@@ -3,13 +3,41 @@
 把一个**预构建好的自包含 bundle** 部署到 Linux 服务器，并管理它的安装、卸载、
 日常运维与在线升级。目标机**不需要源码、不需要 Node/pnpm 工具链、不需要 Docker**。
 
+---
+
+## 最短路径（只想尽快装起来）
+
+```bash
+# 装（一行）
+curl -fsSL <发布源>/install.sh | sudo sh -s -- --source <发布源>
+
+# 看
+toolboxctl status && toolboxctl health
+
+# 升级 / 回滚 / 卸载
+toolboxctl upgrade --source <发布源>
+toolboxctl rollback
+toolboxctl uninstall --purge
+```
+
+没有现成发布源？在已有 `dist-release/` 的机器上 `cd dist-release && python3 -m http.server 8899`，
+发布源就是 `http://<该机IP>:8899`。
+
+> ⚠️ 仓库当前为 **private**，GitHub 直连（raw / Release 资产）对匿名请求返回 404。
+> 转 public、带 `GITHUB_TOKEN`，或走自建 / 内网发布源 —— 详见
+> [`docs/RELEASE.md` §四](../../docs/RELEASE.md)。
+
+其余章节是四类场景的完整说明、目录布局与排障，按需查阅。
+
+---
+
 ## 和其他两种部署方式的分工
 
-| 方式 | 目录 | 目标机需要 | 适用 |
-|---|---|---|---|
-| 源码部署 | 仓库根 `package.json` | Node 20+ / pnpm / 源码 | 开发、CI |
-| 容器部署 | `deploy/docker/` | Docker | 自托管、横向扩展 |
-| **二进制部署** | `deploy/binary/` | `sh` + `tar` + `systemd` + `nginx` | 单机上线、内网服务器、无 Docker 环境 |
+| 方式           | 目录                  | 目标机需要                         | 适用                                 |
+| -------------- | --------------------- | ---------------------------------- | ------------------------------------ |
+| 源码部署       | 仓库根 `package.json` | Node 20+ / pnpm / 源码             | 开发、CI                             |
+| 容器部署       | `deploy/docker/`      | Docker                             | 自托管、横向扩展                     |
+| **二进制部署** | `deploy/binary/`      | `sh` + `tar` + `systemd` + `nginx` | 单机上线、内网服务器、无 Docker 环境 |
 
 ## 一、产出物
 
@@ -76,11 +104,12 @@ deploy/binary/build-bundle.sh --skip-build          # 复用已有 apps/web/dist
 **方式 A：一键安装（推荐，单条命令）**
 
 ```bash
-# 从 GitHub Releases 取最新版（仓库需公开；私有仓库见下）
-curl -fsSL https://raw.githubusercontent.com/zhang123999-qq/toolbox/master/deploy/binary/install.sh | sudo sh
+# 从 GitHub Release 取最新版（入口与 tag 绑定，推荐；仓库需公开）
+curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/latest/download/install.sh | sudo sh
 
 # 指定版本 / 端口 / 自动装依赖
-curl -fsSL .../install.sh | sudo sh -s -- --version 0.0.1 --port 8080 --install-deps
+curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/download/v0.0.1/install.sh \
+  | sudo sh -s -- --version 0.0.1 --port 8080 --install-deps
 
 # 内网发布源（生产推荐：不依赖 GitHub 可达性）
 curl -fsSL http://<发布源>/install.sh | sudo sh -s -- --source http://<发布源>
@@ -90,8 +119,8 @@ curl -fsSL http://<发布源>/install.sh | sudo sh -s -- --source http://<发布
 把落地动作交给 bundle 内的 `toolboxctl`（与手动安装同一条代码路径）。
 `--dry-run` 可先预览动作。
 
-> ⚠️ 仓库当前为 **private**：不带 token 的直连会 404。二选一——
-> 把仓库转为 public，或统一走内网发布源 / 设 `GITHUB_TOKEN`。
+> ⚠️ 仓库当前为 **private**：上面两条 GitHub 直连都会 404（已实测）。
+> 三选一——转 public、安装时带 `GITHUB_TOKEN`，或统一走内网发布源。
 > 发布与版本号规则见 [`docs/RELEASE.md`](../../docs/RELEASE.md)。
 
 **方式 B：手动安装**
@@ -110,14 +139,14 @@ tar -xzf /root/toolbox-0.0.1-linux-amd64.tar.gz -C /root/pkg
 
 常用参数：
 
-| 参数 | 说明 |
-|---|---|
-| `--from <tar.gz\|dir\|url>` | 来源；省略时用脚本所在目录（已在 bundle 内解包的情形） |
-| `--port N` | 监听端口，默认 80 |
-| `--prefix DIR` | 安装根目录，默认 `/opt/toolbox` |
-| `--nginx-user U` | worker 运行用户，默认 `toolbox`；`nobody` 表示不建用户 |
-| `--install-deps` | 自动 `apt-get install nginx`，并停用系统自带的 `nginx.service`（本站用独立实例） |
-| `--no-start` | 只落地不启动 |
+| 参数                        | 说明                                                                             |
+| --------------------------- | -------------------------------------------------------------------------------- |
+| `--from <tar.gz\|dir\|url>` | 来源；省略时用脚本所在目录（已在 bundle 内解包的情形）                           |
+| `--port N`                  | 监听端口，默认 80                                                                |
+| `--prefix DIR`              | 安装根目录，默认 `/opt/toolbox`                                                  |
+| `--nginx-user U`            | worker 运行用户，默认 `toolbox`；`nobody` 表示不建用户                           |
+| `--install-deps`            | 自动 `apt-get install nginx`，并停用系统自带的 `nginx.service`（本站用独立实例） |
+| `--no-start`                | 只落地不启动                                                                     |
 
 ### 2. 卸载
 
@@ -176,14 +205,14 @@ echo "UPDATE_SOURCE='http://releases.internal/toolbox/'" >> /etc/toolbox/toolbox
 
 ## 四、目标机前置条件
 
-| 依赖 | 必需 | 说明 |
-|---|---|---|
-| Linux + x86_64 | ✅ | 产物是平台无关的静态文件，架构只写在 manifest 里 |
-| systemd | ✅ | 以服务方式管理（`/run/systemd/system` 存在） |
-| nginx | ✅ | 可用 `--install-deps` 代装；版本 1.21+ 亦可（本 bundle 自带 MIME 表） |
-| `tar` `gzip` `sha256sum` `awk` `sed` | ✅ | 基线工具 |
-| `curl` 或 `wget` | 升级需要 | 本地目录作为升级源时不需要 |
-| root | ✅ | 安装/卸载/管理服务 |
+| 依赖                                 | 必需     | 说明                                                                  |
+| ------------------------------------ | -------- | --------------------------------------------------------------------- |
+| Linux + x86_64                       | ✅       | 产物是平台无关的静态文件，架构只写在 manifest 里                      |
+| systemd                              | ✅       | 以服务方式管理（`/run/systemd/system` 存在）                          |
+| nginx                                | ✅       | 可用 `--install-deps` 代装；版本 1.21+ 亦可（本 bundle 自带 MIME 表） |
+| `tar` `gzip` `sha256sum` `awk` `sed` | ✅       | 基线工具                                                              |
+| `curl` 或 `wget`                     | 升级需要 | 本地目录作为升级源时不需要                                            |
+| root                                 | ✅       | 安装/卸载/管理服务                                                    |
 
 Docker、Node、Python **都不需要**。
 
@@ -207,16 +236,16 @@ curl -s http://127.0.0.1/healthz
 
 ## 六、排障
 
-| 现象 | 原因与处理 |
-|---|---|
-| `未找到 nginx` | 加 `--install-deps`，或先手动 `apt-get install -y nginx` |
-| `端口 80 已被占用：…` | 换端口 `--port 8080`，或先释放占用进程；`doctor` 会先报出来 |
-| 服务起不来 | `toolboxctl logs -n 50`；再 `nginx -t -c /opt/toolbox/shared/nginx.conf` 看语法 |
-| 健康检查失败 | `curl -v http://127.0.0.1:<port>/healthz`；多半是端口被占或 app 目录不可读 |
-| 升级后仍是旧版本 | 浏览器/CDN 缓存；`/healthz` 的版本号才是服务端真值 |
-| `sha256 校验失败` | 包传输损坏或源被篡改——升级会中止，属预期保护 |
-| 想回到上一版 | `toolboxctl rollback`（不需要重新下载） |
-| 页面 404 但文件明明在 | 检查 `current` 软链指向，`toolboxctl config` 可见渲染后的 `root` |
+| 现象                  | 原因与处理                                                                      |
+| --------------------- | ------------------------------------------------------------------------------- |
+| `未找到 nginx`        | 加 `--install-deps`，或先手动 `apt-get install -y nginx`                        |
+| `端口 80 已被占用：…` | 换端口 `--port 8080`，或先释放占用进程；`doctor` 会先报出来                     |
+| 服务起不来            | `toolboxctl logs -n 50`；再 `nginx -t -c /opt/toolbox/shared/nginx.conf` 看语法 |
+| 健康检查失败          | `curl -v http://127.0.0.1:<port>/healthz`；多半是端口被占或 app 目录不可读      |
+| 升级后仍是旧版本      | 浏览器/CDN 缓存；`/healthz` 的版本号才是服务端真值                              |
+| `sha256 校验失败`     | 包传输损坏或源被篡改——升级会中止，属预期保护                                    |
+| 想回到上一版          | `toolboxctl rollback`（不需要重新下载）                                         |
+| 页面 404 但文件明明在 | 检查 `current` 软链指向，`toolboxctl config` 可见渲染后的 `root`                |
 
 ## 七、安全说明
 

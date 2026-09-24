@@ -3,17 +3,20 @@
 # Toolbox 一键安装脚本
 #
 # 用法（在目标机上以 root 执行）：
-#   curl -fsSL https://raw.githubusercontent.com/zhang123999-qq/toolbox/master/deploy/binary/install.sh | sudo sh
-#   curl -fsSL .../install.sh | sudo sh -s -- --port 8080 --install-deps
+#   curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/latest/download/install.sh | sudo sh
+#   curl -fsSL <上述地址> | sudo sh -s -- --port 8080 --install-deps
 #
 # 也可以先下载再执行（推荐，便于审阅脚本内容）：
-#   curl -fsSLO https://raw.githubusercontent.com/zhang123999-qq/toolbox/master/deploy/binary/install.sh
+#   curl -fsSLO https://github.com/zhang123999-qq/toolbox/releases/latest/download/install.sh
 #   sudo sh install.sh --version 0.0.1
 #
 # 安装源（三选一，按优先级）：
 #   1. --from   <url|本地文件>   直接指定某个 bundle 包
 #   2. --source <base-url>      内网/自建发布源（目录内需有 latest.txt 与包+校验文件）
 #   3. 默认                      GitHub Releases（仓库需公开；私有仓库用 GITHUB_TOKEN）
+#
+#   注意：本仓库当前为 private，第 3 条对匿名请求会 404（已实测）。
+#   转 public、带 GITHUB_TOKEN，或改用 --source 自建源 —— 详见 docs/RELEASE.md §四。
 #
 # 设计要点
 #   • 先校验 sha256 再解包，校验不过绝不安装。

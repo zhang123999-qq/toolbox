@@ -1,34 +1,35 @@
 # 工具库 · 项目开发文档
 
+> **中文** | [English](DEVELOPMENT.en.md)
+
 > 本文是**给开发者看的落地手册**：怎么装环境、怎么建工具、怎么过门禁。
 > 架构设计与工具清单在 `spec/` 与 `catalog/`，本文不重复，只讲「怎么做」。
-> 配套英文版：[`DEVELOPMENT.en.md`](DEVELOPMENT.en.md)
 > 版本：v1.0 · 2026-09-23
 
 ---
 
 ## 〇、本文与其他文档的关系
 
-| 我想… | 看这份 |
-|---|---|
-| 装环境、跑起来、写第一个工具 | **本文** |
-| 了解架构分层、WASM/Worker 方案 | [`spec/02-技术栈与架构.md`](spec/02-技术栈与架构.md) |
-| 查完整目录树 | [`spec/03-目录结构.md`](spec/03-目录结构.md) |
-| 查某个工具的 slug / 优先级 / 可行性 | [`tools/`](tools/) 下对应域文件 |
-| 看 870 条汇总统计 | [`catalog/README.md`](catalog/README.md) |
-| 看哪些决策还没拍板 | [`spec/08-待决事项.md`](spec/08-待决事项.md) |
+| 我想…                               | 看这份                                               |
+| ----------------------------------- | ---------------------------------------------------- |
+| 装环境、跑起来、写第一个工具        | **本文**                                             |
+| 了解架构分层、WASM/Worker 方案      | [`spec/02-技术栈与架构.md`](spec/02-技术栈与架构.md) |
+| 查完整目录树                        | [`spec/03-目录结构.md`](spec/03-目录结构.md)         |
+| 查某个工具的 slug / 优先级 / 可行性 | [`tools/`](tools/) 下对应域文件                      |
+| 看 870 条汇总统计                   | [`catalog/README.md`](catalog/README.md)             |
+| 看哪些决策还没拍板                  | [`spec/08-待决事项.md`](spec/08-待决事项.md)         |
 
 ---
 
 ## 一、环境要求
 
-| 组件 | 要求 | 本机实测 | 必须 |
-|---|---|---|---|
-| Node.js | ≥ 20 | v22.22.2 | ✅ |
-| pnpm | ≥ 9 | 12.3.4 | ✅ |
-| Docker | ≥ 24 | 29.8.0 | ⚠️ 仅阶段验收用 |
-| Git | 任意 | — | ✅ |
-| WSL2 | 可选 | 未启用 | ❌ 非必需 |
+| 组件    | 要求 | 本机实测 | 必须            |
+| ------- | ---- | -------- | --------------- |
+| Node.js | ≥ 20 | v22.22.2 | ✅              |
+| pnpm    | ≥ 9  | 12.3.4   | ✅              |
+| Docker  | ≥ 24 | 29.8.0   | ⚠️ 仅阶段验收用 |
+| Git     | 任意 | —        | ✅              |
+| WSL2    | 可选 | 未启用   | ❌ 非必需       |
 
 > **关于 WSL2**：执行编排提示词原文要求 WSL2 Ubuntu 22.04，但本项目核心是 TS/前端构建，
 > **Windows 原生（Git Bash / PowerShell）可完成全部开发**。Docker 只在最终容器化验收时需要。
@@ -99,17 +100,17 @@ UI              Tailwind CSS + shadcn/ui
 
 ### WASM 模块（9 个，全部懒加载）
 
-| 用途 | 模块 | 目录 |
-|---|---|---|
-| 图片处理 | `photon-rs` | `src/wasm/photon` |
-| 大图 / 批量 | `wasm-vips` | `src/wasm/wasm-vips` |
-| 音视频转码 | `ffmpeg.wasm` | `src/wasm/ffmpeg` |
-| OCR | `tesseract.js` | `src/wasm/tesseract` |
-| PDF 写 | `pdf-lib` | `src/wasm/pdf-lib` |
-| PDF 读 | `pdfjs-dist` | `src/wasm/pdfjs` |
+| 用途        | 模块                   | 目录                  |
+| ----------- | ---------------------- | --------------------- |
+| 图片处理    | `photon-rs`            | `src/wasm/photon`     |
+| 大图 / 批量 | `wasm-vips`            | `src/wasm/wasm-vips`  |
+| 音视频转码  | `ffmpeg.wasm`          | `src/wasm/ffmpeg`     |
+| OCR         | `tesseract.js`         | `src/wasm/tesseract`  |
+| PDF 写      | `pdf-lib`              | `src/wasm/pdf-lib`    |
+| PDF 读      | `pdfjs-dist`           | `src/wasm/pdfjs`      |
 | Office 渲染 | `@neo-office/renderer` | `src/wasm/neo-office` |
-| SQLite | SQLite WASM | `src/wasm/sqlite` |
-| 本地 LLM | `wllama` + WebGPU | `src/wasm/wllama` |
+| SQLite      | SQLite WASM            | `src/wasm/sqlite`     |
+| 本地 LLM    | `wllama` + WebGPU      | `src/wasm/wllama`     |
 
 **硬约束**：任何 WASM 不得打进主包，一律经 `packages/wasm` 的 `loadWasm()` 懒加载并缓存。
 
@@ -144,28 +145,28 @@ UI              Tailwind CSS + shadcn/ui
 
 写 `meta.ts` 时 `category` 与 `group` 必须严格按此表，`check-tools.ts` 会校验。
 
-| # | 域（中文） | `category` | `group` | 工具数 | 编号范围 |
-|---:|---|---|---|---:|---|
-| 1 | 文本与内容处理 | `text` | `dev` | 70 | 1–70 |
-| 2 | 编码 / 加密 / 哈希 / 安全 | `encoding` | `dev` | 60 | 71–130 |
-| 3 | 数据格式 / 解析 / 转换 | `data-format` | `dev` | 60 | 131–190 |
-| 4 | 开发 / 运维 / 云原生 | `devops` | `dev` | 90 | 191–280 |
-| 5 | 时间 / 日期 / 调度 | `datetime` | `dev` | 30 | 281–310 |
-| 6 | 数学 / 单位 / 金融 / 生活 | `math` | `life` | 60 | 311–370 |
-| 7 | 随机 / 生成 / 设计 | `random` | `design` | 50 | 371–420 |
-| 8 | 图片 / 图形 | `image` | `design` | 60 | 421–480 |
-| 9 | PDF / Office / 文档 | `pdf` | `office` | 60 | 481–540 |
-| 10 | 音视频 / 媒体 | `media` | `design` | 45 | 541–585 |
-| 11 | AI / LLM | `ai` | `life` | 30 | 586–615 |
-| 12 | 网络 / SEO / 网站 | `seo` | `dev` | 50 | 616–665 |
-| 13 | 数据可视化 | `visualization` | `design` | 25 | 666–690 |
-| 14 | Web3 / 区块链 | `web3` | `life` | 25 | 691–715 |
-| 15 | 无障碍 / 国际化 | `a11y` | `life` | 25 | 716–740 |
-| 16 | 自动化 / API / 测试 | `automation` | `life` | 30 | 741–770 |
-| 17 | 浏览器扩展 / 油猴 | `extension` | `life` | 15 | 771–785 |
-| 18 | 游戏开发 / 像素 | `game` | `design` | 20 | 786–805 |
-| 19 | 边缘计算 / Serverless | `edge` | `life` | 15 | 806–820 |
-| 20 | 教育 / 学习 / 趣味 | `education` | `life` | 50 | 821–870 |
+|   # | 域（中文）                | `category`      | `group`  | 工具数 | 编号范围 |
+| --: | ------------------------- | --------------- | -------- | -----: | -------- |
+|   1 | 文本与内容处理            | `text`          | `dev`    |     70 | 1–70     |
+|   2 | 编码 / 加密 / 哈希 / 安全 | `encoding`      | `dev`    |     60 | 71–130   |
+|   3 | 数据格式 / 解析 / 转换    | `data-format`   | `dev`    |     60 | 131–190  |
+|   4 | 开发 / 运维 / 云原生      | `devops`        | `dev`    |     90 | 191–280  |
+|   5 | 时间 / 日期 / 调度        | `datetime`      | `dev`    |     30 | 281–310  |
+|   6 | 数学 / 单位 / 金融 / 生活 | `math`          | `life`   |     60 | 311–370  |
+|   7 | 随机 / 生成 / 设计        | `random`        | `design` |     50 | 371–420  |
+|   8 | 图片 / 图形               | `image`         | `design` |     60 | 421–480  |
+|   9 | PDF / Office / 文档       | `pdf`           | `office` |     60 | 481–540  |
+|  10 | 音视频 / 媒体             | `media`         | `design` |     45 | 541–585  |
+|  11 | AI / LLM                  | `ai`            | `life`   |     30 | 586–615  |
+|  12 | 网络 / SEO / 网站         | `seo`           | `dev`    |     50 | 616–665  |
+|  13 | 数据可视化                | `visualization` | `design` |     25 | 666–690  |
+|  14 | Web3 / 区块链             | `web3`          | `life`   |     25 | 691–715  |
+|  15 | 无障碍 / 国际化           | `a11y`          | `life`   |     25 | 716–740  |
+|  16 | 自动化 / API / 测试       | `automation`    | `life`   |     30 | 741–770  |
+|  17 | 浏览器扩展 / 油猴         | `extension`     | `life`   |     15 | 771–785  |
+|  18 | 游戏开发 / 像素           | `game`          | `design` |     20 | 786–805  |
+|  19 | 边缘计算 / Serverless     | `edge`          | `life`   |     15 | 806–820  |
+|  20 | 教育 / 学习 / 趣味        | `education`     | `life`   |     50 | 821–870  |
 
 **合计校验**：`dev` 360 + `design` 200 + `office` 60 + `life` 250 = **870** ✅
 
@@ -184,20 +185,20 @@ import type { ToolMeta } from '@toolbox/catalog'
 
 export const meta: ToolMeta = {
   // —— 标识 ——
-  id: 'json-formatter',              // 全局唯一，kebab-case，= 目录名
-  slug: 'json-formatter',            // URL 片段，与 id 一致
-  title: 'JSON 格式化',               // 中文展示名
+  id: 'json-formatter', // 全局唯一，kebab-case，= 目录名
+  slug: 'json-formatter', // URL 片段，与 id 一致
+  title: 'JSON 格式化', // 中文展示名
   description: '格式化、压缩、校验 JSON，支持树形查看',
 
   // —— 归类 ——
-  category: 'data-format',           // 必须 ∈ 上表 20 个 category
-  group: 'dev',                      // 必须与 category 的归属一致
-  tags: ['json', 'format', 'validate'],  // 2–5 个，全小写
+  category: 'data-format', // 必须 ∈ 上表 20 个 category
+  group: 'dev', // 必须与 category 的归属一致
+  tags: ['json', 'format', 'validate'], // 2–5 个，全小写
 
   // —— 排期与可行性 ——
-  priority: 'P0',                    // P0 | P1 | P2 | P3
-  feasibility: 'A',                  // A | B | C | D | E
-  template: 'T2',                    // T1–T6，见第七节
+  priority: 'P0', // P0 | P1 | P2 | P3
+  feasibility: 'A', // A | B | C | D | E
+  template: 'T2', // T1–T6，见第七节
 
   // —— I/O 契约 ——
   inputs: ['text'],
@@ -205,7 +206,7 @@ export const meta: ToolMeta = {
   options: ['sort', 'indent'],
 
   // —— 执行特征 ——
-  deps: ['jsonc-parser'],            // 必须是已安装依赖
+  deps: ['jsonc-parser'], // 必须是已安装依赖
   worker: false,
   wasm: false,
   api: false,
@@ -214,28 +215,28 @@ export const meta: ToolMeta = {
 
 ### 6.2 校验规则（`check-tools.ts` 强制执行）
 
-| # | 规则 |
-|---:|---|
-| 1 | `id` 唯一、kebab-case、无空格无大写 |
-| 2 | `slug` === `id` |
-| 3 | `category` ∈ 20 域 |
-| 4 | `group` 与 `category` 的归属一致（按第五节表） |
-| 5 | `tags` 2–5 个，全小写 |
-| 6 | `priority` ∈ {P0, P1, P2, P3} |
-| 7 | `feasibility` ∈ {A, B, C, D, E} |
-| 8 | `template` ∈ {T1, …, T6} |
-| 9 | `worker` / `wasm` / `api` 与 `feasibility` 一致（见下表） |
-| 10 | `deps` 中的包必须已在 `package.json` 声明 |
+|   # | 规则                                                      |
+| --: | --------------------------------------------------------- |
+|   1 | `id` 唯一、kebab-case、无空格无大写                       |
+|   2 | `slug` === `id`                                           |
+|   3 | `category` ∈ 20 域                                        |
+|   4 | `group` 与 `category` 的归属一致（按第五节表）            |
+|   5 | `tags` 2–5 个，全小写                                     |
+|   6 | `priority` ∈ {P0, P1, P2, P3}                             |
+|   7 | `feasibility` ∈ {A, B, C, D, E}                           |
+|   8 | `template` ∈ {T1, …, T6}                                  |
+|   9 | `worker` / `wasm` / `api` 与 `feasibility` 一致（见下表） |
+|  10 | `deps` 中的包必须已在 `package.json` 声明                 |
 
 **可行性 → 布尔字段映射（强制）**
 
-| feasibility | 含义 | worker | wasm | api |
-|---|---|---|---|---|
-| **A** | 纯 JS | `false` | `false` | `false` |
-| **B** | WASM | 按需 | **`true`** | `false` |
-| **C** | WebCrypto / WebCodecs / Web API | 按需 | 按需 | `false` |
-| **D** | 用户自备 API / Key | 按需 | 按需 | **`true`** |
-| **E** | 需后端 | 按需 | 按需 | **`true`** |
+| feasibility | 含义                            | worker  | wasm       | api        |
+| ----------- | ------------------------------- | ------- | ---------- | ---------- |
+| **A**       | 纯 JS                           | `false` | `false`    | `false`    |
+| **B**       | WASM                            | 按需    | **`true`** | `false`    |
+| **C**       | WebCrypto / WebCodecs / Web API | 按需    | 按需       | `false`    |
+| **D**       | 用户自备 API / Key              | 按需    | 按需       | **`true`** |
+| **E**       | 需后端                          | 按需    | 按需       | **`true`** |
 
 > **D / E 类工具必须在页面上明示数据流向**，这是红线，不是建议。
 
@@ -257,14 +258,14 @@ export const meta: ToolMeta = {
 
 ## 七、页面模板 T1–T6
 
-| 模板 | 名称 | 布局 | 适用 | 示例 |
-|---|---|---|---|---|
-| **T1** | 单栏 | 上输入下输出 | 简单生成类 | `uuid`、`timestamp`、`password-generator` |
-| **T2** | 双栏 | 左右分栏，宽度可拖 | 转换 / 对比类 | `json-formatter`、`text-diff`、`base64-encode` |
-| **T3** | 多面板 | 输入 + 选项 + 输出 | 3+ 参数 | `regex-tester`、`image-compress`、`loan` |
-| **T4** | 全屏 | 画布 + 悬浮工具栏 | 画布 / 拖拽 | `image-crop`、`pixel-art`、`map-editor` |
-| **T5** | 向导 | 步骤条 + 分步表单 | 多步骤产出 | `id-photo`、`invoice-gen`、`resume` |
-| **T6** | 仪表盘 | 多卡片网格 | 监控面板 | `seo-audit`、`api-test` |
+| 模板   | 名称   | 布局               | 适用          | 示例                                           |
+| ------ | ------ | ------------------ | ------------- | ---------------------------------------------- |
+| **T1** | 单栏   | 上输入下输出       | 简单生成类    | `uuid`、`timestamp`、`password-generator`      |
+| **T2** | 双栏   | 左右分栏，宽度可拖 | 转换 / 对比类 | `json-formatter`、`text-diff`、`base64-encode` |
+| **T3** | 多面板 | 输入 + 选项 + 输出 | 3+ 参数       | `regex-tester`、`image-compress`、`loan`       |
+| **T4** | 全屏   | 画布 + 悬浮工具栏  | 画布 / 拖拽   | `image-crop`、`pixel-art`、`map-editor`        |
+| **T5** | 向导   | 步骤条 + 分步表单  | 多步骤产出    | `id-photo`、`invoice-gen`、`resume`            |
+| **T6** | 仪表盘 | 多卡片网格         | 监控面板      | `seo-audit`、`api-test`                        |
 
 ### 选型判定顺序（从上到下，命中即停）
 
@@ -354,7 +355,7 @@ export function transform(input: Input, options: Options): string {
     const parsed = JSON.parse(input.text)
     return JSON.stringify(parsed, options.sortKeys ? sortedReplacer : null, options.indent)
   } catch {
-    return ''   // 或抛出结构化错误，由 UI 展示
+    return '' // 或抛出结构化错误，由 UI 展示
   }
 }
 ```
@@ -381,30 +382,36 @@ input / output / run / clear / copy / download / example
 
 ### 8.4 分层约束（红线）
 
-| 约束 | 说明 |
-|---|---|
-| `utils.ts` 必须纯函数 | 不依赖 React、不触碰 DOM、无副作用 |
-| `Tool.tsx` 不写业务逻辑 | 只组装，逻辑下沉 `utils.ts` 或 `features/` |
-| `worker.ts` / `wasm.ts` 禁 import React | 执行层不依赖 UI |
-| 工具之间禁止互相 import | 共用逻辑一律上提到 `features/` 或 `lib/` |
-| 不得绕过模板系统 | 必须用 T1–T6 之一 |
+| 约束                                    | 说明                                       |
+| --------------------------------------- | ------------------------------------------ |
+| `utils.ts` 必须纯函数                   | 不依赖 React、不触碰 DOM、无副作用         |
+| `Tool.tsx` 不写业务逻辑                 | 只组装，逻辑下沉 `utils.ts` 或 `features/` |
+| `worker.ts` / `wasm.ts` 禁 import React | 执行层不依赖 UI                            |
+| 工具之间禁止互相 import                 | 共用逻辑一律上提到 `features/` 或 `lib/`   |
+| 不得绕过模板系统                        | 必须用 T1–T6 之一                          |
 
 ---
 
 ## 九、开发命令速查
 
-| 命令 | 作用 |
-|---|---|
-| `pnpm dev` | 启动 `apps/web` 开发服务 |
-| `pnpm build` | 全仓构建 |
-| `pnpm test` | Vitest 单测 |
-| `pnpm test:e2e` | Playwright E2E |
-| `pnpm lint` | ESLint（禁 `any`、禁 `console.log`） |
-| `pnpm typecheck` | `tsc --noEmit` |
-| `pnpm generate:catalog` | 扫描 `tools/*/meta.ts` 重建 catalog |
-| `pnpm generate:sitemap` | 生成 `sitemap.xml` |
-| `pnpm check:tools` | 元数据完整性 + 重复检测 + 模板/大组校验 |
-| `pnpm build:wasm` | 构建 / 拷贝 WASM 模块 |
+| 命令                    | 作用                                        |
+| ----------------------- | ------------------------------------------- |
+| `pnpm dev`              | 启动 `apps/web` 开发服务                    |
+| `pnpm build`            | 全仓构建                                    |
+| `pnpm build:ssg`        | 构建 + SSR 构建 + 预渲染（= CI 的完整产物） |
+| `pnpm test`             | Vitest 单测                                 |
+| `pnpm test:e2e`         | Playwright E2E                              |
+| `pnpm lint`             | ESLint（全仓一份 flat config）              |
+| `pnpm lint:fix`         | ESLint 自动修可修的                         |
+| `pnpm format`           | Prettier 写入                               |
+| `pnpm format:check`     | Prettier 只检查（CI 跑这个）                |
+| `pnpm typecheck`        | `tsc --noEmit`                              |
+| `pnpm check:tools`      | 元数据完整性 + 重复检测 + 模板/大组校验     |
+| `pnpm check:docs`       | 文档一致性（双语配对 / 结构 / 链接 / 术语） |
+| `pnpm verify`           | 以上 6 项门禁串跑（提交前跑这一个即可）     |
+| `pnpm generate:catalog` | 扫描 `tools/*/meta.ts` 重建 catalog         |
+| `pnpm generate:sitemap` | 生成 `sitemap.xml`                          |
+| `pnpm build:wasm`       | 构建 / 拷贝 WASM 模块                       |
 
 ---
 
@@ -451,12 +458,40 @@ input / output / run / clear / copy / download / example
 按序执行，**任一失败即停**：
 
 ```text
-pnpm lint → pnpm typecheck → pnpm check:tools → pnpm test → pnpm build
+pnpm check:tools → pnpm check:docs → pnpm lint → pnpm format:check
+                 → pnpm typecheck → pnpm test → pnpm build:ssg
 ```
+
+本地等价命令是 `pnpm verify`（跑前 6 项；`build:ssg` 因为慢，单独跑）。
+注意 CI 的 `push` 分支是 **master**（默认分支）与 main 两个，
+改默认分支名时要同步改 `.github/workflows/ci.yml`，否则 push 触发的 CI 会静默不跑。
 
 另有 `lighthouse.yml` 负责性能 / SEO / 无障碍检测。
 
-### 10.4 八条红线（不可违反）
+### 10.4 工程配置与「已记录的例外」
+
+| 文件               | 管什么                                             |
+| ------------------ | -------------------------------------------------- |
+| `.editorconfig`    | 编辑器实时行为（缩进 / 换行 / 编码），不参与构建   |
+| `.prettierrc.json` | 格式的**唯一**决定方（无分号、单引号、100 列、LF） |
+| `.prettierignore`  | 生成物、锁文件、二进制不参与格式化                 |
+| `eslint.config.js` | 正确性与可访问性（flat config，全仓一份）          |
+| `.gitattributes`   | 入库换行统一 LF；生成物标记为 `linguist-generated` |
+
+分工原则：**Prettier 管格式，ESLint 管正确性，两者规则零重叠**，
+所以不会出现两个工具互相推翻对方的情况。评审里也不要争论格式——跑一次 `pnpm format` 即可。
+
+两处**刻意保留的规则豁免**，都在 `eslint.config.js` 里写了原因：
+
+- `react-refresh/only-export-components` 对 `src/i18n/**` 与 `src/theme/**` 关闭：
+  Context 的 Provider 与消费它的 hook 必须共享同一个 Context，拆文件只是多一层转发。
+- `react-hooks/static-components` 对 `pages/ToolPage.tsx` 关闭：该页必须按 id 动态取组件
+  （`import.meta.glob` 按需加载），规则无法跨函数识别「已按 id 缓存、身份稳定」。
+
+生成物 `packages/catalog/src/tools.generated.ts` 同时被 Prettier 与 ESLint 忽略：
+它是 `pnpm generate:catalog` 的产物，改它没有意义——要改就改各工具自己的 `meta.ts`。
+
+### 10.5 八条红线（不可违反）
 
 1. **不得手写路由表** —— 一律由 catalog 生成
 2. **不得把 WASM 打进主包** —— 全部懒加载
@@ -471,15 +506,15 @@ pnpm lint → pnpm typecheck → pnpm check:tools → pnpm test → pnpm build
 
 ## 十一、性能预算
 
-| 指标 | 预算 | 策略 |
-|---|---:|---|
-| 首屏 JS | < 50KB | 首页只加载分类 + 热门 Top 20 |
-| 工具页 JS | < 30KB | 每工具独立 chunk，按需加载 |
-| 搜索索引 | < 50KB gzip | 构建时生成，只含 id/title/tags（+ description 需重估预算） |
-| WASM | 延迟加载 | 首次使用才下载，CacheFirst |
-| LCP | < 2.5s | 首页 Hero 静态渲染 |
-| TBT | < 200ms | 重任务入 Worker |
-| CLS | < 0.1 | 预留工具区高度 |
+| 指标      |        预算 | 策略                                                       |
+| --------- | ----------: | ---------------------------------------------------------- |
+| 首屏 JS   |      < 50KB | 首页只加载分类 + 热门 Top 20                               |
+| 工具页 JS |      < 30KB | 每工具独立 chunk，按需加载                                 |
+| 搜索索引  | < 50KB gzip | 构建时生成，只含 id/title/tags（+ description 需重估预算） |
+| WASM      |    延迟加载 | 首次使用才下载，CacheFirst                                 |
+| LCP       |      < 2.5s | 首页 Hero 静态渲染                                         |
+| TBT       |     < 200ms | 重任务入 Worker                                            |
+| CLS       |       < 0.1 | 预留工具区高度                                             |
 
 **超预算时的处置**：chunk 超限 → 拆包 / 懒加载；LCP 慢 → 预加载 + 内联关键 CSS；
 TBT 高 → Worker + 延迟执行；CLS 高 → 预留尺寸；图片大 → WebP/AVIF。
@@ -506,16 +541,16 @@ TBT 高 → Worker + 延迟执行；CLS 高 → 预留尺寸；图片大 → Web
 
 ## 十三、已拍板决策
 
-| # | 事项 | 决定 | 依据 |
-|---:|---|---|---|
-| 1 | 框架 | **Vite**（非 Next.js） | 执行提示词 §四技术栈定稿 |
-| 2 | 工具粒度 | **870 个独立路由**（`/tools/:slug`） | 执行提示词 §六 URL 规范 |
-| 3 | 4 组 ↔ 20 域 | **采用第五节真源表** | 该表脚本校验闭合（合计 870） |
-| 4 | 执行宿主 | **Windows 原生**，不迁移 WSL2 | 前端构建无需 Linux 环境 |
-| 5 | 批次规模 | **B2=662 / B3=59 / B4=79 / B5=58 / B6=12** | 实测可行性分布，非旧估算值 |
-| 6 | i18n 范围 | **中英双语，客户端实时切换**（不再只「预留 key」） | 产品要求双语入口，见 §19 |
-| 7 | 主题 | **明 / 暗手动切换**，默认跟随系统 | 产品要求深色模式，见 §19 |
-| 8 | 语言偏好落点 | **localStorage**，不引入 `/en` 路由前缀 | 需求是「实时切换 + 刷新保持」，非 SEO 多语言站 |
+|   # | 事项         | 决定                                               | 依据                                           |
+| --: | ------------ | -------------------------------------------------- | ---------------------------------------------- |
+|   1 | 框架         | **Vite**（非 Next.js）                             | 执行提示词 §四技术栈定稿                       |
+|   2 | 工具粒度     | **870 个独立路由**（`/tools/:slug`）               | 执行提示词 §六 URL 规范                        |
+|   3 | 4 组 ↔ 20 域 | **采用第五节真源表**                               | 该表脚本校验闭合（合计 870）                   |
+|   4 | 执行宿主     | **Windows 原生**，不迁移 WSL2                      | 前端构建无需 Linux 环境                        |
+|   5 | 批次规模     | **B2=662 / B3=59 / B4=79 / B5=58 / B6=12**         | 实测可行性分布，非旧估算值                     |
+|   6 | i18n 范围    | **中英双语，客户端实时切换**（不再只「预留 key」） | 产品要求双语入口，见 §19                       |
+|   7 | 主题         | **明 / 暗手动切换**，默认跟随系统                  | 产品要求深色模式，见 §19                       |
+|   8 | 语言偏好落点 | **localStorage**，不引入 `/en` 路由前缀            | 需求是「实时切换 + 刷新保持」，非 SEO 多语言站 |
 
 > 决策 6 取代了原先「中文单语起步」的口径：`MessageKey` 由中文真源推导，
 > 英文包为 `Record<MessageKey, string>`，漏译即 typecheck 失败。
@@ -524,12 +559,12 @@ TBT 高 → Worker + 延迟执行；CLS 高 → 预留尺寸；图片大 → Web
 
 ## 十四、待拍板事项（开工前请确认）
 
-| # | 事项 | 建议 | 阻塞 |
-|---:|---|---|---|
-| ~~A~~ | ~~i18n 范围：中文单语 vs 中英双语~~ | **已拍板（决策 6）：中英双语实时切换** | — |
-| B | **「21 → 20」合并了哪个域** | 差异已不可考，注明「以当前 20 域为准」后关闭 | 阶段 0 |
-| C | **WASM 分发**：自建 CDN vs 公共 CDN | 大模块（ffmpeg/vips/wllama）自建同源，小模块可走公共 CDN | 阶段 2 |
-| D | **D 类工具提示样式**（58 个） | 顶部 Banner + 页内卡片（A+C 组合） | 阶段 2 |
+|     # | 事项                                | 建议                                                     | 阻塞   |
+| ----: | ----------------------------------- | -------------------------------------------------------- | ------ |
+| ~~A~~ | ~~i18n 范围：中文单语 vs 中英双语~~ | **已拍板（决策 6）：中英双语实时切换**                   | —      |
+|     B | **「21 → 20」合并了哪个域**         | 差异已不可考，注明「以当前 20 域为准」后关闭             | 阶段 0 |
+|     C | **WASM 分发**：自建 CDN vs 公共 CDN | 大模块（ffmpeg/vips/wllama）自建同源，小模块可走公共 CDN | 阶段 2 |
+|     D | **D 类工具提示样式**（58 个）       | 顶部 Banner + 页内卡片（A+C 组合）                       | 阶段 2 |
 
 ---
 
@@ -537,29 +572,29 @@ TBT 高 → Worker + 延迟执行；CLS 高 → 预留尺寸；图片大 → Web
 
 本文编写时核对出以下 spec 内部不一致，处置如下。**spec 原文尚未修订**，执行时按本节口径：
 
-| # | 位置 | 冲突 | 本文采用 |
-|---:|---|---|---|
-| 1 | `docs/审核报告.md` L4 | 引用路径 `.workbuddy/2026-09-23-17-52-10/docs/` 已不存在（目录已迁移至 `F:/max`） | 以当前实际路径为准 |
-| 2 | `spec/03` §3 工具目录规范 | 仍列 `worker.ts`/`wasm.ts` 进 8 文件基线 | 采用 `spec/09` 审计 #4：基线为 meta/schema/utils/Tool/test/Tool.test/e2e/README，worker/wasm 按需另加 |
-| 3 | `spec/02` §7 待确认项 | 建议「多 Tab 合并」 | 已与决策 #2（870 独立路由）冲突，**作废** |
-| 4 | `spec/07-路线图.md` 开工前置表 | 列 8 项，未反映已拍板的 #1 / #3 | 以 [`spec/08-待决事项.md`](spec/08-待决事项.md) 的决策记录为准 |
-| 5 | `spec/05` 缺口清单 | `Mock API` 在「一、数据/开发」与「四、Web/生态」各计一次 | 唯一模块应为 **66**，非 67 |
-| 6 | `spec/09` §七批次规模 | 写 640/90/80/45/15 | 采用实测 **662/59/79/58/12** |
+|   # | 位置                           | 冲突                                                                              | 本文采用                                                                                              |
+| --: | ------------------------------ | --------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+|   1 | `docs/审核报告.md` L4          | 引用路径 `.workbuddy/2026-09-23-17-52-10/docs/` 已不存在（目录已迁移至 `F:/max`） | 以当前实际路径为准                                                                                    |
+|   2 | `spec/03` §3 工具目录规范      | 仍列 `worker.ts`/`wasm.ts` 进 8 文件基线                                          | 采用 `spec/09` 审计 #4：基线为 meta/schema/utils/Tool/test/Tool.test/e2e/README，worker/wasm 按需另加 |
+|   3 | `spec/02` §7 待确认项          | 建议「多 Tab 合并」                                                               | 已与决策 #2（870 独立路由）冲突，**作废**                                                             |
+|   4 | `spec/07-路线图.md` 开工前置表 | 列 8 项，未反映已拍板的 #1 / #3                                                   | 以 [`spec/08-待决事项.md`](spec/08-待决事项.md) 的决策记录为准                                        |
+|   5 | `spec/05` 缺口清单             | `Mock API` 在「一、数据/开发」与「四、Web/生态」各计一次                          | 唯一模块应为 **66**，非 67                                                                            |
+|   6 | `spec/09` §七批次规模          | 写 640/90/80/45/15                                                                | 采用实测 **662/59/79/58/12**                                                                          |
 
 ---
 
 ## 十六、排障速查
 
-| 症状 | 原因 | 处置 |
-|---|---|---|
-| `pnpm install` 卡住 / 超时 | 未走代理或 registry 未换镜像 | 配 `PROXY` + npmmirror |
-| 新工具页面 404 | 未跑 `generate:catalog`，或 `id` ≠ 目录名 | 跑 `pnpm generate:catalog`；核对 id |
-| `check:tools` 报 group 不匹配 | `category` 与 `group` 未按第五节表 | 查表纠正 |
-| `check:tools` 报 deps 未声明 | `meta.deps` 里的包没装 | 先 `pnpm add`，再写进 meta |
-| chunk 超 30KB | 工具直接 import 了大库 | 动态 import / 上提到 `features/` 共享 chunk |
-| WASM 加载失败 | MIME 类型错误，或缺少 COOP/COEP 头 | 查 `vite.config.ts` 的 `assetsInclude` 与 Nginx `types` |
-| 搜索搜不到新工具 | 索引未重建 | 跑 `pnpm generate:catalog`（索引随 catalog 生成） |
-| E2E 选择器找不到 | 缺 `data-testid` | 补齐 7 个必需 testid |
+| 症状                          | 原因                                      | 处置                                                    |
+| ----------------------------- | ----------------------------------------- | ------------------------------------------------------- |
+| `pnpm install` 卡住 / 超时    | 未走代理或 registry 未换镜像              | 配 `PROXY` + npmmirror                                  |
+| 新工具页面 404                | 未跑 `generate:catalog`，或 `id` ≠ 目录名 | 跑 `pnpm generate:catalog`；核对 id                     |
+| `check:tools` 报 group 不匹配 | `category` 与 `group` 未按第五节表        | 查表纠正                                                |
+| `check:tools` 报 deps 未声明  | `meta.deps` 里的包没装                    | 先 `pnpm add`，再写进 meta                              |
+| chunk 超 30KB                 | 工具直接 import 了大库                    | 动态 import / 上提到 `features/` 共享 chunk             |
+| WASM 加载失败                 | MIME 类型错误，或缺少 COOP/COEP 头        | 查 `vite.config.ts` 的 `assetsInclude` 与 Nginx `types` |
+| 搜索搜不到新工具              | 索引未重建                                | 跑 `pnpm generate:catalog`（索引随 catalog 生成）       |
+| E2E 选择器找不到              | 缺 `data-testid`                          | 补齐 7 个必需 testid                                    |
 
 ---
 
@@ -601,59 +636,61 @@ scripts/             generate-catalog / check-tools / generate-sitemap / prerend
 apps/web/src/        entry-server.tsx（SSG 预渲染入口）
 deploy/docker/       Dockerfile（多阶段，含 SSG）+ docker-compose.dev.yml
 deploy/nginx/        default.conf（SPA fallback + gzip + 缓存 + WASM MIME）
+deploy/binary/       二进制部署：build-bundle.sh / toolboxctl / install.sh / tests
+                     （第三条链路，见 §20；四场景真机验证）
 apps/web/public/     sitemap.xml / robots.txt
 .github/workflows/   ci.yml（含 SSG 步骤）
 ```
 
 ### 18.2 实测门禁结果
 
-| 门禁 | 结果 |
-|---|---|
-| `pnpm check:tools` | ✅ 20 域合计 870；dev 360 / design 200 / office 60 / life 250 |
-| `pnpm typecheck` | ✅ catalog / search / web 三包 0 error |
-| `pnpm test` | ✅ **31 passed**（json-formatter 8+7、首页 7、偏好控件 9） |
-| `pnpm build` | ✅ 工具 chunk **5.08KB**（gzip 2.08KB）< 30KB 预算；`app-core` 23.45KB（gzip 9.10KB） |
-| 路由冒烟 | ✅ `/`、`/tools`、`/c/dev`、`/c/dev/data-format`、`/tools/json-formatter` 全部 200 |
-| `generate:catalog` | ✅ 扫描 `tools/*/meta.ts` 重建注册表，重跑校验仍通过 |
-| Docker 镜像 | ✅ `toolbox-web:dev` 构建成功并运行，容器内 7 条路由全 200，healthcheck `healthy` |
-| Nginx 响应头 | ✅ html `text/html; charset=utf-8`；JS `Content-Encoding: gzip` + `max-age=31536000, immutable`；`.wasm` → `application/wasm` |
-| **SSG 预渲染** | ✅ 27 个静态页 + `404.html`；工具页 HTML 含真实 DOM（`data-testid="input"`），**无** Suspense fallback；title / description / canonical / JSON-LD 均已注入 |
-| **双语切换** | ✅ 默认中文；切英文后首页 / 导航 / 页脚 / 工具页文案与 `<html lang>`、`document.title` 同步更新；写入 `localStorage`，刷新保持 |
-| **明暗主题** | ✅ 切换后 `<html class="dark">` 生效，写入 `localStorage`；首帧由内联脚本应用，无闪动 |
+| 门禁               | 结果                                                                                                                                                       |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm check:tools` | ✅ 20 域合计 870；dev 360 / design 200 / office 60 / life 250                                                                                              |
+| `pnpm typecheck`   | ✅ catalog / search / web 三包 0 error                                                                                                                     |
+| `pnpm test`        | ✅ **31 passed**（json-formatter 8+7、首页 7、偏好控件 9）                                                                                                 |
+| `pnpm build`       | ✅ 工具 chunk **5.08KB**（gzip 2.08KB）< 30KB 预算；`app-core` 23.45KB（gzip 9.10KB）                                                                      |
+| 路由冒烟           | ✅ `/`、`/tools`、`/c/dev`、`/c/dev/data-format`、`/tools/json-formatter` 全部 200                                                                         |
+| `generate:catalog` | ✅ 扫描 `tools/*/meta.ts` 重建注册表，重跑校验仍通过                                                                                                       |
+| Docker 镜像        | ✅ `toolbox-web:dev` 构建成功并运行，容器内 7 条路由全 200，healthcheck `healthy`                                                                          |
+| Nginx 响应头       | ✅ html `text/html; charset=utf-8`；JS `Content-Encoding: gzip` + `max-age=31536000, immutable`；`.wasm` → `application/wasm`                              |
+| **SSG 预渲染**     | ✅ 27 个静态页 + `404.html`；工具页 HTML 含真实 DOM（`data-testid="input"`），**无** Suspense fallback；title / description / canonical / JSON-LD 均已注入 |
+| **双语切换**       | ✅ 默认中文；切英文后首页 / 导航 / 页脚 / 工具页文案与 `<html lang>`、`document.title` 同步更新；写入 `localStorage`，刷新保持                             |
+| **明暗主题**       | ✅ 切换后 `<html class="dark">` 生效，写入 `localStorage`；首帧由内联脚本应用，无闪动                                                                      |
 
 ### 18.3 环境坑（Windows 原生执行必读）
 
-| 现象 | 原因 | 解法 |
-|---|---|---|
-| `ERR_PNPM_IGNORED_BUILDS` | pnpm 10+ 默认不执行构建脚本 | 在 `pnpm-workspace.yaml` 写 `allowBuilds: esbuild: true`（**不是** `package.json` 的 `pnpm` 字段，v12 已不再读取） |
-| esbuild postinstall `EBUSY` | 沙箱限制 spawn，`--version` 校验失败 | `pnpm install --ignore-scripts`；二进制来自 `@esbuild/win32-x64` 平台包，postinstall 仅为校验 |
-| turbo `os error 231`（管道范例耗尽） | 并发 spawn 超出沙箱管道上限 | 无法用 `turbo.json` 的 task 级并发（该 key 不被识别）；改为 `turbo run <task> --concurrency=1`，或直接 `pnpm exec tsc -p <pkg>/tsconfig.json --noEmit` 绕开编排器 |
+| 现象                                 | 原因                                 | 解法                                                                                                                                                              |
+| ------------------------------------ | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ERR_PNPM_IGNORED_BUILDS`            | pnpm 10+ 默认不执行构建脚本          | 在 `pnpm-workspace.yaml` 写 `allowBuilds: esbuild: true`（**不是** `package.json` 的 `pnpm` 字段，v12 已不再读取）                                                |
+| esbuild postinstall `EBUSY`          | 沙箱限制 spawn，`--version` 校验失败 | `pnpm install --ignore-scripts`；二进制来自 `@esbuild/win32-x64` 平台包，postinstall 仅为校验                                                                     |
+| turbo `os error 231`（管道范例耗尽） | 并发 spawn 超出沙箱管道上限          | 无法用 `turbo.json` 的 task 级并发（该 key 不被识别）；改为 `turbo run <task> --concurrency=1`，或直接 `pnpm exec tsc -p <pkg>/tsconfig.json --noEmit` 绕开编排器 |
 
 **Docker 构建期另有三个坑（已写进 `deploy/docker/Dockerfile`）：**
 
-| 现象 | 原因 | 解法 |
-|---|---|---|
-| `base name (${NGINX_IMAGE}) should not be blank` | ARG 写在 stage 内部，是 stage 作用域，第二个 `FROM` 看不见 | 两个 `ARG` 都必须声明在**第一个 `FROM` 之前** |
-| `Could not reach registry.npmjs.org/@pnpm/exe...` | corepack 下载 pnpm 二进制默认走 npmjs | Dockerfile 内设 `COREPACK_NPM_REGISTRY`（默认 npmmirror）；构建代理变量要**大小写各传一份**，corepack/undici 只读小写 |
-| 首页返回 `application/octet-stream`，gzip 静默失效 | nginx 的 `types { }` 块在 server 级会**覆盖** http 级继承的整张 MIME 表 | 删掉 server 级 `types { }`，直接继承 `/etc/nginx/mime.types`（nginx 1.21+ 已内置 `application/wasm`）。另注意 `include` 不能写在 `types { }` 内部 |
-| `/tools` 返回 **301** → `/tools/`，与 canonical 冲突 | `try_files $uri $uri/` 里的 `$uri/` 会触发 index 模块的「目录自动补斜杠」 | 改用 `try_files $uri $uri/index.html`，不写 `$uri/` |
-| 拼错的 URL 返回 **200 + 首页内容**（软 404） | 兜底写成 `/index.html` 时，所有未匹配路径都会被静默替换成首页；SSG 产出的 `404.html` 从未被使用 | `try_files $uri $uri/index.html **=404**;` + `error_page 404 /404.html;` + `location = /404.html { internal; }`，让未知路径真的返回 404 状态码 |
+| 现象                                                 | 原因                                                                                            | 解法                                                                                                                                              |
+| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `base name (${NGINX_IMAGE}) should not be blank`     | ARG 写在 stage 内部，是 stage 作用域，第二个 `FROM` 看不见                                      | 两个 `ARG` 都必须声明在**第一个 `FROM` 之前**                                                                                                     |
+| `Could not reach registry.npmjs.org/@pnpm/exe...`    | corepack 下载 pnpm 二进制默认走 npmjs                                                           | Dockerfile 内设 `COREPACK_NPM_REGISTRY`（默认 npmmirror）；构建代理变量要**大小写各传一份**，corepack/undici 只读小写                             |
+| 首页返回 `application/octet-stream`，gzip 静默失效   | nginx 的 `types { }` 块在 server 级会**覆盖** http 级继承的整张 MIME 表                         | 删掉 server 级 `types { }`，直接继承 `/etc/nginx/mime.types`（nginx 1.21+ 已内置 `application/wasm`）。另注意 `include` 不能写在 `types { }` 内部 |
+| `/tools` 返回 **301** → `/tools/`，与 canonical 冲突 | `try_files $uri $uri/` 里的 `$uri/` 会触发 index 模块的「目录自动补斜杠」                       | 改用 `try_files $uri $uri/index.html`，不写 `$uri/`                                                                                               |
+| 拼错的 URL 返回 **200 + 首页内容**（软 404）         | 兜底写成 `/index.html` 时，所有未匹配路径都会被静默替换成首页；SSG 产出的 `404.html` 从未被使用 | `try_files $uri $uri/index.html **=404**;` + `error_page 404 /404.html;` + `location = /404.html { internal; }`，让未知路径真的返回 404 状态码    |
 
 > Docker Hub 直连在部分网络下会被拦截。基础镜像可用 `--build-arg
-> NODE_IMAGE=docker.m.daocloud.io/library/node:20-alpine` 切国内加速源，
+NODE_IMAGE=docker.m.daocloud.io/library/node:20-alpine` 切国内加速源，
 > Dockerfile 默认值保持官方源（CI 用）。
 
 **SSG 期两个坑：**
 
-| 现象 | 原因 | 解法 |
-|---|---|---|
-| `Cannot destructure property 'basename' of useContext(...) as it is null` | `pnpm add react-router` 装成了 **8.x**，与 `react-router-dom` 内置的 7.x 形成两份实例，Router context 互不相通 | 显式锁版本 `react-router@^7.1.1`，确保 `.pnpm` 下只有一份 `react-router` |
-| 预渲染产物全是「加载中…」 | `router.tsx` / `ToolPage` 用了 `React.lazy`，`renderToString` 只输出 Suspense fallback | 必须用 React 19 的 `prerender`（`react-dom/static`），它会等待 Suspense 解析 |
+| 现象                                                                      | 原因                                                                                                           | 解法                                                                         |
+| ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `Cannot destructure property 'basename' of useContext(...) as it is null` | `pnpm add react-router` 装成了 **8.x**，与 `react-router-dom` 内置的 7.x 形成两份实例，Router context 互不相通 | 显式锁版本 `react-router@^7.1.1`，确保 `.pnpm` 下只有一份 `react-router`     |
+| 预渲染产物全是「加载中…」                                                 | `router.tsx` / `ToolPage` 用了 `React.lazy`，`renderToString` 只输出 Suspense fallback                         | 必须用 React 19 的 `prerender`（`react-dom/static`），它会等待 Suspense 解析 |
 
 **构建分块坑（新增，870 铺量前务必理解）：**
 
-| 现象 | 原因 | 解法 |
-|---|---|---|
+| 现象                                                                    | 原因                                                                                                                                                                                 | 解法                                                                                                                                                                           |
+| ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 入口 chunk 反向静态 import 某个**工具 chunk**，首屏被迫加载整包工具代码 | `manualChunks` 只为工具模块命名、其余返回 `undefined` 时，rollup 会把「被多处共享但未命名」的模块（如 i18n）塞进**首个被命名的 chunk**（即 `tool-json-formatter`），入口反过来依赖它 | 共享基础设施必须**显式命名**：`/src/(i18n\|theme\|lib)/` → `app-core`（且排除 `node_modules` 以免误命中依赖内部目录）。校验方法：检查入口 chunk 的静态 import 里不出现 `tool-` |
 
 > 该坑在只有 1 个工具时表现为「工具 chunk 13.6KB → 5.1KB、入口多背 23KB」；
@@ -662,16 +699,16 @@ apps/web/public/     sitemap.xml / robots.txt
 
 ### 18.4 未实现（后续补齐）
 
-| 项 | 说明 |
-|---|---|
-| ESLint | `pnpm lint` 尚未接入（CI 中该步骤已注释占位） |
-| Orama 正式接入 | 当前为轻量子串匹配；中文分词需 `@orama/tokenizers/mandarin` |
-| 拼音 / 别名搜索 | 需 `pinyin-pro`，文档 §6 有此要求 |
-| shadcn/ui | 现为自建轻量组件 |
-| T1 / T3–T6 模板 | 仅实现 T2 |
-| PWA / Worker / WASM | 阶段 2 及以后 |
-| 工具元数据的英文文案 | 仅 json-formatter 填了 `titleEn` / `descriptionEn`；其余工具缺省回落中文 |
-| `/en` 路由与英文静态页 | 静态产物固定中文口径（SEO 主市场），英文仅在客户端生效 |
+| 项                     | 说明                                                                     |
+| ---------------------- | ------------------------------------------------------------------------ |
+| ESLint                 | `pnpm lint` 尚未接入（CI 中该步骤已注释占位）                            |
+| Orama 正式接入         | 当前为轻量子串匹配；中文分词需 `@orama/tokenizers/mandarin`              |
+| 拼音 / 别名搜索        | 需 `pinyin-pro`，文档 §6 有此要求                                        |
+| shadcn/ui              | 现为自建轻量组件                                                         |
+| T1 / T3–T6 模板        | 仅实现 T2                                                                |
+| PWA / Worker / WASM    | 阶段 2 及以后                                                            |
+| 工具元数据的英文文案   | 仅 json-formatter 填了 `titleEn` / `descriptionEn`；其余工具缺省回落中文 |
+| `/en` 路由与英文静态页 | 静态产物固定中文口径（SEO 主市场），英文仅在客户端生效                   |
 
 ### 18.5 指标冲突（新增，需拍板）
 
@@ -687,7 +724,7 @@ apps/web/public/     sitemap.xml / robots.txt
 
 1. **放宽预算**至 gzip < 120KB（务实，推荐）
 2. **换运行时**：Preact/compat 替代 React（约 −100KB，但偏离技术栈定稿）
-3. **改架构**：SSG 预渲染 +  islands 架构（工作量大，但兼得 SEO 与体积）
+3. **改架构**：SSG 预渲染 + islands 架构（工作量大，但兼得 SEO 与体积）
 
 > 建议 **1**。理由：本项目是工具站，用户价值在工具本身而非首屏字节数；
 > 且 SPA 首屏 JS 天然包含框架，50KB 预算在 React 19 下不可达，硬守只会逼出伪优化。
@@ -698,12 +735,12 @@ apps/web/public/     sitemap.xml / robots.txt
 
 ### 19.1 需求与落点
 
-| 需求 | 实现 |
-|---|---|
-| 中文 / 英文实时切换 | `src/i18n/` 自建轻量 i18n，切换即重渲染，无页面跳转 |
+| 需求                   | 实现                                                |
+| ---------------------- | --------------------------------------------------- |
+| 中文 / 英文实时切换    | `src/i18n/` 自建轻量 i18n，切换即重渲染，无页面跳转 |
 | 切换后所有可见文案更新 | 全站文案（含组名、域名、可行性标签）统一走 i18n key |
-| 明 / 暗主题切换 | `src/theme/` + Tailwind v4 `@custom-variant dark` |
-| 偏好刷新后保持 | `localStorage`：`toolbox.locale` / `toolbox.theme` |
+| 明 / 暗主题切换        | `src/theme/` + Tailwind v4 `@custom-variant dark`   |
+| 偏好刷新后保持         | `localStorage`：`toolbox.locale` / `toolbox.theme`  |
 
 两个控件都在 `Header` 右簇（`SearchDialog` 之后），共用
 `components/layout/controls.ts` 的外观常量：同高 `h-8`、同圆角、同边框色。
@@ -718,16 +755,16 @@ messages.zh.ts   → export const zh = {...} satisfies Record<string,string>
 messages.en.ts   → export const en: Record<MessageKey, string>
 ```
 
-* **漏译即编译失败**：英文包少一个 key，`tsc --noEmit` 直接报错。
-* **动态 key 仍受检**：`t(`group.${id}.name`)` 由模板字面量类型推导出 4 个具体 key，
+- **漏译即编译失败**：英文包少一个 key，`tsc --noEmit` 直接报错。
+- **动态 key 仍受检**：`t(`group.${id}.name`)` 由模板字面量类型推导出 4 个具体 key，
   写错前缀会在类型层暴露。
-* **插值**：`t('featured.stage', { live, planned, percent })`，占位符为 `{name}`。
+- **插值**：`t('featured.stage', { live, planned, percent })`，占位符为 `{name}`。
 
 ### 19.3 首帧不闪动的做法（关键）
 
-| 偏好 | 机制 |
-|---|---|
-| 主题 | 只是 `<html>` 上的类，**index.html 的内联脚本在首次绘制前写好**，React 不参与首帧；图标用 `dark:hidden` / `hidden dark:block` 由 CSS 二选一，避免「状态与主题不同步」的窗口期 |
+| 偏好 | 机制                                                                                                                                                                                                                                          |
+| ---- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 主题 | 只是 `<html>` 上的类，**index.html 的内联脚本在首次绘制前写好**，React 不参与首帧；图标用 `dark:hidden` / `hidden dark:block` 由 CSS 二选一，避免「状态与主题不同步」的窗口期                                                                 |
 | 语言 | 首渲染固定用默认中文（与 SSG 产物一致），`useIsomorphicLayoutEffect` 在**绘制前**同步已存偏好；若记住的语言非中文，内联脚本先挂 `html.i18n-pending` 遮住预渲染内容，Provider 就绪后摘除（另有 3s 兜底定时器，防止脚本异常导致内容永久不可见） |
 
 > `useIsomorphicLayoutEffect`（`src/lib/`）：客户端用 `useLayoutEffect`，
@@ -735,11 +772,11 @@ messages.en.ts   → export const en: Record<MessageKey, string>
 
 ### 19.4 数据类文案的处理
 
-| 类型 | 做法 | 原因 |
-|---|---|---|
-| 组名 / 域名 / 可行性标签（29 条，有限枚举） | 放 i18n 层 `group.*` / `category.*` / `feasibility.*` | 集中一处，catalog 保持纯数据 |
-| 工具标题 / 描述（逐条内容） | `ToolMeta` 新增**可选** `titleEn` / `descriptionEn`，缺省回落中文 | 逐条内容属于各工具自己的 `meta.ts`；可选设计使既有工具无需改动即通过校验 |
-| 搜索索引 | 索引仍由中文 meta 构建，**展示时**按当前语言取词 | 索引是构建期单一产物，不适合按语言复制 |
+| 类型                                        | 做法                                                              | 原因                                                                     |
+| ------------------------------------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| 组名 / 域名 / 可行性标签（29 条，有限枚举） | 放 i18n 层 `group.*` / `category.*` / `feasibility.*`             | 集中一处，catalog 保持纯数据                                             |
+| 工具标题 / 描述（逐条内容）                 | `ToolMeta` 新增**可选** `titleEn` / `descriptionEn`，缺省回落中文 | 逐条内容属于各工具自己的 `meta.ts`；可选设计使既有工具无需改动即通过校验 |
+| 搜索索引                                    | 索引仍由中文 meta 构建，**展示时**按当前语言取词                  | 索引是构建期单一产物，不适合按语言复制                                   |
 
 > `titleEn` / `descriptionEn` **不计入 §6 的 16 个必需字段**，
 > `toolMetaSchema` 中为 `.optional()`，`check-tools` 行为不变。
@@ -754,3 +791,67 @@ messages.en.ts   → export const en: Record<MessageKey, string>
    否则会重新引入首帧不一致的可能。
 4. 改 `src/i18n/` `src/theme/` `src/lib/` 下的模块后，确认
    `vite.config.ts` 的 `manualChunks` 仍把它们划入 `app-core`（见 §18.3 分块坑）。
+
+---
+
+## 二十、部署与发布（三条链路）
+
+### 20.1 选哪条
+
+| 链路           | 位置                  | 目标机需要                       | 适用                                 |
+| -------------- | --------------------- | -------------------------------- | ------------------------------------ |
+| 源码部署       | 仓库根 `package.json` | Node 20+ / pnpm / 源码           | 开发、CI                             |
+| 容器部署       | `deploy/docker/`      | Docker                           | 自托管、横向扩展                     |
+| **二进制部署** | `deploy/binary/`      | `sh` + `tar` + `systemd` + nginx | 单机上线、内网服务器、无 Docker 环境 |
+
+三者的**产物内容完全一致**（都是 `apps/web/dist` 的纯静态文件），差别只在交付与运维方式。
+
+### 20.2 二进制部署：只需记三条
+
+```bash
+# 安装（目标机需 root）
+curl -fsSL <发布源>/install.sh | sudo sh -s -- --source <发布源>
+
+# 查看
+toolboxctl status && toolboxctl health
+
+# 升级 / 回滚 / 卸载
+toolboxctl upgrade --source <发布源>
+toolboxctl rollback
+toolboxctl uninstall --purge
+```
+
+> ⚠️ 仓库当前为 **private**：`raw.githubusercontent.com` 与 Release 资产对匿名请求均返回 **404**（已实测）。
+> 解法：转 public、安装时带 `GITHUB_TOKEN`，或走自建 / 内网发布源（生产推荐）。
+
+### 20.3 目录布局与回滚
+
+```text
+/opt/toolbox/
+├── releases/<ver>/     不可变：解包即用，升级只新增目录
+├── current -> …        唯一切换点（软链，原子替换）
+├── shared/             跨版本保留：渲染后的 nginx.conf / unit / state
+├── logs/  run/         nginx 日志与 pid
+├── /etc/toolbox/toolbox.conf   运行配置（PREFIX / PORT / 升级源）
+└── /usr/local/bin/toolboxctl   全局 CLI（软链到 current/bin）
+```
+
+升级 = 解包到新目录 + 原子切软链；配置语法或健康检查不通过即自动切回旧目录。
+CLI 运行的是**独立 nginx 实例**（自带 pid / 日志 / 临时目录 / MIME 表），只借用系统 nginx
+**二进制**、不读 `/etc/nginx`，因此 `stop` 只停本站点、卸载不影响同机其它站点。
+
+### 20.4 发布新版本
+
+`deploy/binary/VERSION`（版本真源）→ `deploy/binary/build-bundle.sh` →
+`git tag vX.Y.Z` → `gh release create`（附件即产物）。
+一键安装入口固定指向 **Release 资产的 `install.sh`**（与 tag 绑定，不随分支漂移）。
+版本号的五个落点与 changelog 撰写要点见 [`RELEASE.md`](RELEASE.md) §一 / §三。
+
+### 20.5 相关文档
+
+| 我要…                               | 看                                                         |
+| ----------------------------------- | ---------------------------------------------------------- |
+| 一行命令把站点装起来                | 仓库根 [`README.md`](../README.md)「快速开始」· 本文 §20.2 |
+| 四类场景的完整操作手册              | [`../deploy/binary/README.md`](../deploy/binary/README.md) |
+| 打包、打 tag、发 Release、changelog | [`RELEASE.md`](RELEASE.md)                                 |
+| 容器部署细节与 nginx 坑             | 本文 §18.3                                                 |

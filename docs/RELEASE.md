@@ -13,13 +13,13 @@
 
 版本号有**五个落点**，必须一致，脚本已尽量自动对齐：
 
-| 落点 | 值 | 由谁写入 | 用途 |
-|---|---|---|---|
-| `deploy/binary/VERSION` | `0.0.1` | 手工（真源） | 打包与 CLI 版本号的唯一来源 |
-| bundle 文件名 | `toolbox-0.0.1-linux-amd64.tar.gz` | `build-bundle.sh` | 用户可见、升级源按名解析版本 |
-| bundle 内 `VERSION` | `0.0.1` | `build-bundle.sh` | 安装时校验「包内版本」 |
-| bundle 内 `manifest.json` | `"version": "0.0.1"` + `gitCommit` | `build-bundle.sh` | 追溯「这个包出自哪个提交」 |
-| git tag / Release | `v0.0.1` | `gh release create` | 与源码历史绑定 |
+| 落点                      | 值                                 | 由谁写入            | 用途                         |
+| ------------------------- | ---------------------------------- | ------------------- | ---------------------------- |
+| `deploy/binary/VERSION`   | `0.0.1`                            | 手工（真源）        | 打包与 CLI 版本号的唯一来源  |
+| bundle 文件名             | `toolbox-0.0.1-linux-amd64.tar.gz` | `build-bundle.sh`   | 用户可见、升级源按名解析版本 |
+| bundle 内 `VERSION`       | `0.0.1`                            | `build-bundle.sh`   | 安装时校验「包内版本」       |
+| bundle 内 `manifest.json` | `"version": "0.0.1"` + `gitCommit` | `build-bundle.sh`   | 追溯「这个包出自哪个提交」   |
+| git tag / Release         | `v0.0.1`                           | `gh release create` | 与源码历史绑定               |
 
 运行时还提供一个**自证**落点：`GET /healthz` 返回 `ok v0.0.1`。
 它由 nginx 配置在渲染期写死，因此能证明「当前真正在跑的是哪个版本」，
@@ -57,6 +57,7 @@ gh release create v0.0.2 \
 ```
 
 > **tag 的两个细节**（v0.0.1 发布时踩到过）：
+>
 > 1. `git tag -a` 需要提交身份。本机未配置全局 `user.name/user.email` 时会直接失败
 >    （`Committer identity unknown`）。用
 >    `git -c user.name=… -c user.email=… tag -a …` 临时传入即可，不必改全局配置。
@@ -65,12 +66,13 @@ gh release create v0.0.2 \
 >    想要带说明的附注 tag（推荐），必须**先 `git tag -a` 并 push tag**，再建 Release。
 
 产物清单（`dist-release/`）：
-| 文件 | 大小 | 说明 |
-|---|---|---|
-| `toolbox-<ver>-linux-amd64.tar.gz` | ~145KB | 自包含部署包（48 个文件） |
-| `…tar.gz.sha256` | 99B | 整包校验值；安装/升级前必校验 |
-| `latest.txt` | — | 最新版本号，升级源比对版本用 |
-| `index.json` | — | 已发布版本索引（版本/文件名/sha256） |
+
+| 文件                               | 大小   | 说明                                 |
+| ---------------------------------- | ------ | ------------------------------------ |
+| `toolbox-<ver>-linux-amd64.tar.gz` | ~145KB | 自包含部署包（48 个文件）            |
+| `…tar.gz.sha256`                   | 99B    | 整包校验值；安装/升级前必校验        |
+| `latest.txt`                       | —      | 最新版本号，升级源比对版本用         |
+| `index.json`                       | —      | 已发布版本索引（版本/文件名/sha256） |
 
 bundle 内部：`app/`（静态产物）、`bin/toolboxctl`（管理 CLI）、
 `conf/`（nginx 主配置模板 / systemd unit 模板 / MIME 表）、
@@ -79,7 +81,8 @@ bundle 内部：`app/`（静态产物）、`bin/toolboxctl`（管理 CLI）、
 ## 三、changelog 的撰写要点
 
 本项目用仓库根的 [`CHANGELOG.md`](../CHANGELOG.md)，遵循 Keep a Changelog
-+ 语义化版本。写的时候注意：
+
+- 语义化版本。写的时候注意：
 
 1. **面向使用者，不面向提交历史**。「新增 json-formatter」对人有用，
    「重构 utils.ts」没意义——后者属于 commit message。
@@ -99,47 +102,65 @@ bundle 内部：`app/`（静态产物）、`bin/toolboxctl`（管理 CLI）、
 
 ## 四、一键安装脚本的设计
 
-`deploy/binary/install.sh`，支持「下载即执行」：
+`deploy/binary/install.sh`，支持「下载即执行」。脚本作为 **Release 附件**一并发布，
+因此入口地址不随分支变化（进仓库根 `README.md` 的「快速开始」也是这一条）：
 
 ```bash
-# 默认：从 GitHub Releases 取最新版
-curl -fsSL https://raw.githubusercontent.com/zhang123999-qq/toolbox/master/deploy/binary/install.sh | sudo sh
+# ① GitHub Release 资产（推荐入口：与 tag 绑定，分支改名/删除都不影响）
+curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/latest/download/install.sh \
+  | sudo sh
 
-# 指定版本 / 端口 / 自动装依赖
-curl -fsSL .../install.sh | sudo sh -s -- --version 0.0.1 --port 8080 --install-deps
+# ② 指定版本 / 端口 / 自动装依赖
+curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/download/v0.0.1/install.sh \
+  | sudo sh -s -- --version 0.0.1 --port 8080 --install-deps
 
-# 内网发布源（推荐生产环境：不依赖 GitHub 可达性）
-curl -fsSL http://192.168.100.4:8899/install.sh | sudo sh -s -- --source http://192.168.100.4:8899
+# ③ 跟随 master 分支的源码副本（仅便于开发期自测，不推荐作为对外入口）
+curl -fsSL https://raw.githubusercontent.com/zhang123999-qq/toolbox/master/deploy/binary/install.sh \
+  | sudo sh
+
+# ④ 自建 / 内网发布源（生产推荐：不依赖 GitHub 可达性）
+curl -fsSL http://<发布源>/install.sh | sudo sh -s -- --source http://<发布源>
 ```
+
+> ⚠️ **本仓库当前为 private，① ② ③ 三条对匿名请求都返回 404**（已实测：
+> `raw.githubusercontent.com/.../install.sh` → 404；同地址带 token → 200）。
+> 三种解法：
+>
+> - `gh repo edit zhang123999-qq/toolbox --visibility public` 转为公开；
+> - 安装时带 token：`curl … | sudo GITHUB_TOKEN=ghp_xxx sh -s -- …`
+>   （`install.sh` 会把 token 加到 `Authorization: Bearer` 上，也用于取 `api.github.com` 的 latest）；
+> - 走 ④ 自建 / 内网发布源 —— 生产环境首选，顺带解决内网机器无外网的问题。
+>
+> 无论走哪条，**「一键安装入口」应固定指向 ①**（Release 附件），而不是 master 上的源码副本：
+> 前者跟随 tag、可回溯，后者会随分支演进而变。
+>
+> 环境变量可覆盖内建默认值：`TOOLBOX_REPO`（默认 `zhang123999-qq/toolbox`）、
+> `TOOLBOX_RAW_BASE`（默认 `https://raw.githubusercontent.com/$TOOLBOX_REPO/master`）。
 
 设计要点：
 
-| 决策 | 原因 |
-|---|---|
+| 决策                                                | 原因                                                                                   |
+| --------------------------------------------------- | -------------------------------------------------------------------------------------- |
 | **先校验 sha256 再解包**，缺 `.sha256` 直接拒绝安装 | 单条 curl 命令意味着用户放弃了审阅脚本的机会，校验是唯一防线；`--dry-run` 可先预览动作 |
-| 真正的落地逻辑**全部交给 bundle 内的 `toolboxctl`** | 「一键装」与「手动解包装」走同一条代码路径，行为不会分叉；脚本只负责下载/校验/解包 |
-| 无交互 | `curl \| sh` 场景下 stdin 被脚本占用，任何 `read` 都会吞掉脚本内容 |
-| 支持 `--source` 内网源 | 内网机器常无外网；也让「在线升级」与「首次安装」共用同一个发布源 |
-| 支持 `GITHUB_TOKEN` | **私有仓库的 Release 资产需认证**——这是本仓库当前的默认状态 |
-| 架构自动判定，不支持的架构明确报错 | 避免装出跑不起来的包 |
-| 以 `id -u` 判定并要求 root | 安装要写 `/opt`、装 systemd unit，必须 root，早失败早提示 |
-
-> ⚠️ 仓库当前为 **private**：不带 token 的 `curl` 一键安装会 404。
-> 二选一：把仓库转为 public（`gh repo edit --visibility public`），
-> 或统一走内网发布源 / 带 `GITHUB_TOKEN`。
+| 真正的落地逻辑**全部交给 bundle 内的 `toolboxctl`** | 「一键装」与「手动解包装」走同一条代码路径，行为不会分叉；脚本只负责下载/校验/解包     |
+| 无交互                                              | `curl \| sh` 场景下 stdin 被脚本占用，任何 `read` 都会吞掉脚本内容                     |
+| 支持 `--source` 内网源                              | 内网机器常无外网；也让「在线升级」与「首次安装」共用同一个发布源                       |
+| 支持 `GITHUB_TOKEN`                                 | **私有仓库的 Release 资产需认证**——这是本仓库当前的默认状态                            |
+| 架构自动判定，不支持的架构明确报错                  | 避免装出跑不起来的包                                                                   |
+| 以 `id -u` 判定并要求 root                          | 安装要写 `/opt`、装 systemd unit，必须 root，早失败早提示                              |
 
 ## 五、支持的平台与依赖要求
 
-| 项 | 要求 |
-|---|---|
-| 目标机 OS | Linux（x86_64 / aarch64） |
-| 产物性质 | 纯静态文件，**架构无关**；`arch` 仅用于文件名与 manifest 校验 |
-| init | systemd（`/run/systemd/system` 存在） |
-| Web 服务器 | nginx（1.21+；可用 `install --install-deps` 自动 apt 安装） |
-| 基线命令 | `tar` `gzip` `sha256sum` `awk` `sed` `sh`(POSIX) |
-| 联网 | 只有「在线升级 / curl 直装」需要 `curl` 或 `wget`；离线可用本地目录作源 |
-| 权限 | root（安装、卸载、服务管理） |
-| **不需要** | Go、Node、pnpm、Docker、Python |
+| 项         | 要求                                                                    |
+| ---------- | ----------------------------------------------------------------------- |
+| 目标机 OS  | Linux（x86_64 / aarch64）                                               |
+| 产物性质   | 纯静态文件，**架构无关**；`arch` 仅用于文件名与 manifest 校验           |
+| init       | systemd（`/run/systemd/system` 存在）                                   |
+| Web 服务器 | nginx（1.21+；可用 `install --install-deps` 自动 apt 安装）             |
+| 基线命令   | `tar` `gzip` `sha256sum` `awk` `sed` `sh`(POSIX)                        |
+| 联网       | 只有「在线升级 / curl 直装」需要 `curl` 或 `wget`；离线可用本地目录作源 |
+| 权限       | root（安装、卸载、服务管理）                                            |
+| **不需要** | Go、Node、pnpm、Docker、Python                                          |
 
 开发机（打包用）：Node 20+ 与 pnpm（跑构建），bash、`tar`、`sha256sum`。
 

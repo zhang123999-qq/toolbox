@@ -9,9 +9,35 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
 
 ## [未发布]
 
+### 新增
+
+- **工程配置**：ESLint（flat config，含 React / hooks / 可访问性规则）、Prettier、
+  EditorConfig、`.gitattributes`（换行统一 LF）；新增 `pnpm lint` / `format` / `format:check` /
+  `check:docs` / `verify` 脚本，CI 增加静态检查门禁
+- **双语文档体系**：`docs/guide/`（安装与快速上手 / 使用示例 / 配置说明 / 排障，四篇中英成对）、
+  `docs/glossary.md`（术语真源 + 禁用译法）、`CONTRIBUTING.md`、`docs/README.en.md`
+- **文档一致性校验**：`pnpm check:docs` 机检双语配对、结构对齐、链接与锚点、术语统一、
+  在线地址与「尚未上线」标注、新文档是否已入索引
+
+### 修复
+
+- **CI 从未在 push 时运行**：`push` 触发分支写的是 `main`，而默认分支是 `master`，
+  只有开 PR 才会跑
+- **切换语言会丢掉工具页的输入**：`loadTool` 每次渲染都新建 `lazy()` 包装，
+  组件身份变化导致 React 卸载重挂工具组件
+- **搜索弹层的遮罩层键盘不可达**：背板是 `<div onClick>`，只有鼠标能关；
+  改为真正的 `<button>`（Esc 之外的第二条关闭路径）
+- **sitemap 与 canonical 指向占位域名**：`https://example.com` 硬编码在 5 处
+  （含 `robots.txt` 的 Sitemap 指令），现统一由 `packages/catalog/src/site.ts` 的
+  `SITE_ORIGIN` 派生；`robots.txt` 改为构建期生成，不再手工维护
+- **`pnpm build:ssg` 本地不生成 sitemap**：缺少生成步骤且顺序与 Dockerfile 不一致，
+  产出的 `dist/` 用的是上次遗留的 sitemap；现已对齐为
+  sitemap → 客户端构建 → SSR 构建 → 预渲染
+
 ### 计划中
+
 - 铺量 P0 批次（148 个工具），先小批量（10 个）验证再上量
-- ESLint 接入（`pnpm lint` 目前为占位）
+- 补齐工程内部文档的英文版（`docs/spec/`、`docs/tools/` 等 36 份，`pnpm check:docs` 会持续统计）
 - Orama 正式接入 + 中文分词、拼音搜索
 - T1 / T3–T6 页面模板
 
@@ -23,6 +49,7 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
 ### 新增
 
 **工程基座**
+
 - pnpm + Turborepo 单体仓库，`packages/catalog` 作为 20 域 ↔ 4 大组唯一真源表
   （合计 870，脚本校验闭合），含 Zod 元数据契约与可行性→布尔字段强制映射
 - 路由全部由 catalog 派生，新增工具只需建目录 + `meta.ts` 并执行
@@ -31,6 +58,7 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
 - GitHub Actions 流水线：按门禁顺序串联校验 → 类型检查 → 测试 → 构建 → SSG
 
 **站点**
+
 - Vite 6 + React 19 + TypeScript + Tailwind v4，页面级懒加载
 - SSG 预渲染：27 个静态页 + `404.html`，注入 title / description / canonical /
   JSON-LD，工具页对爬虫可见真实 DOM
@@ -43,10 +71,12 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
 - 全局搜索（⌘K / Ctrl+K）
 
 **示例工具**
+
 - `json-formatter`（#131，data-format/dev，P0，T2 模板）：格式化、压缩、校验、
   缩进与键排序，8 文件规范齐全（含单元测试、组件测试、E2E）
 
 **部署**
+
 - 容器部署：多阶段 Dockerfile + 独立 nginx 配置（SPA 路由、gzip、长缓存、
   WASM MIME、真实 404），镜像约 75MB
 - 二进制部署（`deploy/binary/`）：自包含 bundle + `toolboxctl` 管理 CLI，
