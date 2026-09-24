@@ -14,6 +14,14 @@ export default defineConfig({
             const match = /\/src\/tools\/([^/]+)\//.exec(id)
             if (match?.[1]) return `tool-${match[1]}`
           }
+          // 应用级共享模块（i18n / 主题 / lib）必须显式命名。
+          // 否则 rollup 会把它们塞进「首个被命名的 chunk」，也就是某个工具 chunk：
+          // 结果是入口 chunk 反向静态依赖工具 chunk，首屏被迫加载整包工具代码，
+          // 且工具页体积预算（30KB）被共享代码污染。870 个工具时后果明显。
+          // 排除 node_modules，避免误命中依赖内部的 src/lib 目录。
+          if (!id.includes('node_modules') && /\/src\/(i18n|theme|lib)\//.test(id)) {
+            return 'app-core'
+          }
           return undefined
         },
       },
