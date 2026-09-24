@@ -23,13 +23,19 @@
 
 ## 1. Environment
 
-| Component | Required | Verified locally | Mandatory                |
-| --------- | -------- | ---------------- | ------------------------ |
-| Node.js   | ≥ 20     | v22.22.2         | ✅                       |
-| pnpm      | ≥ 9      | 12.3.4           | ✅                       |
-| Docker    | ≥ 24     | 29.8.0           | ⚠️ acceptance stage only |
-| Git       | any      | —                | ✅                       |
-| WSL2      | optional | not enabled      | ❌ not required          |
+| Component | Required                         | Verified locally | Mandatory                |
+| --------- | -------------------------------- | ---------------- | ------------------------ |
+| Node.js   | ≥ 24.15.0 (24.x LTS recommended) | v24.20.0         | ✅                       |
+| pnpm      | ≥ 9                              | 12.3.4           | ✅                       |
+| Docker    | ≥ 24                             | 29.8.0           | ⚠️ acceptance stage only |
+| Git       | any                              | —                | ✅                       |
+| WSL2      | optional                         | not enabled      | ❌ not required          |
+
+> **Two limits on dependency upgrades** (check these after `pnpm outdated` instead of taking every
+> "latest"): ① `react-router` 8.x exists, but `react-router-dom` has no 8.x — upgrading one alone
+> guarantees two instances (see §18.3 for the symptom and fix); ② TypeScript 7 is out, but
+> `typescript-eslint`'s peer range for TypeScript is still `>=4.8.4 <6.1.0`, so moving to 7 would
+> drop support for the type-aware lint rules.
 
 > **On WSL2**: the orchestration prompt calls for WSL2 Ubuntu 22.04, but this project
 > is TypeScript/frontend at its core — **native Windows (Git Bash / PowerShell) handles
@@ -738,15 +744,15 @@ apps/web/public/     sitemap.xml / robots.txt
 | A mistyped URL returns **200 with the home page** (soft 404)         | When the fallback is `/index.html`, every unmatched path is silently replaced by the home page and the SSG-generated `404.html` is never used | `try_files $uri $uri/index.html **=404**;` plus `error_page 404 /404.html;` and `location = /404.html { internal; }` so unknown paths really return a 404 status              |
 
 > Docker Hub may be blocked on some networks. Override the base image with
-> `--build-arg NODE_IMAGE=docker.m.daocloud.io/library/node:20-alpine`;
+> `--build-arg NODE_IMAGE=docker.m.daocloud.io/library/node:24-alpine`;
 > the Dockerfile default stays on the official registry (for CI).
 
 **Two SSG gotchas:**
 
-| Symptom                                                                   | Cause                                                                                                                                                      | Fix                                                                                  |
-| ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| `Cannot destructure property 'basename' of useContext(...) as it is null` | `pnpm add react-router` resolved to **8.x**, creating a second instance alongside the 7.x that `react-router-dom` bundles — the Router contexts never meet | Pin it: `react-router@^7.1.1`, so only one `react-router` exists under `.pnpm`       |
-| Pre-rendered output is all "加载中…"                                      | `router.tsx` / `ToolPage` use `React.lazy`; `renderToString` only emits the Suspense fallback                                                              | Use React 19's `prerender` from `react-dom/static`, which awaits Suspense resolution |
+| Symptom                                                                   | Cause                                                                                                                                                      | Fix                                                                                                                                                                                                                                                   |
+| ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Cannot destructure property 'basename' of useContext(...) as it is null` | `pnpm add react-router` resolved to **8.x**, creating a second instance alongside the 7.x that `react-router-dom` bundles — the Router contexts never meet | keep both on **7.x resolving to the same version** (currently `react-router@^7.18.4` / `react-router-dom@^7.1.1`, both 7.18.4). `react-router` 8.x exists, but **`react-router-dom` has no 8.x yet**, so upgrading one alone guarantees two instances |
+| Pre-rendered output is all "加载中…"                                      | `router.tsx` / `ToolPage` use `React.lazy`; `renderToString` only emits the Suspense fallback                                                              | Use React 19's `prerender` from `react-dom/static`, which awaits Suspense resolution                                                                                                                                                                  |
 
 **Chunking gotcha (new — read this before scaling to 870 tools):**
 

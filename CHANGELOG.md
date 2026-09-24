@@ -60,6 +60,18 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
 
 ### 变更
 
+- **运行环境升级到 Node.js 24**：`engines.node` 由 `^22.22.2 || >=24.15.0` 收紧为
+  `^24.15.0 || >=26.0.0`（与 `jsdom@30`、`vitest@5` 的真实下限一致）；新增 `.nvmrc`（`24`）；
+  `deploy/docker/Dockerfile` 的 `NODE_IMAGE` 默认值与文档中的构建示例
+  由 `node:20-alpine` 改为 `node:24-alpine`；CI 原本已是 Node 24；
+  `docs/DEVELOPMENT`（中英）环境要求表与 `docs/guide/configuration`（中英）示例同步更新
+- **依赖升级到与 Node 24 兼容的最新稳定版**：`vite` 6 → 8.3.0（打包内核换成 rolldown）、
+  `vitest` 3 → 5.0.1、`@vitejs/plugin-react` 4 → 6.1.1、`zod` 3 → 4.6.5、
+  `prettier` 3.9.8 → 3.9.9、`turbo` 2.11.2 → 2.11.3，锁文件同步更新。
+  **两项有意不升**（理由已写入 `docs/DEVELOPMENT` 环境要求段）：`react-router` 8.x 虽已发布，
+  但 `react-router-dom` 至今没有 8.x，单升必然出现双实例；`typescript` 7 虽已发布，
+  但 `typescript-eslint` 对 TypeScript 的 peer 仍是 `>=4.8.4 <6.1.0`
+
 - **一键安装入口改为真实直链**：仓库已公开，两份 README、文档总索引与
   `deploy/binary/README.md` 的一键部署命令统一为
   `curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/latest/download/install.sh | sudo bash`，

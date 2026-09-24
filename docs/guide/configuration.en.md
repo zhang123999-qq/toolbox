@@ -45,7 +45,7 @@ image and the package sources can be overridden:
 
 ```bash
 docker build -f deploy/docker/Dockerfile -t toolbox-web:dev \
-  --build-arg NODE_IMAGE=docker.m.daocloud.io/library/node:20-alpine \
+  --build-arg NODE_IMAGE=docker.m.daocloud.io/library/node:24-alpine \
   --build-arg HTTP_PROXY=http://host.docker.internal:10810 \
   --build-arg HTTPS_PROXY=http://host.docker.internal:10810 .
 ```

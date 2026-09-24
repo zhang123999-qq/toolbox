@@ -1,7 +1,7 @@
 # 基础镜像可通过 --build-arg 覆盖（国内可换镜像加速源）：
-#   docker build --build-arg NODE_IMAGE=docker.m.daocloud.io/library/node:20-alpine ...
+#   docker build --build-arg NODE_IMAGE=docker.m.daocloud.io/library/node:24-alpine ...
 # 注意：ARG 必须在第一个 FROM 之前声明，否则对后续 FROM 不可见
-ARG NODE_IMAGE=node:20-alpine
+ARG NODE_IMAGE=node:24-alpine
 ARG NGINX_IMAGE=nginx:1.27-alpine
 
 # ---- Stage 1: 构建 ----------------------------------------------------------

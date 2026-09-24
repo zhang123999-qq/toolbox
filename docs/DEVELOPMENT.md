@@ -23,13 +23,18 @@
 
 ## 一、环境要求
 
-| 组件    | 要求 | 本机实测 | 必须            |
-| ------- | ---- | -------- | --------------- |
-| Node.js | ≥ 20 | v22.22.2 | ✅              |
-| pnpm    | ≥ 9  | 12.3.4   | ✅              |
-| Docker  | ≥ 24 | 29.8.0   | ⚠️ 仅阶段验收用 |
-| Git     | 任意 | —        | ✅              |
-| WSL2    | 可选 | 未启用   | ❌ 非必需       |
+| 组件    | 要求                       | 本机实测 | 必须            |
+| ------- | -------------------------- | -------- | --------------- |
+| Node.js | ≥ 24.15.0（推荐 24.x LTS） | v24.20.0 | ✅              |
+| pnpm    | ≥ 9                        | 12.3.4   | ✅              |
+| Docker  | ≥ 24                       | 29.8.0   | ⚠️ 仅阶段验收用 |
+| Git     | 任意                       | —        | ✅              |
+| WSL2    | 可选                       | 未启用   | ❌ 非必需       |
+
+> **依赖升级的两条边界**（跑完 `pnpm outdated` 先确认，不要见新就升）：
+> ① `react-router` 已有 8.x，但 `react-router-dom` 至今没有 8.x，单独升前者必然出现双实例
+> （现象与解法见 §18.3）；② TypeScript 7 已发布，但 `typescript-eslint` 对 TypeScript 的
+> peer 范围仍是 `>=4.8.4 <6.1.0`，升到 7 会让类型感知的 lint 规则失去支持。
 
 > **关于 WSL2**：执行编排提示词原文要求 WSL2 Ubuntu 22.04，但本项目核心是 TS/前端构建，
 > **Windows 原生（Git Bash / PowerShell）可完成全部开发**。Docker 只在最终容器化验收时需要。
@@ -717,15 +722,15 @@ apps/web/public/     sitemap.xml / robots.txt
 | 拼错的 URL 返回 **200 + 首页内容**（软 404）         | 兜底写成 `/index.html` 时，所有未匹配路径都会被静默替换成首页；SSG 产出的 `404.html` 从未被使用 | `try_files $uri $uri/index.html **=404**;` + `error_page 404 /404.html;` + `location = /404.html { internal; }`，让未知路径真的返回 404 状态码    |
 
 > Docker Hub 直连在部分网络下会被拦截。基础镜像可用 `--build-arg
-NODE_IMAGE=docker.m.daocloud.io/library/node:20-alpine` 切国内加速源，
+NODE_IMAGE=docker.m.daocloud.io/library/node:24-alpine` 切国内加速源，
 > Dockerfile 默认值保持官方源（CI 用）。
 
 **SSG 期两个坑：**
 
-| 现象                                                                      | 原因                                                                                                           | 解法                                                                         |
-| ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| `Cannot destructure property 'basename' of useContext(...) as it is null` | `pnpm add react-router` 装成了 **8.x**，与 `react-router-dom` 内置的 7.x 形成两份实例，Router context 互不相通 | 显式锁版本 `react-router@^7.1.1`，确保 `.pnpm` 下只有一份 `react-router`     |
-| 预渲染产物全是「加载中…」                                                 | `router.tsx` / `ToolPage` 用了 `React.lazy`，`renderToString` 只输出 Suspense fallback                         | 必须用 React 19 的 `prerender`（`react-dom/static`），它会等待 Suspense 解析 |
+| 现象                                                                      | 原因                                                                                                           | 解法                                                                                                                                                                                               |
+| ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Cannot destructure property 'basename' of useContext(...) as it is null` | `pnpm add react-router` 装成了 **8.x**，与 `react-router-dom` 内置的 7.x 形成两份实例，Router context 互不相通 | 两者都留在 **7.x 且解析到同一版本**（当前 `react-router@^7.18.4` / `react-router-dom@^7.1.1`，均为 7.18.4）。`react-router` 已有 8.x，但 **`react-router-dom` 至今没有 8.x**，单独升前者必然双实例 |
+| 预渲染产物全是「加载中…」                                                 | `router.tsx` / `ToolPage` 用了 `React.lazy`，`renderToString` 只输出 Suspense fallback                         | 必须用 React 19 的 `prerender`（`react-dom/static`），它会等待 Suspense 解析                                                                                                                       |
 
 **构建分块坑（新增，870 铺量前务必理解）：**
 
