@@ -34,6 +34,16 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
 
 ### 变更
 
+- **一键安装入口改为真实直链**：仓库已公开，两份 README、文档总索引与
+  `deploy/binary/README.md` 的一键部署命令统一为
+  `curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/latest/download/install.sh | sudo bash`，
+  并附「先审阅脚本再执行」提示；原先占位式的 `<发布源>/install.sh` 与
+  「仓库私有、匿名请求 404」的说明一并更正
+- **发布源默认值统一指向本仓库**：`toolboxctl` 新增内建默认值
+  `https://github.com/zhang123999-qq/toolbox/releases/latest/download`，
+  `check-update` / `upgrade` 在 `--source` 与配置 `UPDATE_SOURCE` 都为空时回落到它；
+  `install.sh` 装完提示的升级命令同步带上该基址。机检脚本
+  `deploy/binary/tests/verify-release-source.sh` 会拦住三处脚本与五份文档之间的漂移
 - **`docs/审核报告.md` 改名为 `docs/audit-report.md`**：按
   [`docs/spec/11-文档命名规范.md`](docs/spec/11-文档命名规范.md) 的映射统一为英文文件名，
   同步更新两份文档索引与 `check-docs` 的豁免清单
