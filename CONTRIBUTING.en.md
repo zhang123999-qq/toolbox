@@ -192,6 +192,42 @@ git config commit.template .gitmessage
 ✗ fix bug + format          ← two unrelated things in one commit
 ```
 
+### 6.5 Automatic commit and push by the AI assistant (mandatory)
+
+This project is developed with AI assistance, and **changes must never sit in the working tree**.
+Every atomic change must be committed and pushed to its remote branch as soon as it passes the
+relevant checks — batching several changes into one commit means you cannot tell which step
+introduced a regression, and rolling back can only undo the whole block, which defeats the
+point of version control.
+
+1. **When**: right after one atomic change (one tool / one fix / one document) completes and the
+   gates from §7 that apply to it pass. If you cannot judge the blast radius, run the full
+   `pnpm verify`.
+2. **What to run**:
+   ```bash
+   git status --short                      # review the pending files one by one
+   git add <explicit paths of this change>  # stage by path, never `git add -A`
+   git -c user.name=<name> -c user.email=<email> commit -m "<type>(<scope>): <short summary>"
+   git push origin <current branch>
+   ```
+   Follow §6 for the message: type + short summary, with the body explaining _why_.
+   When the machine has no global git identity, pass `-c user.name/-c user.email` as above.
+3. **Scope**: only files belonging to this change. Build output, dependency directories, logs and
+   `.env*` files carrying secrets are always excluded — `.gitignore` already covers them; if one
+   still shows up in `git status`, the ignore rules have a gap, so **fix the rules first** instead
+   of hand-picking around it.
+4. **On failure**: if the push fails, the remote has new commits, or a conflict appears, **stop
+   immediately and report why** — a human decides how to merge. Never force-push with `--force` /
+   `--force-with-lease`, never skip hooks, never discard someone else's work to dodge a conflict.
+   Network failures may be retried behind a proxy (`https_proxy=http://127.0.0.1:10808`); if the
+   retry also fails, treat it as a stop.
+5. **Verification**:
+   - before committing: `git status --short` and `git diff --cached --stat` to confirm the change
+     is complete and carries no unrelated files;
+   - after committing: report the commit hash (`git log --oneline -1`) and the number of files
+     touched, and compare `git ls-remote origin <branch>` against the local HEAD to confirm the
+     remote is actually in sync.
+
 ---
 
 ## 7. Gates that must pass before you commit

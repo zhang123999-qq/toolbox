@@ -51,6 +51,12 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
 - **外部 API 配置校验**：新增 `scripts/check-env-config.ts`（`pnpm check:env`），机检
   `.env` 已被忽略、`.env.example` 已放行、每个 `api: true` 的工具都已登记、
   无疑似真实密钥、无 `VITE_` 前缀承载密钥；已纳入 `pnpm verify` 与 CI
+- **AI 助手自动提交与推送【强制约束】**：`CONTRIBUTING.md` 新增 §6.5（中英同步）——
+  每完成一个原子性改动并通过相关门禁，必须立即提交并推送到当前远程分支，禁止累积多次改动
+  后一次性提交；条款覆盖触发时机、执行动作（按路径暂存 + Conventional Commits + push）、
+  提交范围（排除构建产物 / 依赖目录 / 日志 / 含敏感信息的文件）、失败处理
+  （push 失败或冲突即中止并报告，禁止强推或跳过提交）、验证要求
+  （提交后输出提交哈希并核对远端已同步）
 
 ### 变更
 
