@@ -1,8 +1,8 @@
 # 静态工具站 · 文档中心
 
-> 状态：**架构已定稿，尚未开工**
-> 更新时间：2026-09-23
-> 工具总量：**870 个 / 20 域 / 4 大组**
+> 状态：**阶段 0 已完成**（骨架 + 示例工具 + 双语/主题 + 容器与二进制两条部署链路）
+> 更新时间：2026-09-24
+> 工具总量：**870 个 / 20 域 / 4 大组**（已实现 1 个）
 
 ---
 
@@ -13,6 +13,7 @@ docs/
 ├── README.md                    ← 本文 · 文档总索引
 ├── DEVELOPMENT.md               ← 开发手册（中文）：环境 / 建工具 / 门禁
 ├── DEVELOPMENT.en.md            ← Developer Guide（英文版，同结构）
+├── RELEASE.md                   ← 发布流程：版本号标识 / Release 构建 / changelog 要点 / 一键安装
 ├── spec/                        规范层：架构、规范、路线图
 │   ├── README.md                项目总览（原 00-总览）
 │   ├── 01-域与子类全景.md        20 域 + 60+ 子类概览
@@ -51,6 +52,8 @@ docs/
 | 启动全流程执行 | [`spec/09-执行编排提示词.md`](spec/09-执行编排提示词.md)（先读文末「入库审计」的 3 项拍板清单） |
 | 给新文档起名 / 查命名规则 | [`spec/11-文档命名规范.md`](spec/11-文档命名规范.md) |
 | 查开发日志规范 | [`spec/10-DevLog规范.md`](spec/10-DevLog规范.md) |
+| **发包、打 tag、写 changelog、做一键安装** | [`RELEASE.md`](RELEASE.md) + 仓库根 [`CHANGELOG.md`](../CHANGELOG.md) |
+| **部署到服务器（容器 / 二进制）** | [`../deploy/binary/README.md`](../deploy/binary/README.md)（二进制）· [`../deploy/docker/`](../deploy/docker/)（容器） |
 
 ---
 
