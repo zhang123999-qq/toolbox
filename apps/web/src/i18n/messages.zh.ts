@@ -144,6 +144,9 @@ export const zh = {
   'tool.download': '下载',
 
   // —— 工具内选项 ——
+  // 通用选项文案：铺量时多工具复用，避免每个工具各建一套 key
+  'option.mode': '模式',
+  'option.sortKeys': '排序键名',
   'jsonFormatter.option.indent': '缩进',
   'jsonFormatter.option.sortKeys': '排序键名',
 

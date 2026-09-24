@@ -144,6 +144,9 @@ export const en: Record<MessageKey, string> = {
   'tool.download': 'Download',
 
   // —— Tool options ——
+  // Shared option labels: reused by many tools so each tool needs no dedicated keys
+  'option.mode': 'Mode',
+  'option.sortKeys': 'Sort keys',
   'jsonFormatter.option.indent': 'Indent',
   'jsonFormatter.option.sortKeys': 'Sort keys',
 
