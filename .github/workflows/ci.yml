@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      # 门禁顺序见 DEVELOPMENT.md §10.3
+      # lint 步骤待 ESLint 接入后启用（packages/config/eslint）
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Check tools
+        run: pnpm check:tools
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+
+      # SSG：不补预渲染，870 个工具页对爬虫就是空壳（DEVELOPMENT.md §12）
+      - name: Build SSR bundle
+        run: pnpm --filter @toolbox/web build:ssr
+
+      - name: Generate sitemap
+        run: pnpm generate:sitemap
+        env:
+          SITE_ORIGIN: ${{ vars.SITE_ORIGIN || 'https://example.com' }}
+
+      - name: Prerender (SSG)
+        run: pnpm prerender
+        env:
+          SITE_ORIGIN: ${{ vars.SITE_ORIGIN || 'https://example.com' }}
+
+      - name: Upload dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-dist
+          path: apps/web/dist
