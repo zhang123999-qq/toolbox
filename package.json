@@ -1,0 +1,28 @@
+{
+  "name": "toolbox",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.3.4",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build --concurrency=1",
+    "typecheck": "turbo run typecheck --concurrency=1",
+    "test": "turbo run test --concurrency=1",
+    "lint": "turbo run lint",
+    "generate:catalog": "tsx scripts/generate-catalog.ts",
+    "generate:sitemap": "tsx scripts/generate-sitemap.ts",
+    "check:tools": "tsx scripts/check-tools.ts",
+    "prerender": "tsx scripts/prerender.ts",
+    "build:ssg": "pnpm build && pnpm --filter @toolbox/web build:ssr && pnpm prerender"
+  },
+  "devDependencies": {
+    "@toolbox/catalog": "workspace:*",
+    "tsx": "^4.19.2",
+    "turbo": "^2.4.0",
+    "typescript": "^5.7.2"
+  }
+}
