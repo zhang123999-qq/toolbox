@@ -38,6 +38,10 @@ jobs:
       - name: Check docs consistency
         run: pnpm check:docs
 
+      # 守住「只使用宽松许可的依赖」：GPL / AGPL / SSPL / BUSL 等会直接失败
+      - name: Check dependency licenses
+        run: pnpm check:licenses
+
       - name: Lint
         run: pnpm lint
 
