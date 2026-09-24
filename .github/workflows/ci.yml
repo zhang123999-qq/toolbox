@@ -14,8 +14,9 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: 12
+        # 不写 version：package.json 的 packageManager 是 pnpm 版本的唯一真源。
+        # 两处都指定会让 action v4 直接失败（Multiple versions of pnpm specified）。
+        # 这个坑此前一直被「push 不触发 CI」掩盖着——第一次真正跑就挂在第 3 步。
 
       - uses: actions/setup-node@v4
         with:
