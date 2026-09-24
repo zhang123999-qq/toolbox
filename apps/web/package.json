@@ -19,6 +19,7 @@
     "chardet": "^2.2.0",
     "compromise": "^14.17.0",
     "diff": "^9.0.0",
+    "echarts": "^6.1.0",
     "markdown-it": "^15.0.2",
     "opencc-js": "^1.4.2",
     "papaparse": "^5.7.0",

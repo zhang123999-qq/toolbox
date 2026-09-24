@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 import type { ToolMeta } from '@toolbox/catalog'
 import { useTranslate } from '../../../i18n'
 import { SECONDARY_BUTTON } from './TwoColumn'
-import type { OptionDef } from './TwoColumn'
+import type { ExtraInputDef, OptionDef } from './TwoColumn'
 
 interface MultiPanelProps<I extends { text: string }, O extends object> {
   readonly meta: ToolMeta
@@ -11,6 +11,8 @@ interface MultiPanelProps<I extends { text: string }, O extends object> {
   readonly initialOptions: O
   readonly optionDefs?: readonly OptionDef<O>[]
   readonly example?: I
+  /** 除 `text` 之外的附加输入框（diff 这类需要两段平级内容的工具） */
+  readonly extraInputs?: readonly ExtraInputDef[]
   /** 输出区由工具自己决定怎么呈现：渲染结果、图表、媒体控件都行 */
   readonly renderOutput: (input: I, options: O) => ReactNode
   /** 供「复制 / 下载」使用的纯文本版本（通常是同一结果的源码或文本表示） */
@@ -35,6 +37,7 @@ export function MultiPanel<I extends { text: string }, O extends object>({
   initialOptions,
   optionDefs,
   example,
+  extraInputs,
   renderOutput,
   toText,
   downloadExt = 'txt',
@@ -46,6 +49,11 @@ export function MultiPanel<I extends { text: string }, O extends object>({
 
   function updateOption(key: keyof O & string, value: string | boolean) {
     setOptions((prev) => ({ ...prev, [key]: value }) as O)
+  }
+
+  function readExtra(key: string): string {
+    const value = (input as Record<string, unknown>)[key]
+    return typeof value === 'string' ? value : ''
   }
 
   async function copy() {
@@ -89,6 +97,24 @@ export function MultiPanel<I extends { text: string }, O extends object>({
           value={input.text}
           onChange={(event) => setInput({ ...input, text: event.target.value } as I)}
         />
+        {extraInputs?.map((def) => (
+          <div key={def.key} className="mt-2">
+            <label
+              htmlFor={'tool-input-' + def.key}
+              className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400"
+            >
+              {def.label}
+            </label>
+            <textarea
+              id={'tool-input-' + def.key}
+              data-testid={'input-' + def.key}
+              rows={def.rows ?? 4}
+              className="w-full resize-y rounded border border-slate-200 p-2 font-mono text-sm dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
+              value={readExtra(def.key)}
+              onChange={(event) => setInput({ ...input, [def.key]: event.target.value } as I)}
+            />
+          </div>
+        ))}
         <div className="tool-actions mt-2 flex flex-wrap gap-2">
           <button
             type="button"
