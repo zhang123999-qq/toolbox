@@ -10,6 +10,8 @@ export const meta: ToolMeta = {
   slug: 'json-formatter',
   title: 'JSON 格式化',
   description: '格式化、压缩、校验 JSON，支持树形查看',
+  titleEn: 'JSON Formatter',
+  descriptionEn: 'Format, minify and validate JSON, with a tree view',
 
   category: 'data-format',
   group: 'dev',

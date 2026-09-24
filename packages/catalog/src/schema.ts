@@ -16,6 +16,10 @@ export const toolMetaSchema = z
     title: z.string().min(1),
     description: z.string().min(1),
 
+    // 可选英文文案：不计入 16 个必需字段，缺省时 UI 回落中文
+    titleEn: z.string().min(1).optional(),
+    descriptionEn: z.string().min(1).optional(),
+
     category: z.enum(CATEGORY_IDS),
     group: z.enum(GROUP_IDS),
     tags: z.array(z.string().regex(/^[a-z0-9-]+$/)).min(2).max(5),

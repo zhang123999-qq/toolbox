@@ -16,6 +16,9 @@ interface LoadedMeta {
   slug: string
   title: string
   description: string
+  /** 可选英文文案（types.ts 中为可选字段，缺省表示回落中文） */
+  titleEn?: string
+  descriptionEn?: string
   category: string
   group: string
   tags: readonly string[]
@@ -65,6 +68,9 @@ function render(metas: LoadedMeta[]): string {
         `slug: ${q(m.slug)}`,
         `title: ${q(m.title)}`,
         `description: ${q(m.description)}`,
+        // 可选字段：仅在 meta.ts 里写了才输出，避免给 870 条都塞一串 undefined
+        ...(m.titleEn ? [`titleEn: ${q(m.titleEn)}`] : []),
+        ...(m.descriptionEn ? [`descriptionEn: ${q(m.descriptionEn)}`] : []),
         `category: ${q(m.category)}`,
         `group: ${q(m.group)}`,
         `tags: ${arr(m.tags)}`,

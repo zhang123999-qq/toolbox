@@ -85,6 +85,12 @@ export interface ToolMeta {
   readonly title: string
   readonly description: string
 
+  // —— 英文文案（可选，不计入 16 个必需字段）——
+  // 缺省时 UI 回落中文，因此旧工具无需改动即可通过校验；
+  // 需要英文站的工具在自己的 meta.ts 里补这两个字段即可。
+  readonly titleEn?: string
+  readonly descriptionEn?: string
+
   // —— 归类 ——
   readonly category: CategoryId
   readonly group: GroupId

@@ -1,6 +1,6 @@
 /**
  * 工具注册表 —— 由 scripts/generate-catalog.ts 自动生成，请勿手工编辑。
- * 生成时间：2026-09-23T12:25:37.423Z
+ * 生成时间：2026-09-24T02:16:05.500Z
  * 工具数：1
  */
 import type { ToolMeta } from './types'
@@ -11,6 +11,8 @@ export const TOOLS: readonly ToolMeta[] = [
     slug: 'json-formatter',
     title: 'JSON 格式化',
     description: '格式化、压缩、校验 JSON，支持树形查看',
+    titleEn: 'JSON Formatter',
+    descriptionEn: 'Format, minify and validate JSON, with a tree view',
     category: 'data-format',
     group: 'dev',
     tags: ['json', 'format', 'validate'],
