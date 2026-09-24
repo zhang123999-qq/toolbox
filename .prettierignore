@@ -1,0 +1,31 @@
+# 依赖与构建产物
+node_modules
+dist
+dist-ssr
+.turbo
+coverage
+*.tsbuildinfo
+
+# 报告与本地临时产物
+playwright-report
+test-results
+blob-report
+tmp-shots
+dist-release
+
+# 生成物：由脚本产出，不参与格式化（避免与生成器来回抖动）
+packages/catalog/src/tools.generated.ts
+apps/web/public/sitemap.xml
+apps/web/public/robots.txt
+
+# 锁文件：由 pnpm 维护，格式化会破坏其结构
+pnpm-lock.yaml
+
+# 二进制与图片
+*.png
+*.jpg
+*.jpeg
+*.ico
+*.woff
+*.woff2
+*.tar.gz

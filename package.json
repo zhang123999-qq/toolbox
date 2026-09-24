@@ -5,24 +5,38 @@
   "type": "module",
   "packageManager": "pnpm@12.3.4",
   "engines": {
-    "node": ">=20"
+    "node": ">=20",
+    "pnpm": ">=9"
   },
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build --concurrency=1",
+    "build:ssg": "pnpm generate:sitemap && pnpm --filter @toolbox/web build && pnpm --filter @toolbox/web build:ssr && pnpm prerender",
     "typecheck": "turbo run typecheck --concurrency=1",
     "test": "turbo run test --concurrency=1",
-    "lint": "turbo run lint",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "generate:catalog": "tsx scripts/generate-catalog.ts",
     "generate:sitemap": "tsx scripts/generate-sitemap.ts",
     "check:tools": "tsx scripts/check-tools.ts",
+    "check:docs": "tsx scripts/check-docs.ts",
     "prerender": "tsx scripts/prerender.ts",
-    "build:ssg": "pnpm build && pnpm --filter @toolbox/web build:ssr && pnpm prerender"
+    "verify": "pnpm check:tools && pnpm check:docs && pnpm lint && pnpm format:check && pnpm typecheck && pnpm test"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@toolbox/catalog": "workspace:*",
+    "eslint": "^10.11.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.7",
+    "globals": "^17.12.0",
+    "prettier": "^3.9.8",
     "tsx": "^4.19.2",
     "turbo": "^2.4.0",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.70.1"
   }
 }

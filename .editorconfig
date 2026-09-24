@@ -1,0 +1,26 @@
+# EditorConfig · https://editorconfig.org
+# 统一各编辑器的缩进、换行与编码；与 .prettierrc.json / .gitattributes 三层互补：
+#   EditorConfig  编辑器实时行为
+#   Prettier      写入时的格式真源
+#   .gitattributes 入库换行（eol=lf）
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+max_line_length = 100
+
+[*.md]
+# 中文文档按段落换行，不做硬折行
+trim_trailing_whitespace = false
+
+[*.{sh,service.tpl}]
+# 模板里的裸单位会被 shell 当变量，保持原样；缩进用 2 空格
+indent_size = 2
+
+[Makefile]
+indent_style = tab

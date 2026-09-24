@@ -1,0 +1,34 @@
+# 换行统一为 LF（Windows 上编辑器默认 CRLF 会污染 diff，也让 shell 脚本在容器里跑不起来）
+* text=auto eol=lf
+
+# 明确文本类型，避免 Git 猜测
+*.ts   text eol=lf
+*.tsx  text eol=lf
+*.js   text eol=lf
+*.mjs  text eol=lf
+*.json text eol=lf
+*.css  text eol=lf
+*.html text eol=lf
+*.md   text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+*.sh   text eol=lf
+*.tpl  text eol=lf
+
+# shell 脚本与 Dockerfile 之外的部署脚本必须可执行
+toolboxctl     text eol=lf
+*.sh           text eol=lf
+
+# 二进制
+*.png     binary
+*.jpg     binary
+*.jpeg    binary
+*.ico     binary
+*.woff    binary
+*.woff2   binary
+*.tar.gz  binary
+
+# 生成物与锁文件不计入语言统计、diff 折叠展示
+pnpm-lock.yaml                          -diff linguist-generated
+packages/catalog/src/tools.generated.ts linguist-generated
+apps/web/public/sitemap.xml             linguist-generated
