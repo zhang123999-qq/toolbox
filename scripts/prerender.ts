@@ -14,6 +14,7 @@ import {
   GROUPS,
   SITE_DESCRIPTION,
   SITE_NAME,
+  SITE_ORIGIN as DEFAULT_ORIGIN,
   SITE_TITLE,
   TOOL_ROUTES,
   getCategory,
@@ -23,7 +24,8 @@ import {
 
 const DIST = path.resolve('apps/web/dist')
 const SSR_ENTRY = path.resolve('apps/web/dist-ssr/entry-server.js')
-const SITE_ORIGIN = (process.env['SITE_ORIGIN'] ?? 'https://example.com').replace(/\/$/, '')
+// 默认取 catalog 里的正式域名；预发 / 临时环境用 SITE_ORIGIN 覆盖
+const SITE_ORIGIN = (process.env['SITE_ORIGIN'] ?? DEFAULT_ORIGIN).replace(/\/$/, '')
 
 interface PageMeta {
   readonly title: string
@@ -126,7 +128,9 @@ function main(): void {
     )
   }
   if (!existsSync(path.join(DIST, 'index.html'))) {
-    throw new Error(`[prerender] 未找到客户端产物 ${path.join(DIST, 'index.html')}\n先执行：pnpm build`)
+    throw new Error(
+      `[prerender] 未找到客户端产物 ${path.join(DIST, 'index.html')}\n先执行：pnpm build`,
+    )
   }
 
   const template = readFileSync(path.join(DIST, 'index.html'), 'utf8')
@@ -152,7 +156,10 @@ function main(): void {
     const notFound = await mod.render('/this-route-does-not-exist')
     writeFileSync(
       path.join(DIST, '404.html'),
-      applyMeta(template, '/404', notFound.html, { title: `页面不存在 · ${SITE_NAME}`, description: SITE_DESCRIPTION }),
+      applyMeta(template, '/404', notFound.html, {
+        title: `页面不存在 · ${SITE_NAME}`,
+        description: SITE_DESCRIPTION,
+      }),
       'utf8',
     )
 

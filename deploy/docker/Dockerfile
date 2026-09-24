@@ -30,8 +30,9 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 
 # 站点域名：决定 sitemap 的 <loc> 与 SSG 注入的 canonical / JSON-LD url。
-# 部署到真实域名时务必覆盖，否则产物里会写死 example.com。
-ARG SITE_ORIGIN=https://example.com
+# 默认值 = packages/catalog/src/site.ts 里的正式域名（站点尚未上线，见 docs/guide/getting-started.md）。
+# 预发 / 临时环境用 --build-arg SITE_ORIGIN=https://... 覆盖。
+ARG SITE_ORIGIN=https://006336.xyz
 ENV SITE_ORIGIN=${SITE_ORIGIN}
 
 # 全量构建：客户端产物 → SSR 产物 → 静态预渲染（SSG）

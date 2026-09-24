@@ -21,6 +21,7 @@ blob-report/
 
 # 构建期生成（由 pnpm generate:sitemap 产出）
 apps/web/public/sitemap.xml
+apps/web/public/robots.txt
 
 # 本地临时验证产物（浏览器验证脚本与其截图，不入库）
 tmp-shots/
