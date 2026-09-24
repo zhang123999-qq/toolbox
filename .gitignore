@@ -1,0 +1,23 @@
+node_modules/
+dist/
+dist-ssr/
+.turbo/
+coverage/
+*.local
+.DS_Store
+.env
+.env.*
+!.env.example
+*.log
+
+# 测试产物
+playwright-report/
+test-results/
+blob-report/
+
+# 开发日志与智能体工作状态（非源码，不入库）
+.agent/logs/
+.workbuddy/
+
+# 构建期生成（由 pnpm generate:sitemap 产出）
+apps/web/public/sitemap.xml
