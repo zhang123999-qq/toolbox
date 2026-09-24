@@ -11,6 +11,11 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
 
 ### 新增
 
+- **文本与内容域（01）全部 70 个工具**：按 `docs/tools/01-文本与内容.md` 逐条实现，
+  每个工具 8 文件基线（`meta` / `schema` / `utils` / `Tool` / `test` / `Tool.test` /
+  `e2e` / `README`）；跨域共用逻辑上提到 `apps/web/src/lib/`（`text` / `diff` / `table` /
+  `ai` / `zerowidth` / `pipeline`）；T2 / T3 模板相应补齐异步运行（D 类接口工具）、
+  多段平级输入、多行文本选项与自定义占位文案
 - **工程配置**：ESLint（flat config，含 React / hooks / 可访问性规则）、Prettier、
   EditorConfig、`.gitattributes`（换行统一 LF）；新增 `pnpm lint` / `format` / `format:check` /
   `check:docs` / `verify` 脚本，CI 增加静态检查门禁
