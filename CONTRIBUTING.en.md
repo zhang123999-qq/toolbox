@@ -143,6 +143,54 @@ what:
 **One commit, one thing.** Fixing a bug plus refactoring, or adding a feature plus reformatting,
 makes it impossible to judge risk quickly in review.
 
+### 6.1 Scope values
+
+Scope names the **directory or subsystem you touched**, not the feature:
+
+| scope     | Covers                                             |
+| --------- | -------------------------------------------------- |
+| `catalog` | `packages/catalog`: source table, contract, routes |
+| `web`     | `apps/web`: layout, components, i18n, theme        |
+| `tools`   | a single tool directory (may narrow to `<slug>`)   |
+| `deploy`  | the container and binary deployment paths          |
+| `docs`    | documentation                                      |
+| `scripts` | build-time scripts                                 |
+| `deps`    | adding, removing or upgrading dependencies         |
+
+A `ci` commit may omit the scope.
+
+### 6.2 Breaking changes
+
+Mark incompatible changes with `!` after the type and explain how to migrate under
+`BREAKING CHANGE:` in the footer:
+
+```text
+feat(catalog)!: add titleEn to the metadata contract
+
+BREAKING CHANGE: existing meta.ts files now fail check:tools until
+pnpm generate:catalog is re-run to rebuild the registry.
+```
+
+### 6.3 Commit template
+
+The repository ships [`.gitmessage`](.gitmessage); configure it once and every `git commit`
+starts from that skeleton:
+
+```bash
+git config commit.template .gitmessage
+```
+
+### 6.4 Good and bad examples
+
+```text
+✓ feat(tools): add url-parser for protocol/host/port/query breakdown
+✓ fix(deploy): degrade to install-only instead of failing midway without systemd
+✓ docs(deploy): document --proxy and --mirror for the one-line installer
+✗ update                    ← no type, the nature is unclear
+✗ feat: added a tool        ← says neither what nor where
+✗ fix bug + format          ← two unrelated things in one commit
+```
+
 ---
 
 ## 7. Gates that must pass before you commit
@@ -151,18 +199,19 @@ makes it impossible to judge risk quickly in review.
 pnpm verify
 ```
 
-It runs, in order: metadata validation → documentation consistency → ESLint → Prettier check →
-type check → unit tests. Do not commit if any of them fails. CI runs the same commands, so passing
-locally means passing remotely.
+It runs, in order: metadata validation → documentation consistency → licence validation → ESLint →
+Prettier check → type check → unit tests. Do not commit if any of them fails. CI runs the same
+commands, so passing locally means passing remotely.
 
-| Gate           | Catches                                                                                              |
-| -------------- | ---------------------------------------------------------------------------------------------------- |
-| `check:tools`  | missing metadata fields, non-contiguous numbering, category totals not adding up to 870              |
-| `check:docs`   | a missing half of a pair, misaligned structure, broken links, dead anchors, inconsistent terminology |
-| `lint`         | unused variables, accessibility defects, hook rule violations                                        |
-| `format:check` | formatting drift                                                                                     |
-| `typecheck`    | type errors across the three packages                                                                |
-| `test`         | behavioural regressions                                                                              |
+| Gate             | Catches                                                                                              |
+| ---------------- | ---------------------------------------------------------------------------------------------------- |
+| `check:tools`    | missing metadata fields, non-contiguous numbering, category totals not adding up to 870              |
+| `check:docs`     | a missing half of a pair, misaligned structure, broken links, dead anchors, inconsistent terminology |
+| `check:licenses` | a dependency pulling in a restricted licence (GPL / AGPL / SSPL / BUSL, and so on)                   |
+| `lint`           | unused variables, accessibility defects, hook rule violations                                        |
+| `format:check`   | formatting drift                                                                                     |
+| `typecheck`      | type errors across the three packages                                                                |
+| `test`           | behavioural regressions                                                                              |
 
 ---
 
@@ -194,4 +243,27 @@ After editing, run:
 
 ```bash
 pnpm check:docs
+```
+
+---
+
+## 10. Third-party dependencies and licences
+
+This project is MIT licensed, so **its dependencies must be permissively licensed too**: MIT / ISC /
+Apache-2.0 / BSD / CC0 and similar. Strong copyleft or commercially restricted licences —
+GPL / AGPL / SSPL / BUSL — are never introduced.
+
+| Rule                   | Requirement                                                                                                  |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Permissive only        | check a package's LICENSE and SPDX field before adding it; if you cannot tell, do not add it                 |
+| Prefer no dependency   | most of the 870 tools are plain JS; hand-write utils rather than inflating the dependency tree               |
+| Enforced in CI         | `pnpm check:licenses` scans every installed package and fails on restricted licences                         |
+| Register exceptions    | a **build-time** dependency under weak copyleft (MPL-2.0, say) goes into `APPROVED_EXCEPTIONS` with a reason |
+| No closed-source parts | proprietary binaries and anything requiring a licence to redistribute are out                                |
+
+Run it on its own:
+
+```bash
+pnpm check:licenses          # restricted licences fail; weak copyleft is only reported
+pnpm check:licenses --strict # weak copyleft fails too
 ```

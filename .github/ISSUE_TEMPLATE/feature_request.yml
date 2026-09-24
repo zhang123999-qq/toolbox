@@ -1,0 +1,48 @@
+name: 功能建议
+description: 新增工具、新增能力，或对现有行为的改进
+title: "feat: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        工具清单是 870 个的规划表，见 [`docs/tools/`](../../docs/tools/README.md)。
+        想认领某个工具，建议先说明是哪一个，避免和别人的 PR 撞车。
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: 要解决什么问题
+      description: 说场景，不要直接跳到方案
+      placeholder: 粘贴一段带转义的 JSON 时，得先手工去掉外层引号才能格式化
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: 期望的方案
+      description: 若是新增工具，请写清输入输出长什么样
+    validations:
+      required: true
+
+  - type: dropdown
+    id: pure-frontend
+    attributes:
+      label: 是否必须纯前端实现
+      description: 本项目红线之一：数据不上传，能本地算就本地算
+      options:
+        - 是，纯前端可实现
+        - 不确定
+        - 否，需要服务端（多半会被搁置）
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 考虑过的替代方案
+      description: 有没有现成的宽松许可库可以用，还是得手写
+      placeholder: 现有的 xxx 库是 MIT，但体积 300KB，倾向手写 40 行的 utils
+    validations:
+      required: false

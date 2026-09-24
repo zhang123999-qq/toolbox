@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 安装 / 使用 / 配置 / 排障
+    url: https://github.com/zhang123999-qq/toolbox/blob/master/docs/guide/README.md
+    about: 这几类问题在 docs/guide/ 里基本都有答案，先查再开 issue 更快
+  - name: 怎么参与开发
+    url: https://github.com/zhang123999-qq/toolbox/blob/master/CONTRIBUTING.md
+    about: 环境、目录约定、提交规范、门禁都在贡献指南里

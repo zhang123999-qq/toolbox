@@ -1,0 +1,54 @@
+name: 缺陷报告
+description: 某个工具或某条部署链路行为不对
+title: "fix: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢反馈。请先确认用的是最新版本（`pnpm verify` 全绿、部署版本见 `toolboxctl version`）。
+
+  - type: input
+    id: where
+    attributes:
+      label: 出问题的位置
+      description: 工具页路径（如 `/tools/json-formatter`），或部署环节（安装 / 升级 / 回滚）
+      placeholder: /tools/json-formatter
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 复现步骤
+      description: 写清「输入什么 → 点了什么 → 看到什么」，命令请给完整可跑的那一行
+      placeholder: |
+        1. 打开 /tools/json-formatter
+        2. 输入 `{ "a": 1, }`
+        3. 点击「格式化」
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望结果
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 实际结果
+      description: 贴报错原文或截图，不要只写「报错了」
+    validations:
+      required: true
+
+  - type: input
+    id: env
+    attributes:
+      label: 环境
+      description: 浏览器 / 系统版本；部署问题请写目标机系统、nginx 与 systemd 情况
+      placeholder: Edge 141 / Windows 11；或 Ubuntu 22.04 + nginx 1.24 + systemd 249
+    validations:
+      required: true

@@ -138,6 +138,52 @@ pnpm dev                # 打开 /tools/<slug> 人工看一眼
 
 **一个提交只做一件事**。修 bug 顺带重构、加功能顺带格式化，都会让 review 无法快速判断风险。
 
+### 6.1 scope 取值
+
+scope 写**改动的目录或子系统**，不写功能模块名：
+
+| scope     | 范围                                   |
+| --------- | -------------------------------------- |
+| `catalog` | `packages/catalog`：真源表、契约、路由 |
+| `web`     | `apps/web`：布局、组件、i18n、主题     |
+| `tools`   | 单工具目录（可细到 `<slug>`）          |
+| `deploy`  | 容器 / 二进制两条部署链路              |
+| `docs`    | 文档                                   |
+| `scripts` | 构建期脚本                             |
+| `deps`    | 依赖增删与升级                         |
+
+`ci` 类型的 scope 可省略。
+
+### 6.2 破坏性变更
+
+不兼容的改动在 type 后加 `!`，footer 用 `BREAKING CHANGE:` 说明 migrating 方式：
+
+```text
+feat(catalog)!: 元数据契约新增 titleEn 字段
+
+BREAKING CHANGE: 已有 meta.ts 会被 check:tools 判为缺字段，
+需重跑 pnpm generate:catalog 重新生成注册表。
+```
+
+### 6.3 提交模板
+
+仓库提供 [`.gitmessage`](.gitmessage)，配置一次后每次 `git commit` 都会带出骨架：
+
+```bash
+git config commit.template .gitmessage
+```
+
+### 6.4 正反例
+
+```text
+✓ feat(tools): 新增 url-parser，拆解协议/主机/端口/查询参数
+✓ fix(deploy): 无 systemd 时不再装到一半失败，降级为只落地
+✓ docs(deploy): 一键安装脚本补充 --proxy 与 --mirror 用法
+✗ update                    ← 没有 type，看不出性质
+✗ feat: 加了个工具          ← 没说清加了什么、在哪
+✗ fix bug + format          ← 一次提交做了两件事
+```
+
 ---
 
 ## 七、提交前必须通过的门禁
@@ -146,17 +192,18 @@ pnpm dev                # 打开 /tools/<slug> 人工看一眼
 pnpm verify
 ```
 
-它按顺序跑：元数据校验 → 文档一致性 → ESLint → Prettier 检查 → 类型检查 → 单测。
-任一项失败都不要提交。CI 跑的是同一组命令，本地通过即代表远端通过。
+它按顺序跑：元数据校验 → 文档一致性 → 依赖许可校验 → ESLint → Prettier 检查 → 类型检查 →
+单测。任一项失败都不要提交。CI 跑的是同一组命令，本地通过即代表远端通过。
 
-| 门禁           | 拦的是哪类问题                                     |
-| -------------- | -------------------------------------------------- |
-| `check:tools`  | 元数据缺字段、编号不连续、域合计不等于 870         |
-| `check:docs`   | 双语缺一边、结构不对齐、断链、锚点失效、术语不统一 |
-| `lint`         | 未使用变量、可访问性缺陷、hooks 规则               |
-| `format:check` | 格式漂移                                           |
-| `typecheck`    | 三个包的类型错误                                   |
-| `test`         | 行为回归                                           |
+| 门禁             | 拦的是哪类问题                                     |
+| ---------------- | -------------------------------------------------- |
+| `check:tools`    | 元数据缺字段、编号不连续、域合计不等于 870         |
+| `check:docs`     | 双语缺一边、结构不对齐、断链、锚点失效、术语不统一 |
+| `check:licenses` | 依赖里混进 GPL / AGPL / SSPL / BUSL 等受限许可     |
+| `lint`           | 未使用变量、可访问性缺陷、hooks 规则               |
+| `format:check`   | 格式漂移                                           |
+| `typecheck`      | 三个包的类型错误                                   |
+| `test`           | 行为回归                                           |
 
 ---
 
@@ -185,4 +232,26 @@ pnpm verify
 
 ```bash
 pnpm check:docs
+```
+
+---
+
+## 十、第三方依赖与许可证
+
+本项目是 MIT 许可，因此**依赖也必须是宽松许可**：MIT / ISC / Apache-2.0 / BSD / CC0 这一类。
+GPL / AGPL / SSPL / BUSL 这类强传染或带商业限制的许可一律不引入。
+
+| 规则         | 说明                                                                                   |
+| ------------ | -------------------------------------------------------------------------------------- |
+| 只用宽松许可 | 加依赖前先看它的 LICENSE 与 SPDX 字段；判定不了就别加                                  |
+| 能不加就不加 | 870 个工具绝大多数是纯 JS 能算的，优先手写 utils，不让依赖膨胀                         |
+| 校验进 CI    | `pnpm check:licenses` 扫描全部已安装包，命中受限许可直接失败                           |
+| 例外要登记   | 确需弱 copyleft（如 MPL-2.0）的**构建期**依赖，写进脚本 `APPROVED_EXCEPTIONS` 并附理由 |
+| 不装闭源组件 | 专有二进制、需授权才能分发的组件一律不用                                               |
+
+单独跑：
+
+```bash
+pnpm check:licenses          # 受限许可报错，弱 copyleft 只提示
+pnpm check:licenses --strict # 弱 copyleft 也报错
 ```
