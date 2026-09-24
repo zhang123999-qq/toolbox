@@ -119,6 +119,13 @@ say "生成 checksums.txt"
 ( cd "$STAGE" && find . -type f ! -name checksums.txt | sed 's|^\./||' | LC_ALL=C sort | xargs sha256sum ) > "$STAGE/checksums.txt"
 
 # —— 5. 打包 ——
+# 必须先把 staging 根目录（及其子目录）修成 0755 再打包：
+# STAGE 来自 mktemp -d，默认 0700，而 tar 会把 `./` 这条目录项的模式原样记进归档。
+# 解包后 releases/<version> 就是 drwx------，nginx worker（nobody/toolbox）
+# 连 stat 都过不去 → **全站 403**（只有 /healthz 这类 return 型 location 正常）。
+# 这个坑只在「真起 nginx」时才暴露，静态看文件权限看不出来。
+chmod 0755 "$STAGE"
+find "$STAGE" -type d -exec chmod 0755 {} +
 mkdir -p "$OUT"
 TARBALL="$OUT/${PKG}.tar.gz"
 say "打包 → $TARBALL"

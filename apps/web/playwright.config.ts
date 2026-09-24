@@ -13,7 +13,9 @@ export default defineConfig({
   testMatch: '**/e2e.spec.ts',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
+  // CI 下默认给 2 次重试（网络/渲染抖动很常见），但「重试」会掩盖真失败：
+  // 容器化全量测试用 E2E_RETRIES=0 跑严格模式，失败即失败。
+  retries: Number(process.env.E2E_RETRIES ?? (process.env.CI ? 2 : 0)),
   reporter: process.env.CI ? 'github' : 'list',
   use: {
     baseURL: BASE_URL,

@@ -11,6 +11,13 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
 
 ### 新增
 
+- **容器化全量测试环境**：`deploy/docker/Dockerfile.test` +
+  `deploy/docker/docker-compose.test.yml` + `deploy/docker/run-tests.sh`。
+  一次 build 固化 Node 24 / pnpm / 依赖 / chromium / nginx，再按阶段跑
+  门禁 → 单测 → 构建 → 打 bundle → 真起 nginx → E2E → 产物冒烟，
+  逐阶段日志落 `.agent/test-logs/<轮次>/`（卷挂载）。用法见 `docs/DEVELOPMENT.md` §二十一
+- **二进制部署链路的自动化验证**：`deploy-nginx` 阶段把 bundle 解包、
+  渲染 nginx 配置、真起一个 nginx，再断言路由 / 404 / gzip / 健康检查（32 项）
 - **文本与内容域（01）全部 70 个工具**：按 `docs/tools/01-文本与内容.md` 逐条实现，
   每个工具 8 文件基线（`meta` / `schema` / `utils` / `Tool` / `test` / `Tool.test` /
   `e2e` / `README`）；跨域共用逻辑上提到 `apps/web/src/lib/`（`text` / `diff` / `table` /
@@ -112,6 +119,19 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
 - **`pnpm build:ssg` 本地不生成 sitemap**：缺少生成步骤且顺序与 Dockerfile 不一致，
   产出的 `dist/` 用的是上次遗留的 sitemap；现已对齐为
   sitemap → 客户端构建 → SSR 构建 → 预渲染
+- **bundle 解包后站点全站 403**：`build-bundle.sh` 用 `mktemp -d`（模式 0700）当 staging 根，
+  tar 把这条 `./` 目录项的模式原样记进归档，解包后 `releases/<版本>` 是 `drwx------`，
+  nginx worker（nobody / toolbox）连 `stat` 都过不去，只有 `/healthz` 这类
+  `return` 型 location 正常。现打包前先把 staging 及子目录统一修成 0755
+- **`user` 指令漏组名导致 nginx 起不来**：`toolboxctl` 降级到 `nobody` 运行时渲染出
+  `user nobody;`，而 nginx 省略组时会拿用户名当组名，Debian / Ubuntu 上 nobody 的组叫
+  `nogroup` → `getgrnam("nobody") failed`。现由 `render_tpl` 探测后补上组名
+- **compose 健康检查永远 unhealthy**：exec 数组形式不做 shell 解析，
+  `">/dev/null"` 被当成第三个 URL 传给 `wget`，`depends_on` 因此卡死。
+  改为不带重定向的 `wget -q -O /dev/null`
+- **compose 把宿主机代理透传进构建**：宿主机 `HTTP_PROXY` 指向 `127.0.0.1`，
+  在容器里那是容器自己，`pnpm install` 全程 `Connection refused`。
+  现改为显式 opt-in（`DOCKER_BUILD_HTTP_PROXY`）
 
 ### 计划中
 

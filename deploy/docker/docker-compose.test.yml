@@ -1,0 +1,64 @@
+# 可复现的测试环境：一次 build 固化 Node / pnpm / 依赖 / 浏览器版本，
+# 再用同一份镜像跑全量测试，避免「我这儿能跑」。
+#
+#   docker compose -f deploy/docker/docker-compose.test.yml build
+#   docker compose -f deploy/docker/docker-compose.test.yml run --rm test
+#
+# 说明：
+# - web   = 真实部署链路（生产 Dockerfile + nginx），端口 8081；
+# - test  = 测试镜像，跑门禁 + 单测 + E2E + 构建 + 产物冒烟；
+#           WEB_BASE_URL 指向 web，所以 nginx 那一份产物也会被冒烟覆盖。
+# - 日志通过卷挂载落到宿主机 .agent/test-logs/<轮次>，容器删除不丢。
+services:
+  web:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile
+      # 代理必须显式 opt-in：宿主机的 HTTP_PROXY 通常指向 127.0.0.1，
+      # 透传进容器后 127.0.0.1 是容器自己，结果是每个请求都 Connection refused
+      # （曾让 pnpm install 挂在隧道错误上 18 分钟）。要代理就先 export
+      # DOCKER_BUILD_HTTP_PROXY=http://host.docker.internal:<port>。
+      args:
+        HTTP_PROXY: ${DOCKER_BUILD_HTTP_PROXY:-}
+        HTTPS_PROXY: ${DOCKER_BUILD_HTTPS_PROXY:-}
+        http_proxy: ${DOCKER_BUILD_HTTP_PROXY:-}
+        https_proxy: ${DOCKER_BUILD_HTTPS_PROXY:-}
+    image: toolbox-web:dev
+    container_name: toolbox-web-test
+    ports:
+      - "8081:80"
+    # exec 数组形式不做 shell 解析：`">/dev/null"` 会被当成**第三个 URL** 传给 wget，
+    # wget 解析失败 → 退出非 0 → 容器永远 unhealthy（depends_on 直接卡死）。
+    # 要么用 CMD-SHELL，要么别写重定向。这里选后者，最不容易再写错。
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    restart: unless-stopped
+
+  test:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile.test
+      # 同上：代理只在显式设置 DOCKER_BUILD_HTTP_PROXY 时才传
+      args:
+        HTTP_PROXY: ${DOCKER_BUILD_HTTP_PROXY:-}
+        HTTPS_PROXY: ${DOCKER_BUILD_HTTPS_PROXY:-}
+        http_proxy: ${DOCKER_BUILD_HTTP_PROXY:-}
+        https_proxy: ${DOCKER_BUILD_HTTPS_PROXY:-}
+    image: toolbox-test:dev
+    container_name: toolbox-test
+    depends_on:
+      web:
+        condition: service_healthy
+    environment:
+      CI: "1"
+      # 严格模式：E2E 不重试，失败就是失败（不掩盖 flaky）
+      E2E_RETRIES: "0"
+      WEB_BASE_URL: http://web:80
+      LOG_DIR: /app/.agent/test-logs/${ROUND:-current}
+    volumes:
+      - ../../.agent/test-logs:/app/.agent/test-logs
+    command: ["bash", "deploy/docker/run-tests.sh"]

@@ -38,6 +38,8 @@ blob-report/
 
 # 开发日志与智能体工作状态（非源码，不入库）
 .agent/logs/
+# 容器化全量测试的逐轮过程日志（体积大、可重跑；结论另存 .agent/reports/）
+.agent/test-logs/
 .workbuddy/
 
 # 构建期生成（由 pnpm generate:sitemap 产出）

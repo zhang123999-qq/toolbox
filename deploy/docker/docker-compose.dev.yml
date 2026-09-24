@@ -12,8 +12,10 @@ services:
     ports:
       - "8080:80"
     restart: unless-stopped
+    # exec 数组形式不做 shell 解析：`">/dev/null"` 会被当成第三个 URL 传给 wget，
+    # 结果容器永远 unhealthy。要么 CMD-SHELL，要么不写重定向。
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/", ">/dev/null"]
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/"]
       interval: 30s
       timeout: 3s
       retries: 3

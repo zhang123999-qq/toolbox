@@ -32,3 +32,6 @@ pnpm-lock.yaml
 
 # 铺量期的临时生成脚本（一次性，用完即删）
 tmp/
+
+# 容器化全量测试的过程日志（.agent/test-logs）：是输出不是源码，不该被格式化
+.agent/test-logs

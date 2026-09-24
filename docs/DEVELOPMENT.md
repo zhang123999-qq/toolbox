@@ -902,3 +902,46 @@ CLI 运行的是**独立 nginx 实例**（自带 pid / 日志 / 临时目录 / M
 | 四类场景的完整操作手册              | [`../deploy/binary/README.md`](../deploy/binary/README.md) |
 | 打包、打 tag、发 Release、changelog | [`RELEASE.md`](RELEASE.md)                                 |
 | 容器部署细节与 nginx 坑             | 本文 §18.3                                                 |
+
+## 二十一、容器化全量测试（可复现）
+
+`pnpm verify` 跑的是「本机口径」；同一套检查在容器里再跑一遍，才能排除
+「Node 版本 / 系统库 / 换行 / 权限」带来的差异。容器化测试不是替代，是**第二口径**。
+
+### 21.1 两条命令
+
+```bash
+# 构建（web = 部署链路的 nginx 镜像，test = 测试镜像，含 chromium + nginx）
+docker compose -f deploy/docker/docker-compose.test.yml build
+
+# 跑全量：门禁 → 单测 → 构建 → bundle → 真起 nginx → E2E → 产物冒烟
+ROUND=round1 docker compose -f deploy/docker/docker-compose.test.yml run --rm test
+```
+
+逐阶段日志落在 `.agent/test-logs/$ROUND/*.log` + `summary.tsv`（卷挂载，容器删除不丢）；
+退出码非 0 = 有阶段失败。
+
+### 21.2 覆盖的阶段
+
+| 阶段                            | 内容                                                            |
+| ------------------------------- | --------------------------------------------------------------- |
+| `deps`                          | `pnpm install --frozen-lockfile`，锁文件不一致即失败            |
+| `gate-*`                        | check:tools / source-org / env / docs / licenses / 部署脚本机检 |
+| `lint` `format` `typecheck`     | 与 CI 同一份配置                                                |
+| `unit`                          | vitest（单测 + 组件测试）                                       |
+| `build-ssg`                     | 客户端 → SSR → 预渲染，顺序不能反                               |
+| `bundle` + `deploy-nginx`       | 打 bundle 并**真起一个 nginx** 验证路由 / 404 / gzip / 健康检查 |
+| `e2e`                           | Playwright 真实浏览器跑核心业务流程                             |
+| `smoke-preview` / `smoke-nginx` | HTTP 级冒烟（preview 走 SPA 回退语义，nginx 走硬 404 语义）     |
+
+### 21.3 改这些文件时要注意的坑
+
+1. **`COPY . .` 必须排在 chromium / nginx 之后**：这两个层各要十几分钟，
+   源码先拷进去的话，每改一行代码都会作废它们。
+2. **compose 不要透传宿主机 `HTTP_PROXY`**：它通常指向 `127.0.0.1`，
+   在容器里那是容器自己，结果是所有请求 `Connection refused`。
+   需要代理就显式 `export DOCKER_BUILD_HTTP_PROXY=http://host.docker.internal:<port>`。
+3. **healthcheck 的 exec 数组形式不做 shell 解析**，`">/dev/null"` 会被当成第三个 URL
+   传给 `wget`，容器永远 unhealthy。要么 `CMD-SHELL`，要么别写重定向。
+4. **Git Bash 下 `docker run` 要 `export MSYS_NO_PATHCONV=1`**，否则
+   `-e LOG_DIR=/app/...` 会被转成 Windows 路径，日志写不进挂载卷。

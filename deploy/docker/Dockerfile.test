@@ -1,0 +1,93 @@
+# 测试镜像：与生产镜像解耦，只负责「可复现地跑全量测试」。
+# 与生产镜像的差异只有两点：基础镜像换成 Debian（Playwright 需要 glibc 系依赖，
+# alpine 上装不了官方 chromium），以及额外装一个 chromium。
+# 其余（Node 版本、pnpm 版本、依赖来源）全部对齐生产 Dockerfile 与 CI。
+#
+#   docker build -f deploy/docker/Dockerfile.test -t toolbox-test:dev .
+#
+# 注意：ARG 必须在第一个 FROM 之前声明，否则对后续 FROM 不可见（踩过）。
+
+ARG NODE_IMAGE=node:24-bookworm-slim
+
+FROM ${NODE_IMAGE}
+
+WORKDIR /app
+
+# corepack 默认从 registry.npmjs.org 拉 pnpm，国内/受限网络常失败 → 可覆盖为镜像源。
+ARG COREPACK_NPM_REGISTRY=https://registry.npmmirror.com
+ENV COREPACK_NPM_REGISTRY=${COREPACK_NPM_REGISTRY}
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+
+# Playwright 浏览器下载源。官方 cdn.playwright.dev 在受限网络里会直接连接超时，
+# 默认改用 npmmirror 的二进制镜像（实测可达，且版本与官方一一对应）。
+# 要回官方就传 --build-arg PLAYWRIGHT_DOWNLOAD_HOST=（空值即回落官方）。
+ARG PLAYWRIGHT_DOWNLOAD_HOST=https://registry.npmmirror.com/-/binary/playwright
+ENV PLAYWRIGHT_DOWNLOAD_HOST=${PLAYWRIGHT_DOWNLOAD_HOST}
+
+# 构建期代理（不写入镜像层；corepack/undici 只读小写变量，所以大小写各传一份）
+ARG HTTP_PROXY=
+ARG HTTPS_PROXY=
+ARG http_proxy=
+ARG https_proxy=
+
+RUN corepack enable && corepack prepare pnpm@12.3.4 --activate
+
+# 依赖清单先拷，最大化镜像层缓存命中
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json .npmrc ./
+COPY packages ./packages
+COPY apps ./apps
+COPY scripts ./scripts
+
+# --frozen-lockfile：锁文件与清单不一致即失败，杜绝「本地能跑、容器里飘版本」。
+# 与 CI 保持一致用 --ignore-scripts（esbuild 的 postinstall 在受限环境下会 EBUSY，
+# 而它的二进制来自平台可选包，不需要该脚本）。
+RUN pnpm install --frozen-lockfile --ignore-scripts
+
+# ── 贵的层放前面 ────────────────────────────────────────────
+# 下面两步（chromium 下载、nginx）动辄十几分钟，且不依赖业务源码。
+# 因此 `COPY . .` 必须排在它们**之后**：否则每改一行源码都会作废这两个层，
+# 一轮迭代被迫重下一次 chromium（实测 15 分钟/轮）。
+# 代价是源码不在 pnpm install 的上下文里——由 run-tests.sh 开头再跑一次
+# `pnpm install --frozen-lockfile` 兜住「改了依赖但没重建镜像」的情况。
+
+# apt 源：deb.debian.org 在受限网络里 EOF / 超慢，换成 Debian 镜像。
+# 两点坑：
+#   1) 必须 https —— 本网络里明文 http 到镜像站直接 Connection failed（443 才通）；
+#   2) bookworm 用 deb822 格式的 sources.list.d/debian.sources，不是老的 sources.list。
+ARG APT_MIRROR=https://mirrors.aliyun.com
+# 1) slim 镜像不带 ca-certificates，/etc/ssl/certs 都不存在，
+#    apt 走 https 会报 "Certificate verification failed / No system certificates available"；
+#    先借 node 自带根证书把 CA 包拉下来（curl.se 实测可达），再让 apt 接管。
+# 2) 必须 https —— 本网络里明文 http 到镜像站直接 Connection failed（443 才通）。
+# 3) bookworm 用 deb822 格式的 sources.list.d/debian.sources，不是老的 sources.list。
+# 4) apt-get update 对「索引没拉到」只报 W 且退出码仍是 0，会让后面
+#    `Unable to locate package` 才暴露问题；这里显式断言索引可用，早失败早定位。
+RUN set -eux; \
+    mkdir -p /etc/ssl/certs; \
+    node -e 'fetch("https://curl.se/ca/cacert.pem").then(r => r.text()).then(t => require("fs").writeFileSync("/etc/ssl/certs/ca-certificates.crt", t))'; \
+    if [ -f /etc/apt/sources.list.d/debian.sources ]; then \
+      sed -i "s#http://deb.debian.org#${APT_MIRROR}#g" /etc/apt/sources.list.d/debian.sources; \
+    fi; \
+    if [ -f /etc/apt/sources.list ]; then \
+      sed -i "s#http://deb.debian.org#${APT_MIRROR}#g" /etc/apt/sources.list; \
+    fi; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends ca-certificates; \
+    apt-cache policy libfontconfig1 | grep -q 'Candidate:'
+
+# chromium + 系统依赖；--with-deps 会走 apt，需要网络（可用上面的代理参数）。
+# 必须 cd 到 apps/web：@playwright/test 是 web 包的 devDependency，
+# 在仓库根 `pnpm exec playwright` 会报 command not found（pnpm 只找当前包的 .bin）。
+RUN cd apps/web && pnpm exec playwright install --with-deps chromium
+
+# nginx + curl：verify-nginx-config.sh 会在容器里真起一个 nginx 验证 bundle 部署链路，
+# 这是「二进制部署」这条核心业务流程唯一的自动化覆盖点，必须有真实 nginx。
+RUN apt-get install -y --no-install-recommends nginx-light curl && nginx -v
+
+# ── 源码最后拷：改代码只作废这一层 ──────────────────────────
+COPY . .
+
+ENV CI=1
+ENV PLAYWRIGHT_BROWSERS_PATH=/root/.cache/ms-playwright
+
+CMD ["bash", "deploy/docker/run-tests.sh"]

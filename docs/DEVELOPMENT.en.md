@@ -936,3 +936,51 @@ The five places a version number lives, plus changelog guidance, are in
 | The full guide to the four scenarios             | [`../deploy/binary/README.md`](../deploy/binary/README.md)        |
 | Build, tag, publish a release, write a changelog | [`RELEASE.md`](RELEASE.md)                                        |
 | Container details and nginx gotchas              | §18.3 above                                                       |
+
+## 21. Containerized Full Test Run (reproducible)
+
+`pnpm verify` is the **local** view. Running the same checks inside a container is a
+second, independent view that rules out differences in Node version, system libraries,
+line endings, and file permissions. It complements `pnpm verify` — it does not replace it.
+
+### 21.1 Two commands
+
+```bash
+# Build (web = the nginx image of the deploy path, test = test image with chromium + nginx)
+docker compose -f deploy/docker/docker-compose.test.yml build
+
+# Full run: gates → unit → build → bundle → real nginx → E2E → artifact smoke
+ROUND=round1 docker compose -f deploy/docker/docker-compose.test.yml run --rm test
+```
+
+Per-stage logs land in `.agent/test-logs/$ROUND/*.log` plus `summary.tsv`
+(a bind mount, so deleting the container keeps the logs). A non-zero exit code
+means at least one stage failed.
+
+### 21.2 Stages covered
+
+| Stage                           | What it does                                                                       |
+| ------------------------------- | ---------------------------------------------------------------------------------- |
+| `deps`                          | `pnpm install --frozen-lockfile`; fails if the lockfile drifted                    |
+| `gate-*`                        | check:tools / source-org / env / docs / licenses / deploy-script checks            |
+| `lint` `format` `typecheck`     | same config as CI                                                                  |
+| `unit`                          | vitest (unit + component tests)                                                    |
+| `build-ssg`                     | client → SSR → prerender, in that order                                            |
+| `bundle` + `deploy-nginx`       | build the bundle and **start a real nginx** to assert routes / 404 / gzip / health |
+| `e2e`                           | Playwright, real browser, core business flows                                      |
+| `smoke-preview` / `smoke-nginx` | HTTP-level smoke (preview = SPA fallback, nginx = hard 404)                        |
+
+### 21.3 Gotchas when touching these files
+
+1. **`COPY . .` must come after chromium / nginx**: those two layers cost tens of
+   minutes each. Copying the source first invalidates them on every one-line change.
+2. **Never forward the host `HTTP_PROXY` through compose**: it usually points at
+   `127.0.0.1`, which inside the container is the container itself — every request
+   then fails with `Connection refused`. To use a proxy, set
+   `export DOCKER_BUILD_HTTP_PROXY=http://host.docker.internal:<port>` explicitly.
+3. **The exec-array form of `healthcheck` does no shell parsing**: `">/dev/null"`
+   is passed to `wget` as a third URL, so the container is never healthy.
+   Use `CMD-SHELL`, or drop the redirection entirely.
+4. **Under Git Bash, `docker run` needs `export MSYS_NO_PATHCONV=1`**; otherwise
+   `-e LOG_DIR=/app/...` is rewritten to a Windows path and the logs never reach
+   the bind mount.

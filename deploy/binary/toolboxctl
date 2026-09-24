@@ -49,6 +49,10 @@ PREFIX=/opt/toolbox
 DEFAULT_PREFIX=$PREFIX
 PORT=80
 NGINX_USER=toolbox
+# nginx worker 的组：留空时 nginx 会拿用户名当组名，而 Debian/Ubuntu 里
+# nobody 的组叫 nogroup，所以降级到 nobody 运行时必须由 render_tpl 探测后补上。
+# 必须先初始化为空串：脚本开头是 set -eu，未定义变量会直接 parameter not set。
+NGINX_GROUP=
 NGINX_BIN=
 UPDATE_SOURCE=
 # 发布源默认值：本仓库 Release 的 latest/download 基址（仓库已公开，匿名可访问）。
@@ -68,6 +72,11 @@ DEFAULT_NGINX_USER=toolbox
 say()  { printf '%s\n' "$*"; }
 info() { printf '[toolbox] %s\n' "$*"; }
 warn() { printf '[toolbox] 警告: %s\n' "$*" >&2; }
+# 组是否存在：getent 不是所有镜像都有，回落去查 /etc/group
+group_exists() {
+  getent group "$1" >/dev/null 2>&1 && return 0
+  grep -q "^$1:" /etc/group 2>/dev/null
+}
 step() { printf '\n==> %s\n' "$*"; }
 die()  { printf '[toolbox] 错误: %s\n' "$*" >&2; exit 1; }
 usage_err() { printf '[toolbox] 用法错误: %s\n' "$*" >&2; usage >&2; exit 2; }
@@ -237,12 +246,25 @@ render_tpl() { # render_tpl <模板> <输出>
   [ -f "$tpl" ] || die "找不到模板：$tpl"
   ver=${VER_OVERRIDE:-$(current_version)}
   [ -n "$ver" ] || ver=unknown
+  # 降级到 nobody 运行时必须显式补组名：nginx 的 user 指令省略组会拿用户名当组名，
+  # 而 Debian/Ubuntu 里 nobody 的组是 nogroup（alpine 里才叫 nobody）。
+  # 不补的话 nginx -t 会报 getgrnam("nobody") failed，整条安装链路直接断。
+  if [ "$NGINX_USER" = "nobody" ] && [ -z "$NGINX_GROUP" ]; then
+    if group_exists nobody; then
+      NGINX_GROUP=nobody
+    elif group_exists nogroup; then
+      NGINX_GROUP=nogroup
+    else
+      warn "找不到 nobody/nogroup 组，nginx 将按用户名推断组（可能校验失败）"
+    fi
+  fi
   sed \
     -e "s|@PREFIX@|$PREFIX|g" \
     -e "s|@PORT@|$PORT|g" \
     -e "s|@VERSION@|$ver|g" \
     -e "s|@NGINX_BIN@|${NGINX_BIN:-/usr/sbin/nginx}|g" \
     -e "s|@NGINX_USER@|$NGINX_USER|g" \
+    -e "s|@NGINX_GROUP@|$NGINX_GROUP|g" \
     -e "s|@DOC_URL@|$DOC_URL|g" \
     "$tpl" > "$out"
 }

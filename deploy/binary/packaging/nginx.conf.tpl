@@ -15,7 +15,10 @@ pid               @PREFIX@/run/nginx.pid;
 error_log         @PREFIX@/logs/error.log warn;
 
 # worker 以专用低权限用户运行；master 仍为 root（需要绑定 <1024 端口并 setuid）
-user              @NGINX_USER@;
+# 组名必须显式给：nginx 的 user 指令省略组时会拿「用户名」当组名，
+# 而 Debian/Ubuntu 上 nobody 的组叫 nogroup，只写 `user nobody;` 会让
+# nginx -t 直接报 getgrnam("nobody") failed（降级运行时的真实失败路径）。
+user              @NGINX_USER@ @NGINX_GROUP@;
 
 events {
     worker_connections 1024;

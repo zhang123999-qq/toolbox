@@ -1,0 +1,19 @@
+# Docker 构建上下文裁剪：不排掉 node_modules / dist 会把宿主机产物带进镜像，
+# 既让镜像变大，也会因为平台不一致（Windows 的 esbuild 二进制）在容器里直接崩。
+**/.git
+**/node_modules
+**/dist
+**/dist-ssr
+**/dist-release
+**/tmp
+**/tmp-shots
+**/.turbo
+**/.workbuddy
+**/.agent
+**/coverage
+**/playwright-report
+**/test-results
+**/*.log
+.env
+.env.*
+!.env.example
