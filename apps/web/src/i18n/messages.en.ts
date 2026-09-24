@@ -184,6 +184,8 @@ export const en: Record<MessageKey, string> = {
   'option.padChar': 'Pad character',
   'option.align': 'Alignment',
   'option.tone': 'Tone',
+  'option.breaks': 'Line breaks to <br>',
+  'option.keepLineBreaks': 'Keep line breaks',
   'option.strict': 'Strict mode',
   'option.keepOrder': 'Keep order',
   'option.reverse': 'Reverse',

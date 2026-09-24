@@ -184,6 +184,8 @@ export const zh = {
   'option.padChar': '填充字符',
   'option.align': '对齐方式',
   'option.tone': '声调',
+  'option.breaks': '换行转 <br>',
+  'option.keepLineBreaks': '保留换行',
   'option.strict': '严格模式',
   'option.keepOrder': '保持原顺序',
   'option.reverse': '反向',

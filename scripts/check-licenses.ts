@@ -46,6 +46,8 @@ const ALLOW = new Set([
   'CC-BY-3.0',
   'CC-BY-4.0',
   'WTFPL',
+  // PSF-2.0 是 Python 软件基金会许可，条款与 BSD 同属宽松一类（js-yaml → argparse 会带进来）
+  'PSF-2.0',
 ])
 
 /**

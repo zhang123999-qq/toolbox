@@ -1,69 +1,58 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
+import type { ReactNode } from 'react'
 import type { ToolMeta } from '@toolbox/catalog'
 import { useTranslate } from '../../../i18n'
+import { SECONDARY_BUTTON } from './TwoColumn'
+import type { OptionDef } from './TwoColumn'
 
-export interface OptionDef<O> {
-  readonly key: keyof O & string
-  readonly label: string
-  readonly kind: 'select' | 'boolean'
-  readonly values?: readonly (string | number)[]
-}
-
-interface TwoColumnProps<I extends { text: string }, O extends object> {
+interface MultiPanelProps<I extends { text: string }, O extends object> {
   readonly meta: ToolMeta
   readonly initialInput: I
   readonly initialOptions: O
-  readonly run: (input: I, options: O) => string
-  readonly example?: I
   readonly optionDefs?: readonly OptionDef<O>[]
+  readonly example?: I
+  /** 输出区由工具自己决定怎么呈现：渲染结果、图表、媒体控件都行 */
+  readonly renderOutput: (input: I, options: O) => ReactNode
+  /** 供「复制 / 下载」使用的纯文本版本（通常是同一结果的源码或文本表示） */
+  readonly toText: (input: I, options: O) => string
+  /** 下载文件的扩展名 */
+  readonly downloadExt?: string
 }
 
-/** 次级按钮（描边）统一外观，明暗两版成对给出；T3 模板复用同一份 */
-export const SECONDARY_BUTTON =
-  'rounded border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800'
-
 /**
- * T2 双栏模板（spec/06 §5）
- * 适用：输入输出同构的转换 / 对比类工具。
- * 所有交互元素均带 data-testid（DEVELOPMENT.md §8.3）。
+ * T3 多面板模板（DEVELOPMENT.md §七）
+ *
+ * 与 T2 的差别：T2 的输出固定是一段 `<pre>` 文本，而 T3 的输出区交给工具自己渲染
+ * —— 用于输出不是纯文本的场合（Markdown 预览、图表、语音控件等），
+ * 或参数较多需要把选项区独立出来的场合。
+ *
+ * 交互元素同样带 data-testid（DEVELOPMENT.md §8.3）：
+ * input / output / run / clear / copy / download / example。
  */
-export function TwoColumn<I extends { text: string }, O extends object>({
+export function MultiPanel<I extends { text: string }, O extends object>({
   meta,
   initialInput,
   initialOptions,
-  run,
-  example,
   optionDefs,
-}: TwoColumnProps<I, O>) {
+  example,
+  renderOutput,
+  toText,
+  downloadExt = 'txt',
+}: MultiPanelProps<I, O>) {
   const [input, setInput] = useState<I>(initialInput)
   const [options, setOptions] = useState<O>(initialOptions)
-  const [nonce, setNonce] = useState(0)
   const [copied, setCopied] = useState(false)
   const t = useTranslate()
-
-  const computed = useMemo(() => {
-    try {
-      return { ok: true as const, value: run(input, options) }
-    } catch (error) {
-      return {
-        ok: false as const,
-        value: error instanceof Error ? error.message : String(error),
-      }
-    }
-    // nonce 用于「运行」按钮强制重算
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [input, options, run, nonce])
-
-  const output = computed.ok ? computed.value : ''
 
   function updateOption(key: keyof O & string, value: string | boolean) {
     setOptions((prev) => ({ ...prev, [key]: value }) as O)
   }
 
   async function copy() {
-    if (!output) return
+    const text = toText(input, options)
+    if (!text) return
     try {
-      await navigator.clipboard.writeText(output)
+      await navigator.clipboard.writeText(text)
       setCopied(true)
       setTimeout(() => setCopied(false), 1500)
     } catch {
@@ -72,12 +61,13 @@ export function TwoColumn<I extends { text: string }, O extends object>({
   }
 
   function download() {
-    if (!output) return
-    const blob = new Blob([output], { type: 'application/json;charset=utf-8' })
+    const text = toText(input, options)
+    if (!text) return
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' })
     const url = URL.createObjectURL(blob)
     const anchor = document.createElement('a')
     anchor.href = url
-    anchor.download = `${meta.slug}.json`
+    anchor.download = `${meta.slug}.${downloadExt}`
     anchor.click()
     URL.revokeObjectURL(url)
   }
@@ -100,14 +90,6 @@ export function TwoColumn<I extends { text: string }, O extends object>({
           onChange={(event) => setInput({ ...input, text: event.target.value } as I)}
         />
         <div className="tool-actions mt-2 flex flex-wrap gap-2">
-          <button
-            type="button"
-            data-testid="run"
-            className="rounded bg-brand px-3 py-1.5 text-sm text-white hover:opacity-90"
-            onClick={() => setNonce((n) => n + 1)}
-          >
-            {t('tool.run')}
-          </button>
           <button
             type="button"
             data-testid="example"
@@ -165,24 +147,22 @@ export function TwoColumn<I extends { text: string }, O extends object>({
           ) : null}
         </div>
 
-        {computed.ok ? (
-          <pre
-            data-testid="output"
-            className="min-h-64 w-full flex-1 overflow-auto rounded border border-slate-200 bg-slate-50 p-2 font-mono text-sm dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
-          >
-            {output || t('tool.empty')}
-          </pre>
-        ) : (
-          <p
-            data-testid="output"
-            role="alert"
-            className="min-h-64 w-full flex-1 overflow-auto rounded border border-red-200 bg-red-50 p-2 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300"
-          >
-            {computed.value}
-          </p>
-        )}
+        <div
+          data-testid="output"
+          className="min-h-64 w-full flex-1 overflow-auto rounded border border-slate-200 bg-slate-50 p-2 text-sm dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
+        >
+          {renderOutput(input, options)}
+        </div>
 
         <div className="tool-actions mt-2 flex flex-wrap gap-2">
+          <button
+            type="button"
+            data-testid="run"
+            className="rounded bg-brand px-3 py-1.5 text-sm text-white hover:opacity-90"
+            onClick={() => setInput((prev) => ({ ...prev }))}
+          >
+            {t('tool.run')}
+          </button>
           <button type="button" data-testid="copy" className={SECONDARY_BUTTON} onClick={copy}>
             {copied ? t('tool.copied') : t('tool.copy')}
           </button>
