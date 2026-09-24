@@ -1,5 +1,8 @@
 # Toolbox · 在线工具库
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![CI](https://github.com/zhang123999-qq/toolbox/actions/workflows/ci.yml/badge.svg)](https://github.com/zhang123999-qq/toolbox/actions/workflows/ci.yml)
+
 > **870 个纯前端在线工具**：本地优先（数据不上传）、纯静态部署、建目录即自动注册。
 > 中英双语 · 明暗主题 · 免登录 · 可离线（规划中）
 
@@ -156,3 +159,13 @@ docs/                使用指南、开发手册、规范、发布流程
 | 发包、打 tag、写 changelog | [`docs/RELEASE.md`](docs/RELEASE.md)                                                |
 | 查术语的中英对照           | [`docs/glossary.md`](docs/glossary.md)                                              |
 | 看版本变更                 | [`CHANGELOG.md`](CHANGELOG.md)                                                      |
+
+---
+
+## 许可证
+
+本项目采用 [MIT](LICENSE) 许可，© 2026 zhang123999-qq。
+
+第三方依赖同样只使用宽松许可（MIT / ISC / Apache-2.0 / BSD / CC0 等），
+`pnpm check:licenses` 会拦截 GPL / AGPL / SSPL / BUSL 这类强传染或商业限制的许可，
+不合规的依赖进不了 CI。新增依赖的要求见 [`CONTRIBUTING.md`](CONTRIBUTING.md)。

@@ -1,5 +1,8 @@
 # Toolbox · A Library of Online Tools
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![CI](https://github.com/zhang123999-qq/toolbox/actions/workflows/ci.yml/badge.svg)](https://github.com/zhang123999-qq/toolbox/actions/workflows/ci.yml)
+
 > **870 client-side online tools** that run entirely in your browser: local-first
 > (nothing is uploaded), deployed as plain static files, and registered
 > automatically the moment a directory is added.
@@ -165,3 +168,14 @@ docs/                usage guides, developer handbook, specifications, release p
 | Cut a release, tag, changelog     | [`docs/RELEASE.md`](docs/RELEASE.md)                                                |
 | Check how a term is translated    | [`docs/glossary.md`](docs/glossary.md)                                              |
 | See what changed                  | [`CHANGELOG.md`](CHANGELOG.md)                                                      |
+
+---
+
+## License
+
+[MIT](LICENSE) © 2026 zhang123999-qq.
+
+Third-party dependencies are permissively licensed as well (MIT / ISC / Apache-2.0 / BSD / CC0,
+among others). `pnpm check:licenses` blocks strong copyleft and commercially restricted licenses
+such as GPL / AGPL / SSPL / BUSL, so a non-compliant dependency cannot pass CI. See
+[`CONTRIBUTING.md`](CONTRIBUTING.md) for the rules on adding dependencies.
