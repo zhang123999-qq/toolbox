@@ -14,11 +14,16 @@
 ## 0. Quick start
 
 One command installs it on a Linux server (the target machine needs only `bash` + `tar` +
-`systemd` + `nginx` — no Node, pnpm or Docker):
+`systemd` + `nginx` — no Node, pnpm or Docker; the release source defaults to this repository):
 
 ```bash
-curl -fsSL <release-source>/install.sh | sudo bash -s -- --source <release-source>
+curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/latest/download/install.sh | sudo bash
 ```
+
+> 🔒 **Read it before you run it**: `curl … | bash` hands a remote script straight to your shell.
+> Review it first with
+> `curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/latest/download/install.sh | less`,
+> then run the command above.
 
 The details live in the four usage guides rather than here — open the one you need:
 
@@ -32,10 +37,9 @@ The details live in the four usage guides rather than here — open the one you 
 | look up every `toolboxctl` command                                  | [`../deploy/binary/README.md`](../deploy/binary/README.md) · the CLI cheat sheet in the root [`README.md`](../README.md) |
 | contribute code                                                     | [`../CONTRIBUTING.md`](../CONTRIBUTING.md)                                                                               |
 
-> ⚠️ The repository is currently **private**, so anonymous requests to both
-> `raw.githubusercontent.com` and release assets return **404** (verified). To use GitHub as the
-> release source: ① make it public; ② pass `GITHUB_TOKEN` while installing; ③ host your own or an
-> internal release source (the production recommendation).
+> ✅ The repository is public: `releases/latest/download/install.sh` downloads fine anonymously
+> (verified, HTTP 200). For offline distribution use a self-hosted / internal source:
+> `… | sudo bash -s -- --source <release-source-base-url>`.
 
 ---
 
@@ -206,7 +210,8 @@ Three things were done: **relocate, repair, fill in**.
 **Context**: the documentation set was missing its **entry layer** — the one-line install command
 existed only deep inside `RELEASE.md` §4 and `deploy/binary/README.md` §3.1, the repository root had
 **no `README.md` at all**, and the single install link in `RELEASE.md`
-(`raw.githubusercontent.com/.../install.sh`) returned **404** because the repository is private.
+(`raw.githubusercontent.com/.../install.sh`) returned **404** because the repository was private
+at the time (it has since been made public on 2026-09-24, so the link works anonymously now).
 
 - **Added**: root `README.md` (Chinese landing page) and `README.en.md` (English), with positioning,
   the three deployment paths, a `toolboxctl` cheat sheet, target-machine requirements, project

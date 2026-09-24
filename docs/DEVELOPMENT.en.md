@@ -678,7 +678,7 @@ apps/web/public/     sitemap.xml / robots.txt
 | `generate:catalog`      | ✅ rescans `tools/*/meta.ts`, rebuilds the registry, passes re-validation                                                                                                             |
 | Docker image            | ✅ `toolbox-web:dev` builds and runs; all 7 routes return 200 in-container, healthcheck `healthy`                                                                                     |
 | Nginx headers           | ✅ html `text/html; charset=utf-8`; JS `Content-Encoding: gzip` + `max-age=31536000, immutable`; `.wasm` → `application/wasm`                                                         |
-| **SSG pre-rendering**   | ✅ 27 static pages + `404.html`; tool pages contain real DOM (`data-testid="input"`) with **no** Suspense fallback; title / description / canonical / JSON-LD all injected            |
+| **SSG pre-rendering**   | ✅ 101 static pages + `404.html`; tool pages contain real DOM (`data-testid="input"`) with **no** Suspense fallback; title / description / canonical / JSON-LD all injected           |
 | **Bilingual switching** | ✅ Chinese by default; switching to English updates home / nav / footer / tool page copy plus `<html lang>` and `document.title`; persisted to `localStorage` and kept across reloads |
 | **Light-dark theme**    | ✅ toggling applies `<html class="dark">` and persists to `localStorage`; applied pre-paint by an inline script, so there is no flash                                                 |
 
@@ -846,16 +846,17 @@ curl -fsSL <release-source>/install.sh | sudo bash -s -- --source <release-sourc
 # Inspect
 toolboxctl status && toolboxctl health
 
-# Upgrade / roll back / uninstall
-toolboxctl upgrade --source <release-source>
+# Upgrade / roll back / uninstall (the update source defaults to this repo's releases,
+# so --source is optional)
+toolboxctl upgrade
 toolboxctl rollback
 toolboxctl uninstall --purge
 ```
 
-> ⚠️ This repository is currently **private**: anonymous requests to
-> `raw.githubusercontent.com` and to release assets both return **404** (verified).
-> Fix it by making the repo public, passing `GITHUB_TOKEN` at install time, or hosting
-> your own / internal release source — the production recommendation.
+> ✅ The repository is public, so the default update source
+> `https://github.com/zhang123999-qq/toolbox/releases/latest/download`
+> is reachable anonymously (verified, HTTP 200). For offline environments use a self-hosted /
+> internal source: `toolboxctl upgrade --source <release-source-base-url>`.
 
 ### 20.3 Layout and rollback
 

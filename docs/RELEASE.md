@@ -122,20 +122,19 @@ curl -fsSL https://raw.githubusercontent.com/zhang123999-qq/toolbox/master/deplo
 curl -fsSL http://<发布源>/install.sh | sudo bash -s -- --source http://<发布源>
 ```
 
-> ⚠️ **本仓库当前为 private，① ② ③ 三条对匿名请求都返回 404**（已实测：
-> `raw.githubusercontent.com/.../install.sh` → 404；同地址带 token → 200）。
-> 三种解法：
+> ✅ **仓库已于 2026-09-24 转为 public**：① ② ③ 三条对匿名请求均可访问（已实测 200）。
+> 当前 Release（v0.0.1）附件里的 `install.sh` **已同步为仓库内最新版本**，
+> 因此「对外一键安装入口」与「源码」不会再出现版本漂移。
 >
-> - `gh repo edit zhang123999-qq/toolbox --visibility public` 转为公开；
-> - 安装时带 token：`curl … | sudo GITHUB_TOKEN=ghp_xxx sh -s -- …`
->   （`install.sh` 会把 token 加到 `Authorization: Bearer` 上，也用于取 `api.github.com` 的 latest）；
-> - 走 ④ 自建 / 内网发布源 —— 生产环境首选，顺带解决内网机器无外网的问题。
+> - 仍需离线分发时走 ④ 自建 / 内网发布源 —— 生产环境首选，顺带解决内网机器无外网的问题。
+> - 私有化部署时可继续用 token：`curl … | sudo GITHUB_TOKEN=ghp_xxx bash -s -- …`
+>   （`install.sh` 会把 token 加到 `Authorization: Bearer` 上，也用于取 `api.github.com` 的 latest）。
 >
-> 无论走哪条，**「一键安装入口」应固定指向 ①**（Release 附件），而不是 master 上的源码副本：
+> 无论走哪条，**「一键安装入口」固定指向 ①**（Release 附件），而不是 master 上的源码副本：
 > 前者跟随 tag、可回溯，后者会随分支演进而变。
 >
-> 环境变量可覆盖内建默认值：`TOOLBOX_REPO`（默认 `zhang123999-qq/toolbox`）、
-> `TOOLBOX_RAW_BASE`（默认 `https://raw.githubusercontent.com/$TOOLBOX_REPO/master`）。
+> 环境变量可覆盖内建默认值：`TOOLBOX_REPO`（默认 `zhang123999-qq/toolbox`）；
+> 升级源的默认值随之为 `https://github.com/$TOOLBOX_REPO/releases/latest/download`。
 
 设计要点：
 
@@ -145,7 +144,7 @@ curl -fsSL http://<发布源>/install.sh | sudo bash -s -- --source http://<发�
 | 真正的落地逻辑**全部交给 bundle 内的 `toolboxctl`** | 「一键装」与「手动解包装」走同一条代码路径，行为不会分叉；脚本只负责下载/校验/解包     |
 | 无交互                                              | `curl \| sh` 场景下 stdin 被脚本占用，任何 `read` 都会吞掉脚本内容                     |
 | 支持 `--source` 内网源                              | 内网机器常无外网；也让「在线升级」与「首次安装」共用同一个发布源                       |
-| 支持 `GITHUB_TOKEN`                                 | **私有仓库的 Release 资产需认证**——这是本仓库当前的默认状态                            |
+| 支持 `GITHUB_TOKEN`                                 | 私有化部署 / 自建仓库取 Release 资产仍需认证；本仓库已公开，匿名即可                   |
 | 架构自动判定，不支持的架构明确报错                  | 避免装出跑不起来的包                                                                   |
 | 以 `id -u` 判定并要求 root                          | 安装要写 `/opt`、装 systemd unit，必须 root，早失败早提示                              |
 

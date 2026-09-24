@@ -38,6 +38,15 @@ jobs:
       - name: Check docs consistency
         run: pnpm check:docs
 
+      # 部署脚本此前没有任何自动化校验：语法错只有在目标机上才暴露。
+      # 顺带机检「发布源默认值」在 install.sh / toolboxctl / 文档里是同一个值，
+      # 防止改一处漏一处（脚本本体见 deploy/binary/tests/verify-release-source.sh）。
+      - name: Check deployment scripts
+        run: |
+          bash -n deploy/binary/install.sh
+          bash -n deploy/binary/toolboxctl
+          sh deploy/binary/tests/verify-release-source.sh
+
       # 守住「只使用宽松许可的依赖」：GPL / AGPL / SSPL / BUSL 等会直接失败
       - name: Check dependency licenses
         run: pnpm check:licenses

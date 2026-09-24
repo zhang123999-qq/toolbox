@@ -31,5 +31,13 @@ export default defineConfig({
     environment: 'node',
     // 文档规定工具单测文件名为 test.ts（DEVELOPMENT.md §8.2）
     include: ['src/**/test.ts', 'src/**/*.test.ts', 'src/**/*.test.tsx'],
+    // Windows 下 fork 一个子进程约 420ms，152 个测试文件光启动就要几十秒；
+    // 线程池共享进程、jsdom 环境按文件复用，墙钟时间明显更短。
+    // （只有渲染组件的用例需要 DOM，靠文件顶部 `// @vitest-environment jsdom`
+    // 声明；vitest 3 已废弃 environmentMatchGlobs，不要再用它。）
+    pool: 'threads',
+    // 用例之间有共享的可变状态（localStorage / document.title），
+    // 每次跑完清一遍，避免新增用例互相污染
+    restoreMocks: true,
   },
 })

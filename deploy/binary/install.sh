@@ -15,7 +15,8 @@
 # 参数：
 #   -v, --version VER    指定版本（默认最新 Release），v 前缀可省略
 #       --from URL|FILE  直接用指定的包，跳过版本解析（内网分发用）
-#       --source URL     自建发布源基址（目录内需有 latest.txt 与包 + 校验文件）
+#       --source URL     发布源基址（目录内需有 latest.txt 与包 + 校验文件）
+#                        默认 https://github.com/<repo>/releases/latest/download
 #       --proxy URL      下载走代理，例：http://127.0.0.1:10808
 #       --mirror URL     GitHub 下载加速前缀，例：https://ghfast.top
 #       --service        安装后启用开机自启并立即启动（会做 systemd 前置检查）
@@ -56,6 +57,11 @@ fi
 set -u
 
 REPO=${TOOLBOX_REPO:-zhang123999-qq/toolbox}
+# 发布源默认值：本仓库 Release 的 latest/download 基址。
+# 目录内需有 latest.txt、toolbox-<ver>-linux-<arch>.tar.gz 及其 .sha256——
+# GitHub Release 资产天然满足这个布局，因此装完即可直接用 toolboxctl 在线升级。
+# 换自建源时改 TOOLBOX_REPO，或显式传 --source。
+RELEASE_BASE=https://github.com/${REPO}/releases/latest/download
 TOKEN=${GITHUB_TOKEN:-}
 
 VERSION=""
@@ -96,7 +102,8 @@ Toolbox 一键安装（curl | bash）
 选项:
   -v, --version VER    安装指定版本（默认最新 Release），可写 v0.0.1 或 0.0.1
       --from URL|FILE  直接指定部署包（URL 或本地路径），跳过版本解析
-      --source URL     自建发布源基址（目录内需有 latest.txt 与包 + .sha256）
+      --source URL     发布源基址（目录内需有 latest.txt 与包 + .sha256）
+                       默认 https://github.com/<repo>/releases/latest/download
       --proxy URL      下载走代理，例: http://127.0.0.1:10808
       --mirror URL     GitHub 下载加速前缀，例: https://ghfast.top
       --service        安装后启用开机自启并立即启动（额外做 systemd 前置检查）
@@ -478,7 +485,7 @@ printf "\n${C_GREEN}\033[1m安装完成\033[0m${C_RESET}\n\n"
 printf '  查看状态     toolboxctl status\n'
 printf '  环境自检     toolboxctl doctor\n'
 printf '  实时日志     toolboxctl logs -f\n'
-printf '  在线升级     toolboxctl upgrade --source <发布源>\n'
+printf '  在线升级     toolboxctl upgrade --source %s\n' "$RELEASE_BASE"
 printf '  回滚上一版   toolboxctl rollback\n'
 printf '  完全卸载     toolboxctl uninstall --purge\n'
 printf '\n'

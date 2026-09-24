@@ -648,19 +648,19 @@ apps/web/public/     sitemap.xml / robots.txt
 
 ### 18.2 实测门禁结果
 
-| 门禁               | 结果                                                                                                                                                       |
-| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `pnpm check:tools` | ✅ 20 域合计 870；dev 360 / design 200 / office 60 / life 250                                                                                              |
-| `pnpm typecheck`   | ✅ catalog / search / web 三包 0 error                                                                                                                     |
-| `pnpm test`        | ✅ **31 passed**（json-formatter 8+7、首页 7、偏好控件 9）                                                                                                 |
-| `pnpm build`       | ✅ 工具 chunk **5.08KB**（gzip 2.08KB）< 30KB 预算；`app-core` 23.45KB（gzip 9.10KB）                                                                      |
-| 路由冒烟           | ✅ `/`、`/tools`、`/c/dev`、`/c/dev/data-format`、`/tools/json-formatter` 全部 200                                                                         |
-| `generate:catalog` | ✅ 扫描 `tools/*/meta.ts` 重建注册表，重跑校验仍通过                                                                                                       |
-| Docker 镜像        | ✅ `toolbox-web:dev` 构建成功并运行，容器内 7 条路由全 200，healthcheck `healthy`                                                                          |
-| Nginx 响应头       | ✅ html `text/html; charset=utf-8`；JS `Content-Encoding: gzip` + `max-age=31536000, immutable`；`.wasm` → `application/wasm`                              |
-| **SSG 预渲染**     | ✅ 27 个静态页 + `404.html`；工具页 HTML 含真实 DOM（`data-testid="input"`），**无** Suspense fallback；title / description / canonical / JSON-LD 均已注入 |
-| **双语切换**       | ✅ 默认中文；切英文后首页 / 导航 / 页脚 / 工具页文案与 `<html lang>`、`document.title` 同步更新；写入 `localStorage`，刷新保持                             |
-| **明暗主题**       | ✅ 切换后 `<html class="dark">` 生效，写入 `localStorage`；首帧由内联脚本应用，无闪动                                                                      |
+| 门禁               | 结果                                                                                                                                                        |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm check:tools` | ✅ 20 域合计 870；dev 360 / design 200 / office 60 / life 250                                                                                               |
+| `pnpm typecheck`   | ✅ catalog / search / web 三包 0 error                                                                                                                      |
+| `pnpm test`        | ✅ **31 passed**（json-formatter 8+7、首页 7、偏好控件 9）                                                                                                  |
+| `pnpm build`       | ✅ 工具 chunk **5.08KB**（gzip 2.08KB）< 30KB 预算；`app-core` 23.45KB（gzip 9.10KB）                                                                       |
+| 路由冒烟           | ✅ `/`、`/tools`、`/c/dev`、`/c/dev/data-format`、`/tools/json-formatter` 全部 200                                                                          |
+| `generate:catalog` | ✅ 扫描 `tools/*/meta.ts` 重建注册表，重跑校验仍通过                                                                                                        |
+| Docker 镜像        | ✅ `toolbox-web:dev` 构建成功并运行，容器内 7 条路由全 200，healthcheck `healthy`                                                                           |
+| Nginx 响应头       | ✅ html `text/html; charset=utf-8`；JS `Content-Encoding: gzip` + `max-age=31536000, immutable`；`.wasm` → `application/wasm`                               |
+| **SSG 预渲染**     | ✅ 101 个静态页 + `404.html`；工具页 HTML 含真实 DOM（`data-testid="input"`），**无** Suspense fallback；title / description / canonical / JSON-LD 均已注入 |
+| **双语切换**       | ✅ 默认中文；切英文后首页 / 导航 / 页脚 / 工具页文案与 `<html lang>`、`document.title` 同步更新；写入 `localStorage`，刷新保持                              |
+| **明暗主题**       | ✅ 切换后 `<html class="dark">` 生效，写入 `localStorage`；首帧由内联脚本应用，无闪动                                                                       |
 
 ### 18.3 环境坑（Windows 原生执行必读）
 
@@ -819,14 +819,16 @@ curl -fsSL <发布源>/install.sh | sudo bash -s -- --source <发布源>
 # 查看
 toolboxctl status && toolboxctl health
 
-# 升级 / 回滚 / 卸载
-toolboxctl upgrade --source <发布源>
+# 升级 / 回滚 / 卸载（升级源默认为本仓库 Release，可省略 --source）
+toolboxctl upgrade
 toolboxctl rollback
 toolboxctl uninstall --purge
 ```
 
-> ⚠️ 仓库当前为 **private**：`raw.githubusercontent.com` 与 Release 资产对匿名请求均返回 **404**（已实测）。
-> 解法：转 public、安装时带 `GITHUB_TOKEN`，或走自建 / 内网发布源（生产推荐）。
+> ✅ 仓库已公开，升级源默认值
+> `https://github.com/zhang123999-qq/toolbox/releases/latest/download`
+> 匿名可访问（已实测 200）。离线环境改用自建 / 内网发布源：
+> `toolboxctl upgrade --source <发布源基址>`。
 
 ### 20.3 目录布局与回滚
 

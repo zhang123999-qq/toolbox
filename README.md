@@ -15,7 +15,7 @@
 | 项       | 值                                                                        |
 | -------- | ------------------------------------------------------------------------- |
 | 工具总量 | **870 个 / 20 域 / 4 大组**（规划，脚本校验闭合）                         |
-| 已实现   | **1 个**（`json-formatter`）—— 工程基座与全部部署链路已跑通并验证         |
+| 已实现   | **75 个**（文本与内容域 70 个 + 示例工具等）—— 文本域已全量交付           |
 | 当前版本 | [`v0.0.1`](https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.1) |
 
 ---
@@ -42,11 +42,19 @@
 
 目标机只需 `sh` + `tar` + `systemd` + `nginx`，**不需要** Node、pnpm、Docker、Go。
 
+一键部署（发布源默认为本仓库，脚本直链：
+[`install.sh`](https://github.com/zhang123999-qq/toolbox/releases/latest/download/install.sh)）：
+
 ```bash
-curl -fsSL <发布源>/install.sh | sudo bash -s -- --source <发布源>
+curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/latest/download/install.sh | sudo bash
 ```
 
-完整可跑的例子（发布源目录内需有 `install.sh`、`latest.txt`、`toolbox-*.tar.gz` 及其 `.sha256`）：
+> 🔒 **先看过再执行**：`curl … | bash` 等于把远程脚本直接交给 shell。
+> 建议先 `curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/latest/download/install.sh | less`
+> 审阅内容（或 `curl -fsSLO` 下载后再看），确认无误再跑上面那条命令。
+
+自建 / 内网发布源（生产推荐，不依赖 GitHub 可达性；目录内需有 `install.sh`、
+`latest.txt`、`toolbox-*.tar.gz` 及其 `.sha256`）：
 
 ```bash
 # A. 在已有构建产物的机器上起一个发布源（也可改用 nginx / S3 / OSS 托管同一目录）
@@ -65,12 +73,8 @@ curl -fsSL http://<发布源IP>:8899/install.sh | sudo bash -s -- --source http:
 | 指定版本       | `--version 0.0.1` |
 | 先预览要做的事 | `--dry-run`       |
 
-> ⚠️ **本仓库当前为 private**，因此 `raw.githubusercontent.com` 与 Release 资产对匿名请求
-> 一律返回 **404**（已实测；同地址带 token 可正常下载）。
-> 想直接拿 GitHub 当发布源，三选一：
-> ① `gh repo edit --visibility public` 转为公开；
-> ② 安装时带 token：`curl … | sudo GITHUB_TOKEN=xxx bash -s -- …`；
-> ③ 自建 / 内网发布源（生产推荐，同时不依赖 GitHub 可达性）。
+> ✅ **仓库已公开**：`releases/latest/download/install.sh` 匿名可直接下载（已实测 200）。
+> 需要离线分发时改用上面的自建发布源。
 
 不走一键脚本的手动安装：
 
@@ -92,7 +96,7 @@ docker run -d --name toolbox-web -p 8081:80 toolbox-web:dev   # 8080 常被占�
 pnpm install --ignore-scripts   # esbuild 的 postinstall 在部分 Windows 环境会 EBUSY
 pnpm dev                        # 开发服务器；Windows 沙箱下若报 os error 231，加 --concurrency=1
 pnpm check:tools                # 元数据校验（20 域合计 870）
-pnpm build:ssg                  # 构建 + SSR 构建 + 预渲染 27 个静态页
+pnpm build:ssg                  # 构建 + SSR 构建 + 预渲染 101 个静态页
 ```
 
 ---
@@ -110,10 +114,15 @@ pnpm build:ssg                  # 构建 + SSR 构建 + 预渲染 27 个静态�
 | 已装版本     | `toolboxctl list`                               |
 | 环境自检     | `toolboxctl doctor`                             |
 | 备份配置     | `toolboxctl backup`                             |
-| 查可升级版本 | `toolboxctl check-update --source <发布源>`     |
-| **在线升级** | `toolboxctl upgrade --source <发布源>`          |
+| 查可升级版本 | `toolboxctl check-update`                       |
+| **在线升级** | `toolboxctl upgrade`                            |
 | **回滚**     | `toolboxctl rollback`                           |
 | 卸载         | `toolboxctl uninstall [--purge]`                |
+
+> 升级命令的发布源默认值统一指向本仓库：
+> `https://github.com/zhang123999-qq/toolbox/releases/latest/download`。
+> 优先级为 `--source <基址>` > 配置文件 `UPDATE_SOURCE` > 该默认值；
+> 用自建源时把 `UPDATE_SOURCE='<基址>'` 写进 `/etc/toolbox/toolbox.conf` 即可免传参数。
 
 完整说明（四类场景 + 目录布局 + 排障）：[`deploy/binary/README.md`](deploy/binary/README.md)。
 

@@ -20,15 +20,15 @@ pnpm verify                  # dev machine: metadata + docs + lint + format + ty
 
 ## 2. Installation problems
 
-| Symptom                                               | Cause                                                                                                     | Fix                                                                                   |
-| ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| `缺少校验文件 …tar.gz.sha256 —— 出于安全考虑拒绝安装` | the `.sha256` file is missing from the release source                                                     | add it; refusing to install unverified is deliberate, do not work around it           |
-| `下载失败：…` with a GitHub-shaped URL                | the repository is private (anonymous requests 404), the version does not exist, or the network is blocked | make it public, pass `GITHUB_TOKEN`, or switch to your own or internal release source |
-| `端口 80 已被占用：…`                                 | something else already listens there                                                                      | use `--port 8080`, or free the port first                                             |
-| `不支持的架构：…`                                     | only amd64 and arm64 are published                                                                        | use another host, or build the bundle yourself where the toolchain exists             |
-| Stuck on "health check" and then failure              | the service never came up, or another process grabbed the port                                            | `toolboxctl logs -n 100` and read the nginx error                                     |
-| `apt-get install nginx` fails                         | no outbound network, or the mirror is unreachable                                                         | install nginx yourself and drop `--install-deps`                                      |
-| `toolboxctl` not found after installing               | installed without root, or `/usr/local/bin` is not on PATH                                                | `ls -l /usr/local/bin/toolboxctl`; call it by absolute path                           |
+| Symptom                                               | Cause                                                                                       | Fix                                                                                                                 |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `缺少校验文件 …tar.gz.sha256 —— 出于安全考虑拒绝安装` | the `.sha256` file is missing from the release source                                       | add it; refusing to install unverified is deliberate, do not work around it                                         |
+| `下载失败：…` with a GitHub-shaped URL                | the version does not exist, the network is blocked, or `--proxy` / `--mirror` was set wrong | pin an existing `--version`, add `--proxy http://127.0.0.1:10808`, or switch to your own or internal release source |
+| `端口 80 已被占用：…`                                 | something else already listens there                                                        | use `--port 8080`, or free the port first                                                                           |
+| `不支持的架构：…`                                     | only amd64 and arm64 are published                                                          | use another host, or build the bundle yourself where the toolchain exists                                           |
+| Stuck on "health check" and then failure              | the service never came up, or another process grabbed the port                              | `toolboxctl logs -n 100` and read the nginx error                                                                   |
+| `apt-get install nginx` fails                         | no outbound network, or the mirror is unreachable                                           | install nginx yourself and drop `--install-deps`                                                                    |
+| `toolboxctl` not found after installing               | installed without root, or `/usr/local/bin` is not on PATH                                  | `ls -l /usr/local/bin/toolboxctl`; call it by absolute path                                                         |
 
 ---
 

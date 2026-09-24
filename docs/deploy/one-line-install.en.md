@@ -64,28 +64,30 @@ Sources are tried in this order; the first match wins:
 2. `--source <base-url>` — self-hosted release source (needs `latest.txt`, bundle, `.sha256`)
 3. Default — GitHub Releases
 
-> This repository is currently **private**: the default path returns 404 for anonymous requests (verified). Fix it in one of three ways — make the repository public, pass `GITHUB_TOKEN`, or use `--source` / `--from`. See [`../RELEASE.md`](../RELEASE.md) §4.
+> This repository is **public**: the default path (GitHub Releases) downloads fine for anonymous
+> requests (verified, HTTP 200). For offline or internal distribution use `--source` / `--from`.
+> See [`../RELEASE.md`](../RELEASE.md) §4.
 
 ---
 
 ## 3. Options
 
-| Option            | What it does                                                               | Values / default                                            |
-| ----------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| `-v`, `--version` | Install a specific version; the `v` prefix is optional, space or `=` works | e.g. `-v 0.0.1`, `--version=0.0.1`; default: latest release |
-| `--from`          | Use this exact bundle, **skipping version resolution**                     | URL or local file path                                      |
-| `--source`        | Self-hosted release source base URL (internal distribution)                | e.g. `http://192.168.1.10:8099`                             |
-| `--proxy`         | Download through a proxy                                                   | e.g. `http://127.0.0.1:10808`                               |
-| `--mirror`        | GitHub download accelerator prefix; rewrites `github.com` links only       | e.g. `https://ghfast.top`                                   |
-| `--service`       | Enable autostart and start now (adds a systemd precheck)                   | Flag; mutually exclusive with `--no-start`                  |
-| `--no-start`      | Install files only: no start, no autostart                                 | Flag                                                        |
-| `--port`          | Port the site listens on                                                   | Default `80`                                                |
-| `--prefix`        | Site install root (does not affect command location)                       | Default `/opt/toolbox`                                      |
-| `--bin-dir`       | Directory for the command entry points                                     | Default `/usr/local/bin`                                    |
-| `--install-deps`  | Install system dependencies (`apt-get install nginx`)                      | Flag                                                        |
-| `--no-verify`     | Skip the sha256 check (not recommended)                                    | Flag                                                        |
-| `--dry-run`       | Print the actions without touching the disk                                | Flag                                                        |
-| `-h`, `--help`    | Show help                                                                  | —                                                           |
+| Option            | What it does                                                               | Values / default                                                      |
+| ----------------- | -------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `-v`, `--version` | Install a specific version; the `v` prefix is optional, space or `=` works | e.g. `-v 0.0.1`, `--version=0.0.1`; default: latest release           |
+| `--from`          | Use this exact bundle, **skipping version resolution**                     | URL or local file path                                                |
+| `--source`        | Release source base URL (internal distribution)                            | e.g. `http://192.168.1.10:8099`; omit to use this repo's release base |
+| `--proxy`         | Download through a proxy                                                   | e.g. `http://127.0.0.1:10808`                                         |
+| `--mirror`        | GitHub download accelerator prefix; rewrites `github.com` links only       | e.g. `https://ghfast.top`                                             |
+| `--service`       | Enable autostart and start now (adds a systemd precheck)                   | Flag; mutually exclusive with `--no-start`                            |
+| `--no-start`      | Install files only: no start, no autostart                                 | Flag                                                                  |
+| `--port`          | Port the site listens on                                                   | Default `80`                                                          |
+| `--prefix`        | Site install root (does not affect command location)                       | Default `/opt/toolbox`                                                |
+| `--bin-dir`       | Directory for the command entry points                                     | Default `/usr/local/bin`                                              |
+| `--install-deps`  | Install system dependencies (`apt-get install nginx`)                      | Flag                                                                  |
+| `--no-verify`     | Skip the sha256 check (not recommended)                                    | Flag                                                                  |
+| `--dry-run`       | Print the actions without touching the disk                                | Flag                                                                  |
+| `-h`, `--help`    | Show help                                                                  | —                                                                     |
 
 ---
 
@@ -228,16 +230,16 @@ toolboxctl uninstall --purge     # full removal (--purge-deps also removes nginx
 
 ## 8. Troubleshooting
 
-| Symptom                           | Cause and fix                                                                                |
-| --------------------------------- | -------------------------------------------------------------------------------------------- |
-| `root privileges required`        | Add `sudo`, or rerun as root                                                                 |
-| `cannot determine latest version` | Private repo or no network. Pin `--version`, or use `--source` / `--from`                    |
-| `download failed`                 | Add `--proxy` or `--mirror`; run `--dry-run` first to confirm the script itself is reachable |
-| `missing checksum file … .sha256` | Incomplete release source; `--no-verify` if you trust it (not recommended)                   |
-| `sha256 check failed`             | Corrupted or tampered bundle — install aborted; re-download or switch source                 |
-| `port already in use`             | Pick another `--port`, or free the port first                                                |
-| `toolbox: command not found`      | Check that `--bin-dir` is on `PATH`                                                          |
-| service did not start             | Run `toolboxctl doctor` and `toolboxctl logs -f`; without systemd, start it manually         |
+| Symptom                           | Cause and fix                                                                                            |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `root privileges required`        | Add `sudo`, or rerun as root                                                                             |
+| `cannot determine latest version` | No network (or a self-hosted source missing `latest.txt`). Pin `--version`, or use `--source` / `--from` |
+| `download failed`                 | Add `--proxy` or `--mirror`; run `--dry-run` first to confirm the script itself is reachable             |
+| `missing checksum file … .sha256` | Incomplete release source; `--no-verify` if you trust it (not recommended)                               |
+| `sha256 check failed`             | Corrupted or tampered bundle — install aborted; re-download or switch source                             |
+| `port already in use`             | Pick another `--port`, or free the port first                                                            |
+| `toolbox: command not found`      | Check that `--bin-dir` is on `PATH`                                                                      |
+| service did not start             | Run `toolboxctl doctor` and `toolboxctl logs -f`; without systemd, start it manually                     |
 
 More symptoms in [`../guide/troubleshooting.md`](../guide/troubleshooting.md).
 

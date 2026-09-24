@@ -45,10 +45,16 @@ SCRIPT_DIR=$(resolve_script_dir)
 
 # —— 默认值（可被 /etc/toolbox/toolbox.conf 覆盖）——
 PREFIX=/opt/toolbox
+# load_conf 里「配置缺字段」的回落值要指向同一个常量，别写成两份
+DEFAULT_PREFIX=$PREFIX
 PORT=80
 NGINX_USER=toolbox
 NGINX_BIN=
 UPDATE_SOURCE=
+# 发布源默认值：本仓库 Release 的 latest/download 基址（仓库已公开，匿名可访问）。
+# 目录内需有 latest.txt、toolbox-<ver>-<os>-<arch>.tar.gz 及其 .sha256。
+# 优先级：--source > 配置文件 UPDATE_SOURCE > 这里的默认值。
+DEFAULT_UPDATE_SOURCE=https://github.com/zhang123999-qq/toolbox/releases/latest/download
 SERVICE_NAME=toolbox
 CONF_FILE=/etc/toolbox/toolbox.conf
 UNIT_NAME=toolbox.service
@@ -94,7 +100,9 @@ toolboxctl —— Toolbox 二进制部署管理
   rollback [--to VERSION]
 
   --source 可为本地目录或 HTTP 基址，需含 latest.txt 与
-  toolbox-<ver>-<os>-<arch>.tar.gz(+.sha256)；默认读配置里的 UPDATE_SOURCE。
+  toolbox-<ver>-<os>-<arch>.tar.gz(+.sha256)；省略时用配置里的 UPDATE_SOURCE，
+  都没配则回落到本仓库 Release：
+  https://github.com/zhang123999-qq/toolbox/releases/latest/download
 USAGE
 }
 
@@ -946,7 +954,7 @@ cmd_doctor() {
   if [ -n "${UPDATE_SOURCE:-}" ]; then
     chk "升级源已配置" 1 "$UPDATE_SOURCE"
   else
-    chk "升级源已配置" 0 "（在线升级需设置 UPDATE_SOURCE 或用 --source）"
+    chk "升级源未显式配置" 1 "回落默认值 $DEFAULT_UPDATE_SOURCE（可用 UPDATE_SOURCE / --source 覆盖）"
   fi
 
   say ""
@@ -972,7 +980,8 @@ cmd_version() {
 # 解析升级源，输出「最新可用版本」；同时把 SOURCE_KIND/本地路径 写入全局
 resolve_update_source() {
   src=$1
-  [ -n "$src" ] || die "未配置升级源：请在 $CONF_FILE 设置 UPDATE_SOURCE，或用 --source 指定"
+  # 调用方已保证非空（--source > UPDATE_SOURCE > DEFAULT_UPDATE_SOURCE）
+  [ -n "$src" ] || src=$DEFAULT_UPDATE_SOURCE
   case $src in
     http://*|https://*)
       SOURCE_KIND=url
@@ -1050,7 +1059,7 @@ cmd_check_update() {
     shift
   done
   load_conf
-  [ -n "$SRC" ] || SRC=${UPDATE_SOURCE:-}
+  [ -n "$SRC" ] || SRC=${UPDATE_SOURCE:-$DEFAULT_UPDATE_SOURCE}
   cur=$(current_version)
 
   step "查询升级源"
@@ -1097,8 +1106,8 @@ cmd_upgrade() {
   load_conf
   svc_installed || die "尚未安装，请先 install"
   detect_nginx || die "未找到 nginx，无法升级"
-  [ -n "$SRC" ] || SRC=${UPDATE_SOURCE:-}
-  [ -n "$SRC" ] || die "未指定升级源（--source 或配置 UPDATE_SOURCE）"
+  [ -n "$SRC" ] || SRC=${UPDATE_SOURCE:-$DEFAULT_UPDATE_SOURCE}
+  [ -n "$SRC" ] || die "未指定升级源（--source / UPDATE_SOURCE / 内建默认值均不可用）"
 
   cur=$(current_version)
   [ -n "$cur" ] || die "无法确定当前版本（$PREFIX/current 软链异常）"

@@ -13,11 +13,15 @@
 ## 零、快速开始
 
 一条命令装到 Linux 服务器（目标机只需 `bash` + `tar` + `systemd` + `nginx`，
-不需要 Node / pnpm / Docker）：
+不需要 Node / pnpm / Docker；发布源默认为本仓库）：
 
 ```bash
-curl -fsSL <发布源>/install.sh | sudo bash -s -- --source <发布源>
+curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/latest/download/install.sh | sudo bash
 ```
+
+> 🔒 **先看过再执行**：`curl … | bash` 会把远程脚本直接交给 shell。建议先
+> `curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/latest/download/install.sh | less`
+> 审阅，确认无误再执行。
 
 细节不在这里展开——四篇使用指南各管一段，按需要点开：
 
@@ -31,8 +35,8 @@ curl -fsSL <发布源>/install.sh | sudo bash -s -- --source <发布源>
 | 查 `toolboxctl` 全部命令                 | [`../deploy/binary/README.md`](../deploy/binary/README.md) · 根 [`README.md`](../README.md) 的命令行速查 |
 | 参与开发                                 | [`../CONTRIBUTING.md`](../CONTRIBUTING.md)                                                               |
 
-> ⚠️ 仓库当前为 **private**：`raw.githubusercontent.com` 与 Release 资产对匿名请求均返回 **404**（已实测）。
-> 要拿 GitHub 当发布源：① 转 public；② 安装时带 `GITHUB_TOKEN`；③ 用自建 / 内网发布源（生产推荐）。
+> ✅ 仓库已公开：`releases/latest/download/install.sh` 匿名可直接下载（已实测 200）。
+> 离线分发走自建 / 内网发布源：`… | sudo bash -s -- --source <发布源基址>`。
 
 ---
 
@@ -178,7 +182,7 @@ curl -fsSL <发布源>/install.sh | sudo bash -s -- --source <发布源>
 **背景**：此前的文档体系缺了「入口层」——一键安装命令只存在于 `RELEASE.md` §四与
 `deploy/binary/README.md` §3.1 两处深水区，仓库根**没有 `README.md`**，
 且 `RELEASE.md` 里那条唯一的一键安装链接（`raw.githubusercontent.com/.../install.sh`）
-因仓库当前为 private 而**实测返回 404**。
+因仓库当时为 private 而**实测返回 404**（2026-09-24 起仓库已转 public，该链接现可匿名访问）。
 
 - **新增**：仓库根 `README.md`（中文落地页）与 `README.en.md`（英文版），
   含定位、三条部署链路、`toolboxctl` 命令速查表、目标机要求、项目结构与文档索引。

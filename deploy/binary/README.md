@@ -8,23 +8,28 @@
 ## 最短路径（只想尽快装起来）
 
 ```bash
-# 装（一行）
-curl -fsSL <发布源>/install.sh | sudo bash -s -- --source <发布源>
+# 装（一行；发布源默认为本仓库，脚本直链见下）
+curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/latest/download/install.sh | sudo bash
 
 # 看
 toolboxctl status && toolboxctl health
 
-# 升级 / 回滚 / 卸载
-toolboxctl upgrade --source <发布源>
+# 升级 / 回滚 / 卸载（升级源默认同样是本仓库 Release，可省略 --source）
+toolboxctl upgrade
 toolboxctl rollback
 toolboxctl uninstall --purge
 ```
 
-没有现成发布源？在已有 `dist-release/` 的机器上 `cd dist-release && python3 -m http.server 8899`，
-发布源就是 `http://<该机IP>:8899`。
+> 🔒 **先看过再执行**：`curl … | bash` 会把远程脚本直接交给 shell。
+> 建议先 `curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/latest/download/install.sh | less`
+> 审阅，确认无误再执行。
 
-> ⚠️ 仓库当前为 **private**，GitHub 直连（raw / Release 资产）对匿名请求返回 404。
-> 转 public、带 `GITHUB_TOKEN`，或走自建 / 内网发布源 —— 详见
+没有现成发布源？在已有 `dist-release/` 的机器上 `cd dist-release && python3 -m http.server 8899`，
+发布源就是 `http://<该机IP>:8899`，装的时候加 `--source http://<该机IP>:8899`。
+
+> ✅ 仓库已公开：升级源默认值
+> `https://github.com/zhang123999-qq/toolbox/releases/latest/download`
+> 匿名可访问（已实测 200）。离线环境用自建 / 内网源覆盖它 —— 详见
 > [`docs/RELEASE.md` §四](../../docs/RELEASE.md)。
 
 其余章节是四类场景的完整说明、目录布局与排障，按需查阅。
@@ -104,7 +109,7 @@ deploy/binary/build-bundle.sh --skip-build          # 复用已有 apps/web/dist
 **方式 A：一键安装（推荐，单条命令）**
 
 ```bash
-# 从 GitHub Release 取最新版（入口与 tag 绑定，推荐；仓库需公开）
+# 从 GitHub Release 取最新版（入口与 tag 绑定，推荐；仓库已公开，匿名可下载）
 curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/latest/download/install.sh | sudo bash
 
 # 指定版本 / 端口 / 自动装依赖
@@ -188,9 +193,11 @@ toolboxctl version
 目录里放 `latest.txt` + 各版本 tar.gz 及其 `.sha256`（打包脚本已生成 `latest.txt`/`index.json`）。
 
 ```bash
-# 查询
-toolboxctl check-update --source http://releases.internal/toolbox/
+# 查询（--source 省略时用默认源：https://github.com/zhang123999-qq/toolbox/releases/latest/download）
+toolboxctl check-update
 # 升级（校验失败/健康检查失败都会自动回滚）
+toolboxctl upgrade
+# 换自建 / 内网发布源
 toolboxctl upgrade --source http://releases.internal/toolbox/
 toolboxctl upgrade --source /srv/releases --to 0.0.2
 # 回滚
