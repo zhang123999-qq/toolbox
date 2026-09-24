@@ -142,6 +142,8 @@ export const en: Record<MessageKey, string> = {
   'tool.copy': 'Copy',
   'tool.copied': 'Copied',
   'tool.download': 'Download',
+  'tool.textA': 'Original',
+  'tool.textB': 'Revised',
 
   // —— Tool options ——
   // Shared option labels: reused by many tools so each tool needs no dedicated keys
@@ -197,6 +199,10 @@ export const en: Record<MessageKey, string> = {
   'option.keepMissing': 'Keep missing placeholders',
   'option.count': 'Count',
   'option.stable': 'Reproducible (seed from content)',
+  'option.skipEmpty': 'Skip empty lines',
+  'option.global': 'Replace all',
+  'option.multiline': 'Multiline',
+  'option.ignoreWhitespace': 'Ignore whitespace',
   'jsonFormatter.option.indent': 'Indent',
   'jsonFormatter.option.sortKeys': 'Sort keys',
 

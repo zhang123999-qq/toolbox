@@ -17,6 +17,7 @@
     "@toolbox/catalog": "workspace:*",
     "@toolbox/search": "workspace:*",
     "compromise": "^14.17.0",
+    "diff": "^9.0.0",
     "markdown-it": "^15.0.2",
     "opencc-js": "^1.4.2",
     "papaparse": "^5.7.0",

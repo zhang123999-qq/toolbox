@@ -5,8 +5,18 @@ import { useTranslate } from '../../../i18n'
 export interface OptionDef<O> {
   readonly key: keyof O & string
   readonly label: string
-  readonly kind: 'select' | 'boolean'
+  /** `text` 供需要自由输入的选项（前缀、正则、替换串…） */
+  readonly kind: 'select' | 'boolean' | 'text'
   readonly values?: readonly (string | number)[]
+  readonly placeholder?: string
+}
+
+/** 除 `text` 之外的附加输入框：diff / 三方合并这类「两段及以上平级内容」的工具用 */
+export interface ExtraInputDef {
+  /** 在输入对象里的字段名 */
+  readonly key: string
+  /** 已翻译好的标签 */
+  readonly label: string
 }
 
 interface TwoColumnProps<I extends { text: string }, O extends object> {
@@ -16,6 +26,7 @@ interface TwoColumnProps<I extends { text: string }, O extends object> {
   readonly run: (input: I, options: O) => string
   readonly example?: I
   readonly optionDefs?: readonly OptionDef<O>[]
+  readonly extraInputs?: readonly ExtraInputDef[]
 }
 
 /** 次级按钮（描边）统一外观，明暗两版成对给出；T3 模板复用同一份 */
@@ -34,6 +45,7 @@ export function TwoColumn<I extends { text: string }, O extends object>({
   run,
   example,
   optionDefs,
+  extraInputs,
 }: TwoColumnProps<I, O>) {
   const [input, setInput] = useState<I>(initialInput)
   const [options, setOptions] = useState<O>(initialOptions)
@@ -58,6 +70,11 @@ export function TwoColumn<I extends { text: string }, O extends object>({
 
   function updateOption(key: keyof O & string, value: string | boolean) {
     setOptions((prev) => ({ ...prev, [key]: value }) as O)
+  }
+
+  function readExtra(key: string): string {
+    const value = (input as Record<string, unknown>)[key]
+    return typeof value === 'string' ? value : ''
   }
 
   async function copy() {
@@ -99,6 +116,24 @@ export function TwoColumn<I extends { text: string }, O extends object>({
           value={input.text}
           onChange={(event) => setInput({ ...input, text: event.target.value } as I)}
         />
+        {extraInputs?.map((def) => (
+          <div key={def.key} className="mt-2">
+            <label
+              htmlFor={'tool-input-' + def.key}
+              className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400"
+            >
+              {def.label}
+            </label>
+            <textarea
+              id={'tool-input-' + def.key}
+              data-testid={'input-' + def.key}
+              rows={4}
+              className="w-full resize-y rounded border border-slate-200 p-2 font-mono text-sm dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
+              value={readExtra(def.key)}
+              onChange={(event) => setInput({ ...input, [def.key]: event.target.value } as I)}
+            />
+          </div>
+        ))}
         <div className="tool-actions mt-2 flex flex-wrap gap-2">
           <button
             type="button"
@@ -134,17 +169,35 @@ export function TwoColumn<I extends { text: string }, O extends object>({
           </span>
           {optionDefs?.length ? (
             <div className="flex flex-wrap items-center gap-3 text-sm">
-              {optionDefs.map((def) =>
-                def.kind === 'boolean' ? (
-                  <label key={def.key} className="flex items-center gap-1">
-                    <input
-                      type="checkbox"
-                      checked={Boolean(options[def.key])}
-                      onChange={(event) => updateOption(def.key, event.target.checked)}
-                    />
-                    {def.label}
-                  </label>
-                ) : (
+              {optionDefs.map((def) => {
+                if (def.kind === 'boolean') {
+                  return (
+                    <label key={def.key} className="flex items-center gap-1">
+                      <input
+                        type="checkbox"
+                        checked={Boolean(options[def.key])}
+                        onChange={(event) => updateOption(def.key, event.target.checked)}
+                      />
+                      {def.label}
+                    </label>
+                  )
+                }
+                if (def.kind === 'text') {
+                  return (
+                    <label key={def.key} className="flex items-center gap-1">
+                      {def.label}
+                      <input
+                        type="text"
+                        data-testid={'option-' + def.key}
+                        className="w-32 rounded border border-slate-300 px-1 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                        value={String(options[def.key] ?? '')}
+                        placeholder={def.placeholder}
+                        onChange={(event) => updateOption(def.key, event.target.value)}
+                      />
+                    </label>
+                  )
+                }
+                return (
                   <label key={def.key} className="flex items-center gap-1">
                     {def.label}
                     <select
@@ -159,8 +212,8 @@ export function TwoColumn<I extends { text: string }, O extends object>({
                       ))}
                     </select>
                   </label>
-                ),
-              )}
+                )
+              })}
             </div>
           ) : null}
         </div>

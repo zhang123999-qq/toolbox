@@ -142,6 +142,8 @@ export const zh = {
   'tool.copy': '复制',
   'tool.copied': '已复制',
   'tool.download': '下载',
+  'tool.textA': '原文',
+  'tool.textB': '新版',
 
   // —— 工具内选项 ——
   // 通用选项文案：铺量时多工具复用，避免每个工具各建一套 key
@@ -197,6 +199,10 @@ export const zh = {
   'option.keepMissing': '保留未提供的占位符',
   'option.count': '数量',
   'option.stable': '可复现（按内容取种子）',
+  'option.skipEmpty': '跳过空行',
+  'option.global': '全局替换',
+  'option.multiline': '多行模式',
+  'option.ignoreWhitespace': '忽略空白差异',
   'jsonFormatter.option.indent': '缩进',
   'jsonFormatter.option.sortKeys': '排序键名',
 
