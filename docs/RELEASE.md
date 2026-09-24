@@ -56,8 +56,15 @@ gh release create v0.0.2 \
   --title "v0.0.2" --notes-file CHANGELOG.md
 ```
 
-产物清单（`dist-release/`）：
+> **tag 的两个细节**（v0.0.1 发布时踩到过）：
+> 1. `git tag -a` 需要提交身份。本机未配置全局 `user.name/user.email` 时会直接失败
+>    （`Committer identity unknown`）。用
+>    `git -c user.name=… -c user.email=… tag -a …` 临时传入即可，不必改全局配置。
+> 2. 若 tag 不存在就直接跑 `gh release create <tag>`，gh 会**自己创建一个轻量 tag**
+>    并指向默认分支 HEAD——发布能成功，但 tag 上没有说明信息。
+>    想要带说明的附注 tag（推荐），必须**先 `git tag -a` 并 push tag**，再建 Release。
 
+产物清单（`dist-release/`）：
 | 文件 | 大小 | 说明 |
 |---|---|---|
 | `toolbox-<ver>-linux-amd64.tar.gz` | ~145KB | 自包含部署包（48 个文件） |
