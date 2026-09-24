@@ -1,0 +1,158 @@
+# Toolbox · 在线工具库
+
+> **870 个纯前端在线工具**：本地优先（数据不上传）、纯静态部署、建目录即自动注册。
+> 中英双语 · 明暗主题 · 免登录 · 可离线（规划中）
+
+**中文** | [English](README.en.md)
+
+---
+
+## 状态
+
+| 项       | 值                                                                        |
+| -------- | ------------------------------------------------------------------------- |
+| 工具总量 | **870 个 / 20 域 / 4 大组**（规划，脚本校验闭合）                         |
+| 已实现   | **1 个**（`json-formatter`）—— 工程基座与全部部署链路已跑通并验证         |
+| 当前版本 | [`v0.0.1`](https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.1) |
+
+---
+
+## 在线体验（尚未上线）
+
+站点**尚未上线**，下面两个域名当前不可访问，仅作为未来的在线体验入口登记：
+
+| 地址                      | 状态             |
+| ------------------------- | ---------------- |
+| <https://006336.xyz/>     | 尚未上线         |
+| <https://www.006336.xyz/> | 尚未上线（别名） |
+
+上线前请按下方「快速开始」在本地或内网访问；上线后这两个地址即为正式入口。
+
+---
+
+## 快速开始
+
+三条部署链路，按目标机环境任选一条。逐步说明与验证方式见
+[`docs/guide/getting-started.md`](docs/guide/getting-started.md)。
+
+### ① 二进制部署（Linux 服务器，推荐）
+
+目标机只需 `sh` + `tar` + `systemd` + `nginx`，**不需要** Node、pnpm、Docker、Go。
+
+```bash
+curl -fsSL <发布源>/install.sh | sudo sh -s -- --source <发布源>
+```
+
+完整可跑的例子（发布源目录内需有 `install.sh`、`latest.txt`、`toolbox-*.tar.gz` 及其 `.sha256`）：
+
+```bash
+# A. 在已有构建产物的机器上起一个发布源（也可改用 nginx / S3 / OSS 托管同一目录）
+cd dist-release && python3 -m http.server 8899
+
+# B. 在目标机上一行装完
+curl -fsSL http://<发布源IP>:8899/install.sh | sudo sh -s -- --source http://<发布源IP>:8899
+```
+
+常用变体：
+
+| 需求           | 追加参数          |
+| -------------- | ----------------- |
+| 换端口         | `--port 8080`     |
+| 自动安装 nginx | `--install-deps`  |
+| 指定版本       | `--version 0.0.1` |
+| 先预览要做的事 | `--dry-run`       |
+
+> ⚠️ **本仓库当前为 private**，因此 `raw.githubusercontent.com` 与 Release 资产对匿名请求
+> 一律返回 **404**（已实测；同地址带 token 可正常下载）。
+> 想直接拿 GitHub 当发布源，三选一：
+> ① `gh repo edit --visibility public` 转为公开；
+> ② 安装时带 token：`curl … | sudo GITHUB_TOKEN=xxx sh -s -- …`；
+> ③ 自建 / 内网发布源（生产推荐，同时不依赖 GitHub 可达性）。
+
+不走一键脚本的手动安装：
+
+```bash
+tar -xzf toolbox-0.0.1-linux-amd64.tar.gz -C /root/pkg
+/root/pkg/bin/toolboxctl install --from /root/toolbox-0.0.1-linux-amd64.tar.gz --install-deps
+```
+
+### ② 容器部署
+
+```bash
+docker build -f deploy/docker/Dockerfile -t toolbox-web:dev .
+docker run -d --name toolbox-web -p 8081:80 toolbox-web:dev   # 8080 常被占用，按需改
+```
+
+### ③ 本地开发
+
+```bash
+pnpm install --ignore-scripts   # esbuild 的 postinstall 在部分 Windows 环境会 EBUSY
+pnpm dev                        # 开发服务器；Windows 沙箱下若报 os error 231，加 --concurrency=1
+pnpm check:tools                # 元数据校验（20 域合计 870）
+pnpm build:ssg                  # 构建 + SSR 构建 + 预渲染 27 个静态页
+```
+
+---
+
+## 命令行速查（`toolboxctl`）
+
+安装后全局可用（`/usr/local/bin/toolboxctl`）。
+
+| 场景         | 命令                                            |
+| ------------ | ----------------------------------------------- |
+| 状态一览     | `toolboxctl status`                             |
+| 健康检查     | `toolboxctl health`                             |
+| 起停重载     | `toolboxctl start \| stop \| restart \| reload` |
+| 日志         | `toolboxctl logs -f`                            |
+| 已装版本     | `toolboxctl list`                               |
+| 环境自检     | `toolboxctl doctor`                             |
+| 备份配置     | `toolboxctl backup`                             |
+| 查可升级版本 | `toolboxctl check-update --source <发布源>`     |
+| **在线升级** | `toolboxctl upgrade --source <发布源>`          |
+| **回滚**     | `toolboxctl rollback`                           |
+| 卸载         | `toolboxctl uninstall [--purge]`                |
+
+完整说明（四类场景 + 目录布局 + 排障）：[`deploy/binary/README.md`](deploy/binary/README.md)。
+
+---
+
+## 目标机要求（二进制部署）
+
+| 项         | 要求                                                           |
+| ---------- | -------------------------------------------------------------- |
+| 操作系统   | Linux x86_64 / aarch64                                         |
+| init       | systemd                                                        |
+| Web 服务器 | nginx ≥ 1.21（`--install-deps` 可自动安装）                    |
+| 基线命令   | `sh` `tar` `gzip` `sha256sum` `awk` `sed`，`curl`（或 `wget`） |
+| 权限       | root                                                           |
+| 磁盘       | ≈ 50 MB（`/opt/toolbox`，含新旧两个版本的冗余）                |
+
+站点运行的是**独立 nginx 实例**（自带 `pid` / 日志 / 临时目录 / MIME 表），
+只借用系统 nginx 的**二进制**、完全不读 `/etc/nginx` ——
+因此 `toolboxctl stop` 只停本站点，卸载也不会影响同机其它 nginx 站点。
+
+---
+
+## 项目结构
+
+```text
+packages/catalog/    20 域 ↔ 4 大组唯一真源表 + Zod 元数据契约 + 路由派生
+packages/search/     检索门面（Orama 适配位）
+apps/web/            Vite 6 + React 19 + TS + Tailwind v4（含 i18n / theme / 工具目录）
+scripts/             目录生成 / 元数据校验 / sitemap / SSG 预渲染 / 文档一致性校验
+deploy/docker/       容器部署（多阶段构建 + nginx）
+deploy/binary/       二进制部署（bundle 打包 + toolboxctl + 一键安装脚本）
+docs/                使用指南、开发手册、规范、发布流程
+```
+
+## 文档
+
+| 我想…                      | 看                                                                                  |
+| -------------------------- | ----------------------------------------------------------------------------------- |
+| 浏览全部文档               | [`docs/README.md`](docs/README.md)                                                  |
+| 安装 / 使用 / 配置 / 排障  | [`docs/guide/`](docs/guide/README.md)                                               |
+| 参与开发 / 新增工具        | [`CONTRIBUTING.md`](CONTRIBUTING.md) + [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) |
+| 部署到服务器               | [`deploy/binary/README.md`](deploy/binary/README.md)                                |
+| 发包、打 tag、写 changelog | [`docs/RELEASE.md`](docs/RELEASE.md)                                                |
+| 查术语的中英对照           | [`docs/glossary.md`](docs/glossary.md)                                              |
+| 看版本变更                 | [`CHANGELOG.md`](CHANGELOG.md)                                                      |
