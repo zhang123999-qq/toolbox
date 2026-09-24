@@ -841,7 +841,7 @@ they differ only in how that artifact is delivered and operated.
 
 ```bash
 # Install (root required on the target)
-curl -fsSL <release-source>/install.sh | sudo sh -s -- --source <release-source>
+curl -fsSL <release-source>/install.sh | sudo bash -s -- --source <release-source>
 
 # Inspect
 toolboxctl status && toolboxctl health

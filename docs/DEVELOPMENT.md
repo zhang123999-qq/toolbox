@@ -814,7 +814,7 @@ messages.en.ts   → export const en: Record<MessageKey, string>
 
 ```bash
 # 安装（目标机需 root）
-curl -fsSL <发布源>/install.sh | sudo sh -s -- --source <发布源>
+curl -fsSL <发布源>/install.sh | sudo bash -s -- --source <发布源>
 
 # 查看
 toolboxctl status && toolboxctl health

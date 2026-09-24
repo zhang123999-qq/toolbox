@@ -45,7 +45,7 @@ The target machine needs only `sh` + `tar` + `systemd` + `nginx`.
 **No Node, pnpm, Docker or Go required.**
 
 ```bash
-curl -fsSL <release-source>/install.sh | sudo sh -s -- --source <release-source>
+curl -fsSL <release-source>/install.sh | sudo bash -s -- --source <release-source>
 ```
 
 A complete, runnable example (the release-source directory must contain
@@ -57,7 +57,7 @@ A complete, runnable example (the release-source directory must contain
 cd dist-release && python3 -m http.server 8899
 
 # B. Install on the target machine with a single command
-curl -fsSL http://<source-ip>:8899/install.sh | sudo sh -s -- --source http://<source-ip>:8899
+curl -fsSL http://<source-ip>:8899/install.sh | sudo bash -s -- --source http://<source-ip>:8899
 ```
 
 Common variations:
@@ -73,7 +73,7 @@ Common variations:
 > `raw.githubusercontent.com` and to release assets both return **404** (verified;
 > the same URLs download fine with a token). To use GitHub as the release source,
 > pick one: ① `gh repo edit --visibility public`; ② pass a token while installing
-> (`curl … | sudo GITHUB_TOKEN=xxx sh -s -- …`); ③ host your own / internal source,
+> (`curl … | sudo GITHUB_TOKEN=xxx bash -s -- …`); ③ host your own / internal source,
 > which is the production recommendation and does not depend on GitHub reachability.
 
 Manual install without the one-liner:

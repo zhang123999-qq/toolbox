@@ -12,11 +12,11 @@
 
 ## 零、快速开始
 
-一条命令装到 Linux 服务器（目标机只需 `sh` + `tar` + `systemd` + `nginx`，
+一条命令装到 Linux 服务器（目标机只需 `bash` + `tar` + `systemd` + `nginx`，
 不需要 Node / pnpm / Docker）：
 
 ```bash
-curl -fsSL <发布源>/install.sh | sudo sh -s -- --source <发布源>
+curl -fsSL <发布源>/install.sh | sudo bash -s -- --source <发布源>
 ```
 
 细节不在这里展开——四篇使用指南各管一段，按需要点开：
@@ -27,6 +27,7 @@ curl -fsSL <发布源>/install.sh | sudo sh -s -- --source <发布源>
 | 学会用站点（搜索 / 语言 / 主题）与命令行 | [`guide/usage.md`](guide/usage.md)                                                                       |
 | 改端口、升级源、部署到正式域名           | [`guide/configuration.md`](guide/configuration.md)                                                       |
 | 装不上、起不来、升级失败                 | [`guide/troubleshooting.md`](guide/troubleshooting.md)                                                   |
+| 逐个参数查一键安装（版本 / 代理 / 自启） | [`deploy/one-line-install.md`](deploy/one-line-install.md)                                               |
 | 查 `toolboxctl` 全部命令                 | [`../deploy/binary/README.md`](../deploy/binary/README.md) · 根 [`README.md`](../README.md) 的命令行速查 |
 | 参与开发                                 | [`../CONTRIBUTING.md`](../CONTRIBUTING.md)                                                               |
 
@@ -51,6 +52,9 @@ curl -fsSL <发布源>/install.sh | sudo sh -s -- --source <发布源>
 │   ├── usage.md                 使用示例（站点 / 命令行 / 当库用）
 │   ├── configuration.md         配置说明（构建期 / 运行期 / 浏览器端）
 │   └── troubleshooting.md       排障（症状 → 原因 → 处理）
+├── deploy/                      部署层：一键安装脚本与说明
+│   ├── one-line-install.md      一键安装：参数 / 场景 / 排障（英文 one-line-install.en.md）
+│   └── （脚本本体在 deploy/binary/install.sh）
 ├── DEVELOPMENT.md               ← 开发手册（中文）：环境 / 建工具 / 门禁
 ├── DEVELOPMENT.en.md            ← Developer Guide（英文版，同结构）
 ├── RELEASE.md                   ← 发布流程：版本号标识 / Release 构建 / changelog 要点 / 一键安装

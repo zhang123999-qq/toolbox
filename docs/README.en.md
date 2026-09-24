@@ -13,23 +13,24 @@
 
 ## 0. Quick start
 
-One command installs it on a Linux server (the target machine needs only `sh` + `tar` +
+One command installs it on a Linux server (the target machine needs only `bash` + `tar` +
 `systemd` + `nginx` — no Node, pnpm or Docker):
 
 ```bash
-curl -fsSL <release-source>/install.sh | sudo sh -s -- --source <release-source>
+curl -fsSL <release-source>/install.sh | sudo bash -s -- --source <release-source>
 ```
 
 The details live in the four usage guides rather than here — open the one you need:
 
-| I want to…                                                         | Read                                                                                                                     |
-| ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
-| get it running via any of the three paths                          | [`guide/getting-started.md`](guide/getting-started.md)                                                                   |
-| learn the site (search / language / theme) and the CLI             | [`guide/usage.md`](guide/usage.md)                                                                                       |
-| change the port, update source, or deploy to the production domain | [`guide/configuration.md`](guide/configuration.md)                                                                       |
-| fix an install, startup or upgrade failure                         | [`guide/troubleshooting.md`](guide/troubleshooting.md)                                                                   |
-| look up every `toolboxctl` command                                 | [`../deploy/binary/README.md`](../deploy/binary/README.md) · the CLI cheat sheet in the root [`README.md`](../README.md) |
-| contribute code                                                    | [`../CONTRIBUTING.md`](../CONTRIBUTING.md)                                                                               |
+| I want to…                                                          | Read                                                                                                                     |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| get it running via any of the three paths                           | [`guide/getting-started.md`](guide/getting-started.md)                                                                   |
+| learn the site (search / language / theme) and the CLI              | [`guide/usage.md`](guide/usage.md)                                                                                       |
+| change the port, update source, or deploy to the production domain  | [`guide/configuration.md`](guide/configuration.md)                                                                       |
+| fix an install, startup or upgrade failure                          | [`guide/troubleshooting.md`](guide/troubleshooting.md)                                                                   |
+| look up every one-line install option (version / proxy / autostart) | [`deploy/one-line-install.md`](deploy/one-line-install.md)                                                               |
+| look up every `toolboxctl` command                                  | [`../deploy/binary/README.md`](../deploy/binary/README.md) · the CLI cheat sheet in the root [`README.md`](../README.md) |
+| contribute code                                                     | [`../CONTRIBUTING.md`](../CONTRIBUTING.md)                                                                               |
 
 > ⚠️ The repository is currently **private**, so anonymous requests to both
 > `raw.githubusercontent.com` and release assets return **404** (verified). To use GitHub as the
@@ -54,6 +55,9 @@ The details live in the four usage guides rather than here — open the one you 
 │   ├── usage.md                 usage examples (site / CLI / library)
 │   ├── configuration.md         configuration (build-time / runtime / browser)
 │   └── troubleshooting.md       troubleshooting (symptom → cause → fix)
+├── deploy/                      deployment layer: the one-line installer and its docs
+│   ├── one-line-install.md      one-line install: options / scenarios / troubleshooting (.en.md)
+│   └── (the script itself lives in deploy/binary/install.sh)
 ├── DEVELOPMENT.md               ← developer handbook (Chinese): environment / adding tools / gates
 ├── DEVELOPMENT.en.md            ← Developer Guide (English, same structure)
 ├── RELEASE.md                   ← release process: version identity / building a release / changelog notes / one-line install

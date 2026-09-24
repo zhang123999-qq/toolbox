@@ -108,18 +108,18 @@ bundle 内部：`app/`（静态产物）、`bin/toolboxctl`（管理 CLI）、
 ```bash
 # ① GitHub Release 资产（推荐入口：与 tag 绑定，分支改名/删除都不影响）
 curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/latest/download/install.sh \
-  | sudo sh
+  | sudo bash
 
 # ② 指定版本 / 端口 / 自动装依赖
 curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/download/v0.0.1/install.sh \
-  | sudo sh -s -- --version 0.0.1 --port 8080 --install-deps
+  | sudo bash -s -- --version 0.0.1 --port 8080 --install-deps
 
 # ③ 跟随 master 分支的源码副本（仅便于开发期自测，不推荐作为对外入口）
 curl -fsSL https://raw.githubusercontent.com/zhang123999-qq/toolbox/master/deploy/binary/install.sh \
-  | sudo sh
+  | sudo bash
 
 # ④ 自建 / 内网发布源（生产推荐：不依赖 GitHub 可达性）
-curl -fsSL http://<发布源>/install.sh | sudo sh -s -- --source http://<发布源>
+curl -fsSL http://<发布源>/install.sh | sudo bash -s -- --source http://<发布源>
 ```
 
 > ⚠️ **本仓库当前为 private，① ② ③ 三条对匿名请求都返回 404**（已实测：

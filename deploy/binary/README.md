@@ -9,7 +9,7 @@
 
 ```bash
 # 装（一行）
-curl -fsSL <发布源>/install.sh | sudo sh -s -- --source <发布源>
+curl -fsSL <发布源>/install.sh | sudo bash -s -- --source <发布源>
 
 # 看
 toolboxctl status && toolboxctl health
@@ -105,19 +105,27 @@ deploy/binary/build-bundle.sh --skip-build          # 复用已有 apps/web/dist
 
 ```bash
 # 从 GitHub Release 取最新版（入口与 tag 绑定，推荐；仓库需公开）
-curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/latest/download/install.sh | sudo sh
+curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/latest/download/install.sh | sudo bash
 
 # 指定版本 / 端口 / 自动装依赖
 curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/download/v0.0.1/install.sh \
-  | sudo sh -s -- --version 0.0.1 --port 8080 --install-deps
+  | sudo bash -s -- --version 0.0.1 --port 8080 --install-deps
 
 # 内网发布源（生产推荐：不依赖 GitHub 可达性）
-curl -fsSL http://<发布源>/install.sh | sudo sh -s -- --source http://<发布源>
+curl -fsSL http://<发布源>/install.sh | sudo bash -s -- --source http://<发布源>
 ```
 
 脚本会：判定架构 → 解析版本 → 下载 bundle 与 `.sha256` → **校验通过才解包** →
 把落地动作交给 bundle 内的 `toolboxctl`（与手动安装同一条代码路径）。
 `--dry-run` 可先预览动作。
+
+安装脚本还支持 `--proxy <代理>`（下载走代理，装依赖时也生效）、`--mirror <前缀>`（GitHub
+下载加速）、`--service`（显式开启开机自启）、`--bin-dir`（命令入口目录，默认 `/usr/local/bin`，
+装完后 `toolbox` 与 `toolboxctl` 两个命令都可直接用）。
+
+> 全部参数、逐场景命令示例与排障见
+> [`docs/deploy/one-line-install.md`](../../docs/deploy/one-line-install.md)
+> （英文 [`one-line-install.en.md`](../../docs/deploy/one-line-install.en.md)）。
 
 > ⚠️ 仓库当前为 **private**：上面两条 GitHub 直连都会 404（已实测）。
 > 三选一——转 public、安装时带 `GITHUB_TOKEN`，或统一走内网发布源。

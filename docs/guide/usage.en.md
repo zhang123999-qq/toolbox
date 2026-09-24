@@ -141,8 +141,8 @@ cannot disagree — if they do, `pnpm check:tools` fails first.
 First launch on a clean server:
 
 ```bash
-curl -fsSL <release-source>/install.sh | sudo sh -s -- --source <release-source> --dry-run   # preview
-curl -fsSL <release-source>/install.sh | sudo sh -s -- --source <release-source>             # install
+curl -fsSL <release-source>/install.sh | sudo bash -s -- --source <release-source> --dry-run   # preview
+curl -fsSL <release-source>/install.sh | sudo bash -s -- --source <release-source>             # install
 toolboxctl status                                                                             # versions agree
 curl -s http://127.0.0.1/healthz                                                              # ok v<version>
 ```

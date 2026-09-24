@@ -34,13 +34,13 @@
 装之前可以先自检，缺什么它会直接说：
 
 ```bash
-curl -fsSL <发布源>/install.sh | sudo sh -s -- --source <发布源> --dry-run
+curl -fsSL <发布源>/install.sh | sudo bash -s -- --source <发布源> --dry-run
 ```
 
 ### 2.2 一条命令安装
 
 ```bash
-curl -fsSL <发布源>/install.sh | sudo sh -s -- --source <发布源>
+curl -fsSL <发布源>/install.sh | sudo bash -s -- --source <发布源>
 ```
 
 `<发布源>` 是一个目录或 HTTP 基址，里面需要有 `install.sh`、`latest.txt`、

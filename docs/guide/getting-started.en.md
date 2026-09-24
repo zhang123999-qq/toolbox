@@ -35,13 +35,13 @@ target machine must have.
 You can self-check before installing — it will tell you exactly what is missing:
 
 ```bash
-curl -fsSL <release-source>/install.sh | sudo sh -s -- --source <release-source> --dry-run
+curl -fsSL <release-source>/install.sh | sudo bash -s -- --source <release-source> --dry-run
 ```
 
 ### 2.2 Install with one line
 
 ```bash
-curl -fsSL <release-source>/install.sh | sudo sh -s -- --source <release-source>
+curl -fsSL <release-source>/install.sh | sudo bash -s -- --source <release-source>
 ```
 
 `<release-source>` is a directory or HTTP base containing `install.sh`, `latest.txt`,

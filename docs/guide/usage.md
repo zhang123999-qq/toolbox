@@ -128,8 +128,8 @@ console.log({ tools: TOOLS.length, categories: CATEGORIES.length, groups: GROUPS
 第一次在一台干净服务器上上线：
 
 ```bash
-curl -fsSL <发布源>/install.sh | sudo sh -s -- --source <发布源> --dry-run   # 先看要做什么
-curl -fsSL <发布源>/install.sh | sudo sh -s -- --source <发布源>             # 真装
+curl -fsSL <发布源>/install.sh | sudo bash -s -- --source <发布源> --dry-run   # 先看要做什么
+curl -fsSL <发布源>/install.sh | sudo bash -s -- --source <发布源>             # 真装
 toolboxctl status                                                            # 确认版本一致
 curl -s http://127.0.0.1/healthz                                             # 确认返回 ok v<版本>
 ```

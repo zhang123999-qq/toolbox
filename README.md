@@ -40,7 +40,7 @@
 目标机只需 `sh` + `tar` + `systemd` + `nginx`，**不需要** Node、pnpm、Docker、Go。
 
 ```bash
-curl -fsSL <发布源>/install.sh | sudo sh -s -- --source <发布源>
+curl -fsSL <发布源>/install.sh | sudo bash -s -- --source <发布源>
 ```
 
 完整可跑的例子（发布源目录内需有 `install.sh`、`latest.txt`、`toolbox-*.tar.gz` 及其 `.sha256`）：
@@ -50,7 +50,7 @@ curl -fsSL <发布源>/install.sh | sudo sh -s -- --source <发布源>
 cd dist-release && python3 -m http.server 8899
 
 # B. 在目标机上一行装完
-curl -fsSL http://<发布源IP>:8899/install.sh | sudo sh -s -- --source http://<发布源IP>:8899
+curl -fsSL http://<发布源IP>:8899/install.sh | sudo bash -s -- --source http://<发布源IP>:8899
 ```
 
 常用变体：
@@ -66,7 +66,7 @@ curl -fsSL http://<发布源IP>:8899/install.sh | sudo sh -s -- --source http://
 > 一律返回 **404**（已实测；同地址带 token 可正常下载）。
 > 想直接拿 GitHub 当发布源，三选一：
 > ① `gh repo edit --visibility public` 转为公开；
-> ② 安装时带 token：`curl … | sudo GITHUB_TOKEN=xxx sh -s -- …`；
+> ② 安装时带 token：`curl … | sudo GITHUB_TOKEN=xxx bash -s -- …`；
 > ③ 自建 / 内网发布源（生产推荐，同时不依赖 GitHub 可达性）。
 
 不走一键脚本的手动安装：
