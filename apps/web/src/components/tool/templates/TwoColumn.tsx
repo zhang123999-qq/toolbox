@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import type { ToolMeta } from '@toolbox/catalog'
+import { useTranslate } from '../../../i18n'
 
 export interface OptionDef<O> {
   readonly key: keyof O & string
@@ -16,6 +17,10 @@ interface TwoColumnProps<I extends { text: string }, O extends object> {
   readonly example?: I
   readonly optionDefs?: readonly OptionDef<O>[]
 }
+
+/** 次级按钮（描边）统一外观，明暗两版成对给出 */
+const SECONDARY_BUTTON =
+  'rounded border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800'
 
 /**
  * T2 双栏模板（spec/06 §5）
@@ -34,6 +39,7 @@ export function TwoColumn<I extends { text: string }, O extends object>({
   const [options, setOptions] = useState<O>(initialOptions)
   const [nonce, setNonce] = useState(0)
   const [copied, setCopied] = useState(false)
+  const t = useTranslate()
 
   const computed = useMemo(() => {
     try {
@@ -78,15 +84,18 @@ export function TwoColumn<I extends { text: string }, O extends object>({
 
   return (
     <section className="grid gap-4 md:grid-cols-2">
-      <div className="flex flex-col rounded-lg border border-slate-200 bg-white p-3">
-        <label htmlFor="tool-input" className="mb-2 text-sm font-medium text-slate-700">
-          输入
+      <div className="flex flex-col rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900">
+        <label
+          htmlFor="tool-input"
+          className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-300"
+        >
+          {t('tool.input')}
         </label>
         <textarea
           id="tool-input"
           data-testid="input"
-          className="min-h-64 w-full flex-1 resize-y rounded border border-slate-200 p-2 font-mono text-sm"
-          placeholder="在此粘贴内容…"
+          className="min-h-64 w-full flex-1 resize-y rounded border border-slate-200 p-2 font-mono text-sm dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
+          placeholder={t('tool.inputPlaceholder')}
           value={input.text}
           onChange={(event) => setInput({ ...input, text: event.target.value } as I)}
         />
@@ -97,30 +106,32 @@ export function TwoColumn<I extends { text: string }, O extends object>({
             className="rounded bg-brand px-3 py-1.5 text-sm text-white hover:opacity-90"
             onClick={() => setNonce((n) => n + 1)}
           >
-            运行
+            {t('tool.run')}
           </button>
           <button
             type="button"
             data-testid="example"
-            className="rounded border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
+            className={SECONDARY_BUTTON}
             onClick={() => setInput(example ?? initialInput)}
           >
-            示例
+            {t('tool.example')}
           </button>
           <button
             type="button"
             data-testid="clear"
-            className="rounded border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
+            className={SECONDARY_BUTTON}
             onClick={() => setInput(initialInput)}
           >
-            清空
+            {t('tool.clear')}
           </button>
         </div>
       </div>
 
-      <div className="flex flex-col rounded-lg border border-slate-200 bg-white p-3">
-        <div className="mb-2 flex items-center justify-between">
-          <span className="text-sm font-medium text-slate-700">输出</span>
+      <div className="flex flex-col rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900">
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+            {t('tool.output')}
+          </span>
           {optionDefs?.length ? (
             <div className="flex flex-wrap items-center gap-3 text-sm">
               {optionDefs.map((def) =>
@@ -137,7 +148,7 @@ export function TwoColumn<I extends { text: string }, O extends object>({
                   <label key={def.key} className="flex items-center gap-1">
                     {def.label}
                     <select
-                      className="rounded border border-slate-300 px-1"
+                      className="rounded border border-slate-300 px-1 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
                       value={String(options[def.key])}
                       onChange={(event) => updateOption(def.key, event.target.value)}
                     >
@@ -157,36 +168,31 @@ export function TwoColumn<I extends { text: string }, O extends object>({
         {computed.ok ? (
           <pre
             data-testid="output"
-            className="min-h-64 w-full flex-1 overflow-auto rounded border border-slate-200 bg-slate-50 p-2 font-mono text-sm"
+            className="min-h-64 w-full flex-1 overflow-auto rounded border border-slate-200 bg-slate-50 p-2 font-mono text-sm dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
           >
-            {output || '（空）'}
+            {output || t('tool.empty')}
           </pre>
         ) : (
           <p
             data-testid="output"
             role="alert"
-            className="min-h-64 w-full flex-1 overflow-auto rounded border border-red-200 bg-red-50 p-2 text-sm text-red-700"
+            className="min-h-64 w-full flex-1 overflow-auto rounded border border-red-200 bg-red-50 p-2 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300"
           >
             {computed.value}
           </p>
         )}
 
         <div className="tool-actions mt-2 flex flex-wrap gap-2">
-          <button
-            type="button"
-            data-testid="copy"
-            className="rounded border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
-            onClick={copy}
-          >
-            {copied ? '已复制' : '复制'}
+          <button type="button" data-testid="copy" className={SECONDARY_BUTTON} onClick={copy}>
+            {copied ? t('tool.copied') : t('tool.copy')}
           </button>
           <button
             type="button"
             data-testid="download"
-            className="rounded border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
+            className={SECONDARY_BUTTON}
             onClick={download}
           >
-            下载
+            {t('tool.download')}
           </button>
         </div>
       </div>

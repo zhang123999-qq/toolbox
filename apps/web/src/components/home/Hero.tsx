@@ -1,12 +1,6 @@
 import { Link } from 'react-router-dom'
 import { CATEGORIES, GROUPS, PLANNED_TOTAL_TOOLS, TOOL_COUNT } from '@toolbox/catalog'
-
-const STATS = [
-  { label: '规划工具', value: PLANNED_TOTAL_TOOLS },
-  { label: '已上线', value: TOOL_COUNT },
-  { label: '分类域', value: CATEGORIES.length },
-  { label: '大组', value: GROUPS.length },
-] as const
+import { useTranslate } from '../../i18n'
 
 /**
  * 主视觉区（Hero）
@@ -14,21 +8,30 @@ const STATS = [
  * 图片为占位图（/images/hero-placeholder.svg），后续替换为真实插画即可。
  */
 export function Hero() {
+  const t = useTranslate()
+
+  // 标签随语言变化，故在组件内构造；key 用稳定 id，不用已翻译的文案
+  const stats = [
+    { id: 'planned', label: t('hero.stat.planned'), value: PLANNED_TOTAL_TOOLS },
+    { id: 'live', label: t('hero.stat.live'), value: TOOL_COUNT },
+    { id: 'categories', label: t('hero.stat.categories'), value: CATEGORIES.length },
+    { id: 'groups', label: t('hero.stat.groups'), value: GROUPS.length },
+  ]
+
   return (
     <section
       data-testid="hero"
-      className="grid items-center gap-8 rounded-2xl bg-gradient-to-b from-sky-50 to-white p-6 md:grid-cols-2 md:p-10"
+      className="grid items-center gap-8 rounded-2xl bg-gradient-to-b from-sky-50 to-white p-6 md:grid-cols-2 md:p-10 dark:from-slate-900 dark:to-slate-950"
     >
       <div className="text-center md:text-left">
-        <p className="text-sm font-medium text-brand">纯本地 · 免登录 · 可离线</p>
+        <p className="text-sm font-medium text-brand">{t('hero.eyebrow')}</p>
         <h1 className="mt-3 text-3xl font-semibold leading-tight md:text-4xl">
-          {PLANNED_TOTAL_TOOLS} 个在线工具，
+          {t('hero.titleLead', { count: PLANNED_TOTAL_TOOLS })}
           <br className="hidden sm:block" />
-          全部在你的浏览器里跑
+          {t('hero.titleTail')}
         </h1>
-        <p className="mx-auto mt-4 max-w-md text-slate-600 md:mx-0">
-          文本处理、编码转换、图片编辑、PDF 操作、数学计算……打开即用，不注册、不上传，
-          断网也能继续干活。
+        <p className="mx-auto mt-4 max-w-md text-slate-600 md:mx-0 dark:text-slate-400">
+          {t('hero.subtitle')}
         </p>
 
         <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center md:justify-start">
@@ -37,27 +40,32 @@ export function Hero() {
             data-testid="hero-cta-primary"
             className="rounded-lg bg-brand px-5 py-2.5 text-center text-sm font-medium text-white hover:opacity-90"
           >
-            浏览全部工具
+            {t('hero.ctaPrimary')}
           </Link>
           <Link
             to="/tools/json-formatter"
             data-testid="hero-cta-secondary"
-            className="rounded-lg border border-slate-300 bg-white px-5 py-2.5 text-center text-sm font-medium text-slate-700 hover:bg-slate-50"
+            className="rounded-lg border border-slate-300 bg-white px-5 py-2.5 text-center text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
           >
-            试试 JSON 格式化
+            {t('hero.ctaSecondary')}
           </Link>
         </div>
 
-        <p className="mt-4 text-xs text-slate-500">
-          按 <kbd className="rounded bg-white px-1 shadow-sm">⌘K</kbd> 或{' '}
-          <kbd className="rounded bg-white px-1 shadow-sm">Ctrl+K</kbd> 随时全局搜索
+        <p className="mt-4 text-xs text-slate-500 dark:text-slate-400">
+          {t('hero.searchHintBefore')}{' '}
+          <kbd className="rounded bg-white px-1 shadow-sm dark:bg-slate-800">⌘K</kbd>{' '}
+          {t('hero.searchHintMiddle')}{' '}
+          <kbd className="rounded bg-white px-1 shadow-sm dark:bg-slate-800">Ctrl+K</kbd>{' '}
+          {t('hero.searchHintAfter')}
         </p>
 
         <dl className="mt-8 grid grid-cols-4 gap-2">
-          {STATS.map((stat) => (
-            <div key={stat.label} className="rounded-lg bg-white/70 p-2 text-center">
-              <dt className="text-xs text-slate-500">{stat.label}</dt>
-              <dd className="text-lg font-semibold text-slate-900">{stat.value}</dd>
+          {stats.map((stat) => (
+            <div key={stat.id} className="rounded-lg bg-white/70 p-2 text-center dark:bg-slate-900/70">
+              <dt className="text-xs text-slate-500 dark:text-slate-400">{stat.label}</dt>
+              <dd className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+                {stat.value}
+              </dd>
             </div>
           ))}
         </dl>
@@ -66,7 +74,7 @@ export function Hero() {
       <div>
         <img
           src="/images/hero-placeholder.svg"
-          alt="产品主视觉占位图"
+          alt={t('hero.imageAlt')}
           width={640}
           height={420}
           loading="lazy"

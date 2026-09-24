@@ -1,3 +1,6 @@
+import { PLANNED_TOTAL_TOOLS } from '@toolbox/catalog'
+import { useTranslate } from '../i18n'
+import { useDocumentTitle } from '../lib/useDocumentTitle'
 import { Hero } from '../components/home/Hero'
 import { Highlights } from '../components/home/Highlights'
 import { GroupShowcase } from '../components/home/GroupShowcase'
@@ -11,6 +14,9 @@ import { CtaSection } from '../components/home/CtaSection'
  * 顶部导航与页脚由 App.tsx 全站提供，不在此重复。
  */
 export function HomePage() {
+  const t = useTranslate()
+  useDocumentTitle(t('seo.homeTitle', { name: t('site.name'), count: PLANNED_TOTAL_TOOLS }))
+
   return (
     <div className="space-y-12">
       <Hero />

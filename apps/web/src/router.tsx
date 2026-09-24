@@ -1,6 +1,7 @@
 import { Suspense, lazy } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import { TOOL_ROUTES } from '@toolbox/catalog'
+import { useTranslate } from './i18n'
 
 // 页面级懒加载：首屏只加载壳与路由，控制首屏 JS 体积（DEVELOPMENT.md §11）
 const HomePage = lazy(() => import('./pages/HomePage').then((m) => ({ default: m.HomePage })))
@@ -21,8 +22,12 @@ const NotFoundPage = lazy(() =>
  * 新增工具只需写 meta.ts 并跑 pnpm generate:catalog，本文件无需改动。
  */
 export function AppRoutes() {
+  const t = useTranslate()
+
   return (
-    <Suspense fallback={<p className="text-sm text-slate-500">加载中…</p>}>
+    <Suspense
+      fallback={<p className="text-sm text-slate-500 dark:text-slate-400">{t('common.loading')}</p>}
+    >
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/tools" element={<AllToolsPage />} />

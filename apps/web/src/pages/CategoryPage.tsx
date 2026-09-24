@@ -1,36 +1,58 @@
 import { Link, useParams } from 'react-router-dom'
 import { CATEGORIES, getCategory, toolsOfCategory } from '@toolbox/catalog'
 import type { CategoryId, GroupId } from '@toolbox/catalog'
+import { categoryName, groupName } from '../i18n/catalog-text'
+import { useTranslate } from '../i18n'
+import { useDocumentTitle } from '../lib/useDocumentTitle'
 import { ToolCard } from '../components/tool/ToolCard'
 
 export function CategoryPage() {
   const { group, category } = useParams<{ group: string; category: string }>()
+  const t = useTranslate()
 
   const isCategory = (value: string | undefined): value is CategoryId =>
     CATEGORIES.some((c) => c.id === value)
 
-  if (!isCategory(category)) {
-    return <p className="text-sm text-red-600">未知分类：{category}</p>
-  }
+  // 先判定再取用，避免在非法参数上抛错；hooks 一律在早退之前调用
+  const def = isCategory(category) ? getCategory(category) : undefined
+  const tools = def ? toolsOfCategory(def.id) : []
 
-  const def = getCategory(category)
+  useDocumentTitle(
+    def
+      ? t('seo.categoryTitle', { name: t('site.name'), category: categoryName(t, def.id) })
+      : t('site.name'),
+  )
+
+  if (!def) {
+    return (
+      <p className="text-sm text-red-600 dark:text-red-400">
+        {t('categoryPage.unknown', { category: category ?? '' })}
+      </p>
+    )
+  }
 
   // URL 中的大组必须与域的归属一致，不一致时给出提示但仍可访问
   const mismatch = (group as GroupId) !== def.group
-  const tools = toolsOfCategory(category)
 
   return (
     <div className="space-y-4">
       <header>
-        <h1 className="text-2xl font-semibold">{def.name}</h1>
-        <p className="mt-1 text-sm text-slate-600">
-          编号 {def.range[0]}–{def.range[1]} · 规划 {def.plannedTools} 个工具
+        <h1 className="text-2xl font-semibold">{categoryName(t, def.id)}</h1>
+        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+          {t('categoryPage.summary', {
+            from: def.range[0],
+            to: def.range[1],
+            tools: def.plannedTools,
+          })}
         </p>
       </header>
 
       {mismatch ? (
-        <p className="rounded border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900">
-          该分类属于「{def.group}」组，当前 URL 使用的是「{group}」。
+        <p className="rounded border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200">
+          {t('categoryPage.mismatch', {
+            expected: groupName(t, def.group),
+            actual: group ?? '',
+          })}
         </p>
       ) : null}
 
@@ -41,13 +63,13 @@ export function CategoryPage() {
           ))}
         </div>
       ) : (
-        <p className="text-sm text-slate-500">
-          该分类下暂无已实现工具（规划 {def.plannedTools} 个）。
+        <p className="text-sm text-slate-500 dark:text-slate-400">
+          {t('categoryPage.empty', { tools: def.plannedTools })}
         </p>
       )}
 
       <Link to="/tools" className="inline-block text-sm text-brand hover:underline">
-        查看全部已上线工具 →
+        {t('categoryPage.viewAll')}
       </Link>
     </div>
   )

@@ -1,7 +1,9 @@
 import { lazy, Suspense } from 'react'
 import type { ComponentType } from 'react'
 import { getTool } from '@toolbox/catalog'
-import type { ToolMeta } from '@toolbox/catalog'
+import { toolTitle } from '../i18n/catalog-text'
+import { useI18n } from '../i18n'
+import { useDocumentTitle } from '../lib/useDocumentTitle'
 import { ToolShell } from '../components/tool/ToolShell'
 
 /**
@@ -18,14 +20,21 @@ function loadTool(id: string): ComponentType | null {
 }
 
 export function ToolPage({ slug }: { slug: string }) {
-  const meta: ToolMeta | undefined = getTool(slug)
+  const { locale, t } = useI18n()
+  const meta = getTool(slug)
+
+  useDocumentTitle(
+    meta
+      ? t('seo.toolTitle', { name: t('site.name'), tool: toolTitle(locale, meta) })
+      : t('seo.notFoundTitle', { name: t('site.name') }),
+  )
 
   if (!meta) {
     return (
-      <div className="rounded-lg border border-slate-200 bg-white p-6">
-        <h1 className="text-xl font-semibold">工具不存在</h1>
-        <p className="mt-2 text-sm text-slate-600">
-          未找到 <code>{slug}</code>，它可能尚未实现。
+      <div className="rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
+        <h1 className="text-xl font-semibold">{t('toolPage.notFoundTitle')}</h1>
+        <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+          {t('toolPage.notFoundBody', { slug })}
         </p>
       </div>
     )
@@ -36,8 +45,8 @@ export function ToolPage({ slug }: { slug: string }) {
   if (!ToolComponent) {
     return (
       <ToolShell meta={meta}>
-        <p className="text-sm text-amber-700">
-          该工具已在 catalog 注册，但 <code>Tool.tsx</code> 尚未实现。
+        <p className="text-sm text-amber-700 dark:text-amber-300">
+          {t('toolPage.notImplemented')}
         </p>
       </ToolShell>
     )
@@ -45,7 +54,7 @@ export function ToolPage({ slug }: { slug: string }) {
 
   return (
     <ToolShell meta={meta}>
-      <Suspense fallback={<p className="text-sm text-slate-500">加载中…</p>}>
+      <Suspense fallback={<p className="text-sm text-slate-500 dark:text-slate-400">{t('common.loading')}</p>}>
         <ToolComponent />
       </Suspense>
     </ToolShell>
