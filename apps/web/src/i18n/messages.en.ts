@@ -144,6 +144,9 @@ export const en: Record<MessageKey, string> = {
   'tool.download': 'Download',
   'tool.textA': 'Original',
   'tool.textB': 'Revised',
+  'tool.textBase': 'Base',
+  'tool.textMine': 'Mine',
+  'tool.textTheirs': 'Theirs',
 
   // —— Tool options ——
   // Shared option labels: reused by many tools so each tool needs no dedicated keys
@@ -203,6 +206,11 @@ export const en: Record<MessageKey, string> = {
   'option.global': 'Replace all',
   'option.multiline': 'Multiline',
   'option.ignoreWhitespace': 'Ignore whitespace',
+  'option.preview': 'Preview decoded text',
+  'option.prefer': 'On conflict prefer',
+  'option.joiner': 'Joiner',
+  'option.skipMissing': 'Skip missing columns',
+  'option.keepCommon': 'Keep common whitespace',
   'jsonFormatter.option.indent': 'Indent',
   'jsonFormatter.option.sortKeys': 'Sort keys',
 

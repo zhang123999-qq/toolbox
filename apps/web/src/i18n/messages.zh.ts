@@ -144,6 +144,9 @@ export const zh = {
   'tool.download': '下载',
   'tool.textA': '原文',
   'tool.textB': '新版',
+  'tool.textBase': '基准版本',
+  'tool.textMine': '我的版本',
+  'tool.textTheirs': '他人版本',
 
   // —— 工具内选项 ——
   // 通用选项文案：铺量时多工具复用，避免每个工具各建一套 key
@@ -203,6 +206,11 @@ export const zh = {
   'option.global': '全局替换',
   'option.multiline': '多行模式',
   'option.ignoreWhitespace': '忽略空白差异',
+  'option.preview': '预览解码结果',
+  'option.prefer': '冲突时优先',
+  'option.joiner': '连接符',
+  'option.skipMissing': '跳过缺失的列',
+  'option.keepCommon': '保留常见空白',
   'jsonFormatter.option.indent': '缩进',
   'jsonFormatter.option.sortKeys': '排序键名',
 
