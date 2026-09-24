@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { ToolMeta } from '@toolbox/catalog'
 import { useTranslate } from '../../../i18n'
 
@@ -11,22 +11,35 @@ export interface OptionDef<O> {
   readonly placeholder?: string
 }
 
-/** 除 `text` 之外的附加输入框：diff / 三方合并这类「两段及以上平级内容」的工具用 */
+/** 除 `text` 之外的附加输入框：diff / 三方合并这类「多段平级内容」、以及接口凭据用 */
 export interface ExtraInputDef {
   /** 在输入对象里的字段名 */
   readonly key: string
   /** 已翻译好的标签 */
   readonly label: string
+  /** 行数：凭据类填 1，正文类留空（默认 4 行） */
+  readonly rows?: number
 }
 
 interface TwoColumnProps<I extends { text: string }, O extends object> {
   readonly meta: ToolMeta
   readonly initialInput: I
   readonly initialOptions: O
-  readonly run: (input: I, options: O) => string
+  /** 同步转换：输入或选项变化即重算 */
+  readonly run?: (input: I, options: O) => string
+  /** 异步转换（调外部接口的工具）：只在点「运行」时发起，避免误触付费接口 */
+  readonly runAsync?: (input: I, options: O) => Promise<string>
   readonly example?: I
   readonly optionDefs?: readonly OptionDef<O>[]
   readonly extraInputs?: readonly ExtraInputDef[]
+}
+
+/** 输出区的统一视图：同步与异步两种来源归一 */
+interface OutputView {
+  readonly ok: boolean
+  readonly pending: boolean
+  readonly idle: boolean
+  readonly value: string
 }
 
 /** 次级按钮（描边）统一外观，明暗两版成对给出；T3 模板复用同一份 */
@@ -43,6 +56,7 @@ export function TwoColumn<I extends { text: string }, O extends object>({
   initialInput,
   initialOptions,
   run,
+  runAsync,
   example,
   optionDefs,
   extraInputs,
@@ -51,9 +65,15 @@ export function TwoColumn<I extends { text: string }, O extends object>({
   const [options, setOptions] = useState<O>(initialOptions)
   const [nonce, setNonce] = useState(0)
   const [copied, setCopied] = useState(false)
+  // 异步结果单独存：它不随输入变化而重算，只在点「运行」时更新
+  const [asyncState, setAsyncState] = useState<{
+    status: 'idle' | 'pending' | 'done' | 'error'
+    value: string
+  }>({ status: 'idle', value: '' })
   const t = useTranslate()
 
   const computed = useMemo(() => {
+    if (!run) return null
     try {
       return { ok: true as const, value: run(input, options) }
     } catch (error) {
@@ -66,7 +86,40 @@ export function TwoColumn<I extends { text: string }, O extends object>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [input, options, run, nonce])
 
-  const output = computed.ok ? computed.value : ''
+  useEffect(() => {
+    // nonce 为 0 表示还没点过运行：异步工具不自动发请求
+    if (!runAsync || nonce === 0) return
+    let cancelled = false
+    runAsync(input, options).then(
+      (value) => {
+        if (!cancelled) setAsyncState({ status: 'done', value })
+      },
+      (error: unknown) => {
+        if (!cancelled) {
+          setAsyncState({
+            status: 'error',
+            value: error instanceof Error ? error.message : String(error),
+          })
+        }
+      },
+    )
+    return () => {
+      cancelled = true
+    }
+    // 只在 nonce 变化时发起；input / options 取当次点击时的值
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nonce])
+
+  const view: OutputView = computed
+    ? { ok: computed.ok, pending: false, idle: false, value: computed.value }
+    : {
+        ok: asyncState.status !== 'error',
+        pending: asyncState.status === 'pending',
+        idle: asyncState.status === 'idle',
+        value: asyncState.value,
+      }
+
+  const output = view.ok ? view.value : ''
 
   function updateOption(key: keyof O & string, value: string | boolean) {
     setOptions((prev) => ({ ...prev, [key]: value }) as O)
@@ -127,7 +180,7 @@ export function TwoColumn<I extends { text: string }, O extends object>({
             <textarea
               id={'tool-input-' + def.key}
               data-testid={'input-' + def.key}
-              rows={4}
+              rows={def.rows ?? 4}
               className="w-full resize-y rounded border border-slate-200 p-2 font-mono text-sm dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
               value={readExtra(def.key)}
               onChange={(event) => setInput({ ...input, [def.key]: event.target.value } as I)}
@@ -139,7 +192,11 @@ export function TwoColumn<I extends { text: string }, O extends object>({
             type="button"
             data-testid="run"
             className="rounded bg-brand px-3 py-1.5 text-sm text-white hover:opacity-90"
-            onClick={() => setNonce((n) => n + 1)}
+            onClick={() => {
+              setNonce((n) => n + 1)
+              // 异步工具在点击时就切到 pending：放在 effect 里会触发级联渲染
+              if (runAsync) setAsyncState({ status: 'pending', value: '' })
+            }}
           >
             {t('tool.run')}
           </button>
@@ -218,12 +275,19 @@ export function TwoColumn<I extends { text: string }, O extends object>({
           ) : null}
         </div>
 
-        {computed.ok ? (
+        {view.pending ? (
+          <p
+            data-testid="output"
+            className="min-h-64 w-full flex-1 overflow-auto rounded border border-slate-200 bg-slate-50 p-2 text-sm text-slate-600 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300"
+          >
+            {t('tool.running')}
+          </p>
+        ) : view.ok ? (
           <pre
             data-testid="output"
             className="min-h-64 w-full flex-1 overflow-auto rounded border border-slate-200 bg-slate-50 p-2 font-mono text-sm dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
           >
-            {output || t('tool.empty')}
+            {output || (view.idle ? t('tool.asyncIdle') : t('tool.empty'))}
           </pre>
         ) : (
           <p
@@ -231,7 +295,7 @@ export function TwoColumn<I extends { text: string }, O extends object>({
             role="alert"
             className="min-h-64 w-full flex-1 overflow-auto rounded border border-red-200 bg-red-50 p-2 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300"
           >
-            {computed.value}
+            {view.value}
           </p>
         )}
 

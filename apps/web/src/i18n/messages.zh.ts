@@ -144,7 +144,11 @@ export const zh = {
   'tool.download': '下载',
   'tool.textA': '原文',
   'tool.textB': '新版',
-  'tool.textBase': '基准版本',
+  'tool.running': '调用中…',
+  'tool.asyncIdle': '填好接口信息后点「运行」',
+  'tool.apiBase': '接口地址（Base URL）',
+  'tool.apiKey': 'API Key',
+  'tool.model': '模型名',
   'tool.textMine': '我的版本',
   'tool.textTheirs': '他人版本',
 
@@ -211,6 +215,9 @@ export const zh = {
   'option.joiner': '连接符',
   'option.skipMissing': '跳过缺失的列',
   'option.keepCommon': '保留常见空白',
+  'option.collapse': '折叠连续空白',
+  'option.removeEmpty': '删除空行',
+  'option.source': '源语言',
   'jsonFormatter.option.indent': '缩进',
   'jsonFormatter.option.sortKeys': '排序键名',
 

@@ -144,7 +144,11 @@ export const en: Record<MessageKey, string> = {
   'tool.download': 'Download',
   'tool.textA': 'Original',
   'tool.textB': 'Revised',
-  'tool.textBase': 'Base',
+  'tool.running': 'Calling…',
+  'tool.asyncIdle': 'Fill in the API settings, then click Run',
+  'tool.apiBase': 'Base URL',
+  'tool.apiKey': 'API Key',
+  'tool.model': 'Model',
   'tool.textMine': 'Mine',
   'tool.textTheirs': 'Theirs',
 
@@ -211,6 +215,9 @@ export const en: Record<MessageKey, string> = {
   'option.joiner': 'Joiner',
   'option.skipMissing': 'Skip missing columns',
   'option.keepCommon': 'Keep common whitespace',
+  'option.collapse': 'Collapse repeated whitespace',
+  'option.removeEmpty': 'Remove empty lines',
+  'option.source': 'Source language',
   'jsonFormatter.option.indent': 'Indent',
   'jsonFormatter.option.sortKeys': 'Sort keys',
 
