@@ -1,0 +1,15 @@
+.git
+.github
+node_modules
+**/node_modules
+dist
+**/dist
+.turbo
+**/.turbo
+coverage
+docs
+.agent
+.workbuddy
+*.log
+.env
+.env.*

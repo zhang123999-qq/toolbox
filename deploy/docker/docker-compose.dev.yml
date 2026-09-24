@@ -1,0 +1,19 @@
+services:
+  web:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile
+      args:
+        # 构建期如需代理，在此传入（不写入镜像层）
+        HTTP_PROXY: ${HTTP_PROXY:-}
+        HTTPS_PROXY: ${HTTPS_PROXY:-}
+    image: toolbox-web:dev
+    container_name: toolbox-web
+    ports:
+      - '8080:80'
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://127.0.0.1/', '>/dev/null']
+      interval: 30s
+      timeout: 3s
+      retries: 3
