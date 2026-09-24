@@ -183,6 +183,10 @@ export const en: Record<MessageKey, string> = {
   'option.minLength': 'Min length',
   'option.padChar': 'Pad character',
   'option.align': 'Alignment',
+  'option.tone': 'Tone',
+  'option.strict': 'Strict mode',
+  'option.keepOrder': 'Keep order',
+  'option.reverse': 'Reverse',
   'jsonFormatter.option.indent': 'Indent',
   'jsonFormatter.option.sortKeys': 'Sort keys',
 

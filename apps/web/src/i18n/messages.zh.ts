@@ -183,6 +183,10 @@ export const zh = {
   'option.minLength': '最小长度',
   'option.padChar': '填充字符',
   'option.align': '对齐方式',
+  'option.tone': '声调',
+  'option.strict': '严格模式',
+  'option.keepOrder': '保持原顺序',
+  'option.reverse': '反向',
   'jsonFormatter.option.indent': '缩进',
   'jsonFormatter.option.sortKeys': '排序键名',
 
