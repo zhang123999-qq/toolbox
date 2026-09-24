@@ -1,5 +1,12 @@
 @import 'tailwindcss';
 
+/**
+ * Tailwind v4 默认把 dark: 绑定到 prefers-color-scheme（跟随系统）。
+ * 本项目要在页面上手动切换明暗，所以改成以 <html class="dark"> 为开关。
+ * 类名由 index.html 的内联脚本在首帧前写入，见 apps/web/index.html 注释。
+ */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-brand: #0ea5e9;
 }
@@ -17,6 +24,20 @@ body {
     'PingFang SC',
     'Microsoft YaHei',
     sans-serif;
+  /* 兜底底色：App 容器之外（如橡皮筋回弹区域）也不露出浅色 */
+  @apply bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100;
+}
+
+/**
+ * 语言偏好待定遮罩
+ *
+ * 内联脚本只在「记住的语言不是默认中文」时添加该类，由 I18nProvider 在
+ * 浏览器绘制前移除，从而避免先看到中文、再翻成英文的闪动。
+ * 若脚本或模块加载异常，内联脚本里的 3s 兜底定时器也会摘掉它，
+ * 不会让内容永久不可见。
+ */
+html.i18n-pending #root {
+  visibility: hidden;
 }
 
 /* 移动端工具页操作区固定在底部（DEVELOPMENT.md / spec/06 §11） */
