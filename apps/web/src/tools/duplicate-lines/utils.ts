@@ -1,4 +1,6 @@
 import type { DuplicateLinesInput, DuplicateLinesOptions } from './schema'
+// 去重保序的原语已在 lib/pipeline.ts 定义，#70 文本工作台复用同一份
+import { dedupeLines } from '../../lib/pipeline'
 
 /** 归一化：按选项决定是否去首尾空白、是否忽略大小写 */
 export function normalize(line: string, options: DuplicateLinesOptions): string {
@@ -24,15 +26,7 @@ export function tally(
 
 /** 只保留首次出现的行（去重保序） */
 export function uniqueLines(lines: readonly string[], options: DuplicateLinesOptions): string[] {
-  const seen = new Set<string>()
-  const out: string[] = []
-  for (const line of lines) {
-    const key = normalize(line, options)
-    if (seen.has(key)) continue
-    seen.add(key)
-    out.push(line)
-  }
-  return out
+  return dedupeLines(lines, (line) => normalize(line, options))
 }
 
 /** 报告：按出现次数降序列出重复行 */

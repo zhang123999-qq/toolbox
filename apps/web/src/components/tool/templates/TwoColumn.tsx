@@ -5,8 +5,8 @@ import { useTranslate } from '../../../i18n'
 export interface OptionDef<O> {
   readonly key: keyof O & string
   readonly label: string
-  /** `text` 供需要自由输入的选项（前缀、正则、替换串…） */
-  readonly kind: 'select' | 'boolean' | 'text'
+  /** `text` 供需要自由输入的选项（前缀、正则、替换串…）；`textarea` 供多行的（流水线步骤） */
+  readonly kind: 'select' | 'boolean' | 'text' | 'textarea'
   readonly values?: readonly (string | number)[]
   readonly placeholder?: string
 }
@@ -32,6 +32,12 @@ interface TwoColumnProps<I extends { text: string }, O extends object> {
   readonly example?: I
   readonly optionDefs?: readonly OptionDef<O>[]
   readonly extraInputs?: readonly ExtraInputDef[]
+  /**
+   * 异步工具未运行时的占位文案。
+   * 默认按「填好接口信息后点运行」写，但浏览器原生能力类工具（哈希 / 语音）
+   * 不需要接口，可自行覆盖。
+   */
+  readonly idleText?: string
 }
 
 /** 输出区的统一视图：同步与异步两种来源归一 */
@@ -60,6 +66,7 @@ export function TwoColumn<I extends { text: string }, O extends object>({
   example,
   optionDefs,
   extraInputs,
+  idleText,
 }: TwoColumnProps<I, O>) {
   const [input, setInput] = useState<I>(initialInput)
   const [options, setOptions] = useState<O>(initialOptions)
@@ -254,6 +261,21 @@ export function TwoColumn<I extends { text: string }, O extends object>({
                     </label>
                   )
                 }
+                if (def.kind === 'textarea') {
+                  return (
+                    <label key={def.key} className="flex items-center gap-1">
+                      {def.label}
+                      <textarea
+                        data-testid={'option-' + def.key}
+                        rows={3}
+                        className="w-48 resize-y rounded border border-slate-300 px-1 font-mono text-xs dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                        value={String(options[def.key] ?? '')}
+                        placeholder={def.placeholder}
+                        onChange={(event) => updateOption(def.key, event.target.value)}
+                      />
+                    </label>
+                  )
+                }
                 return (
                   <label key={def.key} className="flex items-center gap-1">
                     {def.label}
@@ -287,7 +309,7 @@ export function TwoColumn<I extends { text: string }, O extends object>({
             data-testid="output"
             className="min-h-64 w-full flex-1 overflow-auto rounded border border-slate-200 bg-slate-50 p-2 font-mono text-sm dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
           >
-            {output || (view.idle ? t('tool.asyncIdle') : t('tool.empty'))}
+            {output || (view.idle ? (idleText ?? t('tool.asyncIdle')) : t('tool.empty'))}
           </pre>
         ) : (
           <p

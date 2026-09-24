@@ -142,17 +142,47 @@ export function MultiPanel<I extends { text: string }, O extends object>({
           </span>
           {optionDefs?.length ? (
             <div className="flex flex-wrap items-center gap-3 text-sm">
-              {optionDefs.map((def) =>
-                def.kind === 'boolean' ? (
-                  <label key={def.key} className="flex items-center gap-1">
-                    <input
-                      type="checkbox"
-                      checked={Boolean(options[def.key])}
-                      onChange={(event) => updateOption(def.key, event.target.checked)}
-                    />
-                    {def.label}
-                  </label>
-                ) : (
+              {optionDefs.map((def) => {
+                if (def.kind === 'boolean') {
+                  return (
+                    <label key={def.key} className="flex items-center gap-1">
+                      <input
+                        type="checkbox"
+                        checked={Boolean(options[def.key])}
+                        onChange={(event) => updateOption(def.key, event.target.checked)}
+                      />
+                      {def.label}
+                    </label>
+                  )
+                }
+                // 自由输入 / 多行输入：都带 data-testid，便于组件测试定位
+                if (def.kind === 'text' || def.kind === 'textarea') {
+                  return (
+                    <label key={def.key} className="flex items-center gap-1">
+                      {def.label}
+                      {def.kind === 'textarea' ? (
+                        <textarea
+                          data-testid={'option-' + def.key}
+                          rows={3}
+                          className="w-48 resize-y rounded border border-slate-300 px-1 font-mono text-xs dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                          value={String(options[def.key] ?? '')}
+                          placeholder={def.placeholder}
+                          onChange={(event) => updateOption(def.key, event.target.value)}
+                        />
+                      ) : (
+                        <input
+                          type="text"
+                          data-testid={'option-' + def.key}
+                          className="w-32 rounded border border-slate-300 px-1 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                          value={String(options[def.key] ?? '')}
+                          placeholder={def.placeholder}
+                          onChange={(event) => updateOption(def.key, event.target.value)}
+                        />
+                      )}
+                    </label>
+                  )
+                }
+                return (
                   <label key={def.key} className="flex items-center gap-1">
                     {def.label}
                     <select
@@ -167,8 +197,8 @@ export function MultiPanel<I extends { text: string }, O extends object>({
                       ))}
                     </select>
                   </label>
-                ),
-              )}
+                )
+              })}
             </div>
           ) : null}
         </div>
