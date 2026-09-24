@@ -21,6 +21,13 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
 
 ### 修复
 
+- **CI 的 pnpm 版本被指定两次**：workflow 里写了 `version: 12`，`package.json` 里又有
+  `packageManager: pnpm@12.3.4`，`pnpm/action-setup` 直接拒绝执行——这条流水线从未成功跑过
+  一次，而「push 不触发」恰好把它掩盖了。现由 action 读取 `packageManager`，版本只留一个真源
+- **`typecheck` / `test` 改走 pnpm 递归运行器**：二者都是纯扇出、不需要依赖图，
+  turbo 却会稳定触发 `os error 231`，导致 `pnpm verify` 在本机跑不通（文档却要求提交前跑它）
+- **`scripts/generate-sitemap.ts` 漏格式化**：改成构建期生成 robots.txt 之后没重跑 Prettier，
+  由 CI 的 `format:check` 抓出——本地门禁跑在改动之前，结论已过期
 - **CI 从未在 push 时运行**：`push` 触发分支写的是 `main`，而默认分支是 `master`，
   只有开 PR 才会跑
 - **切换语言会丢掉工具页的输入**：`loadTool` 每次渲染都新建 `lazy()` 包装，

@@ -58,6 +58,4 @@ for (const [name, content] of [
   writeFileSync(path.join(publicDir, name), content, 'utf8')
 }
 
-console.log(
-  `[generate:sitemap] ${SITE_ORIGIN} → sitemap.xml（${urls.length} 条）+ robots.txt`,
-)
+console.log(`[generate:sitemap] ${SITE_ORIGIN} → sitemap.xml（${urls.length} 条）+ robots.txt`)

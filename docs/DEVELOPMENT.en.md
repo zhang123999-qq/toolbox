@@ -420,6 +420,11 @@ limitations / data flow / examples.
 | `pnpm generate:sitemap` | generate `sitemap.xml`                                       |
 | `pnpm build:wasm`       | build / copy WASM modules                                    |
 
+> `typecheck` / `test` use pnpm's built-in recursive runner (`pnpm -r`) instead of turbo — both are
+> plain fan-outs that need no dependency graph, while turbo reliably trips `os error 231` in
+> restricted Windows environments. `build` and `dev` still use turbo (they need the `^build`
+> topology); locally prefer `pnpm build:ssg`, which bypasses the orchestrator.
+
 ---
 
 ## 10. Quality Gates
@@ -679,11 +684,11 @@ apps/web/public/     sitemap.xml / robots.txt
 
 ### 18.3 Environment gotchas (native Windows)
 
-| Symptom                                         | Cause                                             | Fix                                                                                                                                                                                            |
-| ----------------------------------------------- | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ERR_PNPM_IGNORED_BUILDS`                       | pnpm 10+ skips build scripts by default           | Put `allowBuilds: esbuild: true` in `pnpm-workspace.yaml` — **not** the `pnpm` field in `package.json`, which pnpm 12 no longer reads                                                          |
-| esbuild postinstall `EBUSY`                     | sandbox blocks spawn; the `--version` check fails | `pnpm install --ignore-scripts`. The binary ships in the `@esbuild/win32-x64` platform package; postinstall only validates it                                                                  |
-| turbo `os error 231` (pipe instances exhausted) | concurrent spawn exceeds the sandbox pipe limit   | Task-level concurrency in `turbo.json` is not supported (unknown key). Use `turbo run <task> --concurrency=1`, or bypass the orchestrator with `pnpm exec tsc -p <pkg>/tsconfig.json --noEmit` |
+| Symptom                                         | Cause                                                                           | Fix                                                                                                                                                                                                      |
+| ----------------------------------------------- | ------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ERR_PNPM_IGNORED_BUILDS`                       | pnpm 10+ skips build scripts by default                                         | Put `allowBuilds: esbuild: true` in `pnpm-workspace.yaml` — **not** the `pnpm` field in `package.json`, which pnpm 12 no longer reads                                                                    |
+| esbuild postinstall `EBUSY`                     | sandbox blocks spawn; the `--version` check fails                               | `pnpm install --ignore-scripts`. The binary ships in the `@esbuild/win32-x64` platform package; postinstall only validates it                                                                            |
+| turbo `os error 231` (pipe instances exhausted) | concurrent spawn exceeds the sandbox pipe limit; reproduces reliably on Windows | `typecheck` / `test` now use `pnpm -r`; `build` / `dev` still use turbo, so locally prefer `pnpm build:ssg`, or bypass the orchestrator per package with `pnpm exec tsc -p <pkg>/tsconfig.json --noEmit` |
 
 **Three more gotchas at Docker build time (already encoded in `deploy/docker/Dockerfile`):**
 

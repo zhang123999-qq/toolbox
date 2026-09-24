@@ -413,6 +413,10 @@ input / output / run / clear / copy / download / example
 | `pnpm generate:sitemap` | 生成 `sitemap.xml`                          |
 | `pnpm build:wasm`       | 构建 / 拷贝 WASM 模块                       |
 
+> `typecheck` / `test` 走 pnpm 自带的递归运行器（`pnpm -r`），不经过 turbo —— 两者都是纯扇出，
+> 不需要依赖图，而 turbo 在受限环境的 Windows 上会稳定触发 `os error 231`。
+> `build` 与 `dev` 仍走 turbo（需要 `^build` 拓扑）；本地建议直接用 `pnpm build:ssg`，它不经过编排器。
+
 ---
 
 ## 十、质量门禁
@@ -660,11 +664,11 @@ apps/web/public/     sitemap.xml / robots.txt
 
 ### 18.3 环境坑（Windows 原生执行必读）
 
-| 现象                                 | 原因                                 | 解法                                                                                                                                                              |
-| ------------------------------------ | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ERR_PNPM_IGNORED_BUILDS`            | pnpm 10+ 默认不执行构建脚本          | 在 `pnpm-workspace.yaml` 写 `allowBuilds: esbuild: true`（**不是** `package.json` 的 `pnpm` 字段，v12 已不再读取）                                                |
-| esbuild postinstall `EBUSY`          | 沙箱限制 spawn，`--version` 校验失败 | `pnpm install --ignore-scripts`；二进制来自 `@esbuild/win32-x64` 平台包，postinstall 仅为校验                                                                     |
-| turbo `os error 231`（管道范例耗尽） | 并发 spawn 超出沙箱管道上限          | 无法用 `turbo.json` 的 task 级并发（该 key 不被识别）；改为 `turbo run <task> --concurrency=1`，或直接 `pnpm exec tsc -p <pkg>/tsconfig.json --noEmit` 绕开编排器 |
+| 现象                                 | 原因                                            | 解法                                                                                                                                                                    |
+| ------------------------------------ | ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ERR_PNPM_IGNORED_BUILDS`            | pnpm 10+ 默认不执行构建脚本                     | 在 `pnpm-workspace.yaml` 写 `allowBuilds: esbuild: true`（**不是** `package.json` 的 `pnpm` 字段，v12 已不再读取）                                                      |
+| esbuild postinstall `EBUSY`          | 沙箱限制 spawn，`--version` 校验失败            | `pnpm install --ignore-scripts`；二进制来自 `@esbuild/win32-x64` 平台包，postinstall 仅为校验                                                                           |
+| turbo `os error 231`（管道范例耗尽） | 并发 spawn 超出沙箱管道上限，Windows 上稳定复现 | `typecheck` / `test` 已改为走 `pnpm -r`；`build` / `dev` 仍用 turbo，本地请改用 `pnpm build:ssg`，或按包执行 `pnpm exec tsc -p <pkg>/tsconfig.json --noEmit` 绕开编排器 |
 
 **Docker 构建期另有三个坑（已写进 `deploy/docker/Dockerfile`）：**
 
