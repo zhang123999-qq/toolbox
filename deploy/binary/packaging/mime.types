@@ -1,0 +1,33 @@
+# MIME 表随 bundle 一起分发，避免依赖目标机的 /etc/nginx/mime.types
+# —— 目标机可能没装 nginx（或版本不同），自带一份才能做到「解包即可用」。
+
+types {
+    text/html                             html htm shtml;
+    text/css                              css;
+    text/xml                              xml;
+    text/plain                            txt text;
+    text/markdown                         md;
+    application/javascript                js mjs;
+    application/json                      json map;
+    application/manifest+json             webmanifest;
+    application/wasm                      wasm;
+    application/pdf                       pdf;
+    application/zip                       zip gz;
+    application/xml                       xsl;
+    image/svg+xml                         svg svgz;
+    image/png                             png;
+    image/jpeg                            jpeg jpg;
+    image/gif                             gif;
+    image/webp                            webp;
+    image/avif                            avif;
+    image/bmp                             bmp;
+    image/x-icon                          ico;
+    font/woff                             woff;
+    font/woff2                            woff2;
+    font/ttf                              ttf;
+    font/otf                              otf;
+    audio/mpeg                            mp3;
+    audio/ogg                             ogg;
+    video/mp4                             mp4;
+    video/webm                            webm;
+}

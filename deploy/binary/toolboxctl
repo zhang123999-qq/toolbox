@@ -1,0 +1,1271 @@
+#!/bin/sh
+# ============================================================================
+# toolboxctl —— Toolbox 静态站的二进制部署管理 CLI
+#
+# 覆盖四类场景：
+#   1. 安装      install     从 bundle（tar.gz / 目录 / URL）部署到本机
+#   2. 卸载      uninstall   停服务、摘配置；--purge 全清，--purge-deps 连 nginx 一起卸
+#   3. 日常运维  status/start/stop/restart/reload/logs/health/config/backup/list/doctor/version
+#   4. 在线升级  check-update / upgrade（校验 + 失败自动回滚）/ rollback
+#
+# 设计要点
+#   • 纯 POSIX sh，目标机只需 sh + tar +（systemd + nginx）。不依赖 Docker、Node、Python。
+#   • 目录布局把「不可变版本」与「共享状态」分开，升级即原子切软链：
+#       <prefix>/releases/<ver>/   不可变，解包即用
+#       <prefix>/current -> …      软链，唯一切换点
+#       <prefix>/shared/           配置与状态，跨版本保留
+#       <prefix>/logs  <prefix>/run
+#   • 跑的是**独立 nginx 实例**（自己的 pid/日志/临时目录/MIME 表），
+#     只用系统的 nginx 二进制，不读 /etc/nginx，start/stop 不影响机器上其它站点。
+# ============================================================================
+set -eu
+
+PROG=toolboxctl
+
+# 解析脚本**真实**所在目录（跟随软链）。
+# 必须这样做：安装后 CLI 是 /usr/local/bin/toolboxctl -> <prefix>/current/bin/toolboxctl，
+# 若不解析软链，SCRIPT_DIR 会变成 /usr/local/bin，导致读不到 VERSION、
+# 也找不到与 bin/ 同级的 conf/ 模板。
+resolve_script_dir() {
+  p=$0
+  i=0
+  while [ -L "$p" ]; do
+    i=$((i + 1))
+    [ "$i" -gt 40 ] && break
+    t=$(readlink "$p" 2>/dev/null || true)
+    [ -n "$t" ] || break
+    case $t in
+      /*) p=$t ;;
+      *) p=$(dirname -- "$p")/$t ;;
+    esac
+  done
+  CDPATH= cd -- "$(dirname -- "$p")" && pwd
+}
+SCRIPT_DIR=$(resolve_script_dir)
+
+# —— 默认值（可被 /etc/toolbox/toolbox.conf 覆盖）——
+PREFIX=/opt/toolbox
+PORT=80
+NGINX_USER=toolbox
+NGINX_BIN=
+UPDATE_SOURCE=
+SERVICE_NAME=toolbox
+CONF_FILE=/etc/toolbox/toolbox.conf
+UNIT_NAME=toolbox.service
+UNIT_PATH=/etc/systemd/system/toolbox.service
+CLI_LINK=/usr/local/bin/toolboxctl
+DOC_URL=https://github.com/zhang123999-qq/toolbox
+REPO_NAME=toolbox
+DEFAULT_NGINX_USER=toolbox
+
+# —— 输出helpers ——
+say()  { printf '%s\n' "$*"; }
+info() { printf '[toolbox] %s\n' "$*"; }
+warn() { printf '[toolbox] 警告: %s\n' "$*" >&2; }
+step() { printf '\n==> %s\n' "$*"; }
+die()  { printf '[toolbox] 错误: %s\n' "$*" >&2; exit 1; }
+usage_err() { printf '[toolbox] 用法错误: %s\n' "$*" >&2; usage >&2; exit 2; }
+
+usage() {
+  cat <<'USAGE'
+toolboxctl —— Toolbox 二进制部署管理
+
+安装 / 卸载
+  install   [--from <tar.gz|dir|url>] [--port N] [--prefix DIR]
+            [--nginx-user U] [--install-deps] [--no-start] [--force]
+  uninstall [--purge] [--purge-deps] [--keep-user]
+
+日常运维
+  status            服务/版本/端口/健康一览
+  start | stop | restart | reload
+  health            探测 /healthz 并打印版本
+  logs [-n N] [-f]  查看服务日志（journal + nginx error/access）
+  config            打印当前生效配置
+  list              列出已安装的版本（* 标记当前）
+  backup [--output DIR]   备份配置与状态
+  doctor            环境自检（依赖/端口/磁盘/权限）
+  version           显示 CLI 与已安装版本
+  render [--tpl-dir D] [--out D] [--prefix P] [--port N] [--version V]
+                    只渲染配置模板（CI / 容器内验证 nginx 配置用，不做安装）
+
+在线升级
+  check-update [--source <dir|url>]   查询可升级版本
+  upgrade [--source <dir|url>] [--to VERSION] [--force] [--no-reload]
+  rollback [--to VERSION]
+
+  --source 可为本地目录或 HTTP 基址，需含 latest.txt 与
+  toolbox-<ver>-<os>-<arch>.tar.gz(+.sha256)；默认读配置里的 UPDATE_SOURCE。
+USAGE
+}
+
+# ============================================================================
+# 基础工具
+# ============================================================================
+
+need_root() {
+  [ "$(id -u)" = "0" ] || die "需要 root 权限（当前 uid=$(id -u)），请用 sudo 运行"
+}
+
+need_systemd() {
+  [ -d /run/systemd/system ] || die "本机没有运行 systemd，无法以服务方式管理"
+}
+
+# 取 --opt=value 或 --opt value 两种写法：返回 0 表示命中，值写入 VALUE
+# 用法：match_opt "$1" "--port"
+opt_key() { printf '%s' "$1" | sed -n 's/^\(--[a-z-]*\)=.*$/\1/p'; }
+opt_inline() { printf '%s' "$1" | sed -n 's/^--[a-z-]*=//p'; }
+
+load_conf() {
+  if [ -f "$CONF_FILE" ]; then
+    # shellcheck disable=SC1090
+    . "$CONF_FILE"
+  fi
+  # 兼容旧配置缺字段
+  [ -n "${SERVICE_NAME:-}" ] || SERVICE_NAME=toolbox
+  [ -n "${PREFIX:-}" ] || PREFIX=$DEFAULT_PREFIX
+}
+
+save_conf() {
+  mkdir -p "$(dirname "$CONF_FILE")"
+  {
+    printf '# Toolbox 运行配置（由 %s 维护，可手工微调后 reload）\n' "$PROG"
+    printf "PREFIX='%s'\n" "$PREFIX"
+    printf "PORT='%s'\n" "$PORT"
+    printf "NGINX_USER='%s'\n" "$NGINX_USER"
+    printf "NGINX_BIN='%s'\n" "$NGINX_BIN"
+    printf "UPDATE_SOURCE='%s'\n" "${UPDATE_SOURCE:-}"
+    printf "SERVICE_NAME='%s'\n" "$SERVICE_NAME"
+    printf "INSTALLED_AT='%s'\n" "$(date -Is 2>/dev/null || date)"
+  } > "$CONF_FILE"
+  chmod 644 "$CONF_FILE"
+}
+
+detect_nginx() {
+  if [ -n "${NGINX_BIN:-}" ] && [ -x "$NGINX_BIN" ]; then return 0; fi
+  for c in /usr/sbin/nginx /usr/local/sbin/nginx /sbin/nginx /usr/local/nginx/sbin/nginx; do
+    if [ -x "$c" ]; then NGINX_BIN=$c; return 0; fi
+  done
+  if command -v nginx >/dev/null 2>&1; then NGINX_BIN=$(command -v nginx); return 0; fi
+  return 1
+}
+
+has_systemctl() { command -v systemctl >/dev/null 2>&1; }
+
+# 去掉行尾换行。**注意不要顺手去掉空格**：
+# /healthz 的响应体是 "ok v0.0.1"，中间那个空格是有意义的；
+# 若用 `tr -d ' \t\r\n'` 一并删掉，比对会永远不相等（曾因此让每次升级都被误判失败）。
+strip_eol() { printf '%s' "$1" | tr -d '\r\n'; }
+
+svc_state() {
+  if ! has_systemctl; then printf 'unknown'; return 0; fi
+  systemctl is-active "$UNIT_NAME" 2>/dev/null || true
+}
+
+svc_installed() { [ -f "$UNIT_PATH" ]; }
+
+current_link() { printf '%s/current' "$PREFIX"; }
+
+current_version() {
+  link=$(current_link)
+  if [ -L "$link" ]; then
+    t=$(readlink "$link" 2>/dev/null || true)
+    [ -n "$t" ] && printf '%s' "${t##*/}"
+  fi
+}
+
+# 排序用：输出版本号列表（不含目录名噪音）
+list_release_versions() {
+  [ -d "$PREFIX/releases" ] || return 0
+  for d in "$PREFIX/releases"/*; do
+    [ -d "$d" ] || continue
+    v=${d##*/}
+    case $v in .staging.*|.*) continue ;; esac
+    printf '%s\n' "$v"
+  done
+}
+
+# ver_gt A B —— A 是否大于 B（分段数值比较，避开 sort -V 依赖）
+ver_gt() {
+  awk -v a="$1" -v b="$2" 'BEGIN{
+    n=split(a,x,"."); m=split(b,y,"."); k=(n>m?n:m);
+    for(i=1;i<=k;i++){ p=x[i]+0; q=y[i]+0; if(p>q) exit 0; if(p<q) exit 1 }
+    exit 1
+  }'
+}
+
+# 从候选版本列表中取最大值
+ver_max() {
+  best=""
+  while IFS= read -r v; do
+    [ -n "$v" ] || continue
+    if [ -z "$best" ]; then best=$v; continue; fi
+    if ver_gt "$v" "$best"; then best=$v; fi
+  done
+  printf '%s' "$best"
+}
+
+fetch_url() { # fetch_url <url> -> 打印内容
+  if command -v curl >/dev/null 2>&1; then
+    curl -fsSL --max-time 20 "$1"
+  elif command -v wget >/dev/null 2>&1; then
+    wget -qO- --timeout=20 "$1"
+  else
+    die "需要 curl 或 wget 才能联网获取（可改用本地 --source 目录）"
+  fi
+}
+
+download_file() { # download_file <url> <dest>
+  if command -v curl >/dev/null 2>&1; then
+    curl -fsSL --max-time 300 -o "$2" "$1"
+  elif command -v wget >/dev/null 2>&1; then
+    wget -qO "$2" --timeout=300 "$1"
+  else
+    die "需要 curl 或 wget 才能下载"
+  fi
+}
+
+render_tpl() { # render_tpl <模板> <输出>
+  tpl=$1; out=$2
+  [ -f "$tpl" ] || die "找不到模板：$tpl"
+  ver=${VER_OVERRIDE:-$(current_version)}
+  [ -n "$ver" ] || ver=unknown
+  sed \
+    -e "s|@PREFIX@|$PREFIX|g" \
+    -e "s|@PORT@|$PORT|g" \
+    -e "s|@VERSION@|$ver|g" \
+    -e "s|@NGINX_BIN@|${NGINX_BIN:-/usr/sbin/nginx}|g" \
+    -e "s|@NGINX_USER@|$NGINX_USER|g" \
+    -e "s|@DOC_URL@|$DOC_URL|g" \
+    "$tpl" > "$out"
+}
+
+# 仅渲染模板，不做安装：供 CI / 容器验证 nginx 配置用
+cmd_render() {
+  # bundle 布局里 conf/ 与 bin/ 同级（bin/toolboxctl → conf/），因此是 ../conf
+  if [ -d "$SCRIPT_DIR/../conf" ]; then
+    TPL_DIR=$(CDPATH= cd -- "$SCRIPT_DIR/../conf" && pwd)
+  else
+    TPL_DIR="$SCRIPT_DIR/conf"
+  fi
+  OUT_DIR=""
+  while [ $# -gt 0 ]; do
+    case $1 in
+      --tpl-dir=*) TPL_DIR=$(opt_inline "$1") ;;
+      --tpl-dir) shift; TPL_DIR=${1:-} ;;
+      --out=*) OUT_DIR=$(opt_inline "$1") ;;
+      --out) shift; OUT_DIR=${1:-} ;;
+      --prefix=*) PREFIX=$(opt_inline "$1") ;;
+      --prefix) shift; PREFIX=${1:-} ;;
+      --port=*) PORT=$(opt_inline "$1") ;;
+      --port) shift; PORT=${1:-} ;;
+      --nginx-user=*) NGINX_USER=$(opt_inline "$1") ;;
+      --nginx-user) shift; NGINX_USER=${1:-} ;;
+      --version=*) VER_OVERRIDE=$(opt_inline "$1") ;;
+      --version) shift; VER_OVERRIDE=${1:-} ;;
+      -h|--help) usage; exit 0 ;;
+      *) usage_err "未知参数：$1" ;;
+    esac
+    shift
+  done
+  [ -d "$TPL_DIR" ] || die "模板目录不存在：$TPL_DIR"
+  [ -n "$OUT_DIR" ] || OUT_DIR="$PREFIX/shared"
+  VER_OVERRIDE=${VER_OVERRIDE:-}
+  detect_nginx || warn "本机未找到 nginx，渲染出的配置将由目标机的 nginx 使用"
+  mkdir -p "$OUT_DIR" "$PREFIX/run" "$PREFIX/logs"
+  render_tpl "$TPL_DIR/nginx.conf.tpl" "$OUT_DIR/nginx.conf"
+  render_tpl "$TPL_DIR/toolbox.service.tpl" "$OUT_DIR/$UNIT_NAME"
+  # 渲染后的 MIME 表需要与配置同源可寻（@PREFIX@/current/conf 由调用方准备）
+  if [ -n "${NGINX_BIN:-}" ]; then
+    if "$NGINX_BIN" -t -c "$OUT_DIR/nginx.conf" >/dev/null 2>&1; then
+      info "nginx 配置语法校验通过"
+    else
+      "$NGINX_BIN" -t -c "$OUT_DIR/nginx.conf" 2>&1 | tail -8 >&2
+      die "nginx 配置语法校验失败"
+    fi
+  fi
+  info "已渲染：$OUT_DIR/nginx.conf"
+  info "已渲染：$OUT_DIR/$UNIT_NAME"
+}
+
+render_configs() {
+  mkdir -p "$PREFIX/shared" "$PREFIX/run" "$PREFIX/logs"
+  render_tpl "$PREFIX/current/conf/nginx.conf.tpl" "$PREFIX/shared/nginx.conf"
+  render_tpl "$PREFIX/current/conf/toolbox.service.tpl" "$PREFIX/shared/$UNIT_NAME"
+  mkdir -p "$(dirname "$UNIT_PATH")"
+  cp -f "$PREFIX/shared/$UNIT_NAME" "$UNIT_PATH"
+  # nginx 需要 pid 与临时目录可写；worker 降权后仍需读日志目录
+  chmod 755 "$PREFIX" "$PREFIX/releases" "$PREFIX/logs" "$PREFIX/run" 2>/dev/null || true
+  if [ "$NGINX_USER" != "nobody" ] && id -u "$NGINX_USER" >/dev/null 2>&1; then
+    chown -R "$NGINX_USER" "$PREFIX/logs" "$PREFIX/run" 2>/dev/null || true
+  fi
+}
+
+ensure_user() {
+  [ "$NGINX_USER" = "nobody" ] && return 0
+  if id -u "$NGINX_USER" >/dev/null 2>&1; then return 0; fi
+  info "创建系统用户 $NGINX_USER（nginx worker 降权运行）"
+  if command -v useradd >/dev/null 2>&1; then
+    useradd --system --no-create-home --shell /usr/sbin/nologin "$NGINX_USER" 2>/dev/null \
+      || useradd -r -M -s /sbin/nologin "$NGINX_USER" 2>/dev/null \
+      || { warn "创建用户失败，改用 nobody 运行"; NGINX_USER=nobody; return 0; }
+  else
+    warn "无 useradd，改用 nobody 运行"
+    NGINX_USER=nobody
+  fi
+}
+
+# 校验 bundle 内的 checksums.txt（相对路径），返回非 0 表示损坏
+# 注：不用 GNU 独有的 --quiet——busybox 的 sha256sum 不认，会误判为校验失败。
+verify_checksums() {
+  dir=$1
+  if [ ! -f "$dir/checksums.txt" ]; then
+    warn "bundle 内无 checksums.txt，跳过文件级校验"
+    return 0
+  fi
+  if ( cd "$dir" && sha256sum -c checksums.txt ) >/dev/null 2>&1; then
+    return 0
+  fi
+  warn "以下文件校验不通过："
+  ( cd "$dir" && sha256sum -c checksums.txt ) 2>&1 | grep -v ': OK$' | head -10 >&2 || true
+  return 1
+}
+
+probe_health() { # 单次探测 /healthz，打印响应体（空 = 无响应）
+  if command -v curl >/dev/null 2>&1; then
+    curl -fsS --max-time 3 "http://127.0.0.1:${PORT}/healthz" 2>/dev/null || true
+  elif command -v wget >/dev/null 2>&1; then
+    wget -qO- --timeout=3 "http://127.0.0.1:${PORT}/healthz" 2>/dev/null || true
+  fi
+}
+
+# 只要服务有响应即视为存活（安装/状态展示用）
+health_check() {
+  i=0
+  while [ "$i" -lt 20 ]; do
+    body=$(probe_health)
+    if [ -n "$body" ]; then printf '%s' "$body"; return 0; fi
+    i=$((i + 1))
+    sleep 0.5
+  done
+  return 1
+}
+
+# 轮询到「期望版本」才算成功。
+#
+# 为什么不能只探一次：`systemctl reload` 只是把 HUP 交给 nginx master，
+# master 是**异步**重读配置的；在此之前旧 worker 仍在服务，而 /healthz 里的
+# 版本串是渲染期写死的（见 nginx.conf.tpl），于是会读到旧版本。
+# 只探一次就把结论当真，会把「已经切换成功但还没来得及重载」误判为失败并回滚。
+health_wait_version() {
+  want=$1
+  limit=${2:-40}   # 单位 0.25s → 默认 10s
+  i=0
+  body=""
+  while [ "$i" -lt "$limit" ]; do
+    body=$(probe_health)
+    if [ "$(strip_eol "$body")" = "ok v$want" ]; then
+      printf '%s' "$body"
+      return 0
+    fi
+    i=$((i + 1))
+    sleep 0.25
+  done
+  printf '%s' "$body"
+  return 1
+}
+
+local_ip() {
+  ip=$(hostname -I 2>/dev/null | awk '{print $1}')
+  [ -n "$ip" ] || ip=$(hostname -i 2>/dev/null | awk '{print $1}')
+  [ -n "$ip" ] || ip=127.0.0.1
+  printf '%s' "$ip"
+}
+
+nginx_conf_test() {
+  [ -n "${NGINX_BIN:-}" ] || return 0
+  "$NGINX_BIN" -t -c "$PREFIX/shared/nginx.conf" >/dev/null 2>&1
+}
+
+# ============================================================================
+# 1. 安装
+# ============================================================================
+
+install_nginx_deps() {
+  need_root
+  command -v apt-get >/dev/null 2>&1 \
+    || die "自动安装依赖仅支持 apt 系统；请手动安装 nginx 后重试（或去掉 --install-deps）"
+  step "安装依赖 nginx（apt）"
+  DEBIAN_FRONTEND=noninteractive apt-get update -qq || die "apt-get update 失败（检查网络与 apt 源）"
+  DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends nginx \
+    || die "apt-get install nginx 失败"
+  # 系统 nginx 默认自启并占用 80；本站用独立实例，不读 /etc/nginx，
+  # 因此把系统服务停用以免端口与语义冲突（不动它的配置文件，可随时再启用）。
+  if systemctl is-enabled nginx >/dev/null 2>&1 || systemctl is-active nginx >/dev/null 2>&1; then
+    warn "检测到系统 nginx.service：已停用（本站点使用独立实例，不需要它）"
+    systemctl disable --now nginx >/dev/null 2>&1 || true
+  fi
+  mkdir -p "$PREFIX/shared/state"
+  : > "$PREFIX/shared/state/nginx-installed-by-us"
+  detect_nginx || die "安装完成但未找到 nginx 可执行文件"
+  info "nginx 就绪：$NGINX_BIN（$("$NGINX_BIN" -v 2>&1)）"
+}
+
+# 把 --from 指向的东西落到一个临时目录，并把该目录路径写入 BUNDLE_DIR
+resolve_source() {
+  src=$1
+  work=$2
+  case $src in
+    http://*|https://*)
+      info "下载 bundle：$src"
+      download_file "$src" "$work/pkg.tar.gz"
+      # 若有 .sha256 伴生文件，先校验整包
+      if download_file "$src.sha256" "$work/pkg.sha256" 2>/dev/null; then
+        ( cd "$work" && mv pkg.tar.gz pkg.tar.gz.bak && mv pkg.tar.gz.bak pkg.tar.gz )
+        want=$(awk '{print $1}' "$work/pkg.sha256")
+        got=$(sha256sum "$work/pkg.tar.gz" | awk '{print $1}')
+        [ "$want" = "$got" ] || die "bundle 整包校验失败（期望 $want，实际 $got）"
+        info "整包 sha256 校验通过"
+      else
+        warn "未取到 .sha256 伴生文件，跳过整包校验（仍会做文件级校验）"
+      fi
+      mkdir -p "$work/extract"
+      tar -xzf "$work/pkg.tar.gz" -C "$work/extract" || die "解包失败"
+      find_bundle_root "$work/extract"
+      ;;
+    *.tar.gz|*.tgz)
+      [ -f "$src" ] || die "找不到文件：$src"
+      if [ -f "$src.sha256" ]; then
+        want=$(awk '{print $1}' "$src.sha256")
+        got=$(sha256sum "$src" | awk '{print $1}')
+        [ "$want" = "$got" ] || die "bundle 整包校验失败"
+        info "整包 sha256 校验通过"
+      fi
+      mkdir -p "$work/extract"
+      tar -xzf "$src" -C "$work/extract" || die "解包失败"
+      find_bundle_root "$work/extract"
+      ;;
+    *)
+      [ -d "$src" ] || die "--from 需要是 tar.gz 文件 / 目录 / URL，实际：$src"
+      if [ -f "$src/manifest.json" ] && [ -d "$src/app" ]; then
+        BUNDLE_DIR=$(CDPATH= cd -- "$src" && pwd)
+      else
+        # 目录里挑最新版本的 bundle 包
+        f=$(ls -1 "$src"/${REPO_NAME}-*-linux-*.tar.gz 2>/dev/null | sort | tail -1)
+        [ -n "$f" ] || die "目录 $src 内既不是解包后的 bundle，也没有 ${REPO_NAME}-*.tar.gz"
+        info "使用目录内最新包：${f##*/}"
+        mkdir -p "$work/extract"
+        tar -xzf "$f" -C "$work/extract" || die "解包失败"
+        find_bundle_root "$work/extract"
+      fi
+      ;;
+  esac
+}
+
+# 解包后定位 bundle 根（兼容 tar 内多一层目录的打包方式）
+find_bundle_root() {
+  base=$1
+  if [ -f "$base/manifest.json" ] && [ -d "$base/app" ]; then
+    BUNDLE_DIR=$base
+    return 0
+  fi
+  for d in "$base"/*; do
+    [ -d "$d" ] || continue
+    if [ -f "$d/manifest.json" ] && [ -d "$d/app" ]; then
+      BUNDLE_DIR=$d
+      return 0
+    fi
+  done
+  die "解包内容不合法：未找到 manifest.json 与 app/（不是本项目的 bundle？）"
+}
+
+cmd_install() {
+  SRC=""
+  DO_START=1
+  INSTALL_DEPS=0
+  FORCE=0
+  while [ $# -gt 0 ]; do
+    case $1 in
+      --from=*) SRC=$(opt_inline "$1") ;;
+      --from) shift; SRC=${1:-} ;;
+      --port=*) PORT=$(opt_inline "$1") ;;
+      --port) shift; PORT=${1:-} ;;
+      --prefix=*) PREFIX=$(opt_inline "$1") ;;
+      --prefix) shift; PREFIX=${1:-} ;;
+      --nginx-user=*) NGINX_USER=$(opt_inline "$1") ;;
+      --nginx-user) shift; NGINX_USER=${1:-} ;;
+      --install-deps) INSTALL_DEPS=1 ;;
+      --no-start) DO_START=0 ;;
+      --force) FORCE=1 ;;
+      -h|--help) usage; exit 0 ;;
+      *) usage_err "未知参数：$1" ;;
+    esac
+    shift
+  done
+
+  need_root
+  need_systemd
+
+  case $PORT in
+    ''|*[!0-9]*) die "--port 必须是数字，实际：$PORT" ;;
+  esac
+
+  step "前置检查"
+  mkdir -p "$PREFIX/releases" "$PREFIX/shared" "$PREFIX/run" "$PREFIX/logs"
+
+  if ! detect_nginx; then
+    if [ "$INSTALL_DEPS" = "1" ]; then
+      install_nginx_deps
+    else
+      die "未找到 nginx。请先安装（apt-get install -y nginx），或加 --install-deps 让本工具代装。"
+    fi
+  else
+    info "nginx：$NGINX_BIN（$("$NGINX_BIN" -v 2>&1)）"
+  fi
+
+  # 端口占用检查
+  # 注意不能「看到 nginx 就放行」——那样别的项目的 nginx（或本项目的僵尸实例）
+  # 会被误认为可复用，随后新实例因 bind 失败而反复重启。只在「本服务已安装且
+  # 正在运行」时才认为是自己的占用。
+  if command -v ss >/dev/null 2>&1; then
+    holder=$(ss -lntp 2>/dev/null | awk -v p=":$PORT" '$4 ~ p {print $NF}' | head -1)
+    if [ -n "$holder" ]; then
+      if svc_installed && [ "$(svc_state)" = "active" ]; then
+        info "端口 $PORT 当前由本服务的 nginx 占用，稍后重启复用"
+      else
+        die "端口 $PORT 已被占用：$holder
+  用 --port 换端口，或先释放该端口（这不是本服务在监听）。"
+      fi
+    else
+      info "端口 $PORT 空闲"
+    fi
+  fi
+
+  step "准备 bundle"
+  WORK=$(mktemp -d "${TMPDIR:-/tmp}/toolboxctl.XXXXXX")
+  BUNDLE_DIR=""
+  trap 'rm -rf "$WORK"' EXIT INT TERM
+
+  if [ -z "$SRC" ]; then
+    if [ -f "$SCRIPT_DIR/manifest.json" ] && [ -d "$SCRIPT_DIR/app" ]; then
+      BUNDLE_DIR=$SCRIPT_DIR
+      info "使用脚本所在目录作为 bundle：$BUNDLE_DIR"
+    else
+      die "未指定 --from，且脚本不在解包后的 bundle 目录内"
+    fi
+  else
+    resolve_source "$SRC" "$WORK"
+  fi
+
+  VER=$(cat "$BUNDLE_DIR/VERSION" 2>/dev/null | tr -d ' \t\r\n')
+  [ -n "$VER" ] || die "bundle 缺少 VERSION 文件"
+
+  if [ "$FORCE" != "1" ] && [ -d "$PREFIX/releases/$VER" ]; then
+    die "版本 $VER 已存在。加 --force 覆盖安装，或直接 upgrade。"
+  fi
+
+  step "校验完整性"
+  if ! verify_checksums "$BUNDLE_DIR"; then
+    die "文件级校验失败，bundle 可能损坏或被篡改"
+  fi
+  info "校验通过"
+
+  step "安装版本 $VER"
+  DEST="$PREFIX/releases/$VER"
+  rm -rf "$DEST"
+  mkdir -p "$DEST"
+  # 用 cp -a 保留权限；排除正在写入的临时文件
+  ( cd "$BUNDLE_DIR" && cp -a . "$DEST/" )
+  chmod +x "$DEST/bin/toolboxctl" 2>/dev/null || true
+  [ -d "$DEST/app" ] || die "bundle 缺少 app/ 目录"
+
+  step "切换 current 软链"
+  # 先建临时链接再原子 rename，避免出现「指向不存在版本」的窗口
+  ln -sfn "releases/$VER" "$PREFIX/current.tmp.$$"
+  mv -Tf "$PREFIX/current.tmp.$$" "$PREFIX/current" 2>/dev/null \
+    || mv -f "$PREFIX/current.tmp.$$" "$PREFIX/current"
+  info "current -> releases/$VER"
+
+  step "渲染配置"
+  ensure_user
+  detect_nginx
+  render_configs
+  nginx_conf_test || { "$NGINX_BIN" -t -c "$PREFIX/shared/nginx.conf" 2>&1 | tail -5; die "nginx 配置校验失败"; }
+  info "nginx 配置校验通过"
+
+  # 记录上一个版本，供 upgrade 失败回滚 / rollback 使用
+  mkdir -p "$PREFIX/shared/state"
+  printf '%s\n' "$VER" > "$PREFIX/shared/state/installed"
+
+  step "安装服务单元与 CLI"
+  ln -sfn "$PREFIX/current/bin/toolboxctl" "$CLI_LINK" 2>/dev/null || warn "创建 $CLI_LINK 失败（不影响服务运行）"
+
+  LOADED_FROM=$(printf '%s' "${SRC:-$BUNDLE_DIR}" | sed 's|.*/||')
+  save_conf
+  info "配置写入 $CONF_FILE"
+
+  if [ "$DO_START" = "1" ]; then
+    step "启动服务"
+    systemctl daemon-reload
+    systemctl enable --quiet "$UNIT_NAME" >/dev/null 2>&1 || true
+    systemctl restart "$UNIT_NAME"
+    sleep 0.3
+    if body=$(health_wait_version "$VER" 60); then
+      info "健康检查通过：$body（已确认运行版本 v$VER）"
+    else
+      warn "健康检查未通过，最近日志："
+      journalctl -u "$UNIT_NAME" -n 20 --no-pager 2>/dev/null | tail -20 >&2 || true
+      die "启动失败"
+    fi
+  else
+    info "已跳过启动（--no-start）"
+  fi
+
+  say ""
+  say "安装完成 ✅"
+  say "  版本    : $VER"
+  say "  目录    : $PREFIX（current -> releases/$VER）"
+  say "  服务    : $UNIT_NAME（systemctl status $UNIT_NAME）"
+  say "  访问    : http://$(local_ip):$PORT/"
+  say "  命令行  : $CLI_LINK"
+  say "  来源包  : $LOADED_FROM"
+}
+
+# ============================================================================
+# 2. 卸载
+# ============================================================================
+
+cmd_uninstall() {
+  PURGE=0
+  PURGE_DEPS=0
+  KEEP_USER=0
+  while [ $# -gt 0 ]; do
+    case $1 in
+      --purge) PURGE=1 ;;
+      --purge-deps) PURGE=1; PURGE_DEPS=1 ;;
+      --keep-user) KEEP_USER=1 ;;
+      -h|--help) usage; exit 0 ;;
+      *) usage_err "未知参数：$1" ;;
+    esac
+    shift
+  done
+
+  need_root
+  load_conf
+  VER=$(current_version)
+
+  step "停止并禁用服务"
+  if svc_installed; then
+    systemctl disable --now "$UNIT_NAME" >/dev/null 2>&1 || systemctl stop "$UNIT_NAME" >/dev/null 2>&1 || true
+    info "服务已停止"
+  else
+    info "未发现服务单元，跳过"
+  fi
+
+  step "移除服务单元"
+  if [ -f "$UNIT_PATH" ]; then
+    rm -f "$UNIT_PATH"
+    systemctl daemon-reload 2>/dev/null || true
+    systemctl reset-failed "$UNIT_NAME" >/dev/null 2>&1 || true
+    info "已删除 $UNIT_PATH"
+  fi
+
+  step "移除 CLI 软链"
+  if [ -L "$CLI_LINK" ]; then
+    rm -f "$CLI_LINK" && info "已删除 $CLI_LINK"
+  fi
+
+  step "移除版本与 current"
+  rm -f "$PREFIX/current"
+  if [ -d "$PREFIX/releases" ]; then
+    rm -rf "$PREFIX/releases"
+    info "已删除 $PREFIX/releases"
+  fi
+  rm -rf "$PREFIX/run"
+
+  if [ "$PURGE" = "1" ]; then
+    step "彻底清理（--purge）"
+    rm -rf "$PREFIX"
+    rm -f "$CONF_FILE"
+    rmdir /etc/toolbox 2>/dev/null || true
+    info "已删除 $PREFIX 与 $CONF_FILE"
+    if [ "$KEEP_USER" != "1" ] && id -u "$NGINX_USER" >/dev/null 2>&1; then
+      if command -v userdel >/dev/null 2>&1; then
+        userdel "$NGINX_USER" 2>/dev/null && info "已删除用户 $NGINX_USER" || warn "删除用户 $NGINX_USER 失败（可能有残留进程）"
+      fi
+    fi
+  else
+    step "保留内容"
+    info "配置保留   : $CONF_FILE"
+    info "目录保留   : $PREFIX（logs / shared，便于重装或排查）"
+    info "彻底清理    : toolboxctl uninstall --purge"
+  fi
+
+  if [ "$PURGE_DEPS" = "1" ] && [ -f "$PREFIX/shared/state/nginx-installed-by-us" ]; then
+    step "卸载依赖 nginx（--purge-deps）"
+    warn "nginx 由本工具安装，现一并卸载——若机器上另有站点依赖它，请改用手动处理"
+    DEBIAN_FRONTEND=noninteractive apt-get remove -y -qq nginx nginx-common 2>/dev/null \
+      || warn "apt-get remove nginx 失败，请手动处理"
+  fi
+
+  say ""
+  say "卸载完成 ✅（版本 ${VER:-未知}）"
+}
+
+# ============================================================================
+# 3. 日常运维
+# ============================================================================
+
+cmd_status() {
+  load_conf
+  VER=$(current_version)
+  echo "服务名称 : $SERVICE_NAME（$UNIT_NAME）"
+  if svc_installed; then
+    printf '服务状态 : %s\n' "$(svc_state)"
+  else
+    printf '服务状态 : 未安装\n'
+  fi
+  printf '已装版本 : %s\n' "${VER:-无}"
+  printf '安装目录 : %s\n' "$PREFIX"
+  printf '监听端口 : %s\n' "$PORT"
+  printf '运行用户 : %s（worker）\n' "$NGINX_USER"
+  if [ -n "$VER" ]; then
+    printf '访问地址 : http://%s:%s/\n' "$(local_ip)" "$PORT"
+  fi
+  if [ -n "$VER" ] && [ -x "${NGINX_BIN:-/nonexistent}" ] && [ -f "$PREFIX/shared/nginx.conf" ]; then
+    if body=$(health_check); then
+      hv=$(strip_eol "$body")
+      printf '健康检查 : 通过（%s）\n' "$hv"
+      if [ "$hv" = "ok v$VER" ]; then
+        printf '版本一致 : ✓ 服务端运行的正是 current 指向的 %s\n' "$VER"
+      else
+        printf '版本一致 : ✗ 服务端报告 %s，current 却指向 %s（可能尚未重载，试 %s reload）\n' \
+          "$hv" "$VER" "$PROG"
+      fi
+    else
+      printf '健康检查 : 失败（服务未响应 http://127.0.0.1:%s/healthz）\n' "$PORT"
+    fi
+  fi
+  printf '已装版本集 : %s\n' "$(ls -1 "$PREFIX/releases" 2>/dev/null | tr '\n' ' ')"
+}
+
+cmd_ctl() { # start|stop|restart|reload
+  action=$1
+  load_conf
+  need_root
+  svc_installed || die "未安装（$UNIT_PATH 不存在），先运行 install"
+  cv=$(current_version)
+  step "systemctl $action $UNIT_NAME"
+  systemctl "$action" "$UNIT_NAME"
+  case $action in
+    start|restart)
+      if [ -n "$cv" ]; then
+        if body=$(health_wait_version "$cv" 60); then
+          info "健康检查通过：$body（运行版本 v$cv）"
+        else
+          die "服务未在 15s 内确认版本 v$cv（当前响应：${body:-无响应}），看日志：$PROG logs"
+        fi
+      elif body=$(health_check); then
+        info "健康检查通过：$body"
+      else
+        die "服务未通过健康检查，看日志：$PROG logs"
+      fi
+      ;;
+    reload)
+      # reload 只对「当前已就绪」实例做配置重载；若刚做过版本切换，需要等一下才生效
+      if [ -n "$cv" ] && health_wait_version "$cv" 20 >/dev/null; then
+        info "重载后已确认运行版本 v$cv"
+      else
+        warn "重载后未确认运行版本（可能尚未生效，稍后可用 $PROG status 复查）"
+      fi
+      ;;
+  esac
+  info "完成"
+}
+
+cmd_health() {
+  load_conf
+  cv=$(current_version)
+  [ -n "$cv" ] || die "未安装"
+  if body=$(health_wait_version "$cv" 20); then
+    info "健康：$body（运行版本 v$cv，与 current 一致）"
+    info "地址：http://$(local_ip):$PORT/healthz"
+  else
+    die "健康检查失败：期望 v$cv，实际响应 ${body:-无响应}（试 $PROG logs 排查）"
+  fi
+}
+
+cmd_logs() {
+  LINES=50
+  FOLLOW=0
+  while [ $# -gt 0 ]; do
+    case $1 in
+      -n=*) LINES=$(opt_inline "$1") ;;
+      -n) shift; LINES=${1:-50} ;;
+      -f|--follow) FOLLOW=1 ;;
+      *) usage_err "未知参数：$1" ;;
+    esac
+    shift
+  done
+  load_conf
+  step "服务日志（journal，最近 $LINES 行）"
+  if has_systemctl; then
+    journalctl -u "$UNIT_NAME" -n "$LINES" --no-pager 2>/dev/null || true
+  fi
+  if [ -f "$PREFIX/logs/error.log" ]; then
+    step "nginx 错误日志（末尾 $LINES 行）"
+    tail -n "$LINES" "$PREFIX/logs/error.log"
+  fi
+  if [ "$FOLLOW" = "1" ]; then
+    step "持续跟踪（Ctrl+C 退出）"
+    tail -n 0 -f "$PREFIX/logs/error.log" "$PREFIX/logs/access.log" 2>/dev/null || true
+  else
+    if [ -f "$PREFIX/logs/access.log" ]; then
+      step "nginx 访问日志（末尾 10 行）"
+      tail -n 10 "$PREFIX/logs/access.log"
+    fi
+  fi
+}
+
+cmd_config() {
+  load_conf
+  say "# 配置文件 $CONF_FILE"
+  if [ -f "$CONF_FILE" ]; then cat "$CONF_FILE"; else say "(不存在，使用内置默认值)"; fi
+  say ""
+  say "# 渲染后的 nginx 主配置 $PREFIX/shared/nginx.conf"
+  [ -f "$PREFIX/shared/nginx.conf" ] && cat "$PREFIX/shared/nginx.conf" || say "(未生成)"
+}
+
+cmd_list() {
+  load_conf
+  cur=$(current_version)
+  step "已安装版本（$PREFIX/releases）"
+  found=0
+  for v in $(list_release_versions); do
+    found=1
+    mark="  "
+    [ "$v" = "$cur" ] && mark="* "
+    size=$(du -sh "$PREFIX/releases/$v" 2>/dev/null | awk '{print $1}')
+    printf '%s%-12s %s\n' "$mark" "$v" "${size:-?}"
+  done
+  [ "$found" = "1" ] || say "（无）"
+  say ""
+  say "当前版本：${cur:-无}（* 标记）"
+}
+
+cmd_backup() {
+  OUT=/var/backups/toolbox
+  while [ $# -gt 0 ]; do
+    case $1 in
+      --output=*) OUT=$(opt_inline "$1") ;;
+      --output) shift; OUT=${1:-} ;;
+      *) usage_err "未知参数：$1" ;;
+    esac
+    shift
+  done
+  load_conf
+  need_root
+  [ -n "$(current_version)" ] || die "未安装，无可备份内容"
+  mkdir -p "$OUT"
+  TS=$(date +%Y%m%d-%H%M%S 2>/dev/null || date +%s)
+  ARCHIVE="$OUT/toolbox-backup-$TS.tar.gz"
+  step "备份配置与状态 → $ARCHIVE"
+  TMP=$(mktemp -d)
+  mkdir -p "$TMP/toolbox"
+  [ -f "$CONF_FILE" ] && cp -a "$CONF_FILE" "$TMP/toolbox/" || true
+  [ -d "$PREFIX/shared" ] && cp -a "$PREFIX/shared" "$TMP/toolbox/" || true
+  {
+    printf 'version=%s\n' "$(current_version)"
+    printf 'prefix=%s\nport=%s\n' "$PREFIX" "$PORT"
+    printf 'releases=%s\n' "$(list_release_versions | tr '\n' ' ')"
+    printf 'created=%s\n' "$(date -Is 2>/dev/null || date)"
+  } > "$TMP/toolbox/manifest.txt"
+  ( cd "$TMP" && tar -czf "$ARCHIVE" toolbox )
+  rm -rf "$TMP"
+  info "备份完成：$ARCHIVE（$(du -h "$ARCHIVE" | awk '{print $1}')）"
+}
+
+cmd_doctor() {
+  load_conf
+  step "环境自检"
+  rc=0
+  chk() { # chk <描述> <0/1 是否通过> [补充]
+    if [ "$2" = "1" ]; then printf '  [✓] %s %s\n' "$1" "${3:-}"
+    else printf '  [✗] %s %s\n' "$1" "${3:-}"; rc=1; fi
+  }
+  [ "$(id -u)" = "0" ] && chk "以 root 运行" 1 || chk "以 root 运行" 0 "（安装/管理服务需要 root）"
+  [ -d /run/systemd/system ] && chk "systemd 可用" 1 || chk "systemd 可用" 0 "（无 systemd 无法以服务方式管理）"
+
+  if detect_nginx; then chk "nginx 可执行文件" 1 "$NGINX_BIN $("$NGINX_BIN" -v 2>&1 | sed 's/nginx version: //')"
+  else chk "nginx 可执行文件" 0 "（未安装，可用 install --install-deps）"; fi
+
+  for c in tar gzip sha256sum awk sed; do
+    if command -v "$c" >/dev/null 2>&1; then chk "命令 $c" 1; else chk "命令 $c" 0 "（必需）"; fi
+  done
+  if command -v curl >/dev/null 2>&1 || command -v wget >/dev/null 2>&1; then
+    chk "HTTP 客户端（curl/wget）" 1
+  else
+    chk "HTTP 客户端（curl/wget）" 0 "（在线升级需要）"
+  fi
+
+  if [ -d "$PREFIX" ]; then
+    chk "安装目录可写 $PREFIX" 1 || true
+  else
+    chk "安装目录父级可写 $(dirname "$PREFIX")" 1
+  fi
+
+  free_kb=$(df -Pk "$(dirname "$PREFIX")" 2>/dev/null | awk 'NR==2{print $4}')
+  if [ -n "${free_kb:-}" ] && [ "$free_kb" -gt 204800 ]; then
+    chk "磁盘空间" 1 "$(awk -v k="$free_kb" 'BEGIN{printf "%.1fGB 可用", k/1048576}')"
+  else
+    chk "磁盘空间" 0 "${free_kb:-?}KB 可用（建议 >200MB）"
+  fi
+
+  if command -v ss >/dev/null 2>&1; then
+    holder=$(ss -lntp 2>/dev/null | awk -v p=":$PORT" '$4 ~ p {print $NF}' | head -1)
+    if [ -z "$holder" ]; then chk "端口 $PORT 空闲" 1
+    else
+      case $holder in
+        *nginx*) chk "端口 $PORT" 1 "已被 nginx 占用（可能是本站实例）$holder" ;;
+        *) chk "端口 $PORT 空闲" 0 "被占用：$holder" ;;
+      esac
+    fi
+  fi
+
+  if svc_installed; then chk "服务单元已安装" 1 "$UNIT_PATH"; else chk "服务单元已安装" 0 "（尚未 install）"; fi
+
+  if [ -n "$(current_version)" ]; then
+    if nginx_conf_test; then chk "nginx 配置语法" 1; else chk "nginx 配置语法" 0 "（跑 $PROG config 查看）"; fi
+    cv=$(current_version)
+    if body=$(health_wait_version "$cv" 20); then
+      chk "健康检查（服务端版本与 current 一致）" 1 "$body"
+    else
+      chk "健康检查（服务端版本与 current 一致）" 0 "期望 v$cv，实际响应 ${body:-无}"
+    fi
+  fi
+
+  if [ -n "${UPDATE_SOURCE:-}" ]; then
+    chk "升级源已配置" 1 "$UPDATE_SOURCE"
+  else
+    chk "升级源已配置" 0 "（在线升级需设置 UPDATE_SOURCE 或用 --source）"
+  fi
+
+  say ""
+  if [ "$rc" = "0" ]; then info "自检通过：环境满足部署条件 ✅"; else warn "自检发现未通过项（标 ✗），请先处理"; fi
+  return "$rc"
+}
+
+cmd_version() {
+  load_conf
+  # VERSION 在 bundle 根，与 bin/ 同级
+  cli_ver=$(cat "$SCRIPT_DIR/../VERSION" 2>/dev/null | tr -d ' \t\r\n')
+  [ -n "$cli_ver" ] || cli_ver=$(cat "$SCRIPT_DIR/VERSION" 2>/dev/null | tr -d ' \t\r\n')
+  say "$PROG（Toolbox 部署管理 CLI）"
+  say "  CLI 版本   : ${cli_ver:-unknown}"
+  say "  已装版本   : $(current_version 2>/dev/null || echo 无)"
+  say "  安装目录   : $PREFIX"
+}
+
+# ============================================================================
+# 4. 在线升级
+# ============================================================================
+
+# 解析升级源，输出「最新可用版本」；同时把 SOURCE_KIND/本地路径 写入全局
+resolve_update_source() {
+  src=$1
+  [ -n "$src" ] || die "未配置升级源：请在 $CONF_FILE 设置 UPDATE_SOURCE，或用 --source 指定"
+  case $src in
+    http://*|https://*)
+      SOURCE_KIND=url
+      base=${src%/}
+      v=$(fetch_url "$base/latest.txt" 2>/dev/null | tr -d ' \t\r\n') || true
+      if [ -z "$v" ]; then
+        # 退而求其次：从目录列表里挑最高版本
+        v=$(fetch_url "$base/" 2>/dev/null \
+              | sed -n "s|.*${REPO_NAME}-\([0-9][^\"<>]*\)-linux-[a-z0-9]*\.tar\.gz.*|\1|p" \
+              | sort -u | ver_max)
+      fi
+      [ -n "$v" ] || die "无法从 $base 解析可用版本（缺 latest.txt 且无包列表）"
+      printf '%s' "$v"
+      ;;
+    *)
+      [ -d "$src" ] || die "升级源目录不存在：$src"
+      SOURCE_KIND=dir
+      if [ -f "$src/latest.txt" ]; then
+        v=$(tr -d ' \t\r\n' < "$src/latest.txt")
+      else
+        v=$(ls -1 "$src"/${REPO_NAME}-*-linux-*.tar.gz 2>/dev/null \
+              | sed -n "s|.*${REPO_NAME}-\(.*\)-linux-.*\.tar\.gz|\1|p" | ver_max)
+      fi
+      [ -n "$v" ] || die "目录 $src 内没有可用的 bundle 包"
+      printf '%s' "$v"
+      ;;
+  esac
+}
+
+# 取（下载）指定版本，落到 $WORK/extract，并设置 BUNDLE_DIR
+fetch_release() {
+  want=$1
+  src=$2
+  WORK=$3
+  case $src in
+    http://*|https://*)
+      base=${src%/}
+      name="${REPO_NAME}-${want}-linux-$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz"
+      url="$base/$name"
+      info "下载 $url"
+      download_file "$url" "$WORK/pkg.tar.gz" || die "下载失败：$url"
+      if download_file "$url.sha256" "$WORK/pkg.sha256" 2>/dev/null; then
+        want_sum=$(awk '{print $1}' "$WORK/pkg.sha256")
+        got_sum=$(sha256sum "$WORK/pkg.tar.gz" | awk '{print $1}')
+        if [ "$want_sum" != "$got_sum" ]; then
+          die "整包 sha256 校验失败（期望 $want_sum，实际 $got_sum）——已中止升级"
+        fi
+        info "整包 sha256 校验通过"
+      else
+        warn "无 .sha256 伴生文件，跳过整包校验"
+      fi
+      ;;
+    *)
+      f="$src/${REPO_NAME}-${want}-linux-"*".tar.gz"
+      set -- $f
+      [ -f "$1" ] || die "源目录内找不到版本 $want 的包"
+      info "使用本地包：${1##*/}"
+      cp -f "$1" "$WORK/pkg.tar.gz"
+      ;;
+  esac
+  mkdir -p "$WORK/extract"
+  tar -xzf "$WORK/pkg.tar.gz" -C "$WORK/extract" || die "解包失败"
+  find_bundle_root "$WORK/extract"
+}
+
+cmd_check_update() {
+  SRC=""
+  while [ $# -gt 0 ]; do
+    case $1 in
+      --source=*) SRC=$(opt_inline "$1") ;;
+      --source) shift; SRC=${1:-} ;;
+      -h|--help) usage; exit 0 ;;
+      *) usage_err "未知参数：$1" ;;
+    esac
+    shift
+  done
+  load_conf
+  [ -n "$SRC" ] || SRC=${UPDATE_SOURCE:-}
+  cur=$(current_version)
+
+  step "查询升级源"
+  SOURCE_KIND=
+  latest=$(resolve_update_source "$SRC")
+  info "升级源       : $SRC（$SOURCE_KIND）"
+  info "当前版本     : ${cur:-未安装}"
+  info "源内最新版本 : $latest"
+  if [ -z "$cur" ]; then
+    say "→ 未安装，可直接 install 或 upgrade"
+    return 0
+  fi
+  if [ "$latest" = "$cur" ]; then
+    say "→ 已是最新 ✅"
+  elif ver_gt "$latest" "$cur"; then
+    say "→ 有新版本可升级：$cur → $latest"
+    say "  执行：$PROG upgrade --source $SRC"
+  else
+    say "→ 源内版本（$latest）低于当前（$cur），疑似回退源；如需降级用 rollback --to $latest"
+  fi
+}
+
+cmd_upgrade() {
+  SRC=""
+  TO=""
+  FORCE=0
+  NO_RELOAD=0
+  while [ $# -gt 0 ]; do
+    case $1 in
+      --source=*) SRC=$(opt_inline "$1") ;;
+      --source) shift; SRC=${1:-} ;;
+      --to=*) TO=$(opt_inline "$1") ;;
+      --to) shift; TO=${1:-} ;;
+      --force) FORCE=1 ;;
+      --no-reload) NO_RELOAD=1 ;;
+      -h|--help) usage; exit 0 ;;
+      *) usage_err "未知参数：$1" ;;
+    esac
+    shift
+  done
+
+  need_root
+  need_systemd
+  load_conf
+  svc_installed || die "尚未安装，请先 install"
+  detect_nginx || die "未找到 nginx，无法升级"
+  [ -n "$SRC" ] || SRC=${UPDATE_SOURCE:-}
+  [ -n "$SRC" ] || die "未指定升级源（--source 或配置 UPDATE_SOURCE）"
+
+  cur=$(current_version)
+  [ -n "$cur" ] || die "无法确定当前版本（$PREFIX/current 软链异常）"
+
+  step "确定目标版本"
+  SOURCE_KIND=
+  if [ -n "$TO" ]; then
+    target=$TO
+    info "目标版本由 --to 指定"
+  else
+    target=$(resolve_update_source "$SRC")
+  fi
+  info "当前 $cur → 目标 $target"
+
+  if [ "$target" = "$cur" ] && [ "$FORCE" != "1" ]; then
+    say "已是最新（$cur）。如需强制重装加 --force。"
+    return 0
+  fi
+
+  WORK=$(mktemp -d "${TMPDIR:-/tmp}/toolboxctl.up.XXXXXX")
+  trap 'rm -rf "$WORK"' EXIT INT TERM
+
+  step "获取并校验新版本"
+  BUNDLE_DIR=""
+  fetch_release "$target" "$SRC" "$WORK"
+  ver_gt_ok=0
+  ver=$(cat "$BUNDLE_DIR/VERSION" 2>/dev/null | tr -d ' \t\r\n')
+  [ -n "$ver" ] || die "bundle 缺少 VERSION"
+  [ "$ver" = "$target" ] || warn "包内版本（$ver）与目标版本（$target）不一致，以包内为准"
+  if ! verify_checksums "$BUNDLE_DIR"; then die "文件级校验失败，中止升级"; fi
+  info "校验通过（$ver）"
+
+  step "落盘到 releases/$ver"
+  DEST="$PREFIX/releases/$ver"
+  if [ -d "$DEST" ] && [ "$FORCE" != "1" ]; then
+    info "该版本已存在，直接复用（加 --force 可覆盖）"
+  else
+    rm -rf "$DEST.staging"
+    mkdir -p "$DEST.staging"
+    ( cd "$BUNDLE_DIR" && cp -a . "$DEST.staging/" )
+    chmod +x "$DEST.staging/bin/toolboxctl" 2>/dev/null || true
+    [ -d "$DEST.staging/app" ] || die "新版本缺少 app/ 目录"
+    rm -rf "$DEST"
+    mv "$DEST.staging" "$DEST"
+    info "新版本已就位：$DEST"
+  fi
+
+  step "切换 current 并重载"
+  printf '%s\n' "$cur" > "$PREFIX/shared/state/previous"
+  ln -sfn "releases/$ver" "$PREFIX/current.tmp.$$"
+  mv -Tf "$PREFIX/current.tmp.$$" "$PREFIX/current" 2>/dev/null \
+    || mv -f "$PREFIX/current.tmp.$$" "$PREFIX/current"
+  info "current -> releases/$ver"
+
+  # 用新版本的模板重新渲染配置（模板本身可能变了）
+  render_configs
+  if ! nginx_conf_test; then
+    warn "新配置语法校验失败，回滚"
+    rollback_to "$cur"
+    die "升级失败（配置语法错误），已回滚到 $cur"
+  fi
+
+  if [ "$NO_RELOAD" = "1" ]; then
+    info "已跳过重载（--no-reload）"
+    say ""
+    say "切换完成（未生效）：$cur → $ver，需要时手动执行 systemctl reload $UNIT_NAME"
+    return 0
+  fi
+
+  systemctl reload "$UNIT_NAME" 2>/dev/null || systemctl restart "$UNIT_NAME"
+
+  step "健康检查（轮询确认已切到新版本）"
+  if body=$(health_wait_version "$ver" 60); then
+    info "健康检查通过：$body（已确认运行版本 v$ver）"
+    printf '%s\n' "$ver" > "$PREFIX/shared/state/installed"
+    say ""
+    say "升级完成 ✅  $cur → $ver"
+    say "  访问  : http://$(local_ip):$PORT/"
+    say "  回滚  : $PROG rollback"
+  else
+    warn "切换到 v$ver 后 15s 内未确认目标版本（当前响应：${body:-无响应}），自动回滚到 $cur"
+    rollback_to "$cur"
+    die "升级失败，已回滚到 $cur（排查：$PROG logs）"
+  fi
+}
+
+rollback_to() {
+  v=$1
+  [ -d "$PREFIX/releases/$v" ] || { warn "目标版本目录不存在：$PREFIX/releases/$v"; return 1; }
+  ln -sfn "releases/$v" "$PREFIX/current.tmp.$$"
+  mv -Tf "$PREFIX/current.tmp.$$" "$PREFIX/current" 2>/dev/null \
+    || mv -f "$PREFIX/current.tmp.$$" "$PREFIX/current"
+  render_configs
+  nginx_conf_test || warn "回滚后的配置语法校验未通过"
+  systemctl reload "$UNIT_NAME" 2>/dev/null || systemctl restart "$UNIT_NAME"
+  if body=$(health_wait_version "$v" 40); then
+    info "已回滚到 $v，健康检查通过：$body"
+    printf '%s\n' "$v" > "$PREFIX/shared/state/installed"
+    return 0
+  fi
+  warn "回滚到 $v 后 10s 内未确认目标版本（当前响应：${body:-无响应}）"
+  return 1
+}
+
+cmd_rollback() {
+  TO=""
+  while [ $# -gt 0 ]; do
+    case $1 in
+      --to=*) TO=$(opt_inline "$1") ;;
+      --to) shift; TO=${1:-} ;;
+      -h|--help) usage; exit 0 ;;
+      *) usage_err "未知参数：$1" ;;
+    esac
+    shift
+  done
+
+  need_root
+  load_conf
+  svc_installed || die "尚未安装"
+  cur=$(current_version)
+
+  if [ -z "$TO" ]; then
+    if [ -f "$PREFIX/shared/state/previous" ]; then
+      TO=$(tr -d ' \t\r\n' < "$PREFIX/shared/state/previous")
+    else
+      # 无记录时取当前之外的最大版本
+      TO=$(list_release_versions | sed "s/^${cur}$//" | ver_max)
+    fi
+  fi
+  [ -n "$TO" ] || die "找不到可回滚的历史版本（用 --to 指定）"
+  [ "$TO" = "$cur" ] && die "目标版本与当前版本相同（$cur）"
+
+  step "回滚 $cur → $TO"
+  printf '%s\n' "$cur" > "$PREFIX/shared/state/previous"
+  rollback_to "$TO" || die "回滚失败"
+  say ""
+  say "回滚完成 ✅  $cur → $TO"
+  say "  访问  : http://$(local_ip):$PORT/"
+}
+
+# ============================================================================
+# 入口
+# ============================================================================
+
+main() {
+  [ $# -gt 0 ] || { usage; exit 2; }
+  cmd=$1
+  shift
+  case $cmd in
+    install)       cmd_install "$@" ;;
+    uninstall|remove) cmd_uninstall "$@" ;;
+    status)        cmd_status "$@" ;;
+    start|stop|restart|reload) cmd_ctl "$cmd" "$@" ;;
+    health)        cmd_health "$@" ;;
+    logs)          cmd_logs "$@" ;;
+    config)        cmd_config "$@" ;;
+    list)          cmd_list "$@" ;;
+    backup)        cmd_backup "$@" ;;
+    doctor)        cmd_doctor "$@" ;;
+    render)        cmd_render "$@" ;;
+    version|-v|--version) cmd_version "$@" ;;
+    check-update)  cmd_check_update "$@" ;;
+    upgrade|update) cmd_upgrade "$@" ;;
+    rollback)      cmd_rollback "$@" ;;
+    help|-h|--help) usage ;;
+    *) usage_err "未知命令：$cmd" ;;
+  esac
+}
+
+main "$@"
