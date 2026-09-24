@@ -1,7 +1,13 @@
 import type { ReactNode } from 'react'
 import { getCategory, getGroup } from '@toolbox/catalog'
 import type { ToolMeta } from '@toolbox/catalog'
-import { categoryName, feasibilityLabel, groupName, toolDescription, toolTitle } from '../../i18n/catalog-text'
+import {
+  categoryName,
+  feasibilityLabel,
+  groupName,
+  toolDescription,
+  toolTitle,
+} from '../../i18n/catalog-text'
 import { useI18n } from '../../i18n'
 
 /**

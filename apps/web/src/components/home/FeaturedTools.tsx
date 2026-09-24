@@ -6,9 +6,7 @@ import { ToolCard } from '../tool/ToolCard'
 export function FeaturedTools() {
   const t = useTranslate()
 
-  const percent = PLANNED_TOTAL_TOOLS
-    ? Math.round((TOOL_COUNT / PLANNED_TOTAL_TOOLS) * 100)
-    : 0
+  const percent = PLANNED_TOTAL_TOOLS ? Math.round((TOOL_COUNT / PLANNED_TOTAL_TOOLS) * 100) : 0
 
   return (
     <section data-testid="featured-tools" aria-labelledby="featured-tools-title">

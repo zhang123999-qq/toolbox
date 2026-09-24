@@ -18,7 +18,13 @@ export const CATEGORIES: readonly CategoryDef[] = [
   { id: 'devops', name: '开发 / 运维 / 云原生', group: 'dev', plannedTools: 90, range: [191, 280] },
   { id: 'datetime', name: '时间 / 日期 / 调度', group: 'dev', plannedTools: 30, range: [281, 310] },
   { id: 'math', name: '数学 / 单位 / 金融', group: 'life', plannedTools: 60, range: [311, 370] },
-  { id: 'random', name: '随机 / 生成 / 设计', group: 'design', plannedTools: 50, range: [371, 420] },
+  {
+    id: 'random',
+    name: '随机 / 生成 / 设计',
+    group: 'design',
+    plannedTools: 50,
+    range: [371, 420],
+  },
   { id: 'image', name: '图片 / 图形', group: 'design', plannedTools: 60, range: [421, 480] },
   { id: 'pdf', name: 'PDF / Office / 文档', group: 'office', plannedTools: 60, range: [481, 540] },
   { id: 'media', name: '音视频 / 媒体', group: 'design', plannedTools: 45, range: [541, 585] },
@@ -27,16 +33,32 @@ export const CATEGORIES: readonly CategoryDef[] = [
   { id: 'visualization', name: '数据可视化', group: 'design', plannedTools: 25, range: [666, 690] },
   { id: 'web3', name: 'Web3 / 区块链', group: 'life', plannedTools: 25, range: [691, 715] },
   { id: 'a11y', name: '无障碍 / 国际化', group: 'life', plannedTools: 25, range: [716, 740] },
-  { id: 'automation', name: '自动化 / API / 测试', group: 'life', plannedTools: 30, range: [741, 770] },
-  { id: 'extension', name: '浏览器扩展 / 油猴', group: 'life', plannedTools: 15, range: [771, 785] },
+  {
+    id: 'automation',
+    name: '自动化 / API / 测试',
+    group: 'life',
+    plannedTools: 30,
+    range: [741, 770],
+  },
+  {
+    id: 'extension',
+    name: '浏览器扩展 / 油猴',
+    group: 'life',
+    plannedTools: 15,
+    range: [771, 785],
+  },
   { id: 'game', name: '游戏开发 / 像素', group: 'design', plannedTools: 20, range: [786, 805] },
   { id: 'edge', name: '边缘计算 / Serverless', group: 'life', plannedTools: 15, range: [806, 820] },
-  { id: 'education', name: '教育 / 学习 / 趣味', group: 'life', plannedTools: 50, range: [821, 870] },
+  {
+    id: 'education',
+    name: '教育 / 学习 / 趣味',
+    group: 'life',
+    plannedTools: 50,
+    range: [821, 870],
+  },
 ]
 
-const CATEGORY_MAP: ReadonlyMap<CategoryId, CategoryDef> = new Map(
-  CATEGORIES.map((c) => [c.id, c]),
-)
+const CATEGORY_MAP: ReadonlyMap<CategoryId, CategoryDef> = new Map(CATEGORIES.map((c) => [c.id, c]))
 
 export function getCategory(id: CategoryId): CategoryDef {
   const category = CATEGORY_MAP.get(id)

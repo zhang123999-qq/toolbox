@@ -24,8 +24,7 @@ export const CONTROL_SEGMENT =
   'inline-flex h-full items-center px-2 text-xs font-medium transition focus-visible:outline-2'
 
 /** 分段控件中「当前选中」的样式 */
-export const CONTROL_SEGMENT_ACTIVE =
-  'bg-brand text-white dark:bg-brand dark:text-white'
+export const CONTROL_SEGMENT_ACTIVE = 'bg-brand text-white dark:bg-brand dark:text-white'
 
 export const CONTROL_SEGMENT_IDLE =
   'text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800'

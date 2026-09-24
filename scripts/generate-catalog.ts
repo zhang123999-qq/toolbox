@@ -117,7 +117,9 @@ export const TOOL_COUNT = TOOLS.length
 async function main(): Promise<void> {
   const metas = await loadMetas()
   writeFileSync(OUTPUT, render(metas), 'utf8')
-  console.log(`[generate-catalog] 已写入 ${metas.length} 条 → packages/catalog/src/tools.generated.ts`)
+  console.log(
+    `[generate-catalog] 已写入 ${metas.length} 条 → packages/catalog/src/tools.generated.ts`,
+  )
 }
 
 main().catch((error: unknown) => {

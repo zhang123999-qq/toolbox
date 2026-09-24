@@ -17,9 +17,7 @@ describe('json-formatter / transform', () => {
 
   it('sortKeys 开启时按键名排序', () => {
     const input: JsonInput = { text: '{"b":1,"a":2}' }
-    expect(transform(input, { ...baseOptions, sortKeys: true })).toBe(
-      '{\n  "a": 2,\n  "b": 1\n}',
-    )
+    expect(transform(input, { ...baseOptions, sortKeys: true })).toBe('{\n  "a": 2,\n  "b": 1\n}')
   })
 
   it('空输入返回空字符串（边界）', () => {

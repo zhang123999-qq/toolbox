@@ -61,7 +61,10 @@ export function Hero() {
 
         <dl className="mt-8 grid grid-cols-4 gap-2">
           {stats.map((stat) => (
-            <div key={stat.id} className="rounded-lg bg-white/70 p-2 text-center dark:bg-slate-900/70">
+            <div
+              key={stat.id}
+              className="rounded-lg bg-white/70 p-2 text-center dark:bg-slate-900/70"
+            >
               <dt className="text-xs text-slate-500 dark:text-slate-400">{stat.label}</dt>
               <dd className="text-lg font-semibold text-slate-900 dark:text-slate-100">
                 {stat.value}

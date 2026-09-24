@@ -19,7 +19,7 @@
        * 语言非默认（非中文）时挂上 i18n-pending，遮住预渲染的中文内容，
        * 由 I18nProvider 就绪后摘除；3s 兜底定时器防止异常时内容被永久隐藏。
        */
-      (function () {
+      ;(function () {
         var root = document.documentElement
         try {
           var locale = window.localStorage.getItem('toolbox.locale')

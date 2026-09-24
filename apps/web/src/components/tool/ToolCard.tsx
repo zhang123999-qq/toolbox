@@ -20,7 +20,9 @@ export function ToolCard({ tool }: { tool: ToolMeta }) {
       <p className="mt-1 line-clamp-2 text-sm text-slate-600 dark:text-slate-400">
         {toolDescription(locale, tool)}
       </p>
-      <p className="mt-2 font-mono text-xs text-slate-400 dark:text-slate-500">/tools/{tool.slug}</p>
+      <p className="mt-2 font-mono text-xs text-slate-400 dark:text-slate-500">
+        /tools/{tool.slug}
+      </p>
     </Link>
   )
 }

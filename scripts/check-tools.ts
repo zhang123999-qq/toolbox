@@ -7,13 +7,7 @@
  *  3. slug 唯一性
  *  4. 模板 T1-T6 合法性（由 Schema 保证）
  */
-import {
-  CATEGORIES,
-  GROUPS,
-  PLANNED_TOTAL_TOOLS,
-  TOOLS,
-  categoriesOfGroup,
-} from '@toolbox/catalog'
+import { CATEGORIES, GROUPS, PLANNED_TOTAL_TOOLS, TOOLS, categoriesOfGroup } from '@toolbox/catalog'
 import { validateTool } from '@toolbox/catalog/schema'
 
 let failures = 0
@@ -67,7 +61,9 @@ for (const tool of TOOLS) {
     fail(`[${tool.id}] slug 重复：${tool.slug}`)
   }
   seen.add(tool.slug)
-  console.log(`  ✓ ${tool.id} (${tool.category}/${tool.group} ${tool.priority}${tool.feasibility} ${tool.template})`)
+  console.log(
+    `  ✓ ${tool.id} (${tool.category}/${tool.group} ${tool.priority}${tool.feasibility} ${tool.template})`,
+  )
 }
 
 console.log('=== 结果 ===')

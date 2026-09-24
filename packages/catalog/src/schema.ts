@@ -22,7 +22,10 @@ export const toolMetaSchema = z
 
     category: z.enum(CATEGORY_IDS),
     group: z.enum(GROUP_IDS),
-    tags: z.array(z.string().regex(/^[a-z0-9-]+$/)).min(2).max(5),
+    tags: z
+      .array(z.string().regex(/^[a-z0-9-]+$/))
+      .min(2)
+      .max(5),
 
     priority: z.enum(PRIORITIES),
     feasibility: z.enum(FEASIBILITIES),
@@ -40,7 +43,10 @@ export const toolMetaSchema = z
   .superRefine((meta, ctx) => {
     // 规则 2：slug 必须与 id 一致
     if (meta.slug !== meta.id) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: `slug(${meta.slug}) 必须等于 id(${meta.id})` })
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `slug(${meta.slug}) 必须等于 id(${meta.id})`,
+      })
     }
     // 规则 4：group 必须与 category 的归属一致
     const expectedGroup = groupOfCategory(meta.category)

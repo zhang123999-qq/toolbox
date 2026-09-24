@@ -19,7 +19,9 @@ export function Footer() {
             <p className="mt-2 max-w-xs text-sm text-slate-600 dark:text-slate-400">
               {t('site.description')}
             </p>
-            <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">{t('site.localBadge')}</p>
+            <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
+              {t('site.localBadge')}
+            </p>
           </div>
 
           <nav aria-label={t('footer.byGroup')}>
