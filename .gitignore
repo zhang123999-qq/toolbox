@@ -9,6 +9,15 @@ coverage/
 .env.*
 !.env.example
 *.log
+logs/
+
+# 密钥与证书（TLS 证书、私钥、打包签名等，一旦误提即为泄露）
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+*.keystore
 
 # 编辑器与系统文件
 .idea/
@@ -18,6 +27,9 @@ Thumbs.db
 
 # TypeScript 增量构建缓存
 *.tsbuildinfo
+
+# pnpm 本地 store（依赖缓存，体积大且可重建）
+.pnpm-store/
 
 # 测试产物
 playwright-report/

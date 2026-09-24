@@ -89,9 +89,12 @@ function render(metas: LoadedMeta[]): string {
     })
     .join('\n')
 
+  // 头部**不写生成时间**：否则每次 `pnpm generate:catalog` 都会让这个文件产生一行
+  // 无意义的时间戳 diff，既污染提交、又让人分不清「真改了内容」还是「只是重跑了一遍」。
+  // 改了任何 meta.ts 后重跑本脚本即可，差异就是真实的元数据变化。
   return `/**
  * 工具注册表 —— 由 scripts/generate-catalog.ts 自动生成，请勿手工编辑。
- * 生成时间：${new Date().toISOString()}
+ * 改了任何 meta.ts 后请重跑：pnpm generate:catalog
  * 工具数：${metas.length}
  */
 import type { ToolMeta } from './types'

@@ -1,6 +1,6 @@
 /**
  * 工具注册表 —— 由 scripts/generate-catalog.ts 自动生成，请勿手工编辑。
- * 生成时间：2026-09-24T09:36:41.545Z
+ * 改了任何 meta.ts 后请重跑：pnpm generate:catalog
  * 工具数：75
  */
 import type { ToolMeta } from './types'
