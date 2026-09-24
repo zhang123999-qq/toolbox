@@ -1,8 +1,10 @@
 name: CI
 
+# 分支名以实际默认分支为准：此前写成 main，而仓库默认分支是 master，
+# 结果 push 触发的 CI 从未跑过（只有开 PR 才会跑）。
 on:
   push:
-    branches: [main]
+    branches: [master, main]
   pull_request:
 
 jobs:
@@ -21,35 +23,36 @@ jobs:
           cache: pnpm
 
       - name: Install
-        run: pnpm install --frozen-lockfile
+        # --ignore-scripts：esbuild 的 postinstall 在受限环境下会 EBUSY，
+        # 而它的二进制来自平台可选包，不需要该脚本（DEVELOPMENT.md §18.3）。
+        run: pnpm install --frozen-lockfile --ignore-scripts
 
-      # 门禁顺序见 DEVELOPMENT.md §10.3
-      # lint 步骤待 ESLint 接入后启用（packages/config/eslint）
+      # 门禁顺序见 DEVELOPMENT.md §十：静态检查在前，慢的在后。
+      - name: Check tool metadata
+        run: pnpm check:tools
+
+      - name: Check docs consistency
+        run: pnpm check:docs
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Format check
+        run: pnpm format:check
+
       - name: Typecheck
         run: pnpm typecheck
-
-      - name: Check tools
-        run: pnpm check:tools
 
       - name: Test
         run: pnpm test
 
-      - name: Build
-        run: pnpm build
-
-      # SSG：不补预渲染，870 个工具页对爬虫就是空壳（DEVELOPMENT.md §12）
-      - name: Build SSR bundle
-        run: pnpm --filter @toolbox/web build:ssr
-
-      - name: Generate sitemap
-        run: pnpm generate:sitemap
+      # SSG：不补预渲染，870 个工具页对爬虫就是空壳（DEVELOPMENT.md §十二）
+      # build:ssg = 客户端构建 + SSR 构建 + 预渲染，三步顺序不能反。
+      - name: Build (client + SSR + prerender)
+        run: pnpm build:ssg
         env:
-          SITE_ORIGIN: ${{ vars.SITE_ORIGIN || 'https://example.com' }}
-
-      - name: Prerender (SSG)
-        run: pnpm prerender
-        env:
-          SITE_ORIGIN: ${{ vars.SITE_ORIGIN || 'https://example.com' }}
+          # 默认域名来自 packages/catalog/src/site.ts；部署到别处用仓库变量覆盖
+          SITE_ORIGIN: ${{ vars.SITE_ORIGIN || 'https://006336.xyz' }}
 
       - name: Upload dist
         uses: actions/upload-artifact@v4
