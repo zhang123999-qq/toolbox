@@ -20,7 +20,10 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # 不用 20：测试环境 jsdom@30 的 engines 是 ^22.22.2 || ^24.15.0 || >=26.0.0，
+          # 其依赖 undici@8 要求 >=22.19.0，Node 20 上 jsdom 环境根本起不来
+          # （表现为 webidl.util.markAsUncloneable is not a function）。
+          node-version: 24
           cache: pnpm
 
       - name: Install

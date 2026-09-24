@@ -21,6 +21,11 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
 
 ### 修复
 
+- **声明的 Node 版本低于工具链真实下限**：`engines.node` 写 `>=20`，但测试环境 jsdom@30 的
+  engines 是 `^22.22.2 \|\| ^24.15.0 \|\| >=26.0.0`，其依赖 undici@8 要求 `>=22.19.0`。
+  Node 20 上 jsdom 环境根本无法启动（`webidl.util.markAsUncloneable is not a function`），
+  3 个组件测试文件全部报环境错误。现 CI 改用 Node 24，engines 修正为真实下限，
+  文档里所有「Node ≥ 20」的口径同步更新
 - **CI 的 pnpm 版本被指定两次**：workflow 里写了 `version: 12`，`package.json` 里又有
   `packageManager: pnpm@12.3.4`，`pnpm/action-setup` 直接拒绝执行——这条流水线从未成功跑过
   一次，而「push 不触发」恰好把它掩盖了。现由 action 读取 `packageManager`，版本只留一个真源

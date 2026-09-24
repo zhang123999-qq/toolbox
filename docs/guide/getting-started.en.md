@@ -16,7 +16,7 @@ target machine must have.
 | -------------------- | ---------------------------------- | ----------------------------------------------------------- | ---------------------------------------------------- |
 | Binary deployment    | `sh` + `tar` + `systemd` + `nginx` | single-server rollouts, internal servers, Docker-free hosts | [§2](#2-binary-deployment-linux-servers-recommended) |
 | Container deployment | Docker                             | self-hosting, scale-out                                     | [§3](#3-container-deployment)                        |
-| Local development    | Node 20+ / pnpm                    | changing code, adding tools                                 | [§4](#4-local-development)                           |
+| Local development    | Node ≥ 22.22 / pnpm                | changing code, adding tools                                 | [§4](#4-local-development)                           |
 
 ---
 
@@ -108,7 +108,7 @@ container 80). The container always listens on 80; no image change is needed.
 
 ### 4.1 Requirements
 
-Node ≥ 20 and pnpm ≥ 9. Run `pnpm install` with `--ignore-scripts`: esbuild's postinstall fails on
+Node ≥ 22.22 and pnpm ≥ 9. Run `pnpm install` with `--ignore-scripts`: esbuild's postinstall fails on
 some Windows setups due to file locks, and its binary comes from the platform package anyway.
 
 ### 4.2 Everyday commands

@@ -15,7 +15,7 @@
 | ---------- | ---------------------------------- | ------------------------------------ | ------------------------------------ |
 | 二进制部署 | `sh` + `tar` + `systemd` + `nginx` | 单机上线、内网服务器、无 Docker 环境 | [§二](#二二进制部署linux-服务器推荐) |
 | 容器部署   | Docker                             | 自托管、横向扩展                     | [§三](#三容器部署)                   |
-| 本地开发   | Node 20+ / pnpm                    | 改代码、加工具                       | [§四](#四本地开发)                   |
+| 本地开发   | Node ≥ 22.22 / pnpm                | 改代码、加工具                       | [§四](#四本地开发)                   |
 
 ---
 
@@ -106,7 +106,7 @@ docker run -d --name toolbox-web -p 8081:80 toolbox-web:dev
 
 ### 4.1 环境要求
 
-Node ≥ 20、pnpm ≥ 9。`pnpm install` 用 `--ignore-scripts`：esbuild 的 postinstall
+Node ≥ 22.22、pnpm ≥ 9。`pnpm install` 用 `--ignore-scripts`：esbuild 的 postinstall
 在部分 Windows 环境下会因文件占用失败，而它的二进制来自平台包，不需要该脚本。
 
 ### 4.2 常用命令

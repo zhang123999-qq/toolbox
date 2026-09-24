@@ -20,7 +20,7 @@
 
 ### 2.1 环境要求
 
-Node ≥ 20、pnpm ≥ 9。不需要 Docker、不需要 Go、不需要 WSL。浏览器自动化用系统已装的
+Node ≥ 22.22、pnpm ≥ 9。不需要 Docker、不需要 Go、不需要 WSL。浏览器自动化用系统已装的
 Edge 即可，不必额外下载 Chromium。
 
 ### 2.2 首次安装

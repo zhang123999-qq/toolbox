@@ -21,7 +21,7 @@
 
 ### 2.1 Requirements
 
-Node ≥ 20 and pnpm ≥ 9. No Docker, no Go, no WSL. Browser automation can drive the Edge that is
+Node ≥ 22.22 and pnpm ≥ 9. No Docker, no Go, no WSL. Browser automation can drive the Edge that is
 already installed, so there is no Chromium download.
 
 ### 2.2 First-time setup

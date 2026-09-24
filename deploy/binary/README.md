@@ -35,7 +35,7 @@ toolboxctl uninstall --purge
 
 | 方式           | 目录                  | 目标机需要                         | 适用                                 |
 | -------------- | --------------------- | ---------------------------------- | ------------------------------------ |
-| 源码部署       | 仓库根 `package.json` | Node 20+ / pnpm / 源码             | 开发、CI                             |
+| 源码部署       | 仓库根 `package.json` | Node ≥ 22.22 / pnpm / 源码         | 开发、CI                             |
 | 容器部署       | `deploy/docker/`      | Docker                             | 自托管、横向扩展                     |
 | **二进制部署** | `deploy/binary/`      | `sh` + `tar` + `systemd` + `nginx` | 单机上线、内网服务器、无 Docker 环境 |
 

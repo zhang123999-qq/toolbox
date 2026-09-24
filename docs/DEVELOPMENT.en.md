@@ -830,7 +830,7 @@ messages.en.ts   → export const en: Record<MessageKey, string>
 
 | Path        | Location                 | Target machine needs             | Good for                                                    |
 | ----------- | ------------------------ | -------------------------------- | ----------------------------------------------------------- |
-| From source | repo root `package.json` | Node 20+ / pnpm / the source     | development, CI                                             |
+| From source | repo root `package.json` | Node ≥ 22.22 / pnpm / the source | development, CI                                             |
 | Container   | `deploy/docker/`         | Docker                           | self-hosting, scale-out                                     |
 | **Binary**  | `deploy/binary/`         | `sh` + `tar` + `systemd` + nginx | single-server rollouts, internal servers, Docker-free hosts |
 

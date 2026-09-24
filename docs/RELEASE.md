@@ -162,7 +162,7 @@ curl -fsSL http://<发布源>/install.sh | sudo sh -s -- --source http://<发布
 | 权限       | root（安装、卸载、服务管理）                                            |
 | **不需要** | Go、Node、pnpm、Docker、Python                                          |
 
-开发机（打包用）：Node 20+ 与 pnpm（跑构建），bash、`tar`、`sha256sum`。
+开发机（打包用）：Node ≥ 22.22 与 pnpm（跑构建），bash、`tar`、`sha256sum`。
 
 ## 六、内网/目标服务器的访问与部署方式
 
