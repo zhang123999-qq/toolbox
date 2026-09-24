@@ -4,6 +4,7 @@ node_modules
 **/node_modules
 dist
 **/dist
+**/dist-ssr
 .turbo
 **/.turbo
 coverage
@@ -13,3 +14,7 @@ docs
 *.log
 .env
 .env.*
+
+# 本地临时验证产物：截图与浏览器验证脚本，不应进入镜像构建上下文
+tmp-shots
+verify.mjs
