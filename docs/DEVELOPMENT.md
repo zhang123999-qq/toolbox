@@ -513,6 +513,12 @@ TBT 高 → Worker + 延迟执行；CLS 高 → 预留尺寸；图片大 → Web
 | 3 | 4 组 ↔ 20 域 | **采用第五节真源表** | 该表脚本校验闭合（合计 870） |
 | 4 | 执行宿主 | **Windows 原生**，不迁移 WSL2 | 前端构建无需 Linux 环境 |
 | 5 | 批次规模 | **B2=662 / B3=59 / B4=79 / B5=58 / B6=12** | 实测可行性分布，非旧估算值 |
+| 6 | i18n 范围 | **中英双语，客户端实时切换**（不再只「预留 key」） | 产品要求双语入口，见 §19 |
+| 7 | 主题 | **明 / 暗手动切换**，默认跟随系统 | 产品要求深色模式，见 §19 |
+| 8 | 语言偏好落点 | **localStorage**，不引入 `/en` 路由前缀 | 需求是「实时切换 + 刷新保持」，非 SEO 多语言站 |
+
+> 决策 6 取代了原先「中文单语起步」的口径：`MessageKey` 由中文真源推导，
+> 英文包为 `Record<MessageKey, string>`，漏译即 typecheck 失败。
 
 ---
 
@@ -520,7 +526,7 @@ TBT 高 → Worker + 延迟执行；CLS 高 → 预留尺寸；图片大 → Web
 
 | # | 事项 | 建议 | 阻塞 |
 |---:|---|---|---|
-| A | **i18n 范围**：中文单语 vs 中英双语 | 中文单语起步，文案全走 i18n key 预留双语 | 阶段 0 |
+| ~~A~~ | ~~i18n 范围：中文单语 vs 中英双语~~ | **已拍板（决策 6）：中英双语实时切换** | — |
 | B | **「21 → 20」合并了哪个域** | 差异已不可考，注明「以当前 20 域为准」后关闭 | 阶段 0 |
 | C | **WASM 分发**：自建 CDN vs 公共 CDN | 大模块（ffmpeg/vips/wllama）自建同源，小模块可走公共 CDN | 阶段 2 |
 | D | **D 类工具提示样式**（58 个） | 顶部 Banner + 页内卡片（A+C 组合） | 阶段 2 |
@@ -585,7 +591,11 @@ packages/search      检索门面（Orama 适配位预留）
 apps/web             Vite 6 + React 19 + TS + Tailwind v4
                      路由由 catalog 生成（红线第 1 条已落地）
 components           Header / SearchDialog(Cmd+K) / ToolShell / ToolCard
+                     layout/{ThemeToggle,LanguageSwitch,Footer} / ui/icons
 templates            T2 双栏（T1、T3–T6 待建）
+i18n/                messages.zh(真源) / messages.en / catalog-text / Provider（见 §19）
+theme/               明暗主题 Provider（见 §19）
+lib/                 prefs（落盘 key）/ useIsomorphicLayoutEffect / useDocumentTitle
 tools/               json-formatter（#131，8 文件齐全）
 scripts/             generate-catalog / check-tools / generate-sitemap / prerender
 apps/web/src/        entry-server.tsx（SSG 预渲染入口）
@@ -601,13 +611,15 @@ apps/web/public/     sitemap.xml / robots.txt
 |---|---|
 | `pnpm check:tools` | ✅ 20 域合计 870；dev 360 / design 200 / office 60 / life 250 |
 | `pnpm typecheck` | ✅ catalog / search / web 三包 0 error |
-| `pnpm test` | ✅ **15 passed**（json-formatter：8 个 utils 单测 + 7 个组件测试） |
-| `pnpm build` | ✅ 工具 chunk **13.62KB**（gzip 5.30KB）< 30KB 预算 |
+| `pnpm test` | ✅ **31 passed**（json-formatter 8+7、首页 7、偏好控件 9） |
+| `pnpm build` | ✅ 工具 chunk **5.08KB**（gzip 2.08KB）< 30KB 预算；`app-core` 23.45KB（gzip 9.10KB） |
 | 路由冒烟 | ✅ `/`、`/tools`、`/c/dev`、`/c/dev/data-format`、`/tools/json-formatter` 全部 200 |
 | `generate:catalog` | ✅ 扫描 `tools/*/meta.ts` 重建注册表，重跑校验仍通过 |
 | Docker 镜像 | ✅ `toolbox-web:dev` 构建成功并运行，容器内 7 条路由全 200，healthcheck `healthy` |
 | Nginx 响应头 | ✅ html `text/html; charset=utf-8`；JS `Content-Encoding: gzip` + `max-age=31536000, immutable`；`.wasm` → `application/wasm` |
 | **SSG 预渲染** | ✅ 27 个静态页 + `404.html`；工具页 HTML 含真实 DOM（`data-testid="input"`），**无** Suspense fallback；title / description / canonical / JSON-LD 均已注入 |
+| **双语切换** | ✅ 默认中文；切英文后首页 / 导航 / 页脚 / 工具页文案与 `<html lang>`、`document.title` 同步更新；写入 `localStorage`，刷新保持 |
+| **明暗主题** | ✅ 切换后 `<html class="dark">` 生效，写入 `localStorage`；首帧由内联脚本应用，无闪动 |
 
 ### 18.3 环境坑（Windows 原生执行必读）
 
@@ -624,6 +636,8 @@ apps/web/public/     sitemap.xml / robots.txt
 | `base name (${NGINX_IMAGE}) should not be blank` | ARG 写在 stage 内部，是 stage 作用域，第二个 `FROM` 看不见 | 两个 `ARG` 都必须声明在**第一个 `FROM` 之前** |
 | `Could not reach registry.npmjs.org/@pnpm/exe...` | corepack 下载 pnpm 二进制默认走 npmjs | Dockerfile 内设 `COREPACK_NPM_REGISTRY`（默认 npmmirror）；构建代理变量要**大小写各传一份**，corepack/undici 只读小写 |
 | 首页返回 `application/octet-stream`，gzip 静默失效 | nginx 的 `types { }` 块在 server 级会**覆盖** http 级继承的整张 MIME 表 | 删掉 server 级 `types { }`，直接继承 `/etc/nginx/mime.types`（nginx 1.21+ 已内置 `application/wasm`）。另注意 `include` 不能写在 `types { }` 内部 |
+| `/tools` 返回 **301** → `/tools/`，与 canonical 冲突 | `try_files $uri $uri/` 里的 `$uri/` 会触发 index 模块的「目录自动补斜杠」 | 改用 `try_files $uri $uri/index.html`，不写 `$uri/` |
+| 拼错的 URL 返回 **200 + 首页内容**（软 404） | 兜底写成 `/index.html` 时，所有未匹配路径都会被静默替换成首页；SSG 产出的 `404.html` 从未被使用 | `try_files $uri $uri/index.html **=404**;` + `error_page 404 /404.html;` + `location = /404.html { internal; }`，让未知路径真的返回 404 状态码 |
 
 > Docker Hub 直连在部分网络下会被拦截。基础镜像可用 `--build-arg
 > NODE_IMAGE=docker.m.daocloud.io/library/node:20-alpine` 切国内加速源，
@@ -636,6 +650,16 @@ apps/web/public/     sitemap.xml / robots.txt
 | `Cannot destructure property 'basename' of useContext(...) as it is null` | `pnpm add react-router` 装成了 **8.x**，与 `react-router-dom` 内置的 7.x 形成两份实例，Router context 互不相通 | 显式锁版本 `react-router@^7.1.1`，确保 `.pnpm` 下只有一份 `react-router` |
 | 预渲染产物全是「加载中…」 | `router.tsx` / `ToolPage` 用了 `React.lazy`，`renderToString` 只输出 Suspense fallback | 必须用 React 19 的 `prerender`（`react-dom/static`），它会等待 Suspense 解析 |
 
+**构建分块坑（新增，870 铺量前务必理解）：**
+
+| 现象 | 原因 | 解法 |
+|---|---|---|
+| 入口 chunk 反向静态 import 某个**工具 chunk**，首屏被迫加载整包工具代码 | `manualChunks` 只为工具模块命名、其余返回 `undefined` 时，rollup 会把「被多处共享但未命名」的模块（如 i18n）塞进**首个被命名的 chunk**（即 `tool-json-formatter`），入口反过来依赖它 | 共享基础设施必须**显式命名**：`/src/(i18n\|theme\|lib)/` → `app-core`（且排除 `node_modules` 以免误命中依赖内部目录）。校验方法：检查入口 chunk 的静态 import 里不出现 `tool-` |
+
+> 该坑在只有 1 个工具时表现为「工具 chunk 13.6KB → 5.1KB、入口多背 23KB」；
+> 若不修，870 个工具铺开后共享代码会持续堆积在**随机某个工具 chunk**里，
+> 使「工具页 < 30KB」这条预算彻底失真。
+
 ### 18.4 未实现（后续补齐）
 
 | 项 | 说明 |
@@ -646,14 +670,18 @@ apps/web/public/     sitemap.xml / robots.txt
 | shadcn/ui | 现为自建轻量组件 |
 | T1 / T3–T6 模板 | 仅实现 T2 |
 | PWA / Worker / WASM | 阶段 2 及以后 |
+| 工具元数据的英文文案 | 仅 json-formatter 填了 `titleEn` / `descriptionEn`；其余工具缺省回落中文 |
+| `/en` 路由与英文静态页 | 静态产物固定中文口径（SEO 主市场），英文仅在客户端生效 |
 
 ### 18.5 指标冲突（新增，需拍板）
 
 **首屏 JS 预算 < 50KB 与 React 19 技术栈冲突。**
 
-实测首屏 chunk **262KB（gzip 84KB）**，已做优化（zod 移出首屏路径 −61KB、页面级路由懒加载）后仍超标约 68%。
-基线构成：React 19 + react-dom ≈ 140KB（gzip ~45KB）、React Router ≈ 30KB（gzip ~10KB）——
-**仅框架即在 55KB gzip 以上，恒定超出预算**。
+实测首屏 chunk **262KB（gzip 84KB）**；加入双语与主题后为
+**入口 267.8KB（gzip 85.5KB）+ app-core 23.5KB（gzip 9.1KB）≈ gzip 94.6KB**。
+已做优化（zod 移出首屏路径 −61KB、页面级路由懒加载、页面与偏好控件分块）后仍超标约 89%。
+基线构成：React 19 + react-dom ≈ 140KB（gzip ~45KB）、React Router ≈ 30KB（gzip ~10KB）、
+双语文案 ≈ 20KB（gzip ~9KB）——**仅框架即在 55KB gzip 以上，恒定超出预算**。
 
 三个出路，需选一个：
 
@@ -663,3 +691,66 @@ apps/web/public/     sitemap.xml / robots.txt
 
 > 建议 **1**。理由：本项目是工具站，用户价值在工具本身而非首屏字节数；
 > 且 SPA 首屏 JS 天然包含框架，50KB 预算在 React 19 下不可达，硬守只会逼出伪优化。
+
+---
+
+## 十九、双语与主题（2026-09-24 新增）
+
+### 19.1 需求与落点
+
+| 需求 | 实现 |
+|---|---|
+| 中文 / 英文实时切换 | `src/i18n/` 自建轻量 i18n，切换即重渲染，无页面跳转 |
+| 切换后所有可见文案更新 | 全站文案（含组名、域名、可行性标签）统一走 i18n key |
+| 明 / 暗主题切换 | `src/theme/` + Tailwind v4 `@custom-variant dark` |
+| 偏好刷新后保持 | `localStorage`：`toolbox.locale` / `toolbox.theme` |
+
+两个控件都在 `Header` 右簇（`SearchDialog` 之后），共用
+`components/layout/controls.ts` 的外观常量：同高 `h-8`、同圆角、同边框色。
+移动端：搜索按钮收成图标、语言控件为 `中 | EN` 分段、主题为方形图标按钮，
+三者始终留在顶栏（不藏进折叠菜单），整行在 360px 宽度下仍可容纳。
+
+### 19.2 文案 key 的类型安全
+
+```
+messages.zh.ts   → export const zh = {...} satisfies Record<string,string>
+                   export type MessageKey = keyof typeof zh   ← 唯一真源
+messages.en.ts   → export const en: Record<MessageKey, string>
+```
+
+* **漏译即编译失败**：英文包少一个 key，`tsc --noEmit` 直接报错。
+* **动态 key 仍受检**：`t(`group.${id}.name`)` 由模板字面量类型推导出 4 个具体 key，
+  写错前缀会在类型层暴露。
+* **插值**：`t('featured.stage', { live, planned, percent })`，占位符为 `{name}`。
+
+### 19.3 首帧不闪动的做法（关键）
+
+| 偏好 | 机制 |
+|---|---|
+| 主题 | 只是 `<html>` 上的类，**index.html 的内联脚本在首次绘制前写好**，React 不参与首帧；图标用 `dark:hidden` / `hidden dark:block` 由 CSS 二选一，避免「状态与主题不同步」的窗口期 |
+| 语言 | 首渲染固定用默认中文（与 SSG 产物一致），`useIsomorphicLayoutEffect` 在**绘制前**同步已存偏好；若记住的语言非中文，内联脚本先挂 `html.i18n-pending` 遮住预渲染内容，Provider 就绪后摘除（另有 3s 兜底定时器，防止脚本异常导致内容永久不可见） |
+
+> `useIsomorphicLayoutEffect`（`src/lib/`）：客户端用 `useLayoutEffect`，
+> 服务端回落 `useEffect`，避免 SSG 期打印「does nothing on the server」告警。
+
+### 19.4 数据类文案的处理
+
+| 类型 | 做法 | 原因 |
+|---|---|---|
+| 组名 / 域名 / 可行性标签（29 条，有限枚举） | 放 i18n 层 `group.*` / `category.*` / `feasibility.*` | 集中一处，catalog 保持纯数据 |
+| 工具标题 / 描述（逐条内容） | `ToolMeta` 新增**可选** `titleEn` / `descriptionEn`，缺省回落中文 | 逐条内容属于各工具自己的 `meta.ts`；可选设计使既有工具无需改动即通过校验 |
+| 搜索索引 | 索引仍由中文 meta 构建，**展示时**按当前语言取词 | 索引是构建期单一产物，不适合按语言复制 |
+
+> `titleEn` / `descriptionEn` **不计入 §6 的 16 个必需字段**，
+> `toolMetaSchema` 中为 `.optional()`，`check-tools` 行为不变。
+
+### 19.5 新增/修改工具时的注意事项
+
+1. 组件里**不要**写死中文文案，一律 `useTranslate()` 取词；区块内的常量数组
+   （如 `Highlights` 的 `HIGHLIGHTS`）要移进组件体，否则切换语言后仍是旧文案。
+2. 需要自定义分组文案时，先在 `messages.zh.ts` 加 key，`messages.en.ts` 会因
+   `Record<MessageKey, string>` 立即报缺译。
+3. **纯 CSS 判定的状态不要改成 React 条件渲染**（如主题图标），
+   否则会重新引入首帧不一致的可能。
+4. 改 `src/i18n/` `src/theme/` `src/lib/` 下的模块后，确认
+   `vite.config.ts` 的 `manualChunks` 仍把它们划入 `app-core`（见 §18.3 分块坑）。

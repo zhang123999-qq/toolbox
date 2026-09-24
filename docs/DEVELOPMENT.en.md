@@ -522,6 +522,13 @@ Generated assets: `sitemap.xml` (script), `robots.txt` (static), `rss.xml` (opti
 | 3 | 4 groups ↔ 20 categories | **Use the §5 table** | script-verified, sums to 870 |
 | 4 | Execution host | **Native Windows**, no WSL2 migration | frontend builds need no Linux |
 | 5 | Batch sizes | **B2=662 / B3=59 / B4=79 / B5=58 / B6=12** | measured feasibility distribution, not the old estimates |
+| 6 | i18n scope | **Bilingual (zh/en) with instant client-side switching** (no longer "reserve keys only") | product requires a bilingual entry point, see §19 |
+| 7 | Theme | **Manual light/dark toggle**, defaults to the system preference | product requires a dark mode, see §19 |
+| 8 | Where the locale preference lives | **localStorage**, no `/en` route prefix | the requirement is "switch instantly + survive refresh", not an SEO multi-locale site |
+
+> Decision 6 supersedes the earlier "Chinese-only" stance: `MessageKey` is derived from the
+> Chinese source, and the English bundle is declared as `Record<MessageKey, string>` —
+> a missing translation fails typecheck.
 
 ---
 
@@ -529,7 +536,7 @@ Generated assets: `sitemap.xml` (script), `robots.txt` (static), `rss.xml` (opti
 
 | # | Item | Recommendation | Blocks |
 |---:|---|---|---|
-| A | **i18n scope**: Chinese-only vs bilingual | Ship Chinese-only, but route all copy through i18n keys so a second language is a JSON drop-in | Stage 0 |
+| ~~A~~ | ~~i18n scope: Chinese-only vs bilingual~~ | **Decided (decision 6): bilingual with instant switching** | — |
 | B | **Which category was merged in "21 → 20"** | Unrecoverable; note "the current 20 stand" and close it | Stage 0 |
 | C | **WASM delivery**: self-hosted vs public CDN | Self-host large modules (ffmpeg/vips/wllama); public CDN acceptable for small ones | Stage 2 |
 | D | **Data-flow notice styling for D tools** (58 of them) | Top banner + in-page card | Stage 2 |
@@ -598,7 +605,11 @@ packages/search      search facade (Orama adapter slot reserved)
 apps/web             Vite 6 + React 19 + TS + Tailwind v4
                      routes generated from the catalog (red line #1 enforced)
 components           Header / SearchDialog (Cmd+K) / ToolShell / ToolCard
+                     layout/{ThemeToggle,LanguageSwitch,Footer} / ui/icons
 templates            T2 two-column (T1, T3–T6 pending)
+i18n/                messages.zh (source of truth) / messages.en / catalog-text / Provider (see §19)
+theme/               light-dark theme provider (see §19)
+lib/                 prefs (storage keys) / useIsomorphicLayoutEffect / useDocumentTitle
 tools/               json-formatter (#131, all 8 files)
 scripts/             generate-catalog / check-tools / generate-sitemap / prerender
 apps/web/src/        entry-server.tsx (SSG pre-render entry)
@@ -614,13 +625,15 @@ apps/web/public/     sitemap.xml / robots.txt
 |---|---|
 | `pnpm check:tools` | ✅ 20 categories total 870; dev 360 / design 200 / office 60 / life 250 |
 | `pnpm typecheck` | ✅ catalog / search / web: 0 errors |
-| `pnpm test` | ✅ **15 passed** (json-formatter: 8 utils unit tests + 7 component tests) |
-| `pnpm build` | ✅ tool chunk **13.62KB** (gzip 5.30KB), under the 30KB budget |
+| `pnpm test` | ✅ **31 passed** (json-formatter 8+7, home page 7, preference controls 9) |
+| `pnpm build` | ✅ tool chunk **5.08KB** (gzip 2.08KB), under the 30KB budget; `app-core` 23.45KB (gzip 9.10KB) |
 | Route smoke test | ✅ `/`, `/tools`, `/c/dev`, `/c/dev/data-format`, `/tools/json-formatter` all 200 |
 | `generate:catalog` | ✅ rescans `tools/*/meta.ts`, rebuilds the registry, passes re-validation |
 | Docker image | ✅ `toolbox-web:dev` builds and runs; all 7 routes return 200 in-container, healthcheck `healthy` |
 | Nginx headers | ✅ html `text/html; charset=utf-8`; JS `Content-Encoding: gzip` + `max-age=31536000, immutable`; `.wasm` → `application/wasm` |
 | **SSG pre-rendering** | ✅ 27 static pages + `404.html`; tool pages contain real DOM (`data-testid="input"`) with **no** Suspense fallback; title / description / canonical / JSON-LD all injected |
+| **Bilingual switching** | ✅ Chinese by default; switching to English updates home / nav / footer / tool-page copy plus `<html lang>` and `document.title`; persisted to `localStorage` and kept across reloads |
+| **Light-dark theme** | ✅ toggling applies `<html class="dark">` and persists to `localStorage`; applied pre-paint by an inline script, so there is no flash |
 
 ### 18.3 Environment gotchas (native Windows)
 
@@ -637,6 +650,8 @@ apps/web/public/     sitemap.xml / robots.txt
 | `base name (${NGINX_IMAGE}) should not be blank` | ARG declared inside a stage is stage-scoped, so the second `FROM` cannot see it | Declare both `ARG`s **before the first `FROM`** |
 | `Could not reach registry.npmjs.org/@pnpm/exe...` | corepack downloads the pnpm binary from npmjs by default | Set `COREPACK_NPM_REGISTRY` in the Dockerfile (defaults to npmmirror). Pass proxy build args in **both upper and lower case** — corepack/undici reads only the lowercase ones |
 | Home page returns `application/octet-stream`, gzip silently disabled | a server-level `types { }` block **overrides** the entire MIME table inherited from the http level | Drop the server-level `types { }` and inherit `/etc/nginx/mime.types` (nginx 1.21+ already ships `application/wasm`). Also note `include` is not allowed *inside* `types { }` |
+| `/tools` returns **301** → `/tools/`, clashing with canonical | `$uri/` in `try_files $uri $uri/` triggers the index module's automatic trailing-slash redirect | Use `try_files $uri $uri/index.html` and never `$uri/` |
+| A mistyped URL returns **200 with the home page** (soft 404) | When the fallback is `/index.html`, every unmatched path is silently replaced by the home page and the SSG-generated `404.html` is never used | `try_files $uri $uri/index.html **=404**;` plus `error_page 404 /404.html;` and `location = /404.html { internal; }` so unknown paths really return a 404 status |
 
 > Docker Hub may be blocked on some networks. Override the base image with
 > `--build-arg NODE_IMAGE=docker.m.daocloud.io/library/node:20-alpine`;
@@ -649,6 +664,17 @@ apps/web/public/     sitemap.xml / robots.txt
 | `Cannot destructure property 'basename' of useContext(...) as it is null` | `pnpm add react-router` resolved to **8.x**, creating a second instance alongside the 7.x that `react-router-dom` bundles — the Router contexts never meet | Pin it: `react-router@^7.1.1`, so only one `react-router` exists under `.pnpm` |
 | Pre-rendered output is all "加载中…" | `router.tsx` / `ToolPage` use `React.lazy`; `renderToString` only emits the Suspense fallback | Use React 19's `prerender` from `react-dom/static`, which awaits Suspense resolution |
 
+**Chunking gotcha (new — read this before scaling to 870 tools):**
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| The entry chunk statically imports a **tool chunk**, forcing the first load to pull the whole tool bundle | When `manualChunks` names only tool modules and returns `undefined` for everything else, rollup dumps every shared-but-unnamed module (i18n, for instance) into the **first named chunk** — here `tool-json-formatter` — and the entry then depends on it | Name the shared infrastructure explicitly: `/src/(i18n\|theme\|lib)/` → `app-core` (excluding `node_modules` so dependency-internal `src/lib` folders are not caught). Verify by checking that the entry chunk's static imports contain no `tool-` |
+
+> With a single tool this shows up as "tool chunk 13.6KB → 5.1KB, entry carries 23KB more".
+> Left unfixed across 870 tools, shared code keeps piling into an arbitrary tool chunk,
+> making the "< 30KB per tool page" budget meaningless.
+
+
 ### 18.4 Not yet implemented
 
 | Item | Note |
@@ -659,14 +685,19 @@ apps/web/public/     sitemap.xml / robots.txt
 | shadcn/ui | currently hand-rolled minimal components |
 | T1 / T3–T6 templates | only T2 exists |
 | PWA / Worker / WASM | Stage 2 onward |
+| English tool metadata | only json-formatter has `titleEn` / `descriptionEn`; the rest fall back to Chinese |
+| `/en` routes and English static pages | static output stays Chinese (the primary SEO market); English only applies client-side |
 
 ### 18.5 Budget conflict (new — needs a decision)
 
 **The < 50KB first-load JS budget conflicts with the React 19 stack.**
 
-Measured first-load chunk: **262KB (gzip 84KB)**. After optimization — moving zod out of
-the first-load path (−61KB) and adding route-level lazy loading — it is still ~68% over.
-Baseline: React 19 + react-dom ≈ 140KB (gzip ~45KB), React Router ≈ 30KB (gzip ~10KB).
+Measured first-load chunk: **262KB (gzip 84KB)**; with bilingual copy and theming it is now
+**entry 267.8KB (gzip 85.5KB) + app-core 23.5KB (gzip 9.1KB) ≈ gzip 94.6KB**.
+After optimization — moving zod out of the first-load path (−61KB), route-level lazy loading,
+and splitting pages and preference controls into their own chunks — it is still ~89% over.
+Baseline: React 19 + react-dom ≈ 140KB (gzip ~45KB), React Router ≈ 30KB (gzip ~10KB),
+bilingual catalogue ≈ 20KB (gzip ~9KB).
 **The framework alone exceeds 55KB gzip, permanently over budget.**
 
 Three ways out — pick one:
@@ -678,3 +709,69 @@ Three ways out — pick one:
 > Recommendation: **1**. This is a tool site — the value is in the tools, not in first-load
 > bytes. SPA first-load JS necessarily contains the framework, so 50KB is unreachable on
 > React 19; enforcing it only produces fake optimizations.
+
+---
+
+## 19. Bilingual Copy and Theme (added 2026-09-24)
+
+### 19.1 Requirements and where they live
+
+| Requirement | Implementation |
+|---|---|
+| Switch between Chinese and English instantly | hand-rolled lightweight i18n in `src/i18n/`; switching re-renders in place, no navigation |
+| All visible copy follows the language | every string — including group names, category names and feasibility labels — goes through an i18n key |
+| Light / dark theme toggle | `src/theme/` plus Tailwind v4 `@custom-variant dark` |
+| Preferences survive a reload | `localStorage`: `toolbox.locale` / `toolbox.theme` |
+
+Both controls sit in the header's right cluster, right after `SearchDialog`, and share the
+appearance constants in `components/layout/controls.ts`: same `h-8` height, same radius, same
+border colour. On mobile the search button collapses to an icon, the language control becomes a
+compact `中 | EN` segmented control, and the theme control is a square icon button. All three stay
+in the top bar rather than moving into the collapsed menu, and the whole row still fits at 360px.
+
+### 19.2 Type-safe message keys
+
+```
+messages.zh.ts   → export const zh = {...} satisfies Record<string,string>
+                   export type MessageKey = keyof typeof zh   ← single source of truth
+messages.en.ts   → export const en: Record<MessageKey, string>
+```
+
+* **A missing translation breaks the build**: drop a key from the English bundle and
+  `tsc --noEmit` fails.
+* **Dynamic keys stay checked**: `t(`group.${id}.name`)` resolves to the four concrete keys via
+  template-literal types, so a wrong prefix surfaces at the type level.
+* **Interpolation**: `t('featured.stage', { live, planned, percent })`, placeholders as `{name}`.
+
+### 19.3 Avoiding a first-paint flash (the important part)
+
+| Preference | Mechanism |
+|---|---|
+| Theme | It is just a class on `<html>`, written by the inline script in `index.html` **before first paint**; React stays out of the first frame. Icons use `dark:hidden` / `hidden dark:block` so CSS picks one, removing any window where React state and the real theme disagree |
+| Language | The first render always uses the default Chinese, matching the SSG output; `useIsomorphicLayoutEffect` then syncs the stored preference **before paint**. If the remembered language is not Chinese, the inline script first applies `html.i18n-pending` to cover the pre-rendered Chinese, and the provider removes it once ready (a 3s fallback timer prevents the content from staying hidden if the script misbehaves) |
+
+> `useIsomorphicLayoutEffect` (in `src/lib/`): `useLayoutEffect` on the client, `useEffect` on the
+> server, so SSG does not log "does nothing on the server".
+
+### 19.4 How data-shaped copy is handled
+
+| Kind | Approach | Why |
+|---|---|---|
+| Group / category / feasibility labels (29 values, a closed enum) | live in the i18n layer as `group.*` / `category.*` / `feasibility.*` | keeps copy in one place and the catalog as pure data |
+| Tool titles and descriptions (per-item content) | `ToolMeta` gains **optional** `titleEn` / `descriptionEn`; falls back to Chinese | per-item content belongs in each tool's own `meta.ts`; being optional means existing tools validate untouched |
+| Search index | still built from the Chinese metadata, **localised at render time** | the index is a single build-time artifact; duplicating it per language is wasteful |
+
+> `titleEn` / `descriptionEn` **do not count towards the 16 required fields** in §6 — they are
+> `.optional()` in `toolMetaSchema`, so `check-tools` behaves exactly as before.
+
+### 19.5 Notes for adding or changing a tool
+
+1. Never hardcode Chinese copy in a component — pull it through `useTranslate()`. Move constant
+   arrays that hold copy (such as `Highlights`' `HIGHLIGHTS`) inside the component body, or they
+   will keep the old text after a language switch.
+2. To add a new string, add the key to `messages.zh.ts` first; `messages.en.ts` will immediately
+   fail as an incomplete `Record<MessageKey, string>`.
+3. **Do not convert CSS-decided state into React conditional rendering** (the theme icons, for
+   example) — that reintroduces the possibility of a first-frame mismatch.
+4. After touching anything under `src/i18n/`, `src/theme/` or `src/lib/`, confirm
+   `manualChunks` in `vite.config.ts` still routes it to `app-core` (see the chunking gotcha in §18.3).
