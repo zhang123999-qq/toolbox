@@ -35,6 +35,8 @@ const IGNORED = [
   'packages/catalog/src/tools.generated.ts',
   // 部署侧是 shell / Dockerfile / nginx 配置，由 deploy/binary/tests/ 的容器内验证脚本把关。
   'deploy/**',
+  // 铺量期的临时生成脚本（一次性产出工具目录，用完即删；不进版本库）
+  'tmp/**',
 ]
 
 export default defineConfig(

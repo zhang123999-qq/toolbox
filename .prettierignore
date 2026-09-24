@@ -29,3 +29,6 @@ pnpm-lock.yaml
 *.woff
 *.woff2
 *.tar.gz
+
+# 铺量期的临时生成脚本（一次性，用完即删）
+tmp/
