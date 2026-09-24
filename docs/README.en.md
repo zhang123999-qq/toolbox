@@ -65,6 +65,7 @@ The details live in the four usage guides rather than here — open the one you 
 ├── DEVELOPMENT.md               ← developer handbook (Chinese): environment / adding tools / gates
 ├── DEVELOPMENT.en.md            ← Developer Guide (English, same structure)
 ├── RELEASE.md                   ← release process: version identity / building a release / changelog notes / one-line install
+├── source-organization.md       ← source organization standard (mandatory): one tool, one folder / naming / dependency scope (English [`source-organization.en.md`](source-organization.en.md))
 ├── audit-report.md                   ← documentation review record from an early round (historical archive)
 ├── spec/                        specification layer: architecture, conventions, roadmap
 │   ├── README.md                project overview (formerly 00-overview)

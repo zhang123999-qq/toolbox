@@ -6,13 +6,14 @@
 
 ---
 
-## 一、先读这三份
+## 一、先读这四份
 
-| 文档                                                         | 为什么先读                                             |
-| ------------------------------------------------------------ | ------------------------------------------------------ |
-| [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md)                 | 开发手册：catalog 机制、元数据契约、模板选型、八条红线 |
-| [`docs/guide/configuration.md`](docs/guide/configuration.md) | 配置分三层，改错层会出现「改了没生效」                 |
-| [`docs/glossary.md`](docs/glossary.md)                       | 术语真源；写英文文档时它决定你用哪个词                 |
+| 文档                                                         | 为什么先读                                               |
+| ------------------------------------------------------------ | -------------------------------------------------------- |
+| [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md)                 | 开发手册：catalog 机制、元数据契约、模板选型、八条红线   |
+| [`docs/source-organization.md`](docs/source-organization.md) | 源码组织规范【强制约束】：一工具一文件夹、命名、依赖范围 |
+| [`docs/guide/configuration.md`](docs/guide/configuration.md) | 配置分三层，改错层会出现「改了没生效」                   |
+| [`docs/glossary.md`](docs/glossary.md)                       | 术语真源；写英文文档时它决定你用哪个词                   |
 
 ---
 
@@ -195,15 +196,16 @@ pnpm verify
 它按顺序跑：元数据校验 → 文档一致性 → 依赖许可校验 → ESLint → Prettier 检查 → 类型检查 →
 单测。任一项失败都不要提交。CI 跑的是同一组命令，本地通过即代表远端通过。
 
-| 门禁             | 拦的是哪类问题                                     |
-| ---------------- | -------------------------------------------------- |
-| `check:tools`    | 元数据缺字段、编号不连续、域合计不等于 870         |
-| `check:docs`     | 双语缺一边、结构不对齐、断链、锚点失效、术语不统一 |
-| `check:licenses` | 依赖里混进 GPL / AGPL / SSPL / BUSL 等受限许可     |
-| `lint`           | 未使用变量、可访问性缺陷、hooks 规则               |
-| `format:check`   | 格式漂移                                           |
-| `typecheck`      | 三个包的类型错误                                   |
-| `test`           | 行为回归                                           |
+| 门禁               | 拦的是哪类问题                                                                   |
+| ------------------ | -------------------------------------------------------------------------------- |
+| `check:tools`      | 元数据缺字段、编号不连续、域合计不等于 870                                       |
+| `check:source-org` | 一工具一文件夹、跨工具 import、命名不合规（[规范](docs/source-organization.md)） |
+| `check:docs`       | 双语缺一边、结构不对齐、断链、锚点失效、术语不统一                               |
+| `check:licenses`   | 依赖里混进 GPL / AGPL / SSPL / BUSL 等受限许可                                   |
+| `lint`             | 未使用变量、可访问性缺陷、hooks 规则                                             |
+| `format:check`     | 格式漂移                                                                         |
+| `typecheck`        | 三个包的类型错误                                                                 |
+| `test`             | 行为回归                                                                         |
 
 ---
 

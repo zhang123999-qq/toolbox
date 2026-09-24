@@ -32,6 +32,14 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
   `.github/ISSUE_TEMPLATE`（缺陷 / 功能建议两类 + 选择器）；CONTRIBUTING（中英）补充
   scope 取值、破坏性变更写法、正反例，并新增「第三方依赖与许可证」一节
 
+- **源码组织规范【强制约束】**：新增 [`docs/source-organization.md`](docs/source-organization.md)
+  （中英成对），明确「一工具一文件夹」：工具目录自包含 8 个文件、禁止跨工具 import、
+  命名须 kebab-case 且与 catalog id 一致、禁止多工具混放
+- **源码组织校验**：新增 `scripts/check-source-org.ts`（`pnpm check:source-org`），
+  机检目录 ↔ catalog 对应、标准文件集、跨工具 import、多工具混放、命名合规、
+  公共层反向依赖六条规则；违规退出码 1，已纳入 `pnpm verify` 与 CI；
+  `--report` 可写出 `.agent/reports/source-org-audit.md`
+
 ### 变更
 
 - **一键安装入口改为真实直链**：仓库已公开，两份 README、文档总索引与

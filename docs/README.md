@@ -62,6 +62,7 @@ curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/latest/download/in
 ├── DEVELOPMENT.md               ← 开发手册（中文）：环境 / 建工具 / 门禁
 ├── DEVELOPMENT.en.md            ← Developer Guide（英文版，同结构）
 ├── RELEASE.md                   ← 发布流程：版本号标识 / Release 构建 / changelog 要点 / 一键安装
+├── source-organization.md       ← 源码组织规范【强制约束】：一工具一文件夹 / 命名 / 依赖范围（英文 source-organization.en.md）
 ├── audit-report.md                   ← 早期文档体系的审核记录（历史归档）
 ├── spec/                        规范层：架构、规范、路线图
 │   ├── README.md                项目总览（原 00-总览）

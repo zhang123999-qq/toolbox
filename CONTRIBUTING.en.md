@@ -7,11 +7,12 @@
 
 ---
 
-## 1. Read these three first
+## 1. Read these four first
 
 | Document                                                     | Why first                                                                                          |
 | ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
 | [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md)                 | the developer handbook: catalog mechanics, metadata contract, template choice, the eight red lines |
+| [`docs/source-organization.md`](docs/source-organization.md) | the source organization standard (mandatory): one tool, one folder, naming, dependency scope       |
 | [`docs/guide/configuration.md`](docs/guide/configuration.md) | configuration has three layers; editing the wrong one looks like "nothing happened"                |
 | [`docs/glossary.md`](docs/glossary.md)                       | the terminology source of truth; it decides which word you use in English                          |
 
@@ -203,15 +204,16 @@ It runs, in order: metadata validation → documentation consistency → licence
 Prettier check → type check → unit tests. Do not commit if any of them fails. CI runs the same
 commands, so passing locally means passing remotely.
 
-| Gate             | Catches                                                                                              |
-| ---------------- | ---------------------------------------------------------------------------------------------------- |
-| `check:tools`    | missing metadata fields, non-contiguous numbering, category totals not adding up to 870              |
-| `check:docs`     | a missing half of a pair, misaligned structure, broken links, dead anchors, inconsistent terminology |
-| `check:licenses` | a dependency pulling in a restricted licence (GPL / AGPL / SSPL / BUSL, and so on)                   |
-| `lint`           | unused variables, accessibility defects, hook rule violations                                        |
-| `format:check`   | formatting drift                                                                                     |
-| `typecheck`      | type errors across the three packages                                                                |
-| `test`           | behavioural regressions                                                                              |
+| Gate               | Catches                                                                                                            |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| `check:tools`      | missing metadata fields, non-contiguous numbering, category totals not adding up to 870                            |
+| `check:source-org` | one tool per folder violations, cross-tool imports, non-compliant naming ([standard](docs/source-organization.md)) |
+| `check:docs`       | a missing half of a pair, misaligned structure, broken links, dead anchors, inconsistent terminology               |
+| `check:licenses`   | a dependency pulling in a restricted licence (GPL / AGPL / SSPL / BUSL, and so on)                                 |
+| `lint`             | unused variables, accessibility defects, hook rule violations                                                      |
+| `format:check`     | formatting drift                                                                                                   |
+| `typecheck`        | type errors across the three packages                                                                              |
+| `test`             | behavioural regressions                                                                                            |
 
 ---
 

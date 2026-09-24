@@ -159,15 +159,16 @@ docs/                使用指南、开发手册、规范、发布流程
 
 ## 文档
 
-| 我想…                      | 看                                                                                  |
-| -------------------------- | ----------------------------------------------------------------------------------- |
-| 浏览全部文档               | [`docs/README.md`](docs/README.md)                                                  |
-| 安装 / 使用 / 配置 / 排障  | [`docs/guide/`](docs/guide/README.md)                                               |
-| 参与开发 / 新增工具        | [`CONTRIBUTING.md`](CONTRIBUTING.md) + [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) |
-| 部署到服务器               | [`deploy/binary/README.md`](deploy/binary/README.md)                                |
-| 发包、打 tag、写 changelog | [`docs/RELEASE.md`](docs/RELEASE.md)                                                |
-| 查术语的中英对照           | [`docs/glossary.md`](docs/glossary.md)                                              |
-| 看版本变更                 | [`CHANGELOG.md`](CHANGELOG.md)                                                      |
+| 我想…                      | 看                                                                                            |
+| -------------------------- | --------------------------------------------------------------------------------------------- |
+| 浏览全部文档               | [`docs/README.md`](docs/README.md)                                                            |
+| 安装 / 使用 / 配置 / 排障  | [`docs/guide/`](docs/guide/README.md)                                                         |
+| 参与开发 / 新增工具        | [`CONTRIBUTING.md`](CONTRIBUTING.md) + [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md)           |
+| 看源码组织规范（强制约束） | [`docs/source-organization.md`](docs/source-organization.md) — 一工具一文件夹、命名、依赖范围 |
+| 部署到服务器               | [`deploy/binary/README.md`](deploy/binary/README.md)                                          |
+| 发包、打 tag、写 changelog | [`docs/RELEASE.md`](docs/RELEASE.md)                                                          |
+| 查术语的中英对照           | [`docs/glossary.md`](docs/glossary.md)                                                        |
+| 看版本变更                 | [`CHANGELOG.md`](CHANGELOG.md)                                                                |
 
 ---
 

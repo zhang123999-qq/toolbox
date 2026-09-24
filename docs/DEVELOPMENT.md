@@ -394,24 +394,25 @@ input / output / run / clear / copy / download / example
 
 ## 九、开发命令速查
 
-| 命令                    | 作用                                        |
-| ----------------------- | ------------------------------------------- |
-| `pnpm dev`              | 启动 `apps/web` 开发服务                    |
-| `pnpm build`            | 全仓构建                                    |
-| `pnpm build:ssg`        | 构建 + SSR 构建 + 预渲染（= CI 的完整产物） |
-| `pnpm test`             | Vitest 单测                                 |
-| `pnpm test:e2e`         | Playwright E2E                              |
-| `pnpm lint`             | ESLint（全仓一份 flat config）              |
-| `pnpm lint:fix`         | ESLint 自动修可修的                         |
-| `pnpm format`           | Prettier 写入                               |
-| `pnpm format:check`     | Prettier 只检查（CI 跑这个）                |
-| `pnpm typecheck`        | `tsc --noEmit`                              |
-| `pnpm check:tools`      | 元数据完整性 + 重复检测 + 模板/大组校验     |
-| `pnpm check:docs`       | 文档一致性（双语配对 / 结构 / 链接 / 术语） |
-| `pnpm verify`           | 以上 6 项门禁串跑（提交前跑这一个即可）     |
-| `pnpm generate:catalog` | 扫描 `tools/*/meta.ts` 重建 catalog         |
-| `pnpm generate:sitemap` | 生成 `sitemap.xml`                          |
-| `pnpm build:wasm`       | 构建 / 拷贝 WASM 模块                       |
+| 命令                    | 作用                                                                                                                   |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `pnpm dev`              | 启动 `apps/web` 开发服务                                                                                               |
+| `pnpm build`            | 全仓构建                                                                                                               |
+| `pnpm build:ssg`        | 构建 + SSR 构建 + 预渲染（= CI 的完整产物）                                                                            |
+| `pnpm test`             | Vitest 单测                                                                                                            |
+| `pnpm test:e2e`         | Playwright E2E                                                                                                         |
+| `pnpm lint`             | ESLint（全仓一份 flat config）                                                                                         |
+| `pnpm lint:fix`         | ESLint 自动修可修的                                                                                                    |
+| `pnpm format`           | Prettier 写入                                                                                                          |
+| `pnpm format:check`     | Prettier 只检查（CI 跑这个）                                                                                           |
+| `pnpm typecheck`        | `tsc --noEmit`                                                                                                         |
+| `pnpm check:tools`      | 元数据完整性 + 重复检测 + 模板/大组校验                                                                                |
+| `pnpm check:source-org` | 源码组织规范【强制约束】：一工具一文件夹、跨工具 import、命名（见 [`source-organization.md`](source-organization.md)） |
+| `pnpm check:docs`       | 文档一致性（双语配对 / 结构 / 链接 / 术语）                                                                            |
+| `pnpm verify`           | 以上 6 项门禁串跑（提交前跑这一个即可）                                                                                |
+| `pnpm generate:catalog` | 扫描 `tools/*/meta.ts` 重建 catalog                                                                                    |
+| `pnpm generate:sitemap` | 生成 `sitemap.xml`                                                                                                     |
+| `pnpm build:wasm`       | 构建 / 拷贝 WASM 模块                                                                                                  |
 
 > `typecheck` / `test` 走 pnpm 自带的递归运行器（`pnpm -r`），不经过 turbo —— 两者都是纯扇出，
 > 不需要依赖图，而 turbo 在受限环境的 Windows 上会稳定触发 `os error 231`。

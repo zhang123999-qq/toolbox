@@ -35,6 +35,11 @@ jobs:
       - name: Check tool metadata
         run: pnpm check:tools
 
+      # 源码组织规范（docs/source-organization.md）【强制约束】：
+      # 一工具一文件夹、8 文件齐全、无跨工具 import、命名合规。
+      - name: Check source organization
+        run: pnpm check:source-org
+
       - name: Check docs consistency
         run: pnpm check:docs
 

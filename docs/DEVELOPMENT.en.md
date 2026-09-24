@@ -401,24 +401,25 @@ limitations / data flow / examples.
 
 ## 9. Command Reference
 
-| Command                 | Purpose                                                      |
-| ----------------------- | ------------------------------------------------------------ |
-| `pnpm dev`              | start the `apps/web` dev server                              |
-| `pnpm build`            | build the whole repo                                         |
-| `pnpm build:ssg`        | client build + SSR build + pre-render (= what CI ships)      |
-| `pnpm test`             | Vitest unit tests                                            |
-| `pnpm test:e2e`         | Playwright E2E                                               |
-| `pnpm lint`             | ESLint (one flat config for the whole repo)                  |
-| `pnpm lint:fix`         | ESLint, fixing what it can                                   |
-| `pnpm format`           | Prettier, writes                                             |
-| `pnpm format:check`     | Prettier, check only (what CI runs)                          |
-| `pnpm typecheck`        | `tsc --noEmit`                                               |
-| `pnpm check:tools`      | metadata integrity + duplicates + template/group validation  |
-| `pnpm check:docs`       | docs consistency (pairing / structure / links / glossary)    |
-| `pnpm verify`           | the six gates above, in one command — run this before commit |
-| `pnpm generate:catalog` | rescan `tools/*/meta.ts` and rebuild the catalog             |
-| `pnpm generate:sitemap` | generate `sitemap.xml`                                       |
-| `pnpm build:wasm`       | build / copy WASM modules                                    |
+| Command                 | Purpose                                                                                                                                      |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm dev`              | start the `apps/web` dev server                                                                                                              |
+| `pnpm build`            | build the whole repo                                                                                                                         |
+| `pnpm build:ssg`        | client build + SSR build + pre-render (= what CI ships)                                                                                      |
+| `pnpm test`             | Vitest unit tests                                                                                                                            |
+| `pnpm test:e2e`         | Playwright E2E                                                                                                                               |
+| `pnpm lint`             | ESLint (one flat config for the whole repo)                                                                                                  |
+| `pnpm lint:fix`         | ESLint, fixing what it can                                                                                                                   |
+| `pnpm format`           | Prettier, writes                                                                                                                             |
+| `pnpm format:check`     | Prettier, check only (what CI runs)                                                                                                          |
+| `pnpm typecheck`        | `tsc --noEmit`                                                                                                                               |
+| `pnpm check:tools`      | metadata integrity + duplicates + template/group validation                                                                                  |
+| `pnpm check:source-org` | source organization (mandatory): one tool per folder, no cross-tool imports, naming — see [`source-organization.md`](source-organization.md) |
+| `pnpm check:docs`       | docs consistency (pairing / structure / links / glossary)                                                                                    |
+| `pnpm verify`           | the six gates above, in one command — run this before commit                                                                                 |
+| `pnpm generate:catalog` | rescan `tools/*/meta.ts` and rebuild the catalog                                                                                             |
+| `pnpm generate:sitemap` | generate `sitemap.xml`                                                                                                                       |
+| `pnpm build:wasm`       | build / copy WASM modules                                                                                                                    |
 
 > `typecheck` / `test` use pnpm's built-in recursive runner (`pnpm -r`) instead of turbo — both are
 > plain fan-outs that need no dependency graph, while turbo reliably trips `os error 231` in

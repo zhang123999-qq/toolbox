@@ -171,15 +171,16 @@ docs/                usage guides, developer handbook, specifications, release p
 
 ## Documentation
 
-| I want to…                        | Read                                                                                |
-| --------------------------------- | ----------------------------------------------------------------------------------- |
-| Browse all docs                   | [`docs/README.md`](docs/README.md)                                                  |
-| Install / use / configure / debug | [`docs/guide/`](docs/guide/README.md)                                               |
-| Contribute, or add a tool         | [`CONTRIBUTING.md`](CONTRIBUTING.md) + [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) |
-| Deploy to a server                | [`deploy/binary/README.md`](deploy/binary/README.md)                                |
-| Cut a release, tag, changelog     | [`docs/RELEASE.md`](docs/RELEASE.md)                                                |
-| Check how a term is translated    | [`docs/glossary.md`](docs/glossary.md)                                              |
-| See what changed                  | [`CHANGELOG.md`](CHANGELOG.md)                                                      |
+| I want to…                        | Read                                                                                                          |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Browse all docs                   | [`docs/README.md`](docs/README.md)                                                                            |
+| Install / use / configure / debug | [`docs/guide/`](docs/guide/README.md)                                                                         |
+| Contribute, or add a tool         | [`CONTRIBUTING.md`](CONTRIBUTING.md) + [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md)                           |
+| Read the source organization rule | [`docs/source-organization.md`](docs/source-organization.md) — one tool, one folder; naming; dependency scope |
+| Deploy to a server                | [`deploy/binary/README.md`](deploy/binary/README.md)                                                          |
+| Cut a release, tag, changelog     | [`docs/RELEASE.md`](docs/RELEASE.md)                                                                          |
+| Check how a term is translated    | [`docs/glossary.md`](docs/glossary.md)                                                                        |
+| See what changed                  | [`CHANGELOG.md`](CHANGELOG.md)                                                                                |
 
 ---
 
