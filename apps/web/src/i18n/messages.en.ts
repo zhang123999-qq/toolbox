@@ -48,6 +48,7 @@ export const en: Record<MessageKey, string> = {
   'search.placeholder': 'Search tools by title, tag or description',
   'search.empty': 'No matches',
   'search.hint': 'Type a keyword to start searching',
+  'search.close': 'Close search',
 
   // —— Home · hero ——
   'hero.eyebrow': 'Local-only · No sign-up · Works offline',

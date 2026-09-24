@@ -51,6 +51,7 @@ export const zh = {
   'search.placeholder': '搜索工具（支持标题、标签、描述）',
   'search.empty': '无匹配结果',
   'search.hint': '输入关键词开始搜索',
+  'search.close': '关闭搜索',
 
   // —— 首页 · 主视觉 ——
   'hero.eyebrow': '纯本地 · 免登录 · 可离线',
@@ -75,11 +76,9 @@ export const zh = {
   'highlights.local.body':
     '所有计算都在你的浏览器里完成，输入内容不会离开本机，也不会写入任何服务端日志。',
   'highlights.noSignup.title': '免登录即用',
-  'highlights.noSignup.body':
-    '打开页面就能用，没有注册流程、没有配额限制，也不要求绑定任何账号。',
+  'highlights.noSignup.body': '打开页面就能用，没有注册流程、没有配额限制，也不要求绑定任何账号。',
   'highlights.offline.title': '可离线使用',
-  'highlights.offline.body':
-    '核心工具不依赖网络请求，装到桌面或断网环境下依然可以正常干活。',
+  'highlights.offline.body': '核心工具不依赖网络请求，装到桌面或断网环境下依然可以正常干活。',
   'highlights.coverage.title': '覆盖 {count} 个域',
   'highlights.coverage.body':
     '从文本、编码、数据格式到图片、PDF、数学与教育，按域归类，找工具不用翻菜单。',

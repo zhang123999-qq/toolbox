@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { searchTools } from '@toolbox/search'
 import { getTool, groupOfCategory } from '@toolbox/catalog'
@@ -24,26 +24,42 @@ export function SearchDialog() {
 
   const results = useMemo(() => searchTools(query), [query])
 
+  // 打开/关闭时复位查询与高亮项。
+  // 刻意不写进 effect（react-hooks/set-state-in-effect）：那是「渲染后再同步状态」，
+  // 会多一次渲染，且状态的来源被拆到两处。这里由用户动作直接驱动，来源单一。
+  const openDialog = useCallback(() => {
+    setQuery('')
+    setActive(0)
+    setOpen(true)
+  }, [])
+
+  const close = useCallback(() => {
+    setOpen(false)
+    setQuery('')
+    setActive(0)
+  }, [])
+
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
         event.preventDefault()
-        setOpen((prev) => !prev)
+        if (open) close()
+        else openDialog()
+        return
       }
-      if (event.key === 'Escape') setOpen(false)
+      if (event.key === 'Escape') close()
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [])
+  }, [open, close, openDialog])
 
+  // 打开后聚焦输入框：纯 DOM 副作用，不触发状态更新
   useEffect(() => {
     if (open) inputRef.current?.focus()
-    else setQuery('')
-    setActive(0)
   }, [open])
 
   function go(slug: string) {
-    setOpen(false)
+    close()
     navigate(`/tools/${slug}`)
   }
 
@@ -66,7 +82,7 @@ export function SearchDialog() {
     <>
       <button
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={openDialog}
         aria-label={t('search.open')}
         className={`${CONTROL_BASE} gap-1 px-2 text-sm`}
       >
@@ -82,13 +98,25 @@ export function SearchDialog() {
           role="dialog"
           aria-modal="true"
           aria-label={t('search.dialogLabel')}
-          className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 p-4 pt-24"
-          onClick={() => setOpen(false)}
+          className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-24"
         >
-          <div
-            className="w-full max-w-lg overflow-hidden rounded-lg bg-white shadow-xl dark:bg-slate-900"
-            onClick={(event) => event.stopPropagation()}
-          >
+          {/*
+            背板用真正的 <button>，而不是「给 div 挂 onClick」：
+            前者键盘天然可达（Esc 之外的第二条关闭路径），后者会同时踩中
+            click-events-have-key-events / no-noninteractive-element-interactions
+            两条规则——而那两条规则指出的确实是可访问性缺陷，不是误报。
+            用 fixed 而非 absolute：absolute 的包含块是父元素的 padding box，
+            会在 p-4 留出的边缘上留下点不到的死区。
+            tabIndex=-1：关闭是附加路径，不让它抢走打开时本该落在输入框的焦点。
+          */}
+          <button
+            type="button"
+            aria-label={t('search.close')}
+            tabIndex={-1}
+            onClick={close}
+            className="fixed inset-0 h-full w-full cursor-default bg-black/40"
+          />
+          <div className="relative w-full max-w-lg overflow-hidden rounded-lg bg-white shadow-xl dark:bg-slate-900">
             <input
               ref={inputRef}
               data-testid="search-input"
