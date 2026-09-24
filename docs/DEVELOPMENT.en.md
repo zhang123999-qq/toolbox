@@ -397,6 +397,41 @@ limitations / data flow / examples.
 | Tools must not import each other              | hoist shared logic into `features/` or `lib/`          |
 | Never bypass the template system              | must use one of T1–T6                                  |
 
+### 8.5 External API configuration (hard constraint)
+
+**Any tool or service that calls an external API must document its API configuration and setup in
+`.env` (not committed, so [`.env.example`](../.env.example) is maintained alongside it).**
+Machine check: `pnpm check:env` (part of `pnpm verify` and CI; failure blocks the merge).
+
+| #   | Rule                                | Detail                                                                                                                                       |
+| --- | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Itemise every entry                 | List the config items **per tool**: variable name, purpose, required or not, where to get it (sign-up page or console), format, sample value |
+| 2   | Mixed Chinese/English service names | Write services as `OpenAI（开放AI大模型服务）` / `GitHub（代码托管平台）` so both audiences recognise them                                   |
+| 3   | Comments sit next to the entry      | Put those notes in `.env.example` as comments **directly above the matching variable**, so the file alone is enough to finish setup          |
+| 4   | Never commit a real key             | `.env` is already in `.gitignore`; `.env.example` holds empty values or `xxx` placeholders only                                              |
+| 5   | Register as you add                 | Adding or changing a tool or service that calls an external API must update `.env.example` in the same commit                                |
+| 6   | No `VITE_` prefix for secrets       | Vite inlines `VITE_`-prefixed values into the bundle; only non-secret values (default endpoint, default model) may use it                    |
+
+Comment template (copy it when adding a config item):
+
+```dotenv
+# ── variable: <NAME> ──────────────────────
+# purpose: <one line on what this variable controls>
+# required: yes / no (if no, state the default behaviour)
+# how to get: <service name (Chinese gloss)> + console URL
+# format: <value shape, prefix and separators>
+# example: <NAME>=<placeholder, never a real key>
+<NAME>=
+```
+
+After the variable dictionary, add an entry to the "per-tool list" section of `.env.example`:
+
+```text
+tool: <slug> (Chinese name)
+  requires: <VAR_A> / <VAR_B>
+  notes: <which mode needs it, and what happens without it>
+```
+
 ---
 
 ## 9. Command Reference
@@ -415,6 +450,7 @@ limitations / data flow / examples.
 | `pnpm typecheck`        | `tsc --noEmit`                                                                                                                               |
 | `pnpm check:tools`      | metadata integrity + duplicates + template/group validation                                                                                  |
 | `pnpm check:source-org` | source organization (mandatory): one tool per folder, no cross-tool imports, naming — see [`source-organization.md`](source-organization.md) |
+| `pnpm check:env`        | external API config: whether `.env.example` registers every tool that needs an API (§8.5)                                                    |
 | `pnpm check:docs`       | docs consistency (pairing / structure / links / glossary)                                                                                    |
 | `pnpm verify`           | the six gates above, in one command — run this before commit                                                                                 |
 | `pnpm generate:catalog` | rescan `tools/*/meta.ts` and rebuild the catalog                                                                                             |

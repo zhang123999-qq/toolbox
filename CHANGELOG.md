@@ -40,6 +40,18 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
   公共层反向依赖六条规则；违规退出码 1，已纳入 `pnpm verify` 与 CI；
   `--report` 可写出 `.agent/reports/source-org-audit.md`
 
+- **外部 API 配置硬约束**：新增 `docs/DEVELOPMENT.md` §8.5（中英同步）——任何调用外部 API
+  的工具或服务，都必须在 `.env` / `.env.example` 写清变量字典（用途、是否必填、获取途径、
+  格式、示例值），并按工具逐项列出所需配置；服务名统一中英混合写法
+  （如 `OpenAI（开放AI大模型服务）`、`GitHub（代码托管平台）`）
+- **新增 `.env.example`**：登记 SITE_ORIGIN / GITHUB_TOKEN / TOOLBOX_REPO / TOOLBOX_PROXY /
+  `VITE_TOOLBOX_AI_API_BASE` / `VITE_TOOLBOX_AI_MODEL` / `TOOLBOX_AI_API_KEY` 等变量，
+  以及 5 个 D 类工具（summarize / rewrite / translate / title-gen / tag-gen）与三个服务的清单；
+  附可复制的注释模板
+- **外部 API 配置校验**：新增 `scripts/check-env-config.ts`（`pnpm check:env`），机检
+  `.env` 已被忽略、`.env.example` 已放行、每个 `api: true` 的工具都已登记、
+  无疑似真实密钥、无 `VITE_` 前缀承载密钥；已纳入 `pnpm verify` 与 CI
+
 ### 变更
 
 - **一键安装入口改为真实直链**：仓库已公开，两份 README、文档总索引与

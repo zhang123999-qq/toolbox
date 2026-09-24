@@ -25,6 +25,18 @@ export function normalizeBase(apiBase: string): string {
   return apiBase.trim().replace(/\/+$/, '')
 }
 
+/**
+ * 从构建期环境变量取「非密钥」默认值（DEVELOPMENT.md §8.5）。
+ *
+ * 自部署时可以预置一个自建代理地址与默认模型，省得每个用户手填；
+ * 这两项都不是密钥，进浏览器产物无害。**API Key 永远不在这里**——
+ * 它只能由用户在页面填写，或由自建代理在服务端注入。
+ */
+export const AI_ENV_DEFAULTS: Pick<AiConfig, 'apiBase' | 'model'> = {
+  apiBase: String(import.meta.env['VITE_TOOLBOX_AI_API_BASE'] ?? ''),
+  model: String(import.meta.env['VITE_TOOLBOX_AI_MODEL'] ?? ''),
+}
+
 /** 校验配置齐全；缺哪一项就在报错里点名 */
 export function assertConfig(config: AiConfig): void {
   const missing: string[] = []

@@ -2,6 +2,7 @@ import { TwoColumn } from '../../components/tool/templates/TwoColumn'
 import type { OptionDef } from '../../components/tool/templates/TwoColumn'
 import { useTranslate } from '../../i18n'
 import { meta } from './meta'
+import { AI_ENV_DEFAULTS } from '../../lib/ai'
 import { transform } from './utils'
 import type { RewriteInput, RewriteOptions } from './schema'
 
@@ -27,7 +28,12 @@ export default function Tool() {
   return (
     <TwoColumn<RewriteInput, RewriteOptions>
       meta={meta}
-      initialInput={{ text: '', apiBase: '', apiKey: '', model: '' }}
+      initialInput={{
+        text: '',
+        apiBase: AI_ENV_DEFAULTS.apiBase,
+        apiKey: '',
+        model: AI_ENV_DEFAULTS.model,
+      }}
       initialOptions={{ style: 'polish' }}
       runAsync={transform}
       example={EXAMPLE}

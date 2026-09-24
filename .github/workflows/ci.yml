@@ -40,6 +40,11 @@ jobs:
       - name: Check source organization
         run: pnpm check:source-org
 
+      # 调外部 API 的工具必须把配置写进 .env.example（DEVELOPMENT.md §8.5），
+      # 顺带拦住「真实密钥被提交」与「VITE_ 前缀承载密钥」（会被内联进产物）。
+      - name: Check external API config
+        run: pnpm check:env
+
       - name: Check docs consistency
         run: pnpm check:docs
 

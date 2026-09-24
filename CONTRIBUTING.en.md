@@ -208,6 +208,7 @@ commands, so passing locally means passing remotely.
 | ------------------ | ------------------------------------------------------------------------------------------------------------------ |
 | `check:tools`      | missing metadata fields, non-contiguous numbering, category totals not adding up to 870                            |
 | `check:source-org` | one tool per folder violations, cross-tool imports, non-compliant naming ([standard](docs/source-organization.md)) |
+| `check:env`        | a tool that calls an external API missing from `.env.example`, or a real-looking key committed                     |
 | `check:docs`       | a missing half of a pair, misaligned structure, broken links, dead anchors, inconsistent terminology               |
 | `check:licenses`   | a dependency pulling in a restricted licence (GPL / AGPL / SSPL / BUSL, and so on)                                 |
 | `lint`             | unused variables, accessibility defects, hook rule violations                                                      |

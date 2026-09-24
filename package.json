@@ -35,7 +35,8 @@
     "check:licenses": "tsx scripts/check-licenses.ts",
     "check:source-org": "tsx scripts/check-source-org.ts",
     "prerender": "tsx scripts/prerender.ts",
-    "verify": "pnpm check:tools && pnpm check:source-org && pnpm check:docs && pnpm check:licenses && pnpm lint && pnpm format:check && pnpm typecheck && pnpm test"
+    "verify": "pnpm check:tools && pnpm check:source-org && pnpm check:env && pnpm check:docs && pnpm check:licenses && pnpm lint && pnpm format:check && pnpm typecheck && pnpm test",
+    "check:env": "tsx scripts/check-env-config.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

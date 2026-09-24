@@ -200,6 +200,7 @@ pnpm verify
 | ------------------ | -------------------------------------------------------------------------------- |
 | `check:tools`      | 元数据缺字段、编号不连续、域合计不等于 870                                       |
 | `check:source-org` | 一工具一文件夹、跨工具 import、命名不合规（[规范](docs/source-organization.md)） |
+| `check:env`        | 调外部 API 的工具没在 `.env.example` 登记、或疑似真实密钥入库                    |
 | `check:docs`       | 双语缺一边、结构不对齐、断链、锚点失效、术语不统一                               |
 | `check:licenses`   | 依赖里混进 GPL / AGPL / SSPL / BUSL 等受限许可                                   |
 | `lint`             | 未使用变量、可访问性缺陷、hooks 规则                                             |
