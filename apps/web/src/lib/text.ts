@@ -227,3 +227,36 @@ export function syllableCount(word: string): number {
   if (count > 1 && cleaned.endsWith('e') && !/[aeiouy]e$/.test(cleaned)) count -= 1
   return Math.max(1, count)
 }
+
+/**
+ * 全角（显示占 2 列）的码位区间。
+ * 对齐与折行必须按显示列宽算，否则中日韩文本会比拉丁文本短一半。
+ */
+const WIDE_RANGES: readonly (readonly [number, number])[] = [
+  [0x1100, 0x115f], // 谚文字母
+  [0x2e80, 0x303e], // CJK 部首、康熙部首、中文标点
+  [0x3041, 0x33ff], // 假名、注音、CJK 兼容
+  [0x3400, 0x4dbf], // CJK 扩展 A
+  [0x4e00, 0x9fff], // CJK 基本区
+  [0xa000, 0xa4cf], // 彝文
+  [0xac00, 0xd7a3], // 谚文音节
+  [0xf900, 0xfaff], // CJK 兼容汉字
+  [0xfe10, 0xfe19], // 竖排标点
+  [0xfe30, 0xfe6f], // CJK 兼容形式
+  [0xff00, 0xff60], // 全角 ASCII
+  [0xffe0, 0xffe6], // 全角符号
+  [0x1f300, 0x1f64f], // 符号与表情
+  [0x20000, 0x3fffd], // CJK 扩展 B 及以后
+]
+
+/** 单个码位的显示列宽：全角 2 列，其余 1 列 */
+export function charWidth(code: number): number {
+  return WIDE_RANGES.some(([from, to]) => code >= from && code <= to) ? 2 : 1
+}
+
+/** 字符串的显示列宽 */
+export function displayWidth(text: string): number {
+  let total = 0
+  for (const ch of text) total += charWidth(ch.codePointAt(0) ?? 0)
+  return total
+}

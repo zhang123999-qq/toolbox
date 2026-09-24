@@ -1,48 +1,15 @@
 import type { ZeroWidthInput, ZeroWidthOptions } from './schema'
-
-/** 零宽与方向控制字符：隐写水印通常用这一类 */
-const ZERO_WIDTH = new Set([
-  0x200b, // 零宽空格
-  0x200c, // 零宽非连接符
-  0x200d, // 零宽连接符
-  0x200e, // 左至右标记
-  0x200f, // 右至左标记
-  0x202a, // 左至右嵌入
-  0x202b, // 右至左嵌入
-  0x202c, // 方向格式化结束
-  0x202d, // 左至右重写
-  0x202e, // 右至左重写
-  0x2060, // 词连接符
-  0x2061, // 函数应用
-  0x2062, // 不可见乘号
-  0x2063, // 不可见分隔符
-  0x2064, // 不可见加号
-  0xfeff, // 零宽不换行空格（BOM）
-])
-
-const NAMES: Record<number, string> = {
-  0x200b: '零宽空格',
-  0x200c: '零宽非连接符',
-  0x200d: '零宽连接符',
-  0x200e: '左至右标记',
-  0x200f: '右至左标记',
-  0x2060: '词连接符',
-  0xfeff: '零宽不换行空格（BOM）',
-}
+// 零宽判定与命名已上提到 lib：#42 与 #57 / #58 共用同一套口径
+import { hexOf, isZeroWidthCode, zeroWidthName } from '../../lib/zerowidth'
 
 /** 是否零宽 / 方向控制字符 */
 export function isZeroWidth(code: number): boolean {
-  return ZERO_WIDTH.has(code)
+  return isZeroWidthCode(code)
 }
 
 /** 名称：有名的用专名，其余给统称 */
 export function nameOf(code: number): string {
-  return NAMES[code] ?? '零宽 / 方向控制字符'
-}
-
-/** 码位转 U+XXXX */
-export function hexOf(code: number): string {
-  return 'U+' + code.toString(16).toUpperCase().padStart(4, '0')
+  return zeroWidthName(code)
 }
 
 /** 检测 / 删除 / 抽出零宽字符 */
