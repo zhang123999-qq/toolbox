@@ -1,0 +1,28 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-brand: #0ea5e9;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    'PingFang SC',
+    'Microsoft YaHei',
+    sans-serif;
+}
+
+/* 移动端工具页操作区固定在底部（DEVELOPMENT.md / spec/06 §11） */
+@media (max-width: 640px) {
+  .tool-actions {
+    position: sticky;
+    bottom: 0;
+  }
+}
