@@ -61,7 +61,7 @@ The details live in the four usage guides rather than here — open the one you 
 ├── DEVELOPMENT.md               ← developer handbook (Chinese): environment / adding tools / gates
 ├── DEVELOPMENT.en.md            ← Developer Guide (English, same structure)
 ├── RELEASE.md                   ← release process: version identity / building a release / changelog notes / one-line install
-├── 审核报告.md                   ← documentation review record from an early round (historical archive)
+├── audit-report.md                   ← documentation review record from an early round (historical archive)
 ├── spec/                        specification layer: architecture, conventions, roadmap
 │   ├── README.md                project overview (formerly 00-overview)
 │   ├── 01-域与子类全景.md        the 20 categories plus 60+ sub-categories
@@ -109,7 +109,7 @@ The details live in the four usage guides rather than here — open the one you 
 | check the dev-log specification                                     | [`spec/10-DevLog规范.md`](spec/10-DevLog规范.md)                                                                            |
 | **cut a release, tag it, write a changelog, do a one-line install** | [`RELEASE.md`](RELEASE.md) + the root [`CHANGELOG.md`](../CHANGELOG.md)                                                     |
 | **deploy to a server (container / binary)**                         | [`../deploy/binary/README.md`](../deploy/binary/README.md) (binary) · [`../deploy/docker/`](../deploy/docker/) (container)  |
-| read the early documentation review                                 | [`审核报告.md`](审核报告.md)                                                                                                |
+| read the early documentation review                                 | [`audit-report.md`](audit-report.md)                                                                                        |
 
 ---
 

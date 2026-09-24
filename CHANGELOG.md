@@ -18,6 +18,20 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
   `docs/glossary.md`（术语真源 + 禁用译法）、`CONTRIBUTING.md`、`docs/README.en.md`
 - **文档一致性校验**：`pnpm check:docs` 机检双语配对、结构对齐、链接与锚点、术语统一、
   在线地址与「尚未上线」标注、新文档是否已入索引
+- **MIT 许可证**：新增 `LICENSE`；根与各 workspace 包的 `package.json` 补齐 `license` /
+  `repository` / `bugs` / `homepage` 字段；两份 README 加许可徽标与许可证章节
+- **依赖许可校验**：新增 `scripts/check-licenses.ts`（`pnpm check:licenses`），扫描全部已安装
+  包的 SPDX 表达式（支持 `OR` / `AND` / `WITH`），GPL / AGPL / SSPL / BUSL 与未声明许可一律
+  失败，已纳入 `pnpm verify` 与 CI；弱 copyleft 默认只提示，`--strict` 下才报错
+- **提交规范与社区文件**：新增 `.gitmessage` 提交模板、`.github/PULL_REQUEST_TEMPLATE.md`、
+  `.github/ISSUE_TEMPLATE`（缺陷 / 功能建议两类 + 选择器）；CONTRIBUTING（中英）补充
+  scope 取值、破坏性变更写法、正反例，并新增「第三方依赖与许可证」一节
+
+### 变更
+
+- **`docs/审核报告.md` 改名为 `docs/audit-report.md`**：按
+  [`docs/spec/11-文档命名规范.md`](docs/spec/11-文档命名规范.md) 的映射统一为英文文件名，
+  同步更新两份文档索引与 `check-docs` 的豁免清单
 
 ### 修复
 

@@ -48,7 +48,7 @@ const TIER_A = [
 ]
 
 /** 不要求英文版、也不参与配对检查（历史生成物 / 单语言记录） */
-const PAIR_EXEMPT = ['CHANGELOG.md', 'docs/审核报告.md']
+const PAIR_EXEMPT = ['CHANGELOG.md', 'docs/audit-report.md']
 
 /** 必须声明在线体验地址（含 www 别名）并标注未上线的文档 */
 const MUST_STATE_ONLINE = [

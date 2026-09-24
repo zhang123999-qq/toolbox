@@ -10,6 +10,15 @@ coverage/
 !.env.example
 *.log
 
+# 编辑器与系统文件
+.idea/
+*.swp
+*.swo
+Thumbs.db
+
+# TypeScript 增量构建缓存
+*.tsbuildinfo
+
 # 测试产物
 playwright-report/
 test-results/
