@@ -16,9 +16,10 @@ export const SITE_DESCRIPTION =
 
 /**
  * 正式域名（唯一真源）。
- * 站点**尚未上线**，见 docs/guide/getting-started.md §六；
- * 这里提前用正式域名而不是占位地址，是为了让上线前产出的 canonical、
- * sitemap 与 JSON-LD 就是最终值——占位地址一旦发出去，索引要重新洗一遍。
+ * 站点**已上线**，两个入口均可访问（`SITE_ORIGIN_ALIASES` 里的 www 是别名），
+ * 见 docs/guide/getting-started.md §六；
+ * 这里用正式域名而不是占位地址，是为了让 canonical、sitemap 与 JSON-LD 就是最终值——
+ * 占位地址一旦发出去，索引要重新洗一遍。
  * 需要构建到别处（预发、临时环境）时用 SITE_ORIGIN 环境变量覆盖。
  */
 export const SITE_ORIGIN = 'https://006336.xyz'

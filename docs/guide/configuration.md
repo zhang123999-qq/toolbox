@@ -21,7 +21,7 @@
 ### 2.1 SITE_ORIGIN
 
 决定 sitemap 的 `<loc>`、页面的 `canonical` 与 JSON-LD 里的站点地址。
-默认值是正式域名 `https://006336.xyz`（该站点尚未上线，见
+默认值是正式域名 `https://006336.xyz`（该站点已上线，见
 [`getting-started.md`](getting-started.md) §六）。需要在别处部署时覆盖它：
 
 ```bash

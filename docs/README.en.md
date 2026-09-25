@@ -244,9 +244,10 @@ executable checks.
 - **Consistency checking**: added `scripts/check-docs.ts` (9 checks — see §4 above and `glossary.md`
   §5), wired into `pnpm check:docs` and CI. Bilingual docs went from "hope someone remembers" to
   "miss one side and the check fails".
-- **Live-demo addresses recorded**: `https://006336.xyz/` and `https://www.006336.xyz/`, marked
-  **not launched yet** in the root README and `guide/getting-started.md`; the `SITE_ORIGIN` default
-  changed from the placeholder `https://example.com` to the production domain.
+- **Live-demo addresses recorded**: `https://006336.xyz/` and `https://www.006336.xyz/`, both
+  **live and reachable** (`www` being an alias of the primary domain), marked **live** in the root
+  README and `guide/getting-started.md`; the `SITE_ORIGIN` default changed from the placeholder
+  `https://example.com` to the production domain.
 - **Three real defects fixed along the way**: CI watched `main` while the actual branch is `master`
   (so CI had never run on push), `loadTool` created a fresh `lazy()` wrapper on every render
   (switching language remounted the tool and discarded user input), and the search overlay backdrop

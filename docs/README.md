@@ -210,7 +210,8 @@ curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/latest/download/in
 - **一致性校验**：新增 `scripts/check-docs.ts`（9 项检查，见本文 §四与 `glossary.md` §五），
   接入 `pnpm check:docs` 与 CI。双语文档从「靠人记得」变成「漏一边就失败」。
 - **在线体验地址登记**：`https://006336.xyz/` 与 `https://www.006336.xyz/`，
-  在根 README 与 `guide/getting-started.md` 中标注**尚未上线**；
+  两个地址均已上线可访问（`www` 为主域别名），在根 README 与
+  `guide/getting-started.md` 中标注**已上线**；
   `SITE_ORIGIN` 默认值由占位地址 `https://example.com` 改为正式域名。
 - **顺带修掉 3 个真实缺陷**：CI 只监听 `main` 而实际分支是 `master`（等于 CI 从未在 push 时跑过）、
   `loadTool` 每次渲染都新建 `lazy()` 包装（切语言会卸载重挂工具、丢掉用户输入）、

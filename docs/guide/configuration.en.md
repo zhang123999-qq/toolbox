@@ -23,7 +23,7 @@
 ### 2.1 SITE_ORIGIN
 
 This drives the sitemap's `<loc>`, each page's `canonical` and the site address in the JSON-LD.
-The default is the production domain `https://006336.xyz` (that site has not launched yet — see
+The default is the production domain `https://006336.xyz` (that site is live — see
 [`getting-started.md`](getting-started.md) §6). Override it when deploying elsewhere:
 
 ```bash

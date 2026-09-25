@@ -63,7 +63,7 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
 - **双语文档体系**：`docs/guide/`（安装与快速上手 / 使用示例 / 配置说明 / 排障，四篇中英成对）、
   `docs/glossary.md`（术语真源 + 禁用译法）、`CONTRIBUTING.md`、`docs/README.en.md`
 - **文档一致性校验**：`pnpm check:docs` 机检双语配对、结构对齐、链接与锚点、术语统一、
-  在线地址与「尚未上线」标注、新文档是否已入索引
+  在线地址与「已上线」标注、新文档是否已入索引
 - **MIT 许可证**：新增 `LICENSE`；根与各 workspace 包的 `package.json` 补齐 `license` /
   `repository` / `bugs` / `homepage` 字段；两份 README 加许可徽标与许可证章节
 - **依赖许可校验**：新增 `scripts/check-licenses.ts`（`pnpm check:licenses`），扫描全部已安装
@@ -162,6 +162,15 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
 
 ### 修复
 
+- **在线体验地址的文档描述与实际不符**：文档一直把 `https://006336.xyz/` 与
+  `https://www.006336.xyz/` 标为「尚未上线 / 不可访问」，但实测两个地址均已 **HTTP 200**
+  且都在真实提供站点内容（`<title>工具库 · 870 个纯本地在线工具</title>`），
+  各连续 5 次请求全部成功（主域 2.1–4.8s、`www` 2.4–5.4s，直连与代理均可）。
+  现把 8 份文档（README ×2、guide/getting-started ×2、guide/configuration ×2、
+  docs/README ×2）与 `packages/catalog/src/site.ts` 的注释统一改为「已上线」口径，
+  并明确 `www` 为主域别名、`SITE_ORIGIN` 与 canonical 仍统一指向主域。
+  同步把 `scripts/check-docs.ts` 的规则 7 反转：由「必须标注尚未上线」改为
+  **「必须标注已上线」+ 反向断言禁止残留旧表述**，避免这份口径再次漂移
 - **`upgrade` 对「回退源」会静默降级**：原先只在「源内版本 == 当前版本」时跳过，
   源内版本**低于**当前时（镜像站过期、切回旧源、源内 `latest.txt` 未更新都会造成）
   会直接把线上实例降级——用户以为执行了一次升级。现改为：未显式指定 `--to` 时，

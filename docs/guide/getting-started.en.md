@@ -141,19 +141,21 @@ home page. The latter is a "soft 404" and feeds search engines a pile of meaning
 
 ---
 
-## 6. Live demo (not launched yet)
+## 6. Live demo
 
-The site is not live yet, so the following domains are currently **unreachable**. They are
-recorded here only as the future live-demo entry points:
+The site **is live**; both addresses below are reachable and serve the same content (`www` is an
+alias of the primary domain):
 
-| Address                   | Status                                         |
-| ------------------------- | ---------------------------------------------- |
-| <https://006336.xyz/>     | not launched yet                               |
-| <https://www.006336.xyz/> | not launched yet (alias of the primary domain) |
+| Address                   | Status                                     |
+| ------------------------- | ------------------------------------------ |
+| <https://006336.xyz/>     | ✅ reachable (primary entry point)         |
+| <https://www.006336.xyz/> | ✅ reachable (alias of the primary domain) |
 
-Until launch, reach the site through one of the three paths in this document, locally or on your
-internal network. At build time set `SITE_ORIGIN` to the production domain, otherwise the sitemap
-and page canonicals point at a placeholder address (see [`configuration.md`](configuration.md) §2).
+You can of course still use one of the three paths in this document to deploy the site on your own
+machine and use it offline. The first cold connection to `www` is occasionally slow — just retry if
+it times out. At build time set `SITE_ORIGIN` to the production domain, otherwise
+the sitemap and page canonicals point at a placeholder address (see
+[`configuration.md`](configuration.md) §2).
 
 ---
 

@@ -22,18 +22,21 @@
 
 ---
 
-## Live demo (not launched yet)
+## Live demo
 
-The site is **not launched yet**, so the two domains below are currently unreachable. They are
-recorded here only as the future live-demo entry points:
+The site **is live** and both addresses below are reachable, serving identical content:
 
-| Address                   | Status                   |
-| ------------------------- | ------------------------ |
-| <https://006336.xyz/>     | not launched yet         |
-| <https://www.006336.xyz/> | not launched yet (alias) |
+| Address                   | Status                                     |
+| ------------------------- | ------------------------------------------ |
+| <https://006336.xyz/>     | ✅ reachable (primary entry point)         |
+| <https://www.006336.xyz/> | ✅ reachable (alias of the primary domain) |
 
-Until launch, follow "Quick start" below to reach the site locally or on your internal network;
-after launch these two addresses become the official entry points.
+`www` is only an alias: at build time `SITE_ORIGIN` and every page's canonical URL point at the
+primary domain, so both addresses serve the same content. The first cold connection to `www` is
+occasionally slow — just retry if it times out.
+
+You can also follow "Quick start" below to deploy the site on your own machine and use it
+offline — every tool runs locally in the browser and needs no online service.
 
 ---
 

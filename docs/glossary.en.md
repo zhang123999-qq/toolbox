@@ -88,7 +88,7 @@ pnpm check:docs --strict   # treat warnings as failures too
 `scripts/check-docs.ts` runs nine checks: bilingual pairing, bidirectional language-switcher
 links, matching section and code-block structure, resolvable relative links, real `path#anchor`
 targets, absence of forbidden translations, presence of the online URLs together with the
-"not launched yet" marker, whether new documents appear in the `docs/README.md` map, and
+"is live" marker, whether new documents appear in the `docs/README.md` map, and
 kebab-case file naming.
 
 For the first eight, anything wrong in a Tier A document (reader-facing) is an **error**, while

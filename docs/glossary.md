@@ -84,7 +84,7 @@ pnpm check:docs --strict   # 连警告也算失败
 
 脚本 `scripts/check-docs.ts` 会做 9 项检查：双语配对、语言切换入口双向存在、
 章节与代码块结构对齐、相对链接可达、`path#anchor` 锚点真实存在、
-禁用译法未出现、在线体验地址与「尚未上线」标注齐备、
+禁用译法未出现、在线体验地址与「已上线」标注齐备、
 新增文档已进 `docs/README.md` 的文档地图、文件名符合 kebab-case。
 
 前 8 项中，凡是 Tier A（对外文档）的问题一律 **error**；Tier B（工程内部文档）

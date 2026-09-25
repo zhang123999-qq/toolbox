@@ -13,7 +13,7 @@
  *   4. 链接可达        相对链接必须存在（目录链接也算）
  *   5. 锚点可达        `path#frag` 的锚点在目标文档里真实存在
  *   6. 术语统一        glossary 里登记的「禁用译法」不得出现在英文文档中
- *   7. 在线体验链接     指定文档必须同时含两个正式域名，并标注「尚未上线」
+ *   7. 在线体验链接     指定文档必须同时含两个正式域名，并标注「已上线」
  *   8. 索引覆盖        新增文档必须出现在 docs/README.md 的文档地图里
  *   9. 命名规范        文件名 kebab-case（历史中文文件名只记 warning，不阻塞）
  *
@@ -50,7 +50,7 @@ const TIER_A = [
 /** 不要求英文版、也不参与配对检查（历史生成物 / 单语言记录） */
 const PAIR_EXEMPT = ['CHANGELOG.md', 'docs/audit-report.md']
 
-/** 必须声明在线体验地址（含 www 别名）并标注未上线的文档 */
+/** 必须声明在线体验地址（含 www 别名）并标明上线状态的文档 */
 const MUST_STATE_ONLINE = [
   'README.md',
   'README.en.md',
@@ -60,8 +60,19 @@ const MUST_STATE_ONLINE = [
 
 const ONLINE_PRIMARY = 'https://006336.xyz/'
 const ONLINE_WWW = 'https://www.006336.xyz/'
-const NOT_LIVE_ZH = ['尚未上线', '未上线', '暂未上线']
-const NOT_LIVE_EN = ['not yet live', 'not live', 'coming soon', 'not launched']
+// 站点已上线：文档必须标注「已上线」，且**不得**再留着「尚未上线」这类旧表述
+// （实测两个域名均已 200 可访问，`www` 为主域别名）。
+const LIVE_ZH = ['已上线', '可访问']
+const LIVE_EN = [
+  'is live',
+  'now live',
+  'already live',
+  'has launched',
+  'already launched',
+  'reachable',
+]
+const NOT_LIVE_ZH = ['尚未上线', '未上线', '暂未上线', '不可访问']
+const NOT_LIVE_EN = ['not yet live', 'not live', 'coming soon', 'not launched', 'unreachable']
 
 const GLOSSARY_FILE = 'docs/glossary.md'
 
@@ -315,18 +326,24 @@ if (existsSync(path.join(ROOT, GLOSSARY_FILE))) {
 }
 
 // ───────────────────────────────────────────────────────────
-// 7. 在线体验链接 + 未上线标注
+// 7. 在线体验链接 + 上线状态标注
 // ───────────────────────────────────────────────────────────
 for (const rel of MUST_STATE_ONLINE) {
   if (!existsSync(path.join(ROOT, rel))) continue
   const src = read(rel)
+  const lower = src.toLowerCase()
   for (const url of [ONLINE_PRIMARY, ONLINE_WWW]) {
     if (!src.includes(url)) err(rel, `缺少在线体验地址：${url}`)
   }
-  const markers = isEn(rel) ? NOT_LIVE_EN : NOT_LIVE_ZH
-  if (!markers.some((m) => src.toLowerCase().includes(m.toLowerCase()))) {
-    err(rel, `未标注「尚未上线」状态（需出现其一：${markers.join(' / ')}）`)
+  const live = isEn(rel) ? LIVE_EN : LIVE_ZH
+  if (!live.some((m) => lower.includes(m.toLowerCase()))) {
+    err(rel, `未标注「已上线」状态（需出现其一：${live.join(' / ')}）`)
   }
+  // 反向断言：站点已上线，文档里若还留着「尚未上线 / 不可访问」就是与实际不符。
+  // 只查正向不够——那句话正是这次要清掉的旧口径，漏一处就又是一份误导文档。
+  const stale = isEn(rel) ? NOT_LIVE_EN : NOT_LIVE_ZH
+  const hit = stale.find((m) => lower.includes(m.toLowerCase()))
+  if (hit) err(rel, `站点已上线，但仍残留旧表述「${hit}」——请改写为「已上线」口径`)
 }
 
 // ───────────────────────────────────────────────────────────
