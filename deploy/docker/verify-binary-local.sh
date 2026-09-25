@@ -14,7 +14,19 @@ set -u
 
 TB=/tmp/tbv
 CTL=$TB/toolboxctl
-BUNDLE=$TB/toolbox-0.0.1-beta-linux-amd64.tar.gz
+SRC_DIR=$TB/dist-release
+# 版本号与包名都从发布源现取，避免每次升版都要回来改脚本
+# （先前硬编码过一次，版本号一改脚本就找不到包）。
+VER=$(tr -d ' \t\r\n' < "$SRC_DIR/latest.txt" 2>/dev/null || true)
+[ -n "$VER" ] || {
+  echo "找不到 $SRC_DIR/latest.txt，请先上传 dist-release/" >&2
+  exit 2
+}
+BUNDLE=$SRC_DIR/toolbox-${VER}-linux-amd64.tar.gz
+[ -f "$BUNDLE" ] || {
+  echo "找不到 $BUNDLE" >&2
+  exit 2
+}
 RENDER_OUT=$TB/render-out
 OUT=$TB/a-result.log
 : >"$OUT"
@@ -116,7 +128,7 @@ exec_case A-14 "非 root 执行 install 应被拒绝" any -- \
 banner "A-15..A-18 配置文件加载与渲染"
 exec_case A-15 "render --tpl-dir 生成 nginx.conf" 0 -- \
   bash "$CTL" render --tpl-dir "$TB/bundle/conf" --prefix /opt/toolbox --port 8081 \
-  --version 0.0.1-beta --out "$RENDER_OUT"
+  --version "$VER" --out "$RENDER_OUT"
 exec_case A-16 "渲染结果通过 nginx -t 语法校验" 0 -- \
   nginx -t -c "$RENDER_OUT/nginx.conf"
 assert_case A-16b "渲染出的 nginx.conf 监听 8081" -- \
@@ -125,16 +137,16 @@ assert_case A-16b "渲染出的 nginx.conf 监听 8081" -- \
 # 这条直接盯住默认值，改动被回退时立刻失败。
 exec_case A-16c "render 不传 --port 时默认渲染 8081" 0 -- \
   bash "$CTL" render --tpl-dir "$TB/bundle/conf" --prefix /opt/toolbox \
-  --version 0.0.1-beta --out "$TB/render-default"
+  --version "$VER" --out "$TB/render-default"
 assert_case A-16d "默认渲染结果的监听端口为 8081" -- \
   sh -c "grep -qE 'listen[[:space:]]+8081;' $TB/render-default/nginx.conf"
 assert_case A-16e "环境变量 TOOLBOX_PORT=9091 可覆盖默认端口" -- \
   sh -c "TOOLBOX_PORT=9091 bash $CTL render --tpl-dir $TB/bundle/conf --prefix /opt/toolbox \
-    --version 0.0.1-beta --out $TB/render-env >/dev/null && \
+    --version "$VER" --out $TB/render-env >/dev/null && \
     grep -qE 'listen[[:space:]]+9091;' $TB/render-env/nginx.conf"
 exec_case A-17 "降级到 nobody 时 user 指令带组名 nogroup（回归 getgrnam 缺陷）" 0 -- \
   sh -c "bash $CTL render --tpl-dir $TB/bundle/conf --prefix /opt/toolbox --port 8081 \
-    --version 0.0.1-beta --nginx-user nobody --out $TB/render-nobody >/dev/null && \
+    --version "$VER" --nginx-user nobody --out $TB/render-nobody >/dev/null && \
     grep -E '^user' $TB/render-nobody/nginx.conf | grep -q 'nogroup'"
 exec_case A-18 "render 对不存在的模板目录报错" any -- \
   bash "$CTL" render --tpl-dir /tmp/definitely-no-such-dir --out "$TB/render-bad"

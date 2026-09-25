@@ -13,6 +13,12 @@ IMG_TAR=$TB/web-image.tar
 IMG=toolbox-web:dev
 NAME=tbv-docker-verify
 CPORT=8081 # 容器内 nginx 监听端口（镜像里写死，与二进制部署默认端口一致）
+# 版本号从发布源现取（镜像的 /healthz 由 deploy/binary/VERSION 在构建期注入）
+VER=$(tr -d ' \t\r\n' < "$TB/dist-release/latest.txt" 2>/dev/null || true)
+[ -n "$VER" ] || {
+  echo "找不到 $TB/dist-release/latest.txt，请先上传 dist-release/" >&2
+  exit 2
+}
 HPORT=8082 # 宿主机映射端口：**故意错开** 8081，好让二进制部署（默认 8081）
 #            与 Docker 部署能在同一台机器上串行验证，不抢端口。
 VVOL_PORT=8083 # 日志卷那个临时容器的宿主端口，再错开一位
@@ -121,7 +127,7 @@ assert_case C-10 "GET / 返回 200" -- sh -c "[ \"\$(curl -s -o /dev/null -w '%{
 assert_case C-11 "工具页 /tools/json-formatter/ 返回 200" -- \
   sh -c "[ \"\$(curl -s -o /dev/null -w '%{http_code}' $B/tools/json-formatter/)\" = 200 ]"
 assert_case C-12 "/healthz 返回 200 且内容正确" -- \
-  sh -c "curl -fsS $B/healthz | grep -qx 'ok v0.0.1-beta'"
+  sh -c "curl -fsS $B/healthz | grep -qx 'ok v$VER'"
 assert_case C-13 "未知路径返回真 404" -- \
   sh -c "[ \"\$(curl -s -o /dev/null -w '%{http_code}' $B/definitely-not-a-real-page/)\" = 404 ]"
 assert_case C-14 "sitemap.xml 与 robots.txt 可访问" -- \
