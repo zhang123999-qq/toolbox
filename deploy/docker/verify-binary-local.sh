@@ -104,7 +104,7 @@ exec_case A-04 "version 输出版本号" 0 -- bash "$CTL" version
 
 # ── 异常与非法输入 ──────────────────────────────────────
 banner "A-05..A-11 异常与非法输入处理"
-exec_case A-05 "未知子命令：非 0 退出且给出提示" any -- bash "$CTL" this-is-not-a-command
+exec_case A-05 "未知子命令：退出码 2（usage_err 的约定）并给出提示" 2 -- bash "$CTL" this-is-not-a-command
 assert_case A-06 "未知子命令的错误信息含命令名" -- \
   sh -c "bash $CTL this-is-not-a-command 2>&1 | grep -q '未知命令'"
 exec_case A-07 "--prefix 传相对路径：应被拒绝（回归静默丢弃缺陷）" any -- \
@@ -115,13 +115,13 @@ exec_case A-09 "status 不接受额外参数：应报错而非静默忽略（回
   bash "$CTL" status --bogus-flag
 exec_case A-10 "logs 现在接受 --prefix（修复前报未知参数）" 0 -- \
   bash "$CTL" logs -n 3 --prefix "$TB/bundle"
-exec_case A-11 "install --port 传非数字：应被拒绝" any -- \
+exec_case A-11 "install --port 传非数字：应被拒绝" 1 -- \
   bash "$CTL" install --from "$BUNDLE" --prefix /tmp/tbv-a11 --port abc --no-start
-exec_case A-12 "install --port 越界 99999：应被拒绝" any -- \
+exec_case A-12 "install --port 越界 99999：应被拒绝" 1 -- \
   bash "$CTL" install --from "$BUNDLE" --prefix /tmp/tbv-a12 --port 99999 --no-start
-exec_case A-13 "install --from 指向不存在文件：应报错" any -- \
+exec_case A-13 "install --from 指向不存在文件：应报错" 1 -- \
   bash "$CTL" install --from "$TB/nope.tar.gz" --prefix /tmp/tbv-a13 --no-start
-exec_case A-14 "非 root 执行 install 应被拒绝" any -- \
+exec_case A-14 "非 root 执行 install 应被拒绝" 1 -- \
   su -s /bin/sh nobody -c "bash $CTL install --from $BUNDLE --prefix /tmp/tbv-a14 --no-start"
 
 # ── 配置文件加载与渲染 ──────────────────────────────────
@@ -148,7 +148,7 @@ exec_case A-17 "降级到 nobody 时 user 指令带组名 nogroup（回归 getgr
   sh -c "bash $CTL render --tpl-dir $TB/bundle/conf --prefix /opt/toolbox --port 8081 \
     --version "$VER" --nginx-user nobody --out $TB/render-nobody >/dev/null && \
     grep -E '^user' $TB/render-nobody/nginx.conf | grep -q 'nogroup'"
-exec_case A-18 "render 对不存在的模板目录报错" any -- \
+exec_case A-18 "render 对不存在的模板目录报错" 1 -- \
   bash "$CTL" render --tpl-dir /tmp/definitely-no-such-dir --out "$TB/render-bad"
 
 # ── 打包产物权限（403 回归）──────────────────────────────

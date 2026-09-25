@@ -324,6 +324,12 @@ cmd_render() {
     shift
   done
   [ -d "$TPL_DIR" ] || die "模板目录不存在：$TPL_DIR"
+  # 端口范围同样要校验：render 被 CI 直接调用，是唯一不带 install 前置检查的入口
+  case $PORT in
+    ''|*[!0-9]*) die "--port 必须是 1-65535 的整数，实际：$PORT" ;;
+  esac
+  [ "$PORT" -ge 1 ] && [ "$PORT" -le 65535 ] ||
+    die "--port 必须在 1-65535 之间，实际：$PORT"
   [ -n "$OUT_DIR" ] || OUT_DIR="$PREFIX/shared"
   VER_OVERRIDE=${VER_OVERRIDE:-}
   detect_nginx || warn "本机未找到 nginx，渲染出的配置将由目标机的 nginx 使用"
@@ -561,9 +567,13 @@ cmd_install() {
   need_root
   need_systemd
 
+  # 端口必须落在合法区间。只判「是不是数字」会放 99999 过去，
+  # 渲染出的 nginx 因非法端口起不来，systemd 单元里还留着脏端口。
   case $PORT in
-    ''|*[!0-9]*) die "--port 必须是数字，实际：$PORT" ;;
+    ''|*[!0-9]*) die "--port 必须是 1-65535 的整数，实际：$PORT" ;;
   esac
+  [ "$PORT" -ge 1 ] && [ "$PORT" -le 65535 ] ||
+    die "--port 必须在 1-65535 之间，实际：$PORT"
 
   step "前置检查"
   mkdir -p "$PREFIX/releases" "$PREFIX/shared" "$PREFIX/run" "$PREFIX/logs"
@@ -665,12 +675,17 @@ cmd_install() {
     systemctl enable --quiet "$UNIT_NAME" >/dev/null 2>&1 || true
     systemctl restart "$UNIT_NAME"
     sleep 0.3
-    if body=$(health_wait_version "$VER" 60); then
+    # 等待窗口 60s（240 × 0.25s）。首次安装要建用户、渲染配置、拉起 nginx，
+    # 目标机上实测「从 uninstall 到 /healthz 可用」约 12s；原来的 15s 窗口
+    # 处在临界，机器稍慢就偶发误报「启动失败」（而服务其实马上就绪）。
+    if body=$(health_wait_version "$VER" 240); then
       info "健康检查通过：$body（已确认运行版本 v$VER）"
     else
-      warn "健康检查未通过，最近日志："
+      warn "健康检查未通过（已等待 60s），最近日志："
       journalctl -u "$UNIT_NAME" -n 20 --no-pager 2>/dev/null | tail -20 >&2 || true
-      die "启动失败"
+      die "启动失败：服务未在 60s 内于端口 $PORT 返回「ok v$VER」。
+  可先用 $PROG status 与 $PROG logs -n 50 复查；确认只是启动慢的话，
+  再执行 $PROG start 即可，无需重装。"
     fi
   else
     info "已跳过启动（--no-start）"

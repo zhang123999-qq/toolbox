@@ -453,7 +453,10 @@ set -- install --from "$WORK/pkg.tar.gz"
 
 info "交给 bundle 内的 toolboxctl 落地：$*"
 printf '\n'
-sh "$CTL" "$@"
+# 必须检查退出码：本脚本只有 set -u，没有 set -e，直接 `sh "$CTL" "$@"`
+# 会让落地失败被静默吞掉——脚本照样打印「安装完成 ✅」并以 0 退出，
+# 自动化场景会把它当成部署成功。实测过一次（健康检查超时误报）。
+sh "$CTL" "$@" || die "安装失败：bundle 内的 toolboxctl 返回非 0，请看上方输出定位原因"
 
 # —— 命令入口：让 `toolbox` / `toolboxctl` 在 PATH 里可直接调用 ——
 # toolboxctl 自身会把 toolboxctl 链到 /usr/local/bin；这里补一个更短的 `toolbox` 别名，
