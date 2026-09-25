@@ -393,10 +393,17 @@ verify_checksums() {
 }
 
 probe_health() { # 单次探测 /healthz，打印响应体（空 = 无响应）
+  # 本机回环探测**必须显式绕开代理**。
+  # install.sh 的 --proxy 会把 http_proxy / https_proxy export 给子进程，
+  # 若不绕开，`curl http://127.0.0.1:<port>/healthz` 会被发给代理，
+  # 代理再去访问「它自己的」127.0.0.1:<port>——那往往是另一台机器上的同款
+  # 实例（返回 404 页面），于是健康检查永远拿不到 ok vX.Y.Z。
+  # 实测症状：带 --proxy 的一键安装 100% 报「启动失败」，而服务其实好着。
+  # 注意只在这一处绕开：fetch_text / fetch_file 是远程下载，必须继续用代理。
   if command -v curl >/dev/null 2>&1; then
-    curl -fsS --max-time 3 "http://127.0.0.1:${PORT}/healthz" 2>/dev/null || true
+    curl -fsS --noproxy '*' --max-time 3 "http://127.0.0.1:${PORT}/healthz" 2>/dev/null || true
   elif command -v wget >/dev/null 2>&1; then
-    wget -qO- --timeout=3 "http://127.0.0.1:${PORT}/healthz" 2>/dev/null || true
+    wget -qO- --no-proxy --timeout=3 "http://127.0.0.1:${PORT}/healthz" 2>/dev/null || true
   fi
 }
 

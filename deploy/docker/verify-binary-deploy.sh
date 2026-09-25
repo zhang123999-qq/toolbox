@@ -147,7 +147,13 @@ assert_case B-12 "GET / 返回 200" -- sh -c "[ \"\$(curl -s -o /dev/null -w '%{
 assert_case B-13 "工具页 /tools/json-formatter/ 返回 200" -- \
   sh -c "[ \"\$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:$PORT/tools/json-formatter/)\" = 200 ]"
 assert_case B-14 "/healthz 返回 200 且内容为 ok v$VER" -- \
-  sh -c "curl -fsS http://127.0.0.1:$PORT/healthz | grep -qx 'ok v$VER'"
+  sh -c "curl -fsS --noproxy '*' http://127.0.0.1:$PORT/healthz | grep -qx 'ok v$VER'"
+# 回归：install.sh 的 --proxy 会 export http_proxy，若本地探测不显式绕开代理，
+# 请求会被发给代理（代理再去访问它自己的 localhost，往往撞上另一台机器上的
+# 同款实例），健康检查永远失败 —— 曾导致「带 --proxy 的一键安装 100% 报
+# 启动失败」。这里用一个必然连不上的代理来断言探测确实走了直连。
+assert_case B-14b "带 http_proxy 时健康探测仍走直连（回归：代理劫持本地探测）" -- \
+  sh -c "http_proxy=http://127.0.0.1:9 https_proxy=http://127.0.0.1:9 bash $CTL status 2>&1 | grep -q '健康检查 : 通过'"
 assert_case B-15 "未知路径返回真 404（非软 404）" -- \
   sh -c "[ \"\$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:$PORT/definitely-not-a-real-page/)\" = 404 ]"
 assert_case B-16 "sitemap.xml 与 robots.txt 可访问" -- \
