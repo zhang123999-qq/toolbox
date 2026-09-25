@@ -16,7 +16,7 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
 - **工具 75 / 870**：文本与内容域（01）全部 70 个交付完毕，含工程样例共 75 个，
   全部提供中英双语标题与描述
 - **两条部署链路可用且可验证**：二进制（`toolboxctl` + 自包含 bundle）与容器
-  （多阶段 Dockerfile），并配齐容器化全量测试与制品部署验证规范（三组 86 条用例）
+  （多阶段 Dockerfile），并配齐容器化全量测试与制品部署验证规范（四组 133 条用例）
 - **三类强制约束**（均有机检脚本并纳入 CI）：源码组织、外部 API 配置、依赖许可
 - 静态预渲染 102 个页面（含 `404.html`），默认安装端口统一为 **8081**
 
@@ -117,10 +117,14 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
   逐阶段日志落 `.agent/test-logs/<轮次>/`（卷挂载）
 - **二进制部署链路的自动化验证**：容器化的 `deploy-nginx` 阶段把 bundle 解包、
   渲染 nginx 配置、真起一个 nginx，再断言路由 / 404 / gzip / 健康检查（32 项）
-- **制品部署验证规范**（`docs/DEVELOPMENT.md` §二十二，中英双语）：三组共 86 条用例，
+- **制品部署验证规范**（`docs/DEVELOPMENT.md` §二十二，中英双语）：四组共 133 条用例，
   脚本固化在 `deploy/docker/verify-binary-local.sh`（A 组 28 条，CLI 行为）、
-  `verify-binary-deploy.sh`（B 组 34 条，二进制真实部署）、`verify-docker-deploy.sh`
-  （C 组 23 条，Docker 真实部署）。幂等可重跑，逐条输出编号 / 输入 / 预期 / 实际 / 退出码
+  `verify-binary-deploy.sh`（B 组 35 条，二进制真实部署）、`verify-docker-deploy.sh`
+  （C 组 23 条，Docker 真实部署）、`verify-binary-cli.sh`（**D 组 47 条，运维命令行**：
+  `help`/`version`/`status`/`config`/`list`/`doctor`/`health`/`logs`/`backup`/`render`/
+  `install`/`uninstall`/`start`/`stop`/`restart`/`reload`/`check-update`/`upgrade`/`rollback`
+  与 `install.sh`，含经代理的完整链路与升级→回滚闭环）。幂等可重跑，
+  逐条输出编号 / 输入 / 预期 / 实际 / 退出码
 
 ### 变更
 
@@ -133,7 +137,7 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
   同时新增 **`TOOLBOX_PORT` 环境变量**（等价 `--port`，优先级 `--port` > 已装实例配置 >
   环境变量 > 默认值），登记进 `.env.example`。
   选 8081 的原因：与容器形态统一、不占特权端口 80（非 root 也能装）、
-  且目标机上 80 常被既有站点占用。验证脚本同步扩容到 **86 条用例**
+  且目标机上 80 常被既有站点占用。验证脚本同步扩容到 **133 条用例**
   （A 28 / B 35 / C 23），新增「默认端口正确」与「环境变量可覆盖」两组断言；
   Docker 验证组的宿主端口错开到 8082，好与二进制部署（默认 8081）同机串跑
 - **运行环境升级到 Node.js 24**：`engines.node` 由 `^22.22.2 || >=24.15.0` 收紧为
@@ -158,6 +162,21 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
 
 ### 修复
 
+- **`upgrade` 对「回退源」会静默降级**：原先只在「源内版本 == 当前版本」时跳过，
+  源内版本**低于**当前时（镜像站过期、切回旧源、源内 `latest.txt` 未更新都会造成）
+  会直接把线上实例降级——用户以为执行了一次升级。现改为：未显式指定 `--to` 时，
+  只要**检测不到更高版本就跳过本次更新**，并给出 `rollback` / `--force` 的可行指引
+- **`install` 对已存在的版本直接报错，让一键脚本无法重复执行**：`curl | bash` 重跑
+  （修坏掉的配置、重建实例都很常见）会硬失败在「版本 X 已存在」，`install.sh` 又会
+  如实把它报成「安装失败」。现改为**幂等复用**已落地的 release，只重跑
+  「切 current → 渲染 → 启服务」，与 `upgrade` 对已存在版本的既有行为对齐
+- **`check-update` 打印的升级源类型恒为空括号**：`resolve_update_source` 是用
+  `$(…)` 命令替换调用的，它在**子 shell** 里给 `SOURCE_KIND` 赋值传不回调用方，
+  于是「升级源 : …（url）」里的标签一直是空的。现改为把「源类型 + 版本」拼成一行返回、
+  由调用方拆开，不再依赖副作用
+- **`logs -n` 不校验行数**：传非数字时把值原样丢给 `journalctl -n` 与 `tail -n`，
+  两个命令各自报错又被 `|| true` 吞掉，输出里混着报错却未必以非 0 退出。
+  现要求正整数，非法值按用法错误退出（exit 2）
 - **本地健康探测被代理劫持，带 `--proxy` 的一键安装必然失败（严重）**：
   `install.sh --proxy` 会把 `http_proxy` / `https_proxy` 导出给子进程，
   `toolboxctl` 探测 `http://127.0.0.1:<port>/healthz` 时继承了它们，请求被发给代理；
@@ -243,7 +262,7 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
 - 静态产物固定中文口径，未提供 `/en` 路由（英文仅在客户端切换生效）
 - 首屏入口 JS gzip ≈ 88KB，超出文档原定 50KB 预算（React 19 框架基线所致，待拍板放宽）
 - 870 个工具中已实现 75 个，其余待铺量
-- 制品部署验证（三组 86 条用例）目前是发布前手工执行，尚未纳入 CI——它需要真实目标机
+- 制品部署验证（四组 133 条用例）目前是发布前手工执行，尚未纳入 CI——它需要真实目标机
   与 SSH 凭据
 - `--prefix` 不是多实例开关：全局配置 `/etc/toolbox/toolbox.conf` 与 systemd unit 名
   均为单例，多实例部署尚不支持

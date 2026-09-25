@@ -997,10 +997,11 @@ ssh root@192.168.100.4 'docker load -i /tmp/tbv/web-image.tar && bash /tmp/tbv/v
 | A   | 28     | 可执行性与解释器、usage/version、未知命令、非法 `--port`/`--from`/`--prefix`、非 root 拒绝、模板渲染与 `nginx -t`、**默认端口 8081 与 `TOOLBOX_PORT` 覆盖**、nobody 降级组名、产物权限与校验和                                                                                                               |
 | B   | 35     | 发布源下载→sha256 校验→解包→落地→渲染→systemd 全流程；**dry-run 默认端口与环境变量覆盖**；目录结构、权限属主、worker 可读（403 回归）、master/worker 进程身份、端口、运行时依赖、`/healthz`、真 404、sitemap、gzip、日志落盘与属主、status/config/list/doctor、restart/reload/stop/start、配置文件与命令入口 |
 | C   | 23     | 镜像 load、容器 run、HEALTHCHECK healthy、端口映射、**容器内监听 8081**、容器内权限与 worker 身份、`/healthz`、真 404、gzip、`docker logs` 落盘、挂载卷落盘、端口冲突异常、stop 与端口释放                                                                                                                   |
+| D   | 47     | 见 §22.7（运维命令行：全部子命令 + `install.sh`，含临时代理与升级→回滚闭环）                                                                                                                                                                                                                                 |
 
 ### 22.4 通过标准
 
-1. 三组**全部用例 PASS**，退出码 0；失败必须定位根因后修产品代码，
+1. 四组**全部用例 PASS**，退出码 0；失败必须定位根因后修产品代码，
    **不允许**改断言去迁就、不允许跳过或注释用例。
 2. 修完必须**重建制品**（bundle / 镜像）并重跑相关组做回归，
    只改源码不重造制品等于没验。
@@ -1030,6 +1031,29 @@ ssh root@192.168.100.4 'docker load -i /tmp/tbv/web-image.tar && bash /tmp/tbv/v
    必须先重建 `toolbox-test:dev`，否则验证的是旧逻辑。
 8. **发布源用本机 `python3 -m http.server` 托管 `dist-release/`** 即可覆盖
    「下载 + 校验」环节，不必动公开 Release，也不依赖外网。
+9. **Windows 上 `127.0.0.1` 与 `localhost` 不等价**（踩过）：Docker Desktop 的端口发布
+   在 `localhost` 上生效，而 `127.0.0.1` 可能已被 `com.docker.backend` 自己占住并返回
+   一个**不带 `Server` 头的 404**——症状是「容器内 wget 得到 200，宿主机 curl 得到 404」。
+   E2E 的 base URL 一律用 `localhost`。
+10. **本机 8081 长年被 Docker Desktop 占用**：本地容器映射固定改用 **8090**，
+    免得与 `com.docker.backend` 抢端口而让容器停在 `Created`。
+11. **一键安装执行的是「包内自带」的 `toolboxctl`**（踩过，见 §22.7）：`install.sh`
+    从发布源下载 bundle，再 `sh "$bundle/bin/toolboxctl" install`。所以**改完 CLI
+    必须同步刷新 Release 资产**，否则线上装到的还是旧 CLI。本轮实测症状：仓库里已把
+    「同版本重复安装」改成幂等复用，但 Release 资产没刷新，经代理的一键安装稳定失败在
+    「版本 0.0.1-beta 已存在」。D-30d 用整包 sha256 比对把这类漂移卡在测试里。
+12. **`$(…)` 会吃掉函数里的全局赋值**（踩过）：`resolve_update_source` 是用命令替换
+    调用的，它在**子 shell** 里给 `SOURCE_KIND` 赋值传不回调用方，于是
+    `info "升级源 : $SRC（$SOURCE_KIND）"` 一直打印空括号 `（）`。这类「要顺带返回
+    第二个值」的函数应把结果**拼成一行返回**、由调用方拆开，不要依赖副作用。
+13. **一键脚本必须能重复执行**：`install` 以前对已存在的版本直接 `die`，让 `curl | bash`
+    重跑变成硬失败（`install.sh` 会如实把非 0 退出码报成「安装失败」）。现在改为
+    **幂等复用**已落地的 release，只重跑「切 current → 渲染 → 启服务」，
+    与 `upgrade` 对已存在版本的既有行为对齐。
+14. **刷新 Release 资产后有一段 CDN 缓存期**（踩过）：`gh release upload --clobber` 之后，
+    `releases/latest/download/<name>` 仍会在若干分钟内返回**旧内容**。这期间跑部署验证，
+    一键安装下载到的是旧包（连带旧 CLI），失败信息看起来像产品 bug，实际是假阴性。
+    做法：测前先比对整包 sha256，不一致就等（见 §22.7 的 D-00c 预热闸门）。
 
 ### 22.6 工具批次的端到端验收（双环境 E2E）
 
@@ -1067,11 +1091,42 @@ done
 `msedge.exe`，并带上 `--no-proxy-server`——否则系统代理会把手伸向
 本地与局域网地址。配合 `E2E_NO_WEBSERVER=1` 复用已在跑的站点，不再另起 preview。
 
-接着 §22.5 的坑清单往下编号，双环境 E2E 上还会踩到两条：
+本组本身不需要新知识，但会撞上 §22.5 的坑 9、10（`localhost` 与端口占用），照着那两条做即可。
 
-10. **Windows 上 `127.0.0.1` 与 `localhost` 不等价**（踩过）：Docker Desktop 的端口发布
-    在 `localhost` 上生效，而 `127.0.0.1` 可能已被 `com.docker.backend` 自己占住并返回
-    一个**不带 `Server` 头的 404**——症状是「容器内 wget 得到 200，宿主机 curl 得到 404」。
-    E2E 的 base URL 一律用 `localhost`。
-11. **本机 8081 长年被 Docker Desktop 占用**：本地容器映射固定改用 **8090**，
-    免得与 `com.docker.backend` 抢端口而让容器停在 `Created`。
+### 22.7 二进制运维命令的全量测试（D 组）
+
+A/B/C 组回答的是「装得上、跑得起来」；D 组回答的是**装完之后天天要用的那些命令好不好使**。
+脚本 `deploy/docker/verify-binary-cli.sh`，**47 条用例**，幂等可重跑，
+跑完实例仍停在原版本上（幂等的前提是它自己会复原）。
+
+```bash
+ssh root@192.168.100.4 'bash /tmp/tbv/verify-binary-cli.sh'
+```
+
+覆盖 `toolboxctl` 的全部子命令与 `install.sh`：
+
+| 用例段      | 命令                                                   | 覆盖                                                              |
+| ----------- | ------------------------------------------------------ | ----------------------------------------------------------------- |
+| D-00..D-00c | 本地发布源 + 变体源 + Release 一致性                   | 建源、造变体包、CDN 缓存预热                                      |
+| D-01..D-04  | `help` `-h` `--help` `version`                         | 用法完整、版本双栏、未知子命令 exit 2                             |
+| D-05..D-12  | `status` `config` `list` `doctor` `health` `logs [-n]` | 只读信息类；status 要求「版本一致 ✓」；`logs -n` 传非数字必须拒绝 |
+| D-13..D-16  | `backup` `render` `--prefix` 校验                      | 归档可解开且含 manifest；渲染产物过 `nginx -t`；参数校验          |
+| D-17..D-20  | `reload` `restart` `stop` `start`                      | 服务控制四件套，每步都回验 active + `/healthz` 版本               |
+| D-21..D-25  | `check-update` `upgrade`（无新版本路径）               | 同版本与**回退源**都必须跳过                                      |
+| D-26..D-29  | `upgrade` `rollback`（真实闭环）                       | 用本地源的变体包真升一级再回滚，逐段核对版本                      |
+| D-30..D-33  | `install.sh` / `check-update`（代理）                  | 经代理一键安装；代理环境下本地探测仍绕开代理；源不可达须明确报错  |
+| D-34..D-36  | 权限 / 越界端口 / 收尾                                 | 非 root 拒绝、`--port 99999` 拒绝、收尾 active + 80 未被占用      |
+
+四个设计要点：
+
+1. **「跳过了」要能被证明**（D-23/D-24）。只看输出里有没有「跳过」不够——
+   还要求 `systemctl show -p ActiveEnterTimestamp` 与 `releases/` 目录清单**都没变**，
+   否则分不清「真的跳过」与「悄悄重装了一遍」。
+2. **变体包现场造**（`make_variant()`）：拷现有包 → 改 `VERSION` → 重算 `checksums.txt` →
+   重新打包。这样能在**不动公开 Release** 的前提下真跑升级 / 回滚。
+   造包时同样要把 staging 根 `chmod 0755`，否则解包后又是一个全站 403（见 §22.5 第 1 条同类坑）。
+3. **每段结束回验一次 `/healthz`**，避免某一段把服务弄停了、后面全绿却没人发现。
+4. **代理段之前先做 Release 资产一致性预热**（见 §22.5 第 14 条），
+   否则 CDN 缓存期会把「一键安装」测成假阴性。
+
+D 组的用例数与逐条输出落在目标机 `/tmp/tbv/d-result.log`；CI 暂不跑（需要目标机与代理）。

@@ -114,6 +114,8 @@ toolboxctl —— Toolbox 二进制部署管理
 在线升级
   check-update [--source <dir|url>]   查询可升级版本
   upgrade [--source <dir|url>] [--to VERSION] [--force] [--no-reload]
+                    检测不到更高版本时**跳过本次更新**（不改动实例）；
+                    只有显式 --to 才允许同版本重装或降级
   rollback [--to VERSION]
 
   --source 可为本地目录或 HTTP 基址，需含 latest.txt 与
@@ -633,7 +635,15 @@ cmd_install() {
   [ -n "$VER" ] || die "bundle 缺少 VERSION 文件"
 
   if [ "$FORCE" != "1" ] && [ -d "$PREFIX/releases/$VER" ]; then
-    die "版本 $VER 已存在。加 --force 覆盖安装，或直接 upgrade。"
+    # 同版本重复安装是常见场景：一键脚本重跑、修坏掉的配置、重建实例。
+    # 过去这里直接 die「版本已存在」，把 `curl | bash` 的重跑变成硬失败
+    # （install.sh 现在会如实把非 0 退出码报出来，用户看到的就是「安装失败」）。
+    # 改为**幂等复用**：已落地的 release 不重写，只重跑后面
+    # 「切 current → 渲染配置 → 启服务」，与 upgrade 对已存在版本的处理保持一致。
+    REUSE=1
+    info "版本 $VER 已存在，复用已有 release（加 --force 可强制覆盖重写）"
+  else
+    REUSE=0
   fi
 
   step "校验完整性"
@@ -644,12 +654,16 @@ cmd_install() {
 
   step "安装版本 $VER"
   DEST="$PREFIX/releases/$VER"
-  rm -rf "$DEST"
-  mkdir -p "$DEST"
-  # 用 cp -a 保留权限；排除正在写入的临时文件
-  ( cd "$BUNDLE_DIR" && cp -a . "$DEST/" )
-  chmod +x "$DEST/bin/toolboxctl" 2>/dev/null || true
-  [ -d "$DEST/app" ] || die "bundle 缺少 app/ 目录"
+  if [ "$REUSE" = "1" ]; then
+    info "跳过落盘（复用 $DEST）"
+  else
+    rm -rf "$DEST"
+    mkdir -p "$DEST"
+    # 用 cp -a 保留权限；排除正在写入的临时文件
+    ( cd "$BUNDLE_DIR" && cp -a . "$DEST/" )
+    chmod +x "$DEST/bin/toolboxctl" 2>/dev/null || true
+    [ -d "$DEST/app" ] || die "bundle 缺少 app/ 目录"
+  fi
 
   step "切换 current 软链"
   # 先建临时链接再原子 rename，避免出现「指向不存在版本」的窗口
@@ -884,6 +898,12 @@ cmd_logs() {
     esac
     shift
   done
+  # 行数必须是正整数：以前直接把值丢给 `journalctl -n` / `tail -n`，
+  # 传 abc 时两个命令各自报错、又被 `|| true` 吞掉，输出里混着报错却仍以 0 退出。
+  case $LINES in
+    '' | *[!0-9]*) usage_err "-n 需要正整数，实际：$LINES" ;;
+  esac
+  [ "$LINES" -gt 0 ] || usage_err "-n 需要正整数，实际：$LINES"
   load_conf
   step "服务日志（journal，最近 $LINES 行）"
   if has_systemctl; then
@@ -1051,14 +1071,18 @@ cmd_version() {
 # 4. 在线升级
 # ============================================================================
 
-# 解析升级源，输出「最新可用版本」；同时把 SOURCE_KIND/本地路径 写入全局
+# 解析升级源，输出「源类型 最新可用版本」（第一个空格前是 url/dir）。
+#
+# 为什么把 kind 和版本拼在一行返回：这个函数总是被 `$(...)` 调用（命令替换），
+# 而命令替换跑在**子 shell** 里，函数内对 SOURCE_KIND 的赋值传不回调用方——
+# 结果 `info "升级源 : $SRC（$SOURCE_KIND）"` 打印出的括号一直是空的（"（）"）。
+# 让调用方按第一个空格拆开，既保住单一实现，也不依赖子 shell 的副作用。
 resolve_update_source() {
   src=$1
   # 调用方已保证非空（--source > UPDATE_SOURCE > DEFAULT_UPDATE_SOURCE）
   [ -n "$src" ] || src=$DEFAULT_UPDATE_SOURCE
   case $src in
     http://*|https://*)
-      SOURCE_KIND=url
       base=${src%/}
       v=$(fetch_url "$base/latest.txt" 2>/dev/null | tr -d ' \t\r\n') || true
       if [ -z "$v" ]; then
@@ -1068,11 +1092,10 @@ resolve_update_source() {
               | sort -u | ver_max)
       fi
       [ -n "$v" ] || die "无法从 $base 解析可用版本（缺 latest.txt 且无包列表）"
-      printf '%s' "$v"
+      printf '%s %s' url "$v"
       ;;
     *)
       [ -d "$src" ] || die "升级源目录不存在：$src"
-      SOURCE_KIND=dir
       if [ -f "$src/latest.txt" ]; then
         v=$(tr -d ' \t\r\n' < "$src/latest.txt")
       else
@@ -1080,7 +1103,7 @@ resolve_update_source() {
               | sed -n "s|.*${REPO_NAME}-\(.*\)-linux-.*\.tar\.gz|\1|p" | ver_max)
       fi
       [ -n "$v" ] || die "目录 $src 内没有可用的 bundle 包"
-      printf '%s' "$v"
+      printf '%s %s' dir "$v"
       ;;
   esac
 }
@@ -1137,8 +1160,10 @@ cmd_check_update() {
   cur=$(current_version)
 
   step "查询升级源"
-  SOURCE_KIND=
-  latest=$(resolve_update_source "$SRC")
+  # resolve_update_source 返回「源类型 版本」，这里拆回两个变量
+  _resolved=$(resolve_update_source "$SRC")
+  SOURCE_KIND=${_resolved%% *}
+  latest=${_resolved#* }
   info "升级源       : $SRC（$SOURCE_KIND）"
   info "当前版本     : ${cur:-未安装}"
   info "源内最新版本 : $latest"
@@ -1187,18 +1212,36 @@ cmd_upgrade() {
   [ -n "$cur" ] || die "无法确定当前版本（$PREFIX/current 软链异常）"
 
   step "确定目标版本"
-  SOURCE_KIND=
+  EXPLICIT_TO=0
   if [ -n "$TO" ]; then
     target=$TO
+    EXPLICIT_TO=1
     info "目标版本由 --to 指定"
   else
-    target=$(resolve_update_source "$SRC")
+    _resolved=$(resolve_update_source "$SRC")
+    SOURCE_KIND=${_resolved%% *}
+    target=${_resolved#* }
   fi
   info "当前 $cur → 目标 $target"
 
-  if [ "$target" = "$cur" ] && [ "$FORCE" != "1" ]; then
-    say "已是最新（$cur）。如需强制重装加 --force。"
-    return 0
+  # 检测不到「更高版本」就跳过本次更新。
+  #
+  # 只有显式 `--to` 才算明确的用户意图（允许同版本重装、也允许有意降级）；
+  # 否则只要源内版本不高于当前，一律跳过。理由是回退源很常见：
+  # 镜像站过期、切回旧源、源内 latest.txt 没更新，都会让「源内版本 < 当前版本」，
+  # 过去的实现会**静默把线上实例降级**——用户以为自己执行了一次升级。
+  if [ "$FORCE" != "1" ] && [ "$EXPLICIT_TO" = "0" ]; then
+    if [ "$target" = "$cur" ]; then
+      say "已是最新（$cur），跳过本次更新。"
+      say "  如需强制重装：$PROG upgrade --to $cur --force"
+      return 0
+    fi
+    if ! ver_gt "$target" "$cur"; then
+      say "未检测到新版本：源内版本 $target 不高于当前 $cur，跳过本次更新。"
+      say "  如需降级：$PROG rollback --to $target"
+      say "  如需强制重装：$PROG upgrade --to $target --force"
+      return 0
+    fi
   fi
 
   WORK=$(mktemp -d "${TMPDIR:-/tmp}/toolboxctl.up.XXXXXX")

@@ -42,6 +42,11 @@ blob-report/
 .agent/test-logs/
 .workbuddy/
 
+# 本机专用的 Playwright 配置（用系统 Edge 驱动，绕开未安装的 playwright 内核）。
+# 只在开发机上用，路径写死了 Windows 的 msedge.exe，故不入库；
+# 双环境 E2E 的做法见 docs/DEVELOPMENT.md §22.6。
+apps/web/playwright.edge.config.ts
+
 # 构建期生成（由 pnpm generate:sitemap 产出）
 apps/web/public/sitemap.xml
 apps/web/public/robots.txt

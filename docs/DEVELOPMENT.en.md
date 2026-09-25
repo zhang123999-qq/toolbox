@@ -1037,10 +1037,11 @@ ssh root@192.168.100.4 'docker load -i /tmp/tbv/web-image.tar && bash /tmp/tbv/v
 | A     | 28    | shebang and interpreter, usage/version, unknown command, invalid `--port` / `--from` / `--prefix`, non-root rejection, template render + `nginx -t`, **default port 8081 and the `TOOLBOX_PORT` override**, nobody fallback group, artifact permissions and checksums                                                                                                                |
 | B     | 35    | full source→download→sha256→extract→install→render→systemd path; **dry-run default port and env override**; layout, permissions and ownership, worker-readable app (403 regression), master/worker identity, port, runtime deps, `/healthz`, real 404, sitemap, gzip, log persistence and ownership, status/config/list/doctor, restart/reload/stop/start, config file and CLI entry |
 | C     | 23    | image load, container run, HEALTHCHECK healthy, port mapping, **container listening on 8081**, in-container permissions and worker identity, `/healthz`, real 404, gzip, `docker logs` persistence, bind-mount log persistence, port-conflict failure, stop and port release                                                                                                         |
+| D     | 47    | see §22.7 (ops CLI: every subcommand plus `install.sh`, with a temporary proxy and a real upgrade → rollback round trip)                                                                                                                                                                                                                                                             |
 
 ### 22.4 Exit criteria
 
-1. **All cases in all three groups PASS** with exit code 0. A failure must be
+1. **All cases in all four groups PASS** with exit code 0. A failure must be
    root-caused and fixed in product code — never by relaxing the assertion,
    skipping, or commenting out a case.
 2. After a fix you must **rebuild the artifact** (bundle / image) and re-run the
@@ -1077,6 +1078,39 @@ ssh root@192.168.100.4 'docker load -i /tmp/tbv/web-image.tar && bash /tmp/tbv/v
    editing `build-bundle.sh`, rebuild `toolbox-test:dev`, or you are validating old logic.
 8. **Serving `dist-release/` with a local `python3 -m http.server`** covers the
    download + checksum steps without touching the public Release or needing the internet.
+9. **On Windows, `127.0.0.1` and `localhost` are not equivalent** (learned the hard way):
+   Docker Desktop publishes ports on `localhost`, while `127.0.0.1` may already be held by
+   `com.docker.backend` itself, which answers with a **404 that carries no `Server` header**.
+   The symptom is "wget inside the container gets 200, but curl from the host gets 404".
+   Always use `localhost` in the E2E base URL.
+10. **Port 8081 is permanently taken by Docker Desktop here**: map the local container to
+    **8090**, otherwise it loses the port race against `com.docker.backend` and stays in
+    `Created`.
+11. **The one-line installer runs the `toolboxctl` bundled inside the package** (learned the
+    hard way, see §22.7): `install.sh` downloads the bundle from the release source and then
+    runs `sh "$bundle/bin/toolboxctl" install`. So **after changing the CLI you must refresh
+    the Release assets**, or users installing tomorrow still get the old CLI.
+    Observed symptom: the repo had already made re-installing the same version idempotent,
+    but the Release asset was stale, so the proxied one-line install failed deterministically
+    with "版本 0.0.1-beta 已存在". Case D-30d pins this drift down by comparing the whole
+    package's sha256.
+12. **`$(…)` swallows global assignments made inside a function** (learned the hard way):
+    `resolve_update_source` is called via command substitution, so the `SOURCE_KIND` it
+    assigns runs in a **subshell** and never reaches the caller — which is why
+    `info "升级源 : $SRC（$SOURCE_KIND）"` always printed empty parentheses `（）`.
+    Functions that must return a second value should **pack it onto one line** and let the
+    caller split it, instead of relying on side effects.
+13. **A one-line installer must be re-runnable**: `install` used to `die` when the version
+    already existed, turning a repeated `curl | bash` into a hard failure (`install.sh`
+    faithfully reports the non-zero exit as "安装失败"). It now **idempotently reuses** the
+    release already on disk and only repeats "switch current → render → start the service",
+    matching how `upgrade` already treated an existing version.
+14. **Right after refreshing Release assets there is a CDN cache window** (learned the hard
+    way): following `gh release upload --clobber`, `releases/latest/download/<name>` keeps
+    serving the **old content** for several minutes. Running deployment verification during
+    that window downloads the old package (and therefore the old CLI); the failure looks like
+    a product bug but is a false negative. Compare the whole package's sha256 first and wait if
+    it differs (see the D-00c warm-up gate in §22.7).
 
 ### 22.6 End-to-end acceptance per tool batch (two environments)
 
@@ -1116,13 +1150,46 @@ The machine has no `playwright install` browser, so `apps/web/playwright.edge.co
 system proxy hijacks local and LAN addresses. Pair it with `E2E_NO_WEBSERVER=1` to reuse an
 already-running site instead of starting another preview server.
 
-Continuing the gotcha list from §22.5, the two-environment E2E adds two more:
+This group needs no new knowledge of its own, but it does hit gotchas 9 and 10 from §22.5
+(`localhost` and port contention) — following those two is enough.
 
-10. **On Windows, `127.0.0.1` and `localhost` are not equivalent** (learned the hard way):
-    Docker Desktop publishes ports on `localhost`, while `127.0.0.1` may already be held by
-    `com.docker.backend` itself, which answers with a **404 that carries no `Server` header**.
-    The symptom is "wget inside the container gets 200, but curl from the host gets 404".
-    Always use `localhost` in the E2E base URL.
-11. **Port 8081 is permanently taken by Docker Desktop here**: map the local container to
-    **8090**, otherwise it loses the port race against `com.docker.backend` and stays in
-    `Created`.
+### 22.7 Full test of the binary's ops CLI (group D)
+
+Groups A/B/C answer "does it install and run"; group D answers "**are the commands you use every
+day after installing actually any good**". Script: `deploy/docker/verify-binary-cli.sh`, **47
+cases**, idempotent and re-runnable, and it leaves the instance on its original version.
+
+```bash
+ssh root@192.168.100.4 'bash /tmp/tbv/verify-binary-cli.sh'
+```
+
+It covers every `toolboxctl` subcommand plus `install.sh`:
+
+| Cases       | Commands                                                     | Covers                                                                                                   |
+| ----------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| D-00..D-00c | local release source + variant sources + Release consistency | build sources, forge variant bundles, warm up the CDN cache                                              |
+| D-01..D-04  | `help` `-h` `--help` `version`                               | complete usage, both version fields, unknown subcommand exits 2                                          |
+| D-05..D-12  | `status` `config` `list` `doctor` `health` `logs [-n]`       | read-only info; status must report "版本一致 ✓"; `logs -n` must reject non-numeric                       |
+| D-13..D-16  | `backup` `render` `--prefix` validation                      | archive opens and contains the manifest; rendered output passes `nginx -t`                               |
+| D-17..D-20  | `reload` `restart` `stop` `start`                            | all four service actions, each re-verified against active + `/healthz` version                           |
+| D-21..D-25  | `check-update` `upgrade` (no-newer-version paths)            | both the same-version and the **rollback source** cases must skip                                        |
+| D-26..D-29  | `upgrade` `rollback` (real round trip)                       | really upgrade one step with a locally forged variant, then roll back                                    |
+| D-30..D-33  | `install.sh` / `check-update` (proxy)                        | one-line install through the proxy; local probing still bypasses it; unreachable source must fail loudly |
+| D-34..D-36  | permissions / out-of-range port / final state                | non-root refused, `--port 99999` refused, ends active with port 80 free                                  |
+
+Four design points:
+
+1. **"It skipped" must be provable** (D-23/D-24). Seeing the word "skip" in the output is not
+   enough — `systemctl show -p ActiveEnterTimestamp` and the `releases/` listing must both be
+   **unchanged**, otherwise you cannot tell "really skipped" from "silently reinstalled".
+2. **Variant bundles are forged on the spot** (`make_variant()`): copy the existing bundle,
+   rewrite `VERSION`, regenerate `checksums.txt`, repack. That exercises a real upgrade and
+   rollback **without touching the public Release**. As when packaging, `chmod 0755` the staging
+   root first, or unpacking yields another site-wide 403.
+3. **Re-verify `/healthz` at the end of every block**, so a block that killed the service cannot
+   hide behind later green results.
+4. **Warm up Release asset consistency before the proxy block** (see §22.5 item 14), otherwise
+   the CDN cache window turns the one-line install into a false negative.
+
+Case counts and per-case output land in `/tmp/tbv/d-result.log` on the target. Not in CI (needs
+the target host and the proxy).
