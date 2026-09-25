@@ -56,7 +56,14 @@ async function loadMetas(): Promise<LoadedMeta[]> {
   return metas
 }
 
-const q = (value: string): string => `'${value.replace(/'/g, "\\'")}'`
+/**
+ * 字符串字面量转义。
+ * 顺序不能反：先转义反斜杠，再转义单引号，最后把换行压成 `\n`——
+ * 否则像 `\uXXXX` 这样的工具描述会被当成真的转义序列，产出语法错误的 TS
+ * （`'\u 转义'` → TS1125 Hexadecimal digit expected）。
+ */
+const q = (value: string): string =>
+  `'${value.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n')}'`
 const arr = (items: readonly (string | number)[]): string =>
   `[${items.map((i) => (typeof i === 'number' ? String(i) : q(String(i)))).join(', ')}]`
 
