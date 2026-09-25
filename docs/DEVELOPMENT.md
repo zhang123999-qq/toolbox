@@ -995,7 +995,7 @@ ssh root@192.168.100.4 'docker load -i /tmp/tbv/web-image.tar && bash /tmp/tbv/v
 | 组  | 用例数 | 覆盖                                                                                                                                                                                                                                                                                                         |
 | --- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | A   | 28     | 可执行性与解释器、usage/version、未知命令、非法 `--port`/`--from`/`--prefix`、非 root 拒绝、模板渲染与 `nginx -t`、**默认端口 8081 与 `TOOLBOX_PORT` 覆盖**、nobody 降级组名、产物权限与校验和                                                                                                               |
-| B   | 34     | 发布源下载→sha256 校验→解包→落地→渲染→systemd 全流程；**dry-run 默认端口与环境变量覆盖**；目录结构、权限属主、worker 可读（403 回归）、master/worker 进程身份、端口、运行时依赖、`/healthz`、真 404、sitemap、gzip、日志落盘与属主、status/config/list/doctor、restart/reload/stop/start、配置文件与命令入口 |
+| B   | 35     | 发布源下载→sha256 校验→解包→落地→渲染→systemd 全流程；**dry-run 默认端口与环境变量覆盖**；目录结构、权限属主、worker 可读（403 回归）、master/worker 进程身份、端口、运行时依赖、`/healthz`、真 404、sitemap、gzip、日志落盘与属主、status/config/list/doctor、restart/reload/stop/start、配置文件与命令入口 |
 | C   | 23     | 镜像 load、容器 run、HEALTHCHECK healthy、端口映射、**容器内监听 8081**、容器内权限与 worker 身份、`/healthz`、真 404、gzip、`docker logs` 落盘、挂载卷落盘、端口冲突异常、stop 与端口释放                                                                                                                   |
 
 ### 22.4 通过标准
