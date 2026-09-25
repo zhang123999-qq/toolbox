@@ -47,9 +47,20 @@ FROM ${NGINX_IMAGE}
 
 # 静态产物
 COPY --from=build /app/apps/web/dist /usr/share/nginx/html
+# 版本号来源（构建期注入 /healthz，见下方 RUN）
+COPY --from=build /app/deploy/binary/VERSION /tmp/toolbox-VERSION
 
 # Nginx 配置：SPA fallback + gzip + 缓存策略 + WASM MIME
 COPY deploy/nginx/default.conf /etc/nginx/conf.d/default.conf
+
+# 健康检查端点要能报出版本号，占位符在构建期按仓库里的 VERSION 注入。
+# 不要在这里硬编码版本：会与 deploy/binary/VERSION 漂移。
+RUN set -eux; \
+    v=$(tr -d ' \t\r\n' < /tmp/toolbox-VERSION); \
+    [ -n "$v" ] || { echo 'VERSION 为空，拒绝构建' >&2; exit 1; }; \
+    sed -i "s|@TOOLBOX_VERSION@|${v}|g" /etc/nginx/conf.d/default.conf; \
+    rm -f /tmp/toolbox-VERSION; \
+    grep -q "ok v${v}" /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 

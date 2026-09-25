@@ -4,14 +4,14 @@
 
 ## 一、测试环境（可复现）
 
-| 组成 | 文件 | 说明 |
-| --- | --- | --- |
-| 测试镜像 | `deploy/docker/Dockerfile.test` | `node:24-bookworm-slim`（Chromium 需要 glibc，alpine 装不了官方包）+ pnpm 12.3.4（`packageManager` 为准）+ chromium + nginx-light + curl |
-| 部署镜像 | `deploy/docker/Dockerfile`（既有） | 构建 → nginx 运行，端口 8081 |
-| 编排 | `deploy/docker/docker-compose.test.yml` | `web`（部署链路，healthy 后才跑测试）+ `test`（跑全量） |
-| 驱动 | `deploy/docker/run-tests.sh` | 17 个阶段独立记日志，失败不中断后续阶段 |
-| HTTP 冒烟 | `deploy/docker/smoke.mjs` | 状态码 / content-type / 预渲染 / 404 语义 / SEO 产物 / JS 产物 |
-| 部署脚本机检 | `deploy/docker/verify-deploy-scripts.sh` | `bash -n` + 发布源一致性 |
+| 组成         | 文件                                     | 说明                                                                                                                                     |
+| ------------ | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| 测试镜像     | `deploy/docker/Dockerfile.test`          | `node:24-bookworm-slim`（Chromium 需要 glibc，alpine 装不了官方包）+ pnpm 12.3.4（`packageManager` 为准）+ chromium + nginx-light + curl |
+| 部署镜像     | `deploy/docker/Dockerfile`（既有）       | 构建 → nginx 运行，端口 8081                                                                                                             |
+| 编排         | `deploy/docker/docker-compose.test.yml`  | `web`（部署链路，healthy 后才跑测试）+ `test`（跑全量）                                                                                  |
+| 驱动         | `deploy/docker/run-tests.sh`             | 17 个阶段独立记日志，失败不中断后续阶段                                                                                                  |
+| HTTP 冒烟    | `deploy/docker/smoke.mjs`                | 状态码 / content-type / 预渲染 / 404 语义 / SEO 产物 / JS 产物                                                                           |
+| 部署脚本机检 | `deploy/docker/verify-deploy-scripts.sh` | `bash -n` + 发布源一致性                                                                                                                 |
 
 复现命令（两行）：
 
@@ -24,15 +24,15 @@ ROUND=round1 docker compose -f deploy/docker/docker-compose.test.yml run --rm te
 
 ## 二、逐轮结果
 
-| 轮次 | 阶段 PASS/FAIL | 失败项 |
-| --- | --- | --- |
-| R0（环境搭建） | — | 6 个镜像构建问题，见 §三 |
-| R1 | 11 / 2 | `gate-deploy-scripts`、`smoke-preview` |
-| R2 | 15 / 1 | `deploy-nginx`（`getgrnam("nobody") failed`） |
-| R3 | 15 / 1 | `deploy-nginx`（`NGINX_GROUP: parameter not set`） |
-| R4 | 15 / 2 | `deploy-nginx`（全站 403）、`smoke-nginx`（slug 写错） |
-| R5 | **17 / 0** | — |
-| R6（含文档改动后的复跑） | **17 / 0** | — |
+| 轮次                     | 阶段 PASS/FAIL | 失败项                                                 |
+| ------------------------ | -------------- | ------------------------------------------------------ |
+| R0（环境搭建）           | —              | 6 个镜像构建问题，见 §三                               |
+| R1                       | 11 / 2         | `gate-deploy-scripts`、`smoke-preview`                 |
+| R2                       | 15 / 1         | `deploy-nginx`（`getgrnam("nobody") failed`）          |
+| R3                       | 15 / 1         | `deploy-nginx`（`NGINX_GROUP: parameter not set`）     |
+| R4                       | 15 / 2         | `deploy-nginx`（全站 403）、`smoke-nginx`（slug 写错） |
+| R5                       | **17 / 0**     | —                                                      |
+| R6（含文档改动后的复跑） | **17 / 0**     | —                                                      |
 
 > R1 的日志因 Git Bash 路径转换没落到挂载卷（`-e LOG_DIR=/app/...` 被改写为 Windows 路径），
 > 已在后续轮次用 `MSYS_NO_PATHCONV=1` 修正；R1 的两条失败结论在 §三有完整留存。
@@ -41,16 +41,16 @@ ROUND=round1 docker compose -f deploy/docker/docker-compose.test.yml run --rm te
 
 ### R0 · 镜像构建阶段
 
-| # | 现象 | 根因 | 修复 |
-|---|---|---|---|
-| R0-1 | `failed to fetch anonymous token ... Bad Gateway` | Docker 守护进程内部代理间歇性失败 | 重试即可；记录为已知环境抖动 |
-| R0-2 | `Command "playwright" not found` | `@playwright/test` 是 `apps/web` 的依赖，pnpm `exec` 只解析当前包的 `.bin` | `cd apps/web && pnpm exec playwright install ...` |
-| R0-3 | apt 拉 `deb.debian.org` 报 `unexpected EOF` | 容器内无代理，官方源被限速/中断 | 换 Debian 镜像站 |
-| R0-4 | `host.docker.internal:10808` 不可连 | 宿主机代理只监听 127.0.0.1，容器经网关 IP 访问不到 | 放弃容器内走宿主代理，改走可达镜像源 |
-| R0-5 | 换镜像站后仍 `Connection failed [...:80]` | apt 用的是**明文 http**，本网络只放行 443 | sed 连协议一起换为 `https://` |
-| R0-6 | `No system certificates available` | slim 镜像连 `/etc/ssl/certs` 都没有，https apt 无法校验证书 | 借 node 自带根证书拉 `cacert.pem` 落盘，再 `apt-get install ca-certificates` |
-| R0-7 | `cdn.playwright.dev` 连接超时 | 官方 CDN 不可达 | `PLAYWRIGHT_DOWNLOAD_HOST=https://registry.npmmirror.com/-/binary/playwright` |
-| R0-8 | 每改一行源码都要重下 15 分钟 chromium | `COPY . .` 排在昂贵层之前 | 把 `COPY . .` 移到 chromium / nginx 之后；`run-tests.sh` 开头补一次 `pnpm install --frozen-lockfile` 兜住依赖漂移 |
+| #    | 现象                                              | 根因                                                                       | 修复                                                                                                              |
+| ---- | ------------------------------------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| R0-1 | `failed to fetch anonymous token ... Bad Gateway` | Docker 守护进程内部代理间歇性失败                                          | 重试即可；记录为已知环境抖动                                                                                      |
+| R0-2 | `Command "playwright" not found`                  | `@playwright/test` 是 `apps/web` 的依赖，pnpm `exec` 只解析当前包的 `.bin` | `cd apps/web && pnpm exec playwright install ...`                                                                 |
+| R0-3 | apt 拉 `deb.debian.org` 报 `unexpected EOF`       | 容器内无代理，官方源被限速/中断                                            | 换 Debian 镜像站                                                                                                  |
+| R0-4 | `host.docker.internal:10808` 不可连               | 宿主机代理只监听 127.0.0.1，容器经网关 IP 访问不到                         | 放弃容器内走宿主代理，改走可达镜像源                                                                              |
+| R0-5 | 换镜像站后仍 `Connection failed [...:80]`         | apt 用的是**明文 http**，本网络只放行 443                                  | sed 连协议一起换为 `https://`                                                                                     |
+| R0-6 | `No system certificates available`                | slim 镜像连 `/etc/ssl/certs` 都没有，https apt 无法校验证书                | 借 node 自带根证书拉 `cacert.pem` 落盘，再 `apt-get install ca-certificates`                                      |
+| R0-7 | `cdn.playwright.dev` 连接超时                     | 官方 CDN 不可达                                                            | `PLAYWRIGHT_DOWNLOAD_HOST=https://registry.npmmirror.com/-/binary/playwright`                                     |
+| R0-8 | 每改一行源码都要重下 15 分钟 chromium             | `COPY . .` 排在昂贵层之前                                                  | 把 `COPY . .` 移到 chromium / nginx 之后；`run-tests.sh` 开头补一次 `pnpm install --frozen-lockfile` 兜住依赖漂移 |
 
 ### R1 · 两条失败
 
@@ -111,15 +111,15 @@ ROUND=round1 docker compose -f deploy/docker/docker-compose.test.yml run --rm te
 
 ## 四、最终通过率
 
-| 项目 | 结果 |
-| --- | --- |
-| 阶段 | **17 / 17 通过**（round5、round6 连续两轮） |
-| 单元 + 组件测试（vitest） | **1179 / 1179**，157 个文件 |
-| E2E（Playwright，真实 Chromium） | **231 / 231**，75 个 spec |
-| 二进制部署链路（真起 nginx） | **32 / 32** 断言 |
-| 产物冒烟（preview） | **15 / 15** |
-| 产物冒烟（compose 的 nginx 服务） | **16 / 16** |
-| 用例级合计 | **1473 / 1473 = 100%** |
+| 项目                              | 结果                                                                                                                                                |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 阶段                              | **17 / 17 通过**（round5、round6 连续两轮）                                                                                                         |
+| 单元 + 组件测试（vitest）         | **1179 / 1179**，157 个文件                                                                                                                         |
+| E2E（Playwright，真实 Chromium）  | **231 / 231**，75 个 spec                                                                                                                           |
+| 二进制部署链路（真起 nginx）      | **32 / 32** 断言                                                                                                                                    |
+| 产物冒烟（preview）               | **15 / 15**                                                                                                                                         |
+| 产物冒烟（compose 的 nginx 服务） | **16 / 16**                                                                                                                                         |
+| 用例级合计                        | **1473 / 1473 = 100%**                                                                                                                              |
 | 部署服务实测（宿主机 curl，8081） | `/` 200 · `/tools/json-formatter/` 200 · `/tools/case-convert/` 200 · `/c/dev/` 200 · `/sitemap.xml` 200 · `/robots.txt` 200 · `/nope-xyz/` **404** |
 
 **没有跳过、注释或屏蔽任何用例**：全过程中唯一被修改的断言是「preview 的 404 语义」，
@@ -127,22 +127,22 @@ ROUND=round1 docker compose -f deploy/docker/docker-compose.test.yml run --rm te
 
 ## 五、修复清单（文件级）
 
-| 文件 | 改动 |
-| --- | --- |
-| `deploy/docker/Dockerfile.test` | 新增。测试镜像：Node 24 + pnpm 12.3.4 + chromium + nginx；apt 走 https 镜像站并补 CA；`COPY . .` 放昂贵层之后 |
-| `deploy/docker/docker-compose.test.yml` | 新增。`web`（部署）+ `test`（全量）；代理改显式 opt-in；healthcheck 修掉 exec 形式重定向 |
-| `deploy/docker/run-tests.sh` | 新增。17 阶段驱动 + 逐阶段日志 + `summary.tsv` |
-| `deploy/docker/smoke.mjs` | 新增。HTTP 冒烟，404 语义按环境区分，slug 用 catalog 真值 |
-| `deploy/docker/verify-deploy-scripts.sh` | 新增。部署脚本机检（语法 + 发布源一致性） |
-| `.dockerignore` | 新增。排掉 `node_modules` / `dist` / `.git` / `.agent` 等 |
-| `deploy/docker/docker-compose.dev.yml` | healthcheck 同一处写法修复 |
-| `deploy/binary/packaging/nginx.conf.tpl` | `user` 指令补 `@NGINX_GROUP@` |
-| `deploy/binary/toolboxctl` | 新增 `NGINX_GROUP` 与 `group_exists()`，渲染时按系统补齐组名 |
-| `deploy/binary/build-bundle.sh` | 打包前把 staging 及子目录修成 0755（修全站 403） |
-| `apps/web/playwright.config.ts` | `retries` 可由 `E2E_RETRIES` 控制（容器里设为 0，严格模式） |
-| `.gitignore` / `.prettierignore` | 忽略 `.agent/test-logs/` |
-| `docs/DEVELOPMENT.md` / `.en.md` | 新增 §二十一「容器化全量测试（可复现）」 |
-| `CHANGELOG.md` | 记录新增项与 4 条修复 |
+| 文件                                     | 改动                                                                                                          |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `deploy/docker/Dockerfile.test`          | 新增。测试镜像：Node 24 + pnpm 12.3.4 + chromium + nginx；apt 走 https 镜像站并补 CA；`COPY . .` 放昂贵层之后 |
+| `deploy/docker/docker-compose.test.yml`  | 新增。`web`（部署）+ `test`（全量）；代理改显式 opt-in；healthcheck 修掉 exec 形式重定向                      |
+| `deploy/docker/run-tests.sh`             | 新增。17 阶段驱动 + 逐阶段日志 + `summary.tsv`                                                                |
+| `deploy/docker/smoke.mjs`                | 新增。HTTP 冒烟，404 语义按环境区分，slug 用 catalog 真值                                                     |
+| `deploy/docker/verify-deploy-scripts.sh` | 新增。部署脚本机检（语法 + 发布源一致性）                                                                     |
+| `.dockerignore`                          | 新增。排掉 `node_modules` / `dist` / `.git` / `.agent` 等                                                     |
+| `deploy/docker/docker-compose.dev.yml`   | healthcheck 同一处写法修复                                                                                    |
+| `deploy/binary/packaging/nginx.conf.tpl` | `user` 指令补 `@NGINX_GROUP@`                                                                                 |
+| `deploy/binary/toolboxctl`               | 新增 `NGINX_GROUP` 与 `group_exists()`，渲染时按系统补齐组名                                                  |
+| `deploy/binary/build-bundle.sh`          | 打包前把 staging 及子目录修成 0755（修全站 403）                                                              |
+| `apps/web/playwright.config.ts`          | `retries` 可由 `E2E_RETRIES` 控制（容器里设为 0，严格模式）                                                   |
+| `.gitignore` / `.prettierignore`         | 忽略 `.agent/test-logs/`                                                                                      |
+| `docs/DEVELOPMENT.md` / `.en.md`         | 新增 §二十一「容器化全量测试（可复现）」                                                                      |
+| `CHANGELOG.md`                           | 记录新增项与 4 条修复                                                                                         |
 
 ## 六、仍未解决的问题与影响范围
 

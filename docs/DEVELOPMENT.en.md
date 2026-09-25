@@ -984,3 +984,91 @@ means at least one stage failed.
 4. **Under Git Bash, `docker run` needs `export MSYS_NO_PATHCONV=1`**; otherwise
    `-e LOG_DIR=/app/...` is rewritten to a Windows path and the logs never reach
    the bind mount.
+
+## 22. Binary and Docker Deployment Verification
+
+Unit and E2E tests answer "is the code correct". Deployment verification answers
+"does it actually work once installed". The latter only makes sense on a **real
+target host** — permissions, ownership, systemd, ports, and log persistence never
+surface in a containerized unit test.
+
+This is the **default checklist to run before shipping any binary or Docker
+artifact**. The scripts live in `deploy/docker/verify-*.sh`, are idempotent, and
+print case id, input, expectation, actual result and exit code for every case.
+
+### 22.1 Verification environment (defaults)
+
+| Item               | Value                                                          |
+| ------------------ | -------------------------------------------------------------- |
+| Target host        | `root@192.168.100.4` (Ubuntu 24.04 / nginx 1.24 / docker 29.7) |
+| Proxy for outbound | `http://192.168.200.4:10810` (download steps only)             |
+| Binary deploy port | `80` (managed by systemd)                                      |
+| Docker deploy port | `8081` (single `docker run` container)                         |
+| Logs and report    | `/tmp/tbv/*-result.log` on the target                          |
+
+### 22.2 Three steps
+
+```bash
+# 0) Build the artifacts (inside the container, so it matches CI)
+docker run --rm -v "$PWD/dist-release:/out" toolbox-test:dev \
+  bash -c 'cd /app && pnpm build:ssg && bash deploy/binary/build-bundle.sh --out /out'
+
+# 1) Ship to the target (note: `scp -r` nests if the destination dir exists — rm it first)
+ssh root@192.168.100.4 'rm -rf /tmp/tbv/dist-release'
+scp -r dist-release deploy/binary/toolboxctl deploy/docker/verify-*.sh root@192.168.100.4:/tmp/tbv/
+
+# 2) Group A: local run verification (CLI behaviour, no installed instance needed)
+ssh root@192.168.100.4 'bash /tmp/tbv/verify-binary-local.sh'
+
+# 3) Group B: real binary deploy (idempotent: uninstall --purge first if present, then port 80)
+ssh root@192.168.100.4 'bash /tmp/tbv/verify-binary-deploy.sh'
+
+# 4) Group C: real Docker deploy (save → scp → load → run on 8081)
+docker build -f deploy/docker/Dockerfile -t toolbox-web:dev .
+docker save toolbox-web:dev -o .agent/tmp/web-image.tar
+scp .agent/tmp/web-image.tar root@192.168.100.4:/tmp/tbv/web-image.tar
+ssh root@192.168.100.4 'docker load -i /tmp/tbv/web-image.tar && bash /tmp/tbv/verify-docker-deploy.sh'
+```
+
+### 22.3 Coverage
+
+| Group | Cases | Covers                                                                                                                                                                                                                                                                                                                                    |
+| ----- | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A     | 24    | shebang and interpreter, usage/version, unknown command, invalid `--port` / `--from` / `--prefix`, non-root rejection, template render + `nginx -t`, nobody fallback group, artifact permissions and checksums                                                                                                                            |
+| B     | 32    | full source→download→sha256→extract→install→render→systemd path; layout, permissions and ownership, worker-readable app (403 regression), master/worker identity, port, runtime deps, `/healthz`, real 404, sitemap, gzip, log persistence and ownership, status/config/list/doctor, restart/reload/stop/start, config file and CLI entry |
+| C     | 22    | image load, container run, HEALTHCHECK healthy, port mapping, in-container permissions and worker identity, `/healthz`, real 404, gzip, `docker logs` persistence, bind-mount log persistence, port-conflict failure, stop and port release                                                                                               |
+
+### 22.4 Exit criteria
+
+1. **All cases in all three groups PASS** with exit code 0. A failure must be
+   root-caused and fixed in product code — never by relaxing the assertion,
+   skipping, or commenting out a case.
+2. After a fix you must **rebuild the artifact** (bundle / image) and re-run the
+   affected group. Fixing source without rebuilding the artifact proves nothing.
+3. Wrap up: the port-80 service is active and enabled, no leftover containers,
+   temporary ports released.
+
+### 22.5 Gotchas (following these saves half the time)
+
+1. **`--prefix` is not a multi-instance switch.** The global config
+   `/etc/toolbox/toolbox.conf` and the unit name `toolbox.service` are both
+   **singletons**: install once with `--prefix /tmp/x` and every later command
+   without `--prefix` (including `uninstall`) targets `/tmp/x`. This has already
+   caused "tried to uninstall production, removed the rehearsal instance instead".
+   Use `--prefix` only for temporary rehearsals, then reinstall to `/opt/toolbox`.
+2. **Ops subcommands used to silently ignore `--prefix`** (`status`/`stop`/`config`/`list`
+   parsed no arguments at all), so `toolboxctl stop --prefix /tmp/x` stopped the
+   default instance — this really did take down a production service on the target.
+   `main()` now pre-parses `--prefix` and rejects extra arguments; do not remove
+   that validation when touching those functions.
+3. **Bind-mounting `/var/log/nginx` empties `docker logs`**: the official image
+   symlinks `access.log` to `/dev/stdout`, and mounting a host directory replaces
+   the symlink. Assert the two log paths (stdout vs file) with **separate containers**.
+4. **Under Git Bash, `docker save -o /tmp/x.tar` followed by `scp /tmp/x.tar` fails**:
+   the Windows scp does not understand Git Bash's `/tmp` mapping. Write artifacts
+   to a path inside the project (e.g. `.agent/tmp/`) instead.
+5. **`scp -r` into an existing directory nests** (`dist-release/dist-release`) — `rm -rf` first.
+6. **Running the packaging script inside a container runs the image's copy**: after
+   editing `build-bundle.sh`, rebuild `toolbox-test:dev`, or you are validating old logic.
+7. **Serving `dist-release/` with a local `python3 -m http.server`** covers the
+   download + checksum steps without touching the public Release or needing the internet.

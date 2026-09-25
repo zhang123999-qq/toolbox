@@ -945,3 +945,84 @@ ROUND=round1 docker compose -f deploy/docker/docker-compose.test.yml run --rm te
    传给 `wget`，容器永远 unhealthy。要么 `CMD-SHELL`，要么别写重定向。
 4. **Git Bash 下 `docker run` 要 `export MSYS_NO_PATHCONV=1`**，否则
    `-e LOG_DIR=/app/...` 会被转成 Windows 路径，日志写不进挂载卷。
+
+## 二十二、二进制与 Docker 部署验证规范
+
+单元与 E2E 测试跑的是「代码对不对」；部署验证跑的是「装上去能不能用」。
+后者只能在**真实目标机**上做——权限、属主、systemd、端口、日志落盘这些
+问题，在容器里跑单测永远暴露不出来。
+
+本规范是**每次发二进制或 Docker 制品前默认要跑的一套**，脚本已固化在
+`deploy/docker/verify-*.sh`，可反复执行（幂等），逐条输出用例编号、输入、
+预期、实际与退出码。
+
+### 22.1 验证环境（默认参数）
+
+| 项              | 值                                                              |
+| --------------- | --------------------------------------------------------------- |
+| 目标机          | `root@192.168.100.4`（Ubuntu 24.04 / nginx 1.24 / docker 29.7） |
+| 联网代理        | `http://192.168.200.4:10810`（仅下载环节需要）                  |
+| 二进制部署端口  | `80`（systemd 托管）                                            |
+| Docker 部署端口 | `8081`（单容器 `docker run`）                                   |
+| 日志与报告      | 目标机 `/tmp/tbv/*-result.log`                                  |
+
+### 22.2 三步执行
+
+```bash
+# 0) 造制品（在容器内，保证与 CI 同环境）
+docker run --rm -v "$PWD/dist-release:/out" toolbox-test:dev \
+  bash -c 'cd /app && pnpm build:ssg && bash deploy/binary/build-bundle.sh --out /out'
+
+# 1) 传到目标机（注意：scp -r 时目标目录若已存在会嵌套，先 rm -rf）
+ssh root@192.168.100.4 'rm -rf /tmp/tbv/dist-release'
+scp -r dist-release deploy/binary/toolboxctl deploy/docker/verify-*.sh root@192.168.100.4:/tmp/tbv/
+
+# 2) A 组：二进制本地运行验证（CLI 行为，不需要已安装实例）
+ssh root@192.168.100.4 'bash /tmp/tbv/verify-binary-local.sh'
+
+# 3) B 组：二进制真实部署（幂等：已装则先 uninstall --purge 再装到 80）
+ssh root@192.168.100.4 'bash /tmp/tbv/verify-binary-deploy.sh'
+
+# 4) C 组：Docker 真实部署（镜像 docker save → scp → load → run 8081）
+docker build -f deploy/docker/Dockerfile -t toolbox-web:dev .
+docker save toolbox-web:dev -o .agent/tmp/web-image.tar
+scp .agent/tmp/web-image.tar root@192.168.100.4:/tmp/tbv/web-image.tar
+ssh root@192.168.100.4 'docker load -i /tmp/tbv/web-image.tar && bash /tmp/tbv/verify-docker-deploy.sh'
+```
+
+### 22.3 覆盖面
+
+| 组  | 用例数 | 覆盖                                                                                                                                                                                                                                                                     |
+| --- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| A   | 24     | 可执行性与解释器、usage/version、未知命令、非法 `--port`/`--from`/`--prefix`、非 root 拒绝、模板渲染与 `nginx -t`、nobody 降级组名、产物权限与校验和                                                                                                                     |
+| B   | 32     | 发布源下载→sha256 校验→解包→落地→渲染→systemd 全流程；目录结构、权限属主、worker 可读（403 回归）、master/worker 进程身份、端口、运行时依赖、`/healthz`、真 404、sitemap、gzip、日志落盘与属主、status/config/list/doctor、restart/reload/stop/start、配置文件与命令入口 |
+| C   | 22     | 镜像 load、容器 run、HEALTHCHECK healthy、端口映射、容器内权限与 worker 身份、`/healthz`、真 404、gzip、`docker logs` 落盘、挂载卷落盘、端口冲突异常、stop 与端口释放                                                                                                    |
+
+### 22.4 通过标准
+
+1. 三组**全部用例 PASS**，退出码 0；失败必须定位根因后修产品代码，
+   **不允许**改断言去迁就、不允许跳过或注释用例。
+2. 修完必须**重建制品**（bundle / 镜像）并重跑相关组做回归，
+   只改源码不重造制品等于没验。
+3. 收尾确认：80 端口服务 active+enabled、无残留容器、临时端口已释放。
+
+### 22.5 已知坑（照着做能省一半时间）
+
+1. **`--prefix` 不是多实例开关**。全局配置 `/etc/toolbox/toolbox.conf` 与
+   systemd unit 名 `toolbox.service` 都是**单例**的：用 `--prefix /tmp/x`
+   装一次，之后所有不带 `--prefix` 的命令（含 `uninstall`）都会打向
+   `/tmp/x`。曾因此想卸载生产却卸掉了演练实例。`--prefix` 只用于临时演练，
+   用完立刻装回 `/opt/toolbox`。
+2. **运维子命令曾静默忽略 `--prefix`**（`status`/`stop`/`config`/`list` 等根本不解析参数），
+   `toolboxctl stop --prefix /tmp/x` 会直接停掉默认实例——在目标机上真实停过一次生产服务。
+   现在由 `main()` 统一预解析并对多余参数报错，改这些函数时别把校验删掉。
+3. **给容器挂 `/var/log/nginx` 会让 `docker logs` 变空**：官方镜像把
+   `access.log` 软链到 `/dev/stdout`，挂上宿主机目录后软链被真实目录取代。
+   两条日志路径（stdout / 文件）要用**不同容器**分别断言。
+4. **Git Bash 下 `docker save -o /tmp/x.tar` 后 `scp /tmp/x.tar` 找不到文件**：
+   Windows 版 scp 不认 Git Bash 的 `/tmp` 映射。把制品写到项目内相对路径（如 `.agent/tmp/`）。
+5. **`scp -r` 到已存在的目录会产生嵌套**（`dist-release/dist-release`），先 `rm -rf`。
+6. **在容器里跑打包脚本，用的是镜像内的旧脚本**：改完 `build-bundle.sh`
+   必须先重建 `toolbox-test:dev`，否则验证的是旧逻辑。
+7. **发布源用本机 `python3 -m http.server` 托管 `dist-release/`** 即可覆盖
+   「下载 + 校验」环节，不必动公开 Release，也不依赖外网。

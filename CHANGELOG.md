@@ -11,6 +11,12 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
 
 ### 新增
 
+- **二进制与 Docker 制品的部署验证规范**（`docs/DEVELOPMENT.md` §二十二，中英双语）：
+  三组共 78 条用例，脚本固化在 `deploy/docker/verify-binary-local.sh`（A 组 24 条，CLI 行为）、
+  `verify-binary-deploy.sh`（B 组 32 条，二进制真实部署）、`verify-docker-deploy.sh`
+  （C 组 22 条，Docker 真实部署）。幂等可重跑，逐条输出编号 / 输入 / 预期 / 实际 / 退出码。
+  默认目标机 `root@192.168.100.4`，二进制占 80、Docker 占 8081。
+  报告见 `.agent/reports/binary-deploy-verify-report.md`
 - **容器化全量测试环境**：`deploy/docker/Dockerfile.test` +
   `deploy/docker/docker-compose.test.yml` + `deploy/docker/run-tests.sh`。
   一次 build 固化 Node 24 / pnpm / 依赖 / chromium / nginx，再按阶段跑
@@ -95,7 +101,18 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
 
 ### 修复
 
-- **声明的 Node 版本低于工具链真实下限**：`engines.node` 写 `>=20`，但测试环境 jsdom@30 的
+- **运维子命令静默忽略 `--prefix`（严重）**：`toolboxctl` 只有 `install` / `render` 解析
+  `--prefix`，`status` / `stop` / `config` / `list` 等**根本不解析任何参数**，多余 flag 被丢弃，
+  操作落到默认 `/opt/toolbox`。目标机上实测 `stop --prefix /tmp/x` 直接停掉了 80 端口的生产服务。
+  现由 `main()` 统一预解析 `--prefix`（含绝对路径校验），并对不接受额外参数的子命令报错，
+  `uninstall` / `logs` 也随之支持 `--prefix`
+- **Docker 形态缺 `/healthz`**：二进制部署有健康检查端点，容器形态返回 404，两种部署无法被
+  统一探测。现 `deploy/nginx/default.conf` 增加 `location = /healthz`，版本号由 Dockerfile
+  在构建期从 `deploy/binary/VERSION` 注入并断言替换结果
+- **打包产物里的 `install.sh` 常年是旧版**：`build-bundle.sh` 不复制它，README 的一键命令
+  直链却指向它（历史上一键装到旧脚本复发过不止一次）。现每次打包强制同步
+- **`doctor` 在服务未运行时误导**：输出「期望 v0.0.1，实际响应 无」像部署失败，
+  实际只是没启动。现先判服务状态，未运行时提示「先执行 start」：`engines.node` 写 `>=20`，但测试环境 jsdom@30 的
   engines 是 `^22.22.2 \|\| ^24.15.0 \|\| >=26.0.0`，其依赖 undici@8 要求 `>=22.19.0`。
   Node 20 上 jsdom 环境根本无法启动（`webidl.util.markAsUncloneable is not a function`），
   3 个组件测试文件全部报环境错误。现 CI 改用 Node 24，engines 修正为真实下限，

@@ -135,6 +135,11 @@ tar -czf "$TARBALL" -C "$STAGE" .
 
 # —— 6. 升级源索引 ——
 printf '%s\n' "$VERSION" > "$OUT/latest.txt"
+
+# 一键安装脚本：README 里 `curl … | bash` 指的就是这个文件，必须与仓库同源。
+# 以前它不在打包产物里，靠手工上传，于是发布出去的常常是旧版
+# （历史上一键装到旧脚本出现过不止一次）。这里每次打包强制同步。
+cp -f "$HERE/install.sh" "$OUT/install.sh"
 if [ "$WRITE_INDEX" = "1" ]; then
   {
     printf '{\n  "name": "toolbox",\n  "latest": "%s",\n  "releases": [\n' "$VERSION"

@@ -112,6 +112,12 @@ toolboxctl —— Toolbox 二进制部署管理
   toolbox-<ver>-<os>-<arch>.tar.gz(+.sha256)；省略时用配置里的 UPDATE_SOURCE，
   都没配则回落到本仓库 Release：
   https://github.com/zhang123999-qq/toolbox/releases/latest/download
+
+通用参数
+  --prefix DIR   站点安装根目录（默认 /opt/toolbox）。**所有子命令都支持**，
+                 且只要传了就一定作用于该实例——不会因为某个命令不解析而被
+                 静默丢弃、误操作到默认实例。多实例时注意 systemd unit 名
+                 固定为 toolbox.service，一台机器只能有一个受管服务实例。
 USAGE
 }
 
@@ -966,7 +972,11 @@ cmd_doctor() {
   if [ -n "$(current_version)" ]; then
     if nginx_conf_test; then chk "nginx 配置语法" 1; else chk "nginx 配置语法" 0 "（跑 $PROG config 查看）"; fi
     cv=$(current_version)
-    if body=$(health_wait_version "$cv" 20); then
+    if ! svc_installed || [ "$(svc_state)" != "active" ]; then
+      # 服务没跑起来时做健康检查只会得到「无响应」，容易误判成部署失败；
+      # 这里明确区分「未运行」与「版本不一致」两种状态。
+      chk "服务运行状态" 0 "（当前未运行，先执行 $PROG start）"
+    elif body=$(health_wait_version "$cv" 20); then
       chk "健康检查（服务端版本与 current 一致）" 1 "$body"
     else
       chk "健康检查（服务端版本与 current 一致）" 0 "期望 v$cv，实际响应 ${body:-无}"
@@ -1278,6 +1288,50 @@ main() {
   [ $# -gt 0 ] || { usage; exit 2; }
   cmd=$1
   shift
+
+  # ── 统一预解析 --prefix（所有子命令通用）────────────────
+  # 历史上只有 install / render 解析 --prefix，其余子命令既不解析也不校验，
+  # 于是 `toolboxctl stop --prefix /tmp/x` 会把 --prefix 静默丢掉，
+  # 实际操作默认的 /opt/toolbox —— 曾经因此在目标机上误停了生产实例。
+  # 分发前统一剥离，既去掉重复实现，也保证「带 --prefix 一定作用于该实例」。
+  # 位置参数用「头元素搬到尾部」的方式重建，兼容 POSIX sh 且不破坏引号。
+  _n=$#
+  while [ "$_n" -gt 0 ]; do
+    case ${1:-} in
+      --prefix=*)
+        PREFIX=$(opt_inline "$1")
+        shift
+        _n=$((_n - 1))
+        ;;
+      --prefix)
+        shift
+        _n=$((_n - 1))
+        [ $# -gt 0 ] || usage_err "--prefix 需要一个路径参数"
+        PREFIX=$1
+        shift
+        _n=$((_n - 1))
+        ;;
+      *)
+        set -- "$@" "$1"
+        shift
+        _n=$((_n - 1))
+        ;;
+    esac
+  done
+  case $PREFIX in
+    /*) ;;
+    *) usage_err "--prefix 必须是绝对路径：$PREFIX" ;;
+  esac
+
+  # 不接受额外参数的子命令：多余参数一律报错。
+  # 以前拼错的 flag 会被静默忽略，用户以为生效了，实际没有。
+  case $cmd in
+    status | config | list | health | version | -v | --version | doctor | \
+      start | stop | restart | reload)
+      [ $# -eq 0 ] || usage_err "未知参数：$1（$cmd 仅支持 --prefix）"
+      ;;
+  esac
+
   case $cmd in
     install)       cmd_install "$@" ;;
     uninstall|remove) cmd_uninstall "$@" ;;
