@@ -87,7 +87,7 @@ toolboxctl upgrade --source <发布源>        # 升级
 
 ```bash
 toolboxctl rollback              # 回到上一个版本
-toolboxctl rollback --to 0.0.1   # 回到指定版本
+toolboxctl rollback --to 0.0.1-beta   # 回到指定版本
 ```
 
 回滚同样是「切软链 + 重载 + 健康检查」，做完会打印确认信息；

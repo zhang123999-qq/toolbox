@@ -55,13 +55,13 @@ cd dist-release && python3 -m http.server 8899
 
 Common flags:
 
-| Need                            | Extra flag        |
-| ------------------------------- | ----------------- |
-| Change the port (default 8081)  | `--port 9090`     |
-| Install nginx automatically     | `--install-deps`  |
-| Pin a version                   | `--version 0.0.1` |
-| Lay down files without starting | `--no-start`      |
-| Preview the actions             | `--dry-run`       |
+| Need                            | Extra flag             |
+| ------------------------------- | ---------------------- |
+| Change the port (default 8081)  | `--port 9090`          |
+| Install nginx automatically     | `--install-deps`       |
+| Pin a version                   | `--version 0.0.1-beta` |
+| Lay down files without starting | `--no-start`           |
+| Preview the actions             | `--dry-run`            |
 
 > Once installed the site is at `http://<host>:8081/`. The default port is **8081**, matching the
 > container form and avoiding privileged port 80; besides `--port` you can override it with the
@@ -72,8 +72,8 @@ Common flags:
 When you skip the one-liner, or want to inspect the bundle first:
 
 ```bash
-tar -xzf toolbox-0.0.1-linux-amd64.tar.gz -C /root/pkg
-/root/pkg/bin/toolboxctl install --from /root/toolbox-0.0.1-linux-amd64.tar.gz --install-deps
+tar -xzf toolbox-0.0.1-beta-linux-amd64.tar.gz -C /root/pkg
+/root/pkg/bin/toolboxctl install --from /root/toolbox-0.0.1-beta-linux-amd64.tar.gz --install-deps
 ```
 
 The one-liner and the manual install run **the same landing logic** (the script ultimately calls

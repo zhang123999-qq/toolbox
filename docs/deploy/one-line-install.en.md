@@ -74,7 +74,7 @@ Sources are tried in this order; the first match wins:
 
 | Option            | What it does                                                               | Values / default                                                      |
 | ----------------- | -------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| `-v`, `--version` | Install a specific version; the `v` prefix is optional, space or `=` works | e.g. `-v 0.0.1`, `--version=0.0.1`; default: latest release           |
+| `-v`, `--version` | Install a specific version; the `v` prefix is optional, space or `=` works | e.g. `-v 0.0.1-beta`, `--version=0.0.1-beta`; default: latest release |
 | `--from`          | Use this exact bundle, **skipping version resolution**                     | URL or local file path                                                |
 | `--source`        | Release source base URL (internal distribution)                            | e.g. `http://192.168.1.10:8099`; omit to use this repo's release base |
 | `--proxy`         | Download through a proxy                                                   | e.g. `http://127.0.0.1:10808`                                         |
@@ -112,8 +112,8 @@ curl -fsSL <script-url> | sudo bash
 The `v` prefix is optional. Pinning a version skips the "find latest release" lookup, which is what you want on private repositories or offline networks:
 
 ```sh
-curl -fsSL <script-url> | sudo bash -s -- -v 0.0.1
-curl -fsSL <script-url> | sudo bash -s -- --version=v0.0.1
+curl -fsSL <script-url> | sudo bash -s -- -v 0.0.1-beta
+curl -fsSL <script-url> | sudo bash -s -- --version=v0.0.1-beta
 ```
 
 ### 4.3 Behind a proxy
@@ -158,7 +158,7 @@ Pinned version + proxy + autostart + custom port + automatic dependencies:
 
 ```sh
 curl -fsSL <script-url> | sudo bash -s -- \
-  -v 0.0.1 \
+  -v 0.0.1-beta \
   --proxy http://127.0.0.1:10808 \
   --service \
   --port 9090 \
@@ -176,7 +176,7 @@ curl -fsSL http://192.168.1.10:8099/install.sh | sudo bash -s -- --source http:/
 If the bundle is already on the target machine, skip downloading entirely (a local bundle without `.sha256` skips the whole-archive check, but the bundle still verifies file by file):
 
 ```sh
-curl -fsSL <script-url> | sudo bash -s -- --from /root/toolbox-0.0.1-linux-amd64.tar.gz
+curl -fsSL <script-url> | sudo bash -s -- --from /root/toolbox-0.0.1-beta-linux-amd64.tar.gz
 ```
 
 ### 4.7 Dry run first
@@ -184,7 +184,7 @@ curl -fsSL <script-url> | sudo bash -s -- --from /root/toolbox-0.0.1-linux-amd64
 Add `--dry-run` to any combination to see what would happen, without writing anything:
 
 ```sh
-curl -fsSL <script-url> | sudo bash -s -- -v 0.0.1 --proxy http://127.0.0.1:10808 --dry-run
+curl -fsSL <script-url> | sudo bash -s -- -v 0.0.1-beta --proxy http://127.0.0.1:10808 --dry-run
 ```
 
 ---
@@ -202,7 +202,7 @@ An explicit option always wins over its environment variable.
 | `http_proxy` / `https_proxy` / `HTTP_PROXY` / `HTTPS_PROXY` | `--proxy`     | Used when nothing is set explicitly                  |
 
 ```sh
-GITHUB_TOKEN=ghp_xxx curl -fsSL <script-url> | sudo bash -s -- -v 0.0.1
+GITHUB_TOKEN=ghp_xxx curl -fsSL <script-url> | sudo bash -s -- -v 0.0.1-beta
 ```
 
 ---

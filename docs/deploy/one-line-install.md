@@ -71,22 +71,22 @@ toolboxctl doctor
 
 ## 三、参数速查
 
-| 参数              | 作用                                                  | 取值 / 默认                                                |
-| ----------------- | ----------------------------------------------------- | ---------------------------------------------------------- |
-| `-v`, `--version` | 安装指定版本；`v` 前缀可省略，与参数间空格或 `=` 均可 | 例 `-v 0.0.1`、`--version=0.0.1`；默认最新 Release         |
-| `--from`          | 直接用指定的部署包，**跳过版本解析**                  | URL 或本地文件路径                                         |
-| `--source`        | 发布源基址（内网分发用）                              | 例 `http://192.168.1.10:8099`；省略时用本仓库 Release 基址 |
-| `--proxy`         | 下载走代理，适配国内网络                              | 例 `http://127.0.0.1:10808`                                |
-| `--mirror`        | GitHub 下载加速前缀，只改写 `github.com` 的下载链接   | 例 `https://ghfast.top`                                    |
-| `--service`       | 装完启用开机自启并立即启动（额外做 systemd 前置检查） | 开关；与 `--no-start` 互斥                                 |
-| `--no-start`      | 只落地文件，不启动、不设自启                          | 开关                                                       |
-| `--port`          | 站点监听端口                                          | 默认 `8081`（与 Docker 形态一致；也可用 `TOOLBOX_PORT`）   |
-| `--prefix`        | 站点安装根目录（不影响命令位置）                      | 默认 `/opt/toolbox`                                        |
-| `--bin-dir`       | 命令行入口目录                                        | 默认 `/usr/local/bin`                                      |
-| `--install-deps`  | 自动安装系统依赖（`apt-get install nginx`）           | 开关                                                       |
-| `--no-verify`     | 跳过 sha256 校验（不推荐）                            | 开关                                                       |
-| `--dry-run`       | 只打印将要执行的动作，不落地任何文件                  | 开关                                                       |
-| `-h`, `--help`    | 显示帮助                                              | ——                                                         |
+| 参数              | 作用                                                  | 取值 / 默认                                                  |
+| ----------------- | ----------------------------------------------------- | ------------------------------------------------------------ |
+| `-v`, `--version` | 安装指定版本；`v` 前缀可省略，与参数间空格或 `=` 均可 | 例 `-v 0.0.1-beta`、`--version=0.0.1-beta`；默认最新 Release |
+| `--from`          | 直接用指定的部署包，**跳过版本解析**                  | URL 或本地文件路径                                           |
+| `--source`        | 发布源基址（内网分发用）                              | 例 `http://192.168.1.10:8099`；省略时用本仓库 Release 基址   |
+| `--proxy`         | 下载走代理，适配国内网络                              | 例 `http://127.0.0.1:10808`                                  |
+| `--mirror`        | GitHub 下载加速前缀，只改写 `github.com` 的下载链接   | 例 `https://ghfast.top`                                      |
+| `--service`       | 装完启用开机自启并立即启动（额外做 systemd 前置检查） | 开关；与 `--no-start` 互斥                                   |
+| `--no-start`      | 只落地文件，不启动、不设自启                          | 开关                                                         |
+| `--port`          | 站点监听端口                                          | 默认 `8081`（与 Docker 形态一致；也可用 `TOOLBOX_PORT`）     |
+| `--prefix`        | 站点安装根目录（不影响命令位置）                      | 默认 `/opt/toolbox`                                          |
+| `--bin-dir`       | 命令行入口目录                                        | 默认 `/usr/local/bin`                                        |
+| `--install-deps`  | 自动安装系统依赖（`apt-get install nginx`）           | 开关                                                         |
+| `--no-verify`     | 跳过 sha256 校验（不推荐）                            | 开关                                                         |
+| `--dry-run`       | 只打印将要执行的动作，不落地任何文件                  | 开关                                                         |
+| `-h`, `--help`    | 显示帮助                                              | ——                                                           |
 
 ---
 
@@ -111,8 +111,8 @@ curl -fsSL <脚本地址> | sudo bash
 版本号带不带 `v` 都可以；指定版本后会跳过「查询最新 Release」，适合内网或私有仓库：
 
 ```sh
-curl -fsSL <脚本地址> | sudo bash -s -- -v 0.0.1
-curl -fsSL <脚本地址> | sudo bash -s -- --version=v0.0.1
+curl -fsSL <脚本地址> | sudo bash -s -- -v 0.0.1-beta
+curl -fsSL <脚本地址> | sudo bash -s -- --version=v0.0.1-beta
 ```
 
 ### 4.3 配置代理（国内网络）
@@ -157,7 +157,7 @@ curl -fsSL <脚本地址> | sudo bash -s -- --no-start
 
 ```sh
 curl -fsSL <脚本地址> | sudo bash -s -- \
-  -v 0.0.1 \
+  -v 0.0.1-beta \
   --proxy http://127.0.0.1:10808 \
   --service \
   --port 9090 \
@@ -175,7 +175,7 @@ curl -fsSL http://192.168.1.10:8099/install.sh | sudo bash -s -- --source http:/
 已经把包拷到目标机时，连下载都省掉（本地包无 `.sha256` 时会跳过整包校验，但包内仍会做逐文件校验）：
 
 ```sh
-curl -fsSL <脚本地址> | sudo bash -s -- --from /root/toolbox-0.0.1-linux-amd64.tar.gz
+curl -fsSL <脚本地址> | sudo bash -s -- --from /root/toolbox-0.0.1-beta-linux-amd64.tar.gz
 ```
 
 ### 4.7 先预演再执行
@@ -183,7 +183,7 @@ curl -fsSL <脚本地址> | sudo bash -s -- --from /root/toolbox-0.0.1-linux-amd
 任何组合都可以先加 `--dry-run` 看会发生什么，不落地任何文件：
 
 ```sh
-curl -fsSL <脚本地址> | sudo bash -s -- -v 0.0.1 --proxy http://127.0.0.1:10808 --dry-run
+curl -fsSL <脚本地址> | sudo bash -s -- -v 0.0.1-beta --proxy http://127.0.0.1:10808 --dry-run
 ```
 
 ---
@@ -201,7 +201,7 @@ curl -fsSL <脚本地址> | sudo bash -s -- -v 0.0.1 --proxy http://127.0.0.1:10
 | `http_proxy` / `https_proxy` / `HTTP_PROXY` / `HTTPS_PROXY` | `--proxy`  | 未显式指定时自动沿用                    |
 
 ```sh
-GITHUB_TOKEN=ghp_xxx curl -fsSL <脚本地址> | sudo bash -s -- -v 0.0.1
+GITHUB_TOKEN=ghp_xxx curl -fsSL <脚本地址> | sudo bash -s -- -v 0.0.1-beta
 ```
 
 ---

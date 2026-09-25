@@ -50,8 +50,8 @@ toolboxctl uninstall --purge
 
 ```
 dist-release/
-├── toolbox-0.0.1-linux-amd64.tar.gz         自包含部署包（~700KB）
-├── toolbox-0.0.1-linux-amd64.tar.gz.sha256  整包校验值（升级前校验）
+├── toolbox-0.0.1-beta-linux-amd64.tar.gz         自包含部署包（~700KB）
+├── toolbox-0.0.1-beta-linux-amd64.tar.gz.sha256  整包校验值（升级前校验）
 ├── latest.txt                                最新版本号（升级源用）
 └── index.json                                已发布版本索引
 ```
@@ -82,7 +82,7 @@ deploy/binary/build-bundle.sh --skip-build          # 复用已有 apps/web/dist
 ```
 /opt/toolbox/
 ├── releases/
-│   ├── 0.0.1/            ← 不可变：解包即用，升级只新增目录，不原地改
+│   ├── 0.0.1-beta/            ← 不可变：解包即用，升级只新增目录，不原地改
 │   └── 0.0.2/
 ├── current -> releases/0.0.2     ← 唯一的切换点（软链，原子替换）
 ├── shared/
@@ -113,8 +113,8 @@ deploy/binary/build-bundle.sh --skip-build          # 复用已有 apps/web/dist
 curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/latest/download/install.sh | sudo bash
 
 # 指定版本 / 端口 / 自动装依赖（默认端口 8081，这里示范换成 9090）
-curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/download/v0.0.1/install.sh \
-  | sudo bash -s -- --version 0.0.1 --port 9090 --install-deps
+curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/download/v0.0.1-beta/install.sh \
+  | sudo bash -s -- --version 0.0.1-beta --port 9090 --install-deps
 
 # 内网发布源（生产推荐：不依赖 GitHub 可达性）
 curl -fsSL http://<发布源>/install.sh | sudo bash -s -- --source http://<发布源>
@@ -140,10 +140,10 @@ curl -fsSL http://<发布源>/install.sh | sudo bash -s -- --source http://<发�
 
 ```bash
 # 目标机上前置：只需 nginx（没有可用 --install-deps 代装）
-scp dist-release/toolbox-0.0.1-linux-amd64.tar.gz* root@<host>:/root/
+scp dist-release/toolbox-0.0.1-beta-linux-amd64.tar.gz* root@<host>:/root/
 ssh root@<host>
-tar -xzf /root/toolbox-0.0.1-linux-amd64.tar.gz -C /root/pkg
-/root/pkg/bin/toolboxctl install --from /root/toolbox-0.0.1-linux-amd64.tar.gz --install-deps
+tar -xzf /root/toolbox-0.0.1-beta-linux-amd64.tar.gz -C /root/pkg
+/root/pkg/bin/toolboxctl install --from /root/toolbox-0.0.1-beta-linux-amd64.tar.gz --install-deps
 ```
 
 `install` 依次做：前置检查（root / systemd / nginx / 端口占用 / 磁盘）→ 校验完整性
@@ -202,7 +202,7 @@ toolboxctl upgrade --source http://releases.internal/toolbox/
 toolboxctl upgrade --source /srv/releases --to 0.0.2
 # 回滚
 toolboxctl rollback                    # 回到 shared/state/previous 记录的版本
-toolboxctl rollback --to 0.0.1
+toolboxctl rollback --to 0.0.1-beta
 ```
 
 也可以把源写进配置，之后免传 `--source`：
@@ -237,7 +237,7 @@ Docker、Node、Python **都不需要**。
 # 1) 开发机：在容器里验证 nginx 配置能真实服务（不需要 systemd）
 MSYS_NO_PATHCONV=1 docker run --rm -v "F:/max:/w" -w /w nginx:1.27-alpine \
   sh /w/deploy/binary/tests/verify-nginx-config.sh \
-  /w/dist-release/toolbox-0.0.1-linux-amd64.tar.gz
+  /w/dist-release/toolbox-0.0.1-beta-linux-amd64.tar.gz
 
 # 2) 目标机：自检 + 端到端
 toolboxctl doctor

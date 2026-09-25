@@ -54,13 +54,13 @@ cd dist-release && python3 -m http.server 8899
 
 常用参数：
 
-| 需求                | 追加参数          |
-| ------------------- | ----------------- |
-| 换端口（默认 8081） | `--port 9090`     |
-| 自动安装 nginx      | `--install-deps`  |
-| 指定版本            | `--version 0.0.1` |
-| 只落地不启动        | `--no-start`      |
-| 先预览动作          | `--dry-run`       |
+| 需求                | 追加参数               |
+| ------------------- | ---------------------- |
+| 换端口（默认 8081） | `--port 9090`          |
+| 自动安装 nginx      | `--install-deps`       |
+| 指定版本            | `--version 0.0.1-beta` |
+| 只落地不启动        | `--no-start`           |
+| 先预览动作          | `--dry-run`            |
 
 > 装完默认访问 `http://<目标机IP>:8081/`。默认端口 **8081** 与容器形态一致，
 > 也不占特权端口 80；除 `--port` 外还可用环境变量 `TOOLBOX_PORT=9090` 覆盖。
@@ -70,8 +70,8 @@ cd dist-release && python3 -m http.server 8899
 不走一键脚本，或想先审阅包内容时：
 
 ```bash
-tar -xzf toolbox-0.0.1-linux-amd64.tar.gz -C /root/pkg
-/root/pkg/bin/toolboxctl install --from /root/toolbox-0.0.1-linux-amd64.tar.gz --install-deps
+tar -xzf toolbox-0.0.1-beta-linux-amd64.tar.gz -C /root/pkg
+/root/pkg/bin/toolboxctl install --from /root/toolbox-0.0.1-beta-linux-amd64.tar.gz --install-deps
 ```
 
 一键脚本与手动安装**走的是同一段落地逻辑**（脚本最终就是调 `toolboxctl install`），

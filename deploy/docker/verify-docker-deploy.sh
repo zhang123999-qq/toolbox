@@ -121,7 +121,7 @@ assert_case C-10 "GET / 返回 200" -- sh -c "[ \"\$(curl -s -o /dev/null -w '%{
 assert_case C-11 "工具页 /tools/json-formatter/ 返回 200" -- \
   sh -c "[ \"\$(curl -s -o /dev/null -w '%{http_code}' $B/tools/json-formatter/)\" = 200 ]"
 assert_case C-12 "/healthz 返回 200 且内容正确" -- \
-  sh -c "curl -fsS $B/healthz | grep -qx 'ok v0.0.1'"
+  sh -c "curl -fsS $B/healthz | grep -qx 'ok v0.0.1-beta'"
 assert_case C-13 "未知路径返回真 404" -- \
   sh -c "[ \"\$(curl -s -o /dev/null -w '%{http_code}' $B/definitely-not-a-real-page/)\" = 404 ]"
 assert_case C-14 "sitemap.xml 与 robots.txt 可访问" -- \

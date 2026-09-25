@@ -92,7 +92,7 @@ rm -f /etc/toolbox/toolbox.conf
   >"$TB/httpd.log" 2>&1 & echo $! >"$TB/httpd.pid")
 sleep 2
 assert_case B-00 "发布源可访问且含 latest.txt 与校验文件" -- \
-  sh -c "curl -fsS $SRC_URL/latest.txt >/dev/null && curl -fsSI $SRC_URL/toolbox-0.0.1-linux-amd64.tar.gz.sha256 >/dev/null"
+  sh -c "curl -fsS $SRC_URL/latest.txt >/dev/null && curl -fsSI $SRC_URL/toolbox-0.0.1-beta-linux-amd64.tar.gz.sha256 >/dev/null"
 
 # ── B-01 dry-run，顺带验证「默认端口 = 8081」────────────────
 banner "B-01 安装前 dry-run 与默认端口"
@@ -140,8 +140,8 @@ banner "B-12..B-17 HTTP 核心功能"
 assert_case B-12 "GET / 返回 200" -- sh -c "[ \"\$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:$PORT/)\" = 200 ]"
 assert_case B-13 "工具页 /tools/json-formatter/ 返回 200" -- \
   sh -c "[ \"\$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:$PORT/tools/json-formatter/)\" = 200 ]"
-assert_case B-14 "/healthz 返回 200 且内容为 ok v0.0.1" -- \
-  sh -c "curl -fsS http://127.0.0.1:$PORT/healthz | grep -qx 'ok v0.0.1'"
+assert_case B-14 "/healthz 返回 200 且内容为 ok v0.0.1-beta" -- \
+  sh -c "curl -fsS http://127.0.0.1:$PORT/healthz | grep -qx 'ok v0.0.1-beta'"
 assert_case B-15 "未知路径返回真 404（非软 404）" -- \
   sh -c "[ \"\$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:$PORT/definitely-not-a-real-page/)\" = 404 ]"
 assert_case B-16 "sitemap.xml 与 robots.txt 可访问" -- \

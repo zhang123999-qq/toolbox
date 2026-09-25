@@ -13,22 +13,22 @@
 
 版本号有**五个落点**，必须一致，脚本已尽量自动对齐：
 
-| 落点                      | 值                                 | 由谁写入            | 用途                         |
-| ------------------------- | ---------------------------------- | ------------------- | ---------------------------- |
-| `deploy/binary/VERSION`   | `0.0.1`                            | 手工（真源）        | 打包与 CLI 版本号的唯一来源  |
-| bundle 文件名             | `toolbox-0.0.1-linux-amd64.tar.gz` | `build-bundle.sh`   | 用户可见、升级源按名解析版本 |
-| bundle 内 `VERSION`       | `0.0.1`                            | `build-bundle.sh`   | 安装时校验「包内版本」       |
-| bundle 内 `manifest.json` | `"version": "0.0.1"` + `gitCommit` | `build-bundle.sh`   | 追溯「这个包出自哪个提交」   |
-| git tag / Release         | `v0.0.1`                           | `gh release create` | 与源码历史绑定               |
+| 落点                      | 值                                      | 由谁写入            | 用途                         |
+| ------------------------- | --------------------------------------- | ------------------- | ---------------------------- |
+| `deploy/binary/VERSION`   | `0.0.1-beta`                            | 手工（真源）        | 打包与 CLI 版本号的唯一来源  |
+| bundle 文件名             | `toolbox-0.0.1-beta-linux-amd64.tar.gz` | `build-bundle.sh`   | 用户可见、升级源按名解析版本 |
+| bundle 内 `VERSION`       | `0.0.1-beta`                            | `build-bundle.sh`   | 安装时校验「包内版本」       |
+| bundle 内 `manifest.json` | `"version": "0.0.1-beta"` + `gitCommit` | `build-bundle.sh`   | 追溯「这个包出自哪个提交」   |
+| git tag / Release         | `v0.0.1-beta`                           | `gh release create` | 与源码历史绑定               |
 
-运行时还提供一个**自证**落点：`GET /healthz` 返回 `ok v0.0.1`。
+运行时还提供一个**自证**落点：`GET /healthz` 返回 `ok v0.0.1-beta`。
 它由 nginx 配置在渲染期写死，因此能证明「当前真正在跑的是哪个版本」，
 是升级/回滚判定的依据（见第四节）。
 
 约定：
 
 - 采用**语义化版本** `MAJOR.MINOR.PATCH`；`0.y.z` 表示尚未稳定。
-- 打 tag 时带 `v` 前缀（`v0.0.1`），资产文件名不带 `v`（`toolbox-0.0.1-…`）；
+- 打 tag 时带 `v` 前缀（`v0.0.1-beta`），资产文件名不带 `v`（`toolbox-0.0.1-beta-…`）；
   一键安装脚本会自动去掉前缀做映射。
 - 版本号**不在** `package.json` 里维护（那个 `version: 0.0.0` 只是占位），
   避免两处真源不一致。
@@ -56,7 +56,7 @@ gh release create v0.0.2 \
   --title "v0.0.2" --notes-file CHANGELOG.md
 ```
 
-> **tag 的两个细节**（v0.0.1 发布时踩到过）：
+> **tag 的两个细节**（首次发布时踩到过）：
 >
 > 1. `git tag -a` 需要提交身份。本机未配置全局 `user.name/user.email` 时会直接失败
 >    （`Committer identity unknown`）。用
@@ -94,7 +94,7 @@ bundle 内部：`app/`（静态产物）、`bin/toolboxctl`（管理 CLI）、
 4. **「未发布」区块常驻**：开发中随手往里加，发版时改标题为版本号+日期，
    再新建一个空的「未发布」。
 5. **必须显式写「已知限制」**。项目里英文文案只覆盖 1 个工具、
-   无 `/en` 路由、首屏 JS 超预算等待决项，都写在 0.0.1 的已知限制里——
+   无 `/en` 路由、首屏 JS 超预算等待决项，都写在 0.0.1-beta 的已知限制里——
    不写等于让用户替你发现。
 6. **链接化**：版本标题指到对应 Release，`未发布` 指到 compare 链接。
 7. **Release notes 直接用 changelog 的对应段落**（`--notes-file`），
@@ -111,8 +111,8 @@ curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/latest/download/in
   | sudo bash
 
 # ② 指定版本 / 端口 / 自动装依赖
-curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/download/v0.0.1/install.sh \
-  | sudo bash -s -- --version 0.0.1 --port 9090 --install-deps
+curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/download/v0.0.1-beta/install.sh \
+  | sudo bash -s -- --version 0.0.1-beta --port 9090 --install-deps
 
 # ③ 跟随 master 分支的源码副本（仅便于开发期自测，不推荐作为对外入口）
 curl -fsSL https://raw.githubusercontent.com/zhang123999-qq/toolbox/master/deploy/binary/install.sh \
@@ -123,7 +123,7 @@ curl -fsSL http://<发布源>/install.sh | sudo bash -s -- --source http://<发�
 ```
 
 > ✅ **仓库已于 2026-09-24 转为 public**：① ② ③ 三条对匿名请求均可访问（已实测 200）。
-> 当前 Release（v0.0.1）附件里的 `install.sh` **已同步为仓库内最新版本**，
+> 当前 Release（v0.0.1-beta）附件里的 `install.sh` **已同步为仓库内最新版本**，
 > 因此「对外一键安装入口」与「源码」不会再出现版本漂移。
 >
 > - 仍需离线分发时走 ④ 自建 / 内网发布源 —— 生产环境首选，顺带解决内网机器无外网的问题。

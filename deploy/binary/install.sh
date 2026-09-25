@@ -7,10 +7,10 @@
 #
 # 带参数（管道场景必须用 `bash -s --` 传参）：
 #   ... | sudo bash -s -- --service
-#   ... | sudo bash -s -- -v 0.0.1 --proxy http://127.0.0.1:10808
+#   ... | sudo bash -s -- -v 0.0.1-beta --proxy http://127.0.0.1:10808
 #
 # 也支持先下载再执行（推荐，便于先审阅脚本内容）：
-#   curl -fsSLO <上面的地址> && sudo bash install.sh --version 0.0.1
+#   curl -fsSLO <上面的地址> && sudo bash install.sh --version 0.0.1-beta
 #
 # 参数：
 #   -v, --version VER    指定版本（默认最新 Release），v 前缀可省略
@@ -101,7 +101,7 @@ Toolbox 一键安装（curl | bash）
   curl -fsSLO <脚本地址> && sudo bash install.sh [选项]
 
 选项:
-  -v, --version VER    安装指定版本（默认最新 Release），可写 v0.0.1 或 0.0.1
+  -v, --version VER    安装指定版本（默认最新 Release），可写 v0.0.1-beta 或 0.0.1-beta
       --from URL|FILE  直接指定部署包（URL 或本地路径），跳过版本解析
       --source URL     发布源基址（目录内需有 latest.txt 与包 + .sha256）
                        默认 https://github.com/<repo>/releases/latest/download
@@ -122,13 +122,13 @@ Toolbox 一键安装（curl | bash）
   curl -fsSL <脚本地址> | sudo bash
 
   # 指定版本
-  curl -fsSL <脚本地址> | sudo bash -s -- -v 0.0.1
+  curl -fsSL <脚本地址> | sudo bash -s -- -v 0.0.1-beta
 
   # 国内网络走代理
   curl -fsSL <脚本地址> | sudo bash -s -- --proxy http://127.0.0.1:10808
 
   # 组合：指定版本 + 代理 + 开机自启 + 换端口（默认 8081，这里示范换成 9090）
-  curl -fsSL <脚本地址> | sudo bash -s -- -v 0.0.1 --proxy http://127.0.0.1:10808 --service --port 9090
+  curl -fsSL <脚本地址> | sudo bash -s -- -v 0.0.1-beta --proxy http://127.0.0.1:10808 --service --port 9090
 
 环境变量:
   GITHUB_TOKEN    私有仓库取 Release 时需要
@@ -143,7 +143,7 @@ USAGE
 while [ $# -gt 0 ]; do
   case $1 in
     -v|--version)
-      [ $# -ge 2 ] || die "-v/--version 需要一个版本号，例：-v 0.0.1"
+      [ $# -ge 2 ] || die "-v/--version 需要一个版本号，例：-v 0.0.1-beta"
       VERSION=${2#v}; shift 2 ;;
     --version=*)     VERSION=$(printf '%s' "${1#*=}" | sed 's/^v//'); shift ;;
     --from)
@@ -344,7 +344,7 @@ else
       # 常见原因：仓库私有且无 GITHUB_TOKEN、或网络不通。给可执行的下一步而不是干报错。
       die "无法确定最新版本。
   可任选其一：
-    1) 显式指定版本   --version 0.0.1
+    1) 显式指定版本   --version 0.0.1-beta
     2) 用自建发布源   --source http://<内网源>
     3) 私有仓库带 token  GITHUB_TOKEN=<token> $0"
     fi

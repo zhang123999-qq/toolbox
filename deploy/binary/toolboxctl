@@ -183,7 +183,7 @@ detect_nginx() {
 has_systemctl() { command -v systemctl >/dev/null 2>&1; }
 
 # 去掉行尾换行。**注意不要顺手去掉空格**：
-# /healthz 的响应体是 "ok v0.0.1"，中间那个空格是有意义的；
+# /healthz 的响应体是 "ok v0.0.1-beta"，中间那个空格是有意义的；
 # 若用 `tr -d ' \t\r\n'` 一并删掉，比对会永远不相等（曾因此让每次升级都被误判失败）。
 strip_eol() { printf '%s' "$1" | tr -d '\r\n'; }
 
@@ -217,10 +217,22 @@ list_release_versions() {
 
 # ver_gt A B —— A 是否大于 B（分段数值比较，避开 sort -V 依赖）
 ver_gt() {
+  # 比较语义化版本：返回 0 表示 $1 > $2，1 表示 $1 <= $2。
+  # 必须先把预发布后缀（`-beta` / `-rc.1`）剥出来单独比较，否则
+  # `split(..., ".")` 会把 `0.0.1-beta` 的第三段算成数字 1，
+  # 于是 `0.0.1-beta` 与 `0.0.1` 被判为「相等」——升级与回滚都会判错。
+  # 规则同 semver：主版本相同时，**带预发布后缀的更小**。
   awk -v a="$1" -v b="$2" 'BEGIN{
-    n=split(a,x,"."); m=split(b,y,"."); k=(n>m?n:m);
+    pa = a; pre_a = "";
+    if (match(a, /-/)) { pa = substr(a, 1, RSTART - 1); pre_a = substr(a, RSTART + 1) }
+    pb = b; pre_b = "";
+    if (match(b, /-/)) { pb = substr(b, 1, RSTART - 1); pre_b = substr(b, RSTART + 1) }
+    n=split(pa,x,"."); m=split(pb,y,"."); k=(n>m?n:m);
     for(i=1;i<=k;i++){ p=x[i]+0; q=y[i]+0; if(p>q) exit 0; if(p<q) exit 1 }
-    exit 1
+    if (pre_a == "" && pre_b != "") exit 0;
+    if (pre_a != "" && pre_b == "") exit 1;
+    if (pre_a == pre_b) exit 1;
+    exit (pre_a > pre_b) ? 0 : 1;
   }'
 }
 

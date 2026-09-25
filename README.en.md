@@ -18,7 +18,7 @@
 | --------------- | ----------------------------------------------------------------------------------------- |
 | Planned tools   | **870 across 20 categories in 4 groups** (validated by script)                            |
 | Implemented     | **75** (70 in the text & content category, plus sample tools) — that category is complete |
-| Current release | [`v0.0.1`](https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.1)                 |
+| Current release | [`v0.0.1-beta`](https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.1-beta)       |
 
 ---
 
@@ -78,12 +78,12 @@ curl -fsSL http://<source-ip>:8899/install.sh | sudo bash -s -- --source http://
 
 Common variations:
 
-| Need                        | Extra flag        |
-| --------------------------- | ----------------- |
-| Change the port             | `--port 9090`     |
-| Install nginx automatically | `--install-deps`  |
-| Pin a version               | `--version 0.0.1` |
-| Preview the actions first   | `--dry-run`       |
+| Need                        | Extra flag             |
+| --------------------------- | ---------------------- |
+| Change the port             | `--port 9090`          |
+| Install nginx automatically | `--install-deps`       |
+| Pin a version               | `--version 0.0.1-beta` |
+| Preview the actions first   | `--dry-run`            |
 
 > ✅ **The repository is public**: `releases/latest/download/install.sh` downloads fine
 > anonymously (verified, HTTP 200). Use a self-hosted source instead when you need offline
@@ -92,8 +92,8 @@ Common variations:
 Manual install without the one-liner:
 
 ```bash
-tar -xzf toolbox-0.0.1-linux-amd64.tar.gz -C /root/pkg
-/root/pkg/bin/toolboxctl install --from /root/toolbox-0.0.1-linux-amd64.tar.gz --install-deps
+tar -xzf toolbox-0.0.1-beta-linux-amd64.tar.gz -C /root/pkg
+/root/pkg/bin/toolboxctl install --from /root/toolbox-0.0.1-beta-linux-amd64.tar.gz --install-deps
 ```
 
 ### 2. Container deployment

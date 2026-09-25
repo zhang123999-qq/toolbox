@@ -12,11 +12,11 @@
 
 ## 状态
 
-| 项       | 值                                                                        |
-| -------- | ------------------------------------------------------------------------- |
-| 工具总量 | **870 个 / 20 域 / 4 大组**（规划，脚本校验闭合）                         |
-| 已实现   | **75 个**（文本与内容域 70 个 + 示例工具等）—— 文本域已全量交付           |
-| 当前版本 | [`v0.0.1`](https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.1) |
+| 项       | 值                                                                                  |
+| -------- | ----------------------------------------------------------------------------------- |
+| 工具总量 | **870 个 / 20 域 / 4 大组**（规划，脚本校验闭合）                                   |
+| 已实现   | **75 个**（文本与内容域 70 个 + 示例工具等）—— 文本域已全量交付                     |
+| 当前版本 | [`v0.0.1-beta`](https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.1-beta) |
 
 ---
 
@@ -69,12 +69,12 @@ curl -fsSL http://<发布源IP>:8899/install.sh | sudo bash -s -- --source http:
 
 常用变体：
 
-| 需求           | 追加参数          |
-| -------------- | ----------------- |
-| 换端口         | `--port 9090`     |
-| 自动安装 nginx | `--install-deps`  |
-| 指定版本       | `--version 0.0.1` |
-| 先预览要做的事 | `--dry-run`       |
+| 需求           | 追加参数               |
+| -------------- | ---------------------- |
+| 换端口         | `--port 9090`          |
+| 自动安装 nginx | `--install-deps`       |
+| 指定版本       | `--version 0.0.1-beta` |
+| 先预览要做的事 | `--dry-run`            |
 
 > ✅ **仓库已公开**：`releases/latest/download/install.sh` 匿名可直接下载（已实测 200）。
 > 需要离线分发时改用上面的自建发布源。
@@ -82,8 +82,8 @@ curl -fsSL http://<发布源IP>:8899/install.sh | sudo bash -s -- --source http:
 不走一键脚本的手动安装：
 
 ```bash
-tar -xzf toolbox-0.0.1-linux-amd64.tar.gz -C /root/pkg
-/root/pkg/bin/toolboxctl install --from /root/toolbox-0.0.1-linux-amd64.tar.gz --install-deps
+tar -xzf toolbox-0.0.1-beta-linux-amd64.tar.gz -C /root/pkg
+/root/pkg/bin/toolboxctl install --from /root/toolbox-0.0.1-beta-linux-amd64.tar.gz --install-deps
 ```
 
 ### ② 容器部署

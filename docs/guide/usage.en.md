@@ -96,7 +96,7 @@ stopping halfway.
 
 ```bash
 toolboxctl rollback              # go back to the previous version
-toolboxctl rollback --to 0.0.1   # go back to a specific version
+toolboxctl rollback --to 0.0.1-beta   # go back to a specific version
 ```
 
 A rollback is the same three steps — re-point the symlink, reload, health check — and prints a
