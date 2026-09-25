@@ -1030,3 +1030,48 @@ ssh root@192.168.100.4 'docker load -i /tmp/tbv/web-image.tar && bash /tmp/tbv/v
    必须先重建 `toolbox-test:dev`，否则验证的是旧逻辑。
 8. **发布源用本机 `python3 -m http.server` 托管 `dist-release/`** 即可覆盖
    「下载 + 校验」环节，不必动公开 Release，也不依赖外网。
+
+### 22.6 工具批次的端到端验收（双环境 E2E）
+
+每批工具除了单测与组件测试，还要在**两种真实部署形态**上各跑一遍 E2E
+（局域网服务器 + 本地 Docker），确认新工具在真实站点里点得开、算得对。
+
+```bash
+# ① 造含新工具的产物
+docker build -f deploy/docker/Dockerfile.test -t toolbox-test:dev .   # 镜像里是旧源码就要先重建
+docker run --rm -v "$PWD/dist-release:/out" toolbox-test:dev \
+  bash -c 'cd /app && pnpm build:ssg && bash deploy/binary/build-bundle.sh --out /out'
+
+# ② 局域网服务器：uninstall --purge 后用 --from 装新包
+ssh root@192.168.100.4 'rm -rf /tmp/tbv/dist-release'
+scp -r dist-release deploy/binary/install.sh root@192.168.100.4:/tmp/tbv/
+ssh root@192.168.100.4 'cd /tmp/tbv/dist-release && sha256sum -c *.sha256 &&
+  toolboxctl uninstall --purge >/dev/null 2>&1
+  bash /tmp/tbv/install.sh --from /tmp/tbv/dist-release/toolbox-0.0.1-beta-linux-amd64.tar.gz \
+    --service --port 8081'
+
+# ③ 本地 Docker：宿主端口用 8090（8081 常被 Docker Desktop 自己占着）
+docker build -f deploy/docker/Dockerfile -t toolbox-web:dev .
+docker run -d --name tbv-e2e-docker -p 8090:8081 toolbox-web:dev
+
+# ④ 两个环境各跑一遍本批工具（--grep 限定本批 slug）
+cd apps/web
+for BASE in http://192.168.100.4:8081 http://localhost:8090; do
+  E2E_BASE_URL=$BASE E2E_NO_WEBSERVER=1 E2E_RETRIES=0 \
+    npx playwright test --config playwright.edge.config.ts --grep "slug1|slug2|..."
+done
+```
+
+本机没有 `playwright install` 下载的内核，`apps/web/playwright.edge.config.ts`
+（**临时文件，不入库**）改用系统 Edge 驱动：`launchOptions.executablePath` 指向
+`msedge.exe`，并带上 `--no-proxy-server`——否则系统代理会把手伸向
+本地与局域网地址。配合 `E2E_NO_WEBSERVER=1` 复用已在跑的站点，不再另起 preview。
+
+接着 §22.5 的坑清单往下编号，双环境 E2E 上还会踩到两条：
+
+10. **Windows 上 `127.0.0.1` 与 `localhost` 不等价**（踩过）：Docker Desktop 的端口发布
+    在 `localhost` 上生效，而 `127.0.0.1` 可能已被 `com.docker.backend` 自己占住并返回
+    一个**不带 `Server` 头的 404**——症状是「容器内 wget 得到 200，宿主机 curl 得到 404」。
+    E2E 的 base URL 一律用 `localhost`。
+11. **本机 8081 长年被 Docker Desktop 占用**：本地容器映射固定改用 **8090**，
+    免得与 `com.docker.backend` 抢端口而让容器停在 `Created`。

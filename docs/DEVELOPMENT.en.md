@@ -1077,3 +1077,52 @@ ssh root@192.168.100.4 'docker load -i /tmp/tbv/web-image.tar && bash /tmp/tbv/v
    editing `build-bundle.sh`, rebuild `toolbox-test:dev`, or you are validating old logic.
 8. **Serving `dist-release/` with a local `python3 -m http.server`** covers the
    download + checksum steps without touching the public Release or needing the internet.
+
+### 22.6 End-to-end acceptance per tool batch (two environments)
+
+Beyond unit and component tests, every batch must run its E2E on **both real deployment
+forms** (a LAN server and local Docker) to prove the new tools open and compute correctly
+inside an actual site.
+
+```bash
+# 1) Build artifacts that contain the new tools
+docker build -f deploy/docker/Dockerfile.test -t toolbox-test:dev .   # rebuild if the image predates the sources
+docker run --rm -v "$PWD/dist-release:/out" toolbox-test:dev \
+  bash -c 'cd /app && pnpm build:ssg && bash deploy/binary/build-bundle.sh --out /out'
+
+# 2) LAN server: uninstall --purge, then install the new bundle with --from
+ssh root@192.168.100.4 'rm -rf /tmp/tbv/dist-release'
+scp -r dist-release deploy/binary/install.sh root@192.168.100.4:/tmp/tbv/
+ssh root@192.168.100.4 'cd /tmp/tbv/dist-release && sha256sum -c *.sha256 &&
+  toolboxctl uninstall --purge >/dev/null 2>&1
+  bash /tmp/tbv/install.sh --from /tmp/tbv/dist-release/toolbox-0.0.1-beta-linux-amd64.tar.gz \
+    --service --port 8081'
+
+# 3) Local Docker: use host port 8090 (8081 is usually taken by Docker Desktop itself)
+docker build -f deploy/docker/Dockerfile -t toolbox-web:dev .
+docker run -d --name tbv-e2e-docker -p 8090:8081 toolbox-web:dev
+
+# 4) Run the batch's tools against both
+cd apps/web
+for BASE in http://192.168.100.4:8081 http://localhost:8090; do
+  E2E_BASE_URL=$BASE E2E_NO_WEBSERVER=1 E2E_RETRIES=0 \
+    npx playwright test --config playwright.edge.config.ts --grep "slug1|slug2|..."
+done
+```
+
+The machine has no `playwright install` browser, so `apps/web/playwright.edge.config.ts`
+(a **temporary, uncommitted** file) drives the system Edge instead: point
+`launchOptions.executablePath` at `msedge.exe` and pass `--no-proxy-server` — otherwise the
+system proxy hijacks local and LAN addresses. Pair it with `E2E_NO_WEBSERVER=1` to reuse an
+already-running site instead of starting another preview server.
+
+Continuing the gotcha list from §22.5, the two-environment E2E adds two more:
+
+10. **On Windows, `127.0.0.1` and `localhost` are not equivalent** (learned the hard way):
+    Docker Desktop publishes ports on `localhost`, while `127.0.0.1` may already be held by
+    `com.docker.backend` itself, which answers with a **404 that carries no `Server` header**.
+    The symptom is "wget inside the container gets 200, but curl from the host gets 404".
+    Always use `localhost` in the E2E base URL.
+11. **Port 8081 is permanently taken by Docker Desktop here**: map the local container to
+    **8090**, otherwise it loses the port race against `com.docker.backend` and stays in
+    `Created`.
