@@ -14,7 +14,7 @@ SRC_PORT=8899
 SRC_URL="http://127.0.0.1:$SRC_PORT"
 PFX=/opt/toolbox
 CTL=$PFX/current/bin/toolboxctl
-PORT=80
+PORT=8081
 OUT=$TB/b-result.log
 : >"$OUT"
 
@@ -94,14 +94,20 @@ sleep 2
 assert_case B-00 "发布源可访问且含 latest.txt 与校验文件" -- \
   sh -c "curl -fsS $SRC_URL/latest.txt >/dev/null && curl -fsSI $SRC_URL/toolbox-0.0.1-linux-amd64.tar.gz.sha256 >/dev/null"
 
-# ── B-01 dry-run ────────────────────────────────────────
-banner "B-01 安装前 dry-run"
+# ── B-01 dry-run，顺带验证「默认端口 = 8081」────────────────
+banner "B-01 安装前 dry-run 与默认端口"
 exec_case B-01 "install.sh --dry-run 只打印不落地" 0 -- \
   bash "$TB/install.sh" --source "$SRC_URL" --port "$PORT" --prefix "$PFX" --dry-run
+# 这条**故意不传 --port**：dry-run 打印出来的就是默认值。
+# 默认端口若被改回 80，这里会立刻失败——比装完再去踩端口冲突便宜得多。
+assert_case B-01b "不传 --port 时默认端口为 8081" -- \
+  sh -c "bash $TB/install.sh --source $SRC_URL --prefix $PFX --dry-run 2>&1 | grep -qE '端口[[:space:]]*: 8081'"
+assert_case B-01c "环境变量 TOOLBOX_PORT=9090 能覆盖默认端口" -- \
+  sh -c "TOOLBOX_PORT=9090 bash $TB/install.sh --source $SRC_URL --prefix $PFX --dry-run 2>&1 | grep -qE '端口[[:space:]]*: 9090'"
 
 # ── B-02 真实安装 ───────────────────────────────────────
 banner "B-02 真实部署（下载→校验→落地→启服务）"
-exec_case B-02 "install.sh --service --port 80 完整安装" 0 -- \
+exec_case B-02 "install.sh --service --port $PORT 完整安装" 0 -- \
   bash "$TB/install.sh" --source "$SRC_URL" --port "$PORT" --prefix "$PFX" --service
 
 # ── B-03..B-07 文件布局、权限与属主 ──────────────────────
@@ -125,7 +131,7 @@ assert_case B-08 "systemd 单元 active 且 enabled" -- \
 assert_case B-09 "nginx master 为 root、worker 为 toolbox" -- \
   sh -c "ps -o user=,cmd= -C nginx | grep -q '^root .*master process' && \
          ps -o user=,cmd= -C nginx | grep -q '^toolbox .*worker process'"
-assert_case B-10 "端口 80 处于监听" -- sh -c "ss -lnt | grep -q ':80 '"
+assert_case B-10 "端口 $PORT 处于监听" -- sh -c "ss -lnt | grep -q ':$PORT '"
 assert_case B-11 "运行时依赖：nginx 可执行文件与自带 MIME 表均就位" -- \
   sh -c "command -v nginx >/dev/null && [ -s $PFX/current/conf/mime.types ]"
 
@@ -163,7 +169,7 @@ banner "B-25..B-28 服务生命周期"
 exec_case B-25 "restart 后健康检查通过" 0 -- bash "$CTL" restart
 exec_case B-26 "reload 后仍健康" 0 -- bash "$CTL" reload
 exec_case B-27 "stop 后端口释放" 0 -- \
-  sh -c "bash $CTL stop >/dev/null 2>&1; sleep 1; ! ss -lnt | grep -q ':80 '"
+  sh -c "bash $CTL stop >/dev/null 2>&1; sleep 1; ! ss -lnt | grep -q ':$PORT '"
 exec_case B-28 "start 后恢复服务" 0 -- bash "$CTL" start
 
 # ── B-29..B-31 配置文件与入口 ───────────────────────────

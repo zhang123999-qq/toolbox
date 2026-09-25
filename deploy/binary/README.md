@@ -112,9 +112,9 @@ deploy/binary/build-bundle.sh --skip-build          # 复用已有 apps/web/dist
 # 从 GitHub Release 取最新版（入口与 tag 绑定，推荐；仓库已公开，匿名可下载）
 curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/latest/download/install.sh | sudo bash
 
-# 指定版本 / 端口 / 自动装依赖
+# 指定版本 / 端口 / 自动装依赖（默认端口 8081，这里示范换成 9090）
 curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/download/v0.0.1/install.sh \
-  | sudo bash -s -- --version 0.0.1 --port 8080 --install-deps
+  | sudo bash -s -- --version 0.0.1 --port 9090 --install-deps
 
 # 内网发布源（生产推荐：不依赖 GitHub 可达性）
 curl -fsSL http://<发布源>/install.sh | sudo bash -s -- --source http://<发布源>
@@ -155,7 +155,7 @@ tar -xzf /root/toolbox-0.0.1-linux-amd64.tar.gz -C /root/pkg
 | 参数                        | 说明                                                                             |
 | --------------------------- | -------------------------------------------------------------------------------- |
 | `--from <tar.gz\|dir\|url>` | 来源；省略时用脚本所在目录（已在 bundle 内解包的情形）                           |
-| `--port N`                  | 监听端口，默认 80                                                                |
+| `--port N`                  | 监听端口，默认 `8081`（与 Docker 形态一致；也可用环境变量 `TOOLBOX_PORT`）       |
 | `--prefix DIR`              | 安装根目录，默认 `/opt/toolbox`                                                  |
 | `--nginx-user U`            | worker 运行用户，默认 `toolbox`；`nobody` 表示不建用户                           |
 | `--install-deps`            | 自动 `apt-get install nginx`，并停用系统自带的 `nginx.service`（本站用独立实例） |
@@ -242,7 +242,7 @@ MSYS_NO_PATHCONV=1 docker run --rm -v "F:/max:/w" -w /w nginx:1.27-alpine \
 # 2) 目标机：自检 + 端到端
 toolboxctl doctor
 toolboxctl status
-curl -s http://127.0.0.1/healthz
+curl -s http://127.0.0.1:8081/healthz
 ```
 
 `verify-nginx-config.sh` 覆盖：解包、文件级校验、软链布局、模板渲染（含「无残留占位符」）、
@@ -251,16 +251,16 @@ curl -s http://127.0.0.1/healthz
 
 ## 六、排障
 
-| 现象                  | 原因与处理                                                                      |
-| --------------------- | ------------------------------------------------------------------------------- |
-| `未找到 nginx`        | 加 `--install-deps`，或先手动 `apt-get install -y nginx`                        |
-| `端口 80 已被占用：…` | 换端口 `--port 8080`，或先释放占用进程；`doctor` 会先报出来                     |
-| 服务起不来            | `toolboxctl logs -n 50`；再 `nginx -t -c /opt/toolbox/shared/nginx.conf` 看语法 |
-| 健康检查失败          | `curl -v http://127.0.0.1:<port>/healthz`；多半是端口被占或 app 目录不可读      |
-| 升级后仍是旧版本      | 浏览器/CDN 缓存；`/healthz` 的版本号才是服务端真值                              |
-| `sha256 校验失败`     | 包传输损坏或源被篡改——升级会中止，属预期保护                                    |
-| 想回到上一版          | `toolboxctl rollback`（不需要重新下载）                                         |
-| 页面 404 但文件明明在 | 检查 `current` 软链指向，`toolboxctl config` 可见渲染后的 `root`                |
+| 现象                    | 原因与处理                                                                      |
+| ----------------------- | ------------------------------------------------------------------------------- |
+| `未找到 nginx`          | 加 `--install-deps`，或先手动 `apt-get install -y nginx`                        |
+| `端口 8081 已被占用：…` | 换端口 `--port 9090`，或先释放占用进程；`doctor` 会先报出来                     |
+| 服务起不来              | `toolboxctl logs -n 50`；再 `nginx -t -c /opt/toolbox/shared/nginx.conf` 看语法 |
+| 健康检查失败            | `curl -v http://127.0.0.1:<port>/healthz`；多半是端口被占或 app 目录不可读      |
+| 升级后仍是旧版本        | 浏览器/CDN 缓存；`/healthz` 的版本号才是服务端真值                              |
+| `sha256 校验失败`       | 包传输损坏或源被篡改——升级会中止，属预期保护                                    |
+| 想回到上一版            | `toolboxctl rollback`（不需要重新下载）                                         |
+| 页面 404 但文件明明在   | 检查 `current` 软链指向，`toolboxctl config` 可见渲染后的 `root`                |
 
 ## 七、安全说明
 

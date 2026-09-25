@@ -57,11 +57,15 @@ Common flags:
 
 | Need                            | Extra flag        |
 | ------------------------------- | ----------------- |
-| Change the port (default 80)    | `--port 8080`     |
+| Change the port (default 8081)  | `--port 9090`     |
 | Install nginx automatically     | `--install-deps`  |
 | Pin a version                   | `--version 0.0.1` |
 | Lay down files without starting | `--no-start`      |
 | Preview the actions             | `--dry-run`       |
+
+> Once installed the site is at `http://<host>:8081/`. The default port is **8081**, matching the
+> container form and avoiding privileged port 80; besides `--port` you can override it with the
+> environment variable `TOOLBOX_PORT=9090`.
 
 ### 2.3 Manual install
 
@@ -91,7 +95,7 @@ toolboxctl logs -n 50 # first place to look when something is wrong
 
 ```bash
 docker build -f deploy/docker/Dockerfile -t toolbox-web:dev .
-docker run -d --name toolbox-web -p 8081:80 toolbox-web:dev
+docker run -d --name toolbox-web -p 8081:8081 toolbox-web:dev
 ```
 
 The image pre-renders the site during build; nginx serves gzip, long-lived asset caching,
@@ -99,8 +103,10 @@ the WASM MIME type and a real 404 page.
 
 ### 3.2 Port conflicts
 
-Port 8080 on the host is frequently taken, so map something else (`-p 8081:80` means host 8081 →
-container 80). The container always listens on 80; no image change is needed.
+The container's nginx listens on **8081** (the same default as the binary deployment, so
+`-p 8081:8081` means host 8081 → container 8081). If the host port is taken, just change the
+mapping — e.g. `-p 9090:8081` — with **no image change required**. When both deployment forms
+run on one machine they must use different host ports, since both default to 8081.
 
 ---
 

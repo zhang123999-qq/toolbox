@@ -73,6 +73,18 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
 
 ### 变更
 
+- **默认安装端口由 `80` 改为 `8081`**（**破坏性变更**，但**只影响新安装**：已装实例的端口
+  记在 `/etc/toolbox/toolbox.conf`，升级不会自动改，也不会因此中断）。改动覆盖全部落点：
+  `toolboxctl` 的 `PORT` 常量（真源）、`install.sh` 的帮助文本与 dry-run 兜底值、
+  `deploy/nginx/default.conf` 的 `listen`、`Dockerfile` 的 `EXPOSE` 与 `HEALTHCHECK`、
+  两个 compose 的端口映射与 healthcheck（`8081:8081`），以及 README / 部署文档 /
+  快速开始 / 排障 / 发布流程共 12 份文档（中英成对）。
+  同时新增 **`TOOLBOX_PORT` 环境变量**（等价 `--port`，优先级 `--port` > 已装实例配置 >
+  环境变量 > 默认值），登记进 `.env.example`。
+  选 8081 的原因：与容器形态统一、不占特权端口 80（非 root 也能装）、
+  且目标机上 80 常被既有站点占用。验证脚本同步扩容到 **85 条用例**
+  （A 28 / B 34 / C 23），新增「默认端口正确」与「环境变量可覆盖」两组断言；
+  Docker 验证组的宿主端口错开到 8082，好与二进制部署（默认 8081）同机串跑
 - **运行环境升级到 Node.js 24**：`engines.node` 由 `^22.22.2 || >=24.15.0` 收紧为
   `^24.15.0 || >=26.0.0`（与 `jsdom@30`、`vitest@5` 的真实下限一致）；新增 `.nvmrc`（`24`）；
   `deploy/docker/Dockerfile` 的 `NODE_IMAGE` 默认值与文档中的构建示例

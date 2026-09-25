@@ -59,6 +59,10 @@ curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/latest/download/in
 > `curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/latest/download/install.sh | less`
 > (or download it with `curl -fsSLO` and read the file), then run the command above.
 
+> 🌐 **Once installed** it serves on `http://<host>:8081/`. The default port is **8081** (same as
+> the Docker form, and it avoids privileged port 80, which is usually taken); use `--port 9090`
+> or set `TOOLBOX_PORT=9090` to change it.
+
 Self-hosted / internal release source (the production recommendation — it does not depend on
 GitHub reachability; the directory must contain `install.sh`, `latest.txt`, `toolbox-*.tar.gz`
 and its `.sha256`):
@@ -76,7 +80,7 @@ Common variations:
 
 | Need                        | Extra flag        |
 | --------------------------- | ----------------- |
-| Change the port             | `--port 8080`     |
+| Change the port             | `--port 9090`     |
 | Install nginx automatically | `--install-deps`  |
 | Pin a version               | `--version 0.0.1` |
 | Preview the actions first   | `--dry-run`       |
@@ -96,7 +100,7 @@ tar -xzf toolbox-0.0.1-linux-amd64.tar.gz -C /root/pkg
 
 ```bash
 docker build -f deploy/docker/Dockerfile -t toolbox-web:dev .
-docker run -d --name toolbox-web -p 8081:80 toolbox-web:dev   # 8080 is often taken
+docker run -d --name toolbox-web -p 8081:8081 toolbox-web:dev   # 8081 inside and out
 ```
 
 ### 3. Local development

@@ -998,13 +998,13 @@ print case id, input, expectation, actual result and exit code for every case.
 
 ### 22.1 Verification environment (defaults)
 
-| Item               | Value                                                          |
-| ------------------ | -------------------------------------------------------------- |
-| Target host        | `root@192.168.100.4` (Ubuntu 24.04 / nginx 1.24 / docker 29.7) |
-| Proxy for outbound | `http://192.168.200.4:10810` (download steps only)             |
-| Binary deploy port | `80` (managed by systemd)                                      |
-| Docker deploy port | `8081` (single `docker run` container)                         |
-| Logs and report    | `/tmp/tbv/*-result.log` on the target                          |
+| Item               | Value                                                                                                               |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| Target host        | `root@192.168.100.4` (Ubuntu 24.04 / nginx 1.24 / docker 29.7)                                                      |
+| Proxy for outbound | `http://192.168.200.4:10810` (download steps only)                                                                  |
+| Binary deploy port | `8081` (managed by systemd — this is the product default)                                                           |
+| Docker deploy port | `8081` inside the container, `8082` on the host (**deliberately offset** so it can run alongside the binary deploy) |
+| Logs and report    | `/tmp/tbv/*-result.log` on the target                                                                               |
 
 ### 22.2 Three steps
 
@@ -1020,10 +1020,10 @@ scp -r dist-release deploy/binary/toolboxctl deploy/docker/verify-*.sh root@192.
 # 2) Group A: local run verification (CLI behaviour, no installed instance needed)
 ssh root@192.168.100.4 'bash /tmp/tbv/verify-binary-local.sh'
 
-# 3) Group B: real binary deploy (idempotent: uninstall --purge first if present, then port 80)
+# 3) Group B: real binary deploy (idempotent: uninstall --purge first if present, then port 8081)
 ssh root@192.168.100.4 'bash /tmp/tbv/verify-binary-deploy.sh'
 
-# 4) Group C: real Docker deploy (save → scp → load → run on 8081)
+# 4) Group C: real Docker deploy (save → scp → load → run; container 8081, host 8082)
 docker build -f deploy/docker/Dockerfile -t toolbox-web:dev .
 docker save toolbox-web:dev -o .agent/tmp/web-image.tar
 scp .agent/tmp/web-image.tar root@192.168.100.4:/tmp/tbv/web-image.tar
@@ -1032,11 +1032,11 @@ ssh root@192.168.100.4 'docker load -i /tmp/tbv/web-image.tar && bash /tmp/tbv/v
 
 ### 22.3 Coverage
 
-| Group | Cases | Covers                                                                                                                                                                                                                                                                                                                                    |
-| ----- | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| A     | 24    | shebang and interpreter, usage/version, unknown command, invalid `--port` / `--from` / `--prefix`, non-root rejection, template render + `nginx -t`, nobody fallback group, artifact permissions and checksums                                                                                                                            |
-| B     | 32    | full source→download→sha256→extract→install→render→systemd path; layout, permissions and ownership, worker-readable app (403 regression), master/worker identity, port, runtime deps, `/healthz`, real 404, sitemap, gzip, log persistence and ownership, status/config/list/doctor, restart/reload/stop/start, config file and CLI entry |
-| C     | 22    | image load, container run, HEALTHCHECK healthy, port mapping, in-container permissions and worker identity, `/healthz`, real 404, gzip, `docker logs` persistence, bind-mount log persistence, port-conflict failure, stop and port release                                                                                               |
+| Group | Cases | Covers                                                                                                                                                                                                                                                                                                                                                                               |
+| ----- | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| A     | 28    | shebang and interpreter, usage/version, unknown command, invalid `--port` / `--from` / `--prefix`, non-root rejection, template render + `nginx -t`, **default port 8081 and the `TOOLBOX_PORT` override**, nobody fallback group, artifact permissions and checksums                                                                                                                |
+| B     | 34    | full source→download→sha256→extract→install→render→systemd path; **dry-run default port and env override**; layout, permissions and ownership, worker-readable app (403 regression), master/worker identity, port, runtime deps, `/healthz`, real 404, sitemap, gzip, log persistence and ownership, status/config/list/doctor, restart/reload/stop/start, config file and CLI entry |
+| C     | 23    | image load, container run, HEALTHCHECK healthy, port mapping, **container listening on 8081**, in-container permissions and worker identity, `/healthz`, real 404, gzip, `docker logs` persistence, bind-mount log persistence, port-conflict failure, stop and port release                                                                                                         |
 
 ### 22.4 Exit criteria
 
@@ -1045,8 +1045,8 @@ ssh root@192.168.100.4 'docker load -i /tmp/tbv/web-image.tar && bash /tmp/tbv/v
    skipping, or commenting out a case.
 2. After a fix you must **rebuild the artifact** (bundle / image) and re-run the
    affected group. Fixing source without rebuilding the artifact proves nothing.
-3. Wrap up: the port-80 service is active and enabled, no leftover containers,
-   temporary ports released.
+3. Wrap up: the service on the default port (8081) is active and enabled, no leftover
+   containers, temporary ports released.
 
 ### 22.5 Gotchas (following these saves half the time)
 
@@ -1061,14 +1061,19 @@ ssh root@192.168.100.4 'docker load -i /tmp/tbv/web-image.tar && bash /tmp/tbv/v
    default instance — this really did take down a production service on the target.
    `main()` now pre-parses `--prefix` and rejects extra arguments; do not remove
    that validation when touching those functions.
-3. **Bind-mounting `/var/log/nginx` empties `docker logs`**: the official image
+3. **Both deployment forms default to the same port (8081), so they must be offset on one
+   host.** The binary deploy takes 8081 and the container also listens on 8081, so on a
+   single machine either run them sequentially or change the host mapping (`-p 8082:8081`).
+   That is exactly what the verification scripts do: group B uses the product default 8081,
+   group C pins the host mapping to 8082.
+4. **Bind-mounting `/var/log/nginx` empties `docker logs`**: the official image
    symlinks `access.log` to `/dev/stdout`, and mounting a host directory replaces
    the symlink. Assert the two log paths (stdout vs file) with **separate containers**.
-4. **Under Git Bash, `docker save -o /tmp/x.tar` followed by `scp /tmp/x.tar` fails**:
+5. **Under Git Bash, `docker save -o /tmp/x.tar` followed by `scp /tmp/x.tar` fails**:
    the Windows scp does not understand Git Bash's `/tmp` mapping. Write artifacts
    to a path inside the project (e.g. `.agent/tmp/`) instead.
-5. **`scp -r` into an existing directory nests** (`dist-release/dist-release`) — `rm -rf` first.
-6. **Running the packaging script inside a container runs the image's copy**: after
+6. **`scp -r` into an existing directory nests** (`dist-release/dist-release`) — `rm -rf` first.
+7. **Running the packaging script inside a container runs the image's copy**: after
    editing `build-bundle.sh`, rebuild `toolbox-test:dev`, or you are validating old logic.
-7. **Serving `dist-release/` with a local `python3 -m http.server`** covers the
+8. **Serving `dist-release/` with a local `python3 -m http.server`** covers the
    download + checksum steps without touching the public Release or needing the internet.

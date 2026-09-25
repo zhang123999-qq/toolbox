@@ -115,12 +115,25 @@ exec_case A-14 "非 root 执行 install 应被拒绝" any -- \
 # ── 配置文件加载与渲染 ──────────────────────────────────
 banner "A-15..A-18 配置文件加载与渲染"
 exec_case A-15 "render --tpl-dir 生成 nginx.conf" 0 -- \
-  bash "$CTL" render --tpl-dir "$TB/bundle/conf" --prefix /opt/toolbox --port 80 \
+  bash "$CTL" render --tpl-dir "$TB/bundle/conf" --prefix /opt/toolbox --port 8081 \
   --version 0.0.1 --out "$RENDER_OUT"
 exec_case A-16 "渲染结果通过 nginx -t 语法校验" 0 -- \
   nginx -t -c "$RENDER_OUT/nginx.conf"
+assert_case A-16b "渲染出的 nginx.conf 监听 8081" -- \
+  sh -c "grep -qE 'listen[[:space:]]+8081;' $RENDER_OUT/nginx.conf"
+# 默认端口的真源在 toolboxctl 的 PORT 常量：不传 --port 时应该渲染出 8081。
+# 这条直接盯住默认值，改动被回退时立刻失败。
+exec_case A-16c "render 不传 --port 时默认渲染 8081" 0 -- \
+  bash "$CTL" render --tpl-dir "$TB/bundle/conf" --prefix /opt/toolbox \
+  --version 0.0.1 --out "$TB/render-default"
+assert_case A-16d "默认渲染结果的监听端口为 8081" -- \
+  sh -c "grep -qE 'listen[[:space:]]+8081;' $TB/render-default/nginx.conf"
+assert_case A-16e "环境变量 TOOLBOX_PORT=9091 可覆盖默认端口" -- \
+  sh -c "TOOLBOX_PORT=9091 bash $CTL render --tpl-dir $TB/bundle/conf --prefix /opt/toolbox \
+    --version 0.0.1 --out $TB/render-env >/dev/null && \
+    grep -qE 'listen[[:space:]]+9091;' $TB/render-env/nginx.conf"
 exec_case A-17 "降级到 nobody 时 user 指令带组名 nogroup（回归 getgrnam 缺陷）" 0 -- \
-  sh -c "bash $CTL render --tpl-dir $TB/bundle/conf --prefix /opt/toolbox --port 80 \
+  sh -c "bash $CTL render --tpl-dir $TB/bundle/conf --prefix /opt/toolbox --port 8081 \
     --version 0.0.1 --nginx-user nobody --out $TB/render-nobody >/dev/null && \
     grep -E '^user' $TB/render-nobody/nginx.conf | grep -q 'nogroup'"
 exec_case A-18 "render 对不存在的模板目录报错" any -- \

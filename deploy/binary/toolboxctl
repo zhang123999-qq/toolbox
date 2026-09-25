@@ -47,7 +47,14 @@ SCRIPT_DIR=$(resolve_script_dir)
 PREFIX=/opt/toolbox
 # load_conf 里「配置缺字段」的回落值要指向同一个常量，别写成两份
 DEFAULT_PREFIX=$PREFIX
-PORT=80
+# 站点默认监听端口。用 8081 而非 80：
+#   • 与 Docker 形态对外端口一致（容器内也监听 8081），两种部署记忆成本一致；
+#   • 80 是特权端口，非 root 装不了，8081 不占特权端口；
+#   • 目标机上 80 常被别的站点/网关先占掉。
+# 优先级：--port > 配置文件 PORT > 环境变量 TOOLBOX_PORT > 这里的默认值。
+# 注意：install.sh 的 dry-run 打印里有同一个默认值的兜底（${PORT:-8081}），
+# 改这里要同步改那里。
+PORT=${TOOLBOX_PORT:-8081}
 NGINX_USER=toolbox
 # nginx worker 的组：留空时 nginx 会拿用户名当组名，而 Debian/Ubuntu 里
 # nobody 的组叫 nogroup，所以降级到 nobody 运行时必须由 render_tpl 探测后补上。
@@ -88,6 +95,7 @@ toolboxctl —— Toolbox 二进制部署管理
 安装 / 卸载
   install   [--from <tar.gz|dir|url>] [--port N] [--prefix DIR]
             [--nginx-user U] [--install-deps] [--no-start] [--force]
+            （--port 默认 8081；换端口用 --port，或设环境变量 TOOLBOX_PORT）
   uninstall [--purge] [--purge-deps] [--keep-user]
 
 日常运维

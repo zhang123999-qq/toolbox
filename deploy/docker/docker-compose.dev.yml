@@ -10,12 +10,14 @@ services:
     image: toolbox-web:dev
     container_name: toolbox-web
     ports:
-      - "8080:80"
+      # 容器内 nginx 监听 8081（与二进制部署默认端口一致），故映射为 8081:8081。
+      # 与二进制部署同机跑时改成 "8082:8081" 避免冲突。
+      - "8081:8081"
     restart: unless-stopped
     # exec 数组形式不做 shell 解析：`">/dev/null"` 会被当成第三个 URL 传给 wget，
     # 结果容器永远 unhealthy。要么 CMD-SHELL，要么不写重定向。
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/"]
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8081/"]
       interval: 30s
       timeout: 3s
       retries: 3

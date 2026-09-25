@@ -21,7 +21,7 @@
 #       --mirror URL     GitHub 下载加速前缀，例：https://ghfast.top
 #       --service        安装后启用开机自启并立即启动（会做 systemd 前置检查）
 #       --no-start       只落地文件，不启动、不设自启
-#       --port N         站点监听端口（默认 80）
+#       --port N         站点监听端口（默认 8081，同 Docker 形态）
 #       --prefix DIR     站点安装根目录（默认 /opt/toolbox）
 #       --bin-dir DIR    命令行入口目录（默认 /usr/local/bin）
 #       --install-deps   自动安装系统依赖（apt-get install nginx）
@@ -34,6 +34,7 @@
 #   TOOLBOX_REPO    覆盖仓库（默认 zhang123999-qq/toolbox）
 #   TOOLBOX_PROXY   同 --proxy
 #   TOOLBOX_MIRROR  同 --mirror
+#   TOOLBOX_PORT    同 --port（默认 8081）
 #
 # 设计要点
 #   • 安装源三选一，优先级：--from > --source > GitHub Releases。
@@ -67,7 +68,7 @@ TOKEN=${GITHUB_TOKEN:-}
 VERSION=""
 SOURCE=""
 FROM=""
-PORT=""
+PORT=${TOOLBOX_PORT:-}
 PREFIX=""
 BIN_DIR="/usr/local/bin"
 INSTALL_DEPS=0
@@ -108,7 +109,7 @@ Toolbox 一键安装（curl | bash）
       --mirror URL     GitHub 下载加速前缀，例: https://ghfast.top
       --service        安装后启用开机自启并立即启动（额外做 systemd 前置检查）
       --no-start       只落地文件，不启动、也不设开机自启
-      --port N         站点监听端口（默认 80）
+      --port N         站点监听端口（默认 8081，同 Docker 形态）
       --prefix DIR     站点安装根目录（默认 /opt/toolbox）
       --bin-dir DIR    命令行入口目录（默认 /usr/local/bin）
       --install-deps   自动安装系统依赖（apt-get install nginx）
@@ -126,14 +127,15 @@ Toolbox 一键安装（curl | bash）
   # 国内网络走代理
   curl -fsSL <脚本地址> | sudo bash -s -- --proxy http://127.0.0.1:10808
 
-  # 组合：指定版本 + 代理 + 开机自启 + 换端口
-  curl -fsSL <脚本地址> | sudo bash -s -- -v 0.0.1 --proxy http://127.0.0.1:10808 --service --port 8080
+  # 组合：指定版本 + 代理 + 开机自启 + 换端口（默认 8081，这里示范换成 9090）
+  curl -fsSL <脚本地址> | sudo bash -s -- -v 0.0.1 --proxy http://127.0.0.1:10808 --service --port 9090
 
 环境变量:
   GITHUB_TOKEN    私有仓库取 Release 时需要
   TOOLBOX_REPO    覆盖仓库（默认 zhang123999-qq/toolbox）
   TOOLBOX_PROXY   同 --proxy
   TOOLBOX_MIRROR  同 --mirror
+  TOOLBOX_PORT    同 --port（默认 8081）
 USAGE
   exit 0
 }
@@ -363,7 +365,7 @@ if [ "$DRY_RUN" = "1" ]; then
   printf '  校验    : %s\n' "$([ "$NO_VERIFY" = "1" ] && echo '已跳过（--no-verify）' || echo '同名 .sha256，缺失即中止')"
   printf '  站点目录: %s\n' "${PREFIX:-/opt/toolbox}"
   printf '  命令入口: %s\n' "${BIN_DIR}"
-  printf '  端口    : %s\n' "${PORT:-80}"
+  printf '  端口    : %s\n' "${PORT:-8081}"
   printf '  开机自启: %s\n' "$([ "$NO_START" = "1" ] && echo '否（--no-start）' || echo '是')"
   [ "$INSTALL_DEPS" = "1" ] && printf '  系统依赖: apt-get install -y nginx\n'
   printf '\n  --dry-run：以上动作均未执行\n\n'

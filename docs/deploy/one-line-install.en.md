@@ -81,7 +81,7 @@ Sources are tried in this order; the first match wins:
 | `--mirror`        | GitHub download accelerator prefix; rewrites `github.com` links only       | e.g. `https://ghfast.top`                                             |
 | `--service`       | Enable autostart and start now (adds a systemd precheck)                   | Flag; mutually exclusive with `--no-start`                            |
 | `--no-start`      | Install files only: no start, no autostart                                 | Flag                                                                  |
-| `--port`          | Port the site listens on                                                   | Default `80`                                                          |
+| `--port`          | Port the site listens on                                                   | Default `8081` (same as the Docker form; also `TOOLBOX_PORT`)         |
 | `--prefix`        | Site install root (does not affect command location)                       | Default `/opt/toolbox`                                                |
 | `--bin-dir`       | Directory for the command entry points                                     | Default `/usr/local/bin`                                              |
 | `--install-deps`  | Install system dependencies (`apt-get install nginx`)                      | Flag                                                                  |
@@ -161,7 +161,7 @@ curl -fsSL <script-url> | sudo bash -s -- \
   -v 0.0.1 \
   --proxy http://127.0.0.1:10808 \
   --service \
-  --port 8080 \
+  --port 9090 \
   --install-deps
 ```
 

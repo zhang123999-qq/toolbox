@@ -80,7 +80,7 @@ toolboxctl doctor
 | `--mirror`        | GitHub 下载加速前缀，只改写 `github.com` 的下载链接   | 例 `https://ghfast.top`                                    |
 | `--service`       | 装完启用开机自启并立即启动（额外做 systemd 前置检查） | 开关；与 `--no-start` 互斥                                 |
 | `--no-start`      | 只落地文件，不启动、不设自启                          | 开关                                                       |
-| `--port`          | 站点监听端口                                          | 默认 `80`                                                  |
+| `--port`          | 站点监听端口                                          | 默认 `8081`（与 Docker 形态一致；也可用 `TOOLBOX_PORT`）   |
 | `--prefix`        | 站点安装根目录（不影响命令位置）                      | 默认 `/opt/toolbox`                                        |
 | `--bin-dir`       | 命令行入口目录                                        | 默认 `/usr/local/bin`                                      |
 | `--install-deps`  | 自动安装系统依赖（`apt-get install nginx`）           | 开关                                                       |
@@ -160,7 +160,7 @@ curl -fsSL <脚本地址> | sudo bash -s -- \
   -v 0.0.1 \
   --proxy http://127.0.0.1:10808 \
   --service \
-  --port 8080 \
+  --port 9090 \
   --install-deps
 ```
 

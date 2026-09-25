@@ -54,13 +54,16 @@ cd dist-release && python3 -m http.server 8899
 
 常用参数：
 
-| 需求              | 追加参数          |
-| ----------------- | ----------------- |
-| 换端口（默认 80） | `--port 8080`     |
-| 自动安装 nginx    | `--install-deps`  |
-| 指定版本          | `--version 0.0.1` |
-| 只落地不启动      | `--no-start`      |
-| 先预览动作        | `--dry-run`       |
+| 需求                | 追加参数          |
+| ------------------- | ----------------- |
+| 换端口（默认 8081） | `--port 9090`     |
+| 自动安装 nginx      | `--install-deps`  |
+| 指定版本            | `--version 0.0.1` |
+| 只落地不启动        | `--no-start`      |
+| 先预览动作          | `--dry-run`       |
+
+> 装完默认访问 `http://<目标机IP>:8081/`。默认端口 **8081** 与容器形态一致，
+> 也不占特权端口 80；除 `--port` 外还可用环境变量 `TOOLBOX_PORT=9090` 覆盖。
 
 ### 2.3 手动安装
 
@@ -90,15 +93,16 @@ toolboxctl logs -n 50 # 出问题时先看这里
 
 ```bash
 docker build -f deploy/docker/Dockerfile -t toolbox-web:dev .
-docker run -d --name toolbox-web -p 8081:80 toolbox-web:dev
+docker run -d --name toolbox-web -p 8081:8081 toolbox-web:dev
 ```
 
 镜像内部已完成 SSG 预渲染，nginx 提供 gzip、静态资源长缓存、WASM MIME 与真正的 404。
 
 ### 3.2 端口冲突
 
-宿主 8080 常被别的服务占用，换个映射即可（`-p 8081:80` 表示宿主 8081 → 容器 80）。
-容器内始终监听 80，不需要改镜像。
+容器内 nginx 监听 **8081**（与二进制部署默认端口一致，`-p 8081:8081` 表示宿主 8081 → 容器 8081）。
+宿主端口被占时只改映射即可，例如 `-p 9090:8081`，**不需要改镜像**。
+若同一台机器上还跑着二进制部署（默认也占 8081），两者必须错开宿主端口。
 
 ---
 

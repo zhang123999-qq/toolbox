@@ -112,7 +112,7 @@ curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/latest/download/in
 
 # ② 指定版本 / 端口 / 自动装依赖
 curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/download/v0.0.1/install.sh \
-  | sudo bash -s -- --version 0.0.1 --port 8080 --install-deps
+  | sudo bash -s -- --version 0.0.1 --port 9090 --install-deps
 
 # ③ 跟随 master 分支的源码副本（仅便于开发期自测，不推荐作为对外入口）
 curl -fsSL https://raw.githubusercontent.com/zhang123999-qq/toolbox/master/deploy/binary/install.sh \
@@ -172,12 +172,12 @@ curl -fsSL http://<发布源>/install.sh | sudo bash -s -- --source http://<发�
    │  git push 走 127.0.0.1:10808 代理 → GitHub
    │  ssh/scp 直连内网
    ▼
-目标机 192.168.100.4  (Ubuntu 24.04.5, x86_64, systemd 255, Docker 29.7, 无 nginx)
-   └─ toolbox.service : 独立 nginx 实例，监听 :80，root=/opt/toolbox/current/app
+目标机 192.168.100.4  (Ubuntu 24.04.5, x86_64, systemd 255, Docker 29.7, nginx 1.24)
+   └─ toolbox.service : 独立 nginx 实例，监听 :8081，root=/opt/toolbox/current/app
 ```
 
-- **访问方式**：`http://192.168.100.4/`（内网直连；`/healthz` 可查版本）。
-  从开发机验证时需绕开系统代理：`curl --noproxy '*' http://192.168.100.4/`。
+- **访问方式**：`http://192.168.100.4:8081/`（内网直连；`/healthz` 可查版本）。
+  从开发机验证时需绕开系统代理：`curl --noproxy '*' http://192.168.100.4:8081/`。
 - **首次部署**（内网无外网时）：
   `scp dist-release/* root@192.168.100.4:/root/tb-upload/`
   → 解包 → `install --from <包> --install-deps`。

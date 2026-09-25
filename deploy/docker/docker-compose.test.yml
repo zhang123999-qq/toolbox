@@ -26,12 +26,14 @@ services:
     image: toolbox-web:dev
     container_name: toolbox-web-test
     ports:
-      - "8081:80"
+      # 容器内 nginx 监听 8081（与二进制部署默认端口一致），故映射为 8081:8081。
+      # 注意：同机若已用二进制方式部署占了 8081，这里要改成 "8082:8081"。
+      - "8081:8081"
     # exec 数组形式不做 shell 解析：`">/dev/null"` 会被当成**第三个 URL** 传给 wget，
     # wget 解析失败 → 退出非 0 → 容器永远 unhealthy（depends_on 直接卡死）。
     # 要么用 CMD-SHELL，要么别写重定向。这里选后者，最不容易再写错。
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/"]
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8081/"]
       interval: 10s
       timeout: 3s
       retries: 5
@@ -57,7 +59,7 @@ services:
       CI: "1"
       # 严格模式：E2E 不重试，失败就是失败（不掩盖 flaky）
       E2E_RETRIES: "0"
-      WEB_BASE_URL: http://web:80
+      WEB_BASE_URL: http://web:8081
       LOG_DIR: /app/.agent/test-logs/${ROUND:-current}
     volumes:
       - ../../.agent/test-logs:/app/.agent/test-logs

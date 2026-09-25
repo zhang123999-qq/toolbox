@@ -62,9 +62,10 @@ RUN set -eux; \
     rm -f /tmp/toolbox-VERSION; \
     grep -q "ok v${v}" /etc/nginx/conf.d/default.conf
 
-EXPOSE 80
+EXPOSE 8081
 
+# 健康检查也走 8081：容器内 nginx 监听的端口与二进制形态一致。
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD wget -qO- http://127.0.0.1/ >/dev/null || exit 1
+  CMD wget -qO- http://127.0.0.1:8081/ >/dev/null || exit 1
 
 CMD ["nginx", "-g", "daemon off;"]

@@ -53,6 +53,9 @@ curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/latest/download/in
 > 建议先 `curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/latest/download/install.sh | less`
 > 审阅内容（或 `curl -fsSLO` 下载后再看），确认无误再跑上面那条命令。
 
+> 🌐 **装完访问** `http://<目标机IP>:8081/`。默认端口 **8081**（与 Docker 形态一致，
+> 也避开了常被占用的特权端口 80）；换端口用 `--port 9090`，或设 `TOOLBOX_PORT=9090`。
+
 自建 / 内网发布源（生产推荐，不依赖 GitHub 可达性；目录内需有 `install.sh`、
 `latest.txt`、`toolbox-*.tar.gz` 及其 `.sha256`）：
 
@@ -68,7 +71,7 @@ curl -fsSL http://<发布源IP>:8899/install.sh | sudo bash -s -- --source http:
 
 | 需求           | 追加参数          |
 | -------------- | ----------------- |
-| 换端口         | `--port 8080`     |
+| 换端口         | `--port 9090`     |
 | 自动安装 nginx | `--install-deps`  |
 | 指定版本       | `--version 0.0.1` |
 | 先预览要做的事 | `--dry-run`       |
@@ -87,7 +90,7 @@ tar -xzf toolbox-0.0.1-linux-amd64.tar.gz -C /root/pkg
 
 ```bash
 docker build -f deploy/docker/Dockerfile -t toolbox-web:dev .
-docker run -d --name toolbox-web -p 8081:80 toolbox-web:dev   # 8080 常被占用，按需改
+docker run -d --name toolbox-web -p 8081:8081 toolbox-web:dev   # 容器内外都是 8081
 ```
 
 ### ③ 本地开发
