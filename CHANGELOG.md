@@ -8,6 +8,47 @@
 每个版本对应一个 git tag（`vX.Y.Z`）与一个 GitHub Release，
 Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELEASE.md)）。
 
+## [Unreleased]
+
+把「已交付工具数」从 190 推进到 **280 个**：新增开发 / 运维 / 云原生域（04）90 个工具
+（编号 191–280），并对这 90 个工具做了一次三层（静态契约 → 真实浏览器逐页冒烟 →
+逐工具深度逻辑审计）零 bug 审查。
+
+### 新增
+
+- **开发 / 运维 / 云原生域（04）90 个**（#191–#280）：正则与 AST、Cron 与时间、
+  HTTP / API、证书与安全、Git / Linux / 容器 / K8s / 云配置生成器、CSS / 前端代码、
+  CI 流水线、工程化 / 文档 / 度量 / 数据库连接等；沿用统一 8 文件基线，
+  全部提供中英双语标题与描述
+- 零新增 npm 依赖：规划中点名的 cronstrue / dayjs / prettier / terser / autoprefixer /
+  svgo / acorn / semver 等均以 TypeScript 自研等价能力实现；仅复用已安装的
+  `diff` / `jose` / `node-forge` / `qrcode`
+- DNS / Whois / HTTP 请求 / Webhook 等需要联网的能力由浏览器直连公共接口
+  （Google DoH / RDAP / fetch），不经我方服务器；端口扫描 / Ping 等受浏览器沙箱限制的
+  工具如实生成等价终端命令，README 与页面均诚实标注边界
+
+### 修复（零 bug 审计坐实并补锁定测试）
+
+- **权限 / 压缩 / 配置注入等硬缺陷**：chmod 修复 `4755`/`1777` 特殊位（SUID/SGID/sticky）
+  被静默丢弃；code-minify 修复块注释删除致标识符粘连、压空格破坏 ASI；
+  k8s / docker-compose / nginx / docker / helm / ssh / cors / db-connection / gitlab-ci /
+  ansible / makefile 等配置生成器补齐换行注入、越界端口、非法主机名等输入校验，
+  用户文本统一以安全的 YAML/JSON 引号标量输出
+- **其余逻辑缺陷**：cron 解析与下次运行、git/code diff、cert-parser 的 BigInteger 进制、
+  curl 转换、CSS 渐变注入、ISO8601 的 Z 重建、JSON→K8s 序列化、MAC OUI 显示错位等
+
+### 质量验证
+
+- 单元 / 组件测试 **4661 个全部通过**（568 个测试文件，较上一版新增 69 个锁定用例）
+- 系统 Edge 无头浏览器对 90 个新工具逐页冒烟：**90/90 通过、0 未捕获异常**
+- `typecheck` / `lint`（0 error）/ `format:check` / `check:tools` /
+  `check:source-org` / `check:licenses` 与生产构建全部通过
+
+### 文档
+
+- README 中英文「已实现」更新为 280，并如实说明少数联网工具的边界
+- 工具总数规划仍为 870（20 域），本批后剩余 590 个待后续批次铺量
+
 ## [0.0.2] - 2026-09-26
 
 第二个测试版。在 0.0.1-beta 的 75 个工具基础上，把「已交付工具数」推进到 **190 个**：
@@ -86,6 +127,7 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
 - 静态预渲染产物固定中文口径，仍无 `/en` 路由（英文在客户端切换生效）
 - 个别大型工具 chunk 超过 500KB 打包告警阈值（构建成功，仅为体积提示），后续按需做代码分割
 
+[Unreleased]: https://github.com/zhang123999-qq/toolbox/compare/v0.0.2...HEAD
 [0.0.2]: https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.2
 
 ## [0.0.1-beta] - 2026-09-25

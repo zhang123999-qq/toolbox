@@ -14,11 +14,11 @@
 
 ## Status
 
-| Item            | Value                                                                                                                    |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| Planned tools   | **870 across 20 categories in 4 groups** (validated by script)                                                           |
-| Implemented     | **190** — the first 190 tools delivered across text & content (70), encoding/crypto/security (60), and data formats (60) |
-| Current release | [`v0.0.2`](https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.2)                                                |
+| Item            | Value                                                                                                                                              |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Planned tools   | **870 across 20 categories in 4 groups** (validated by script)                                                                                     |
+| Implemented     | **280** — the first 280 tools delivered across text & content (70), encoding/crypto/security (60), data formats (60), and DevOps/cloud-native (90) |
+| Current release | [`v0.0.2`](https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.2)                                                                          |
 
 ---
 
@@ -36,7 +36,10 @@ primary domain, so both addresses serve the same content. The first cold connect
 occasionally slow — just retry if it times out.
 
 You can also follow "Quick start" below to deploy the site on your own machine and use it
-offline — every tool runs locally in the browser and needs no online service.
+offline — the vast majority of tools run entirely in the browser and need no online service.
+Only a handful of network tools (DNS / Whois / HTTP request / Webhook tester) require
+connectivity, and even then the browser talks directly to the public endpoint — no request
+passes through our servers and no input is collected.
 
 ---
 
@@ -112,7 +115,7 @@ docker run -d --name toolbox-web -p 8081:8081 toolbox-web:dev   # 8081 inside an
 pnpm install --ignore-scripts   # esbuild's postinstall hits EBUSY on some Windows setups
 pnpm dev                        # dev server; add --concurrency=1 if you see os error 231
 pnpm check:tools                # validate metadata (20 categories, 870 total)
-pnpm build:ssg                  # client build + SSR build + pre-render 101 static pages
+pnpm build:ssg                  # client build + SSR build + pre-render every static page (tool pages are generated from their directories)
 ```
 
 ---
