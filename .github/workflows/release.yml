@@ -1,0 +1,67 @@
+name: Release
+
+# 发布二进制部署 bundle（见 docs/RELEASE.md）。
+#
+# 为什么需要这个工作流：toolboxctl upgrade / 一键安装依赖 Release 附件里的
+# latest.txt、toolbox-<ver>-linux-amd64.tar.gz 及其 .sha256、index.json、install.sh。
+# 这些产物只能在 Linux 上由 deploy/binary/build-bundle.sh 打出（需要 tar/gzip/sha256sum），
+# 过去靠开发机手工构建上传，漏传附件时线上 `toolboxctl upgrade` 会直接报
+# 「无法解析可用版本（缺 latest.txt 且无包列表）」。改为推 tag 自动构建上传，根治漏传。
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "要发布或补附件的版本 tag（如 v0.0.2）"
+        required: true
+        default: "v0.0.2"
+
+# gh release upload 需要对 contents 写权限
+permissions:
+  contents: write
+
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # 推 tag 时构建该 tag；手动补发时构建输入框指定的 tag
+          ref: ${{ github.event.inputs.tag || github.ref }}
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Build static site (sitemap -> client -> SSR -> prerender)
+        env:
+          SITE_ORIGIN: ${{ vars.SITE_ORIGIN || 'https://006336.xyz' }}
+        run: pnpm build:ssg
+
+      - name: Package self-contained bundle
+        # 复用上面 build:ssg 已产出的 apps/web/dist（含 sitemap/robots/预渲染页），
+        # 只负责组装 + 校验和 + 打包，避免 build-bundle 内部再跑一遍不完整的构建。
+        run: bash deploy/binary/build-bundle.sh --skip-build
+
+      - name: Upload assets to GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ github.event.inputs.tag || github.ref_name }}
+        run: |
+          gh release view "$RELEASE_TAG" >/dev/null 2>&1 ||
+            gh release create "$RELEASE_TAG" --title "$RELEASE_TAG" --notes "Release $RELEASE_TAG"
+          gh release upload "$RELEASE_TAG" \
+            dist-release/toolbox-*-linux-amd64.tar.gz \
+            dist-release/toolbox-*-linux-amd64.tar.gz.sha256 \
+            dist-release/latest.txt \
+            dist-release/index.json \
+            dist-release/install.sh \
+            --clobber

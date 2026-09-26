@@ -65,11 +65,18 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
   现放宽上限并对同分结果增加按 slug 升序的确定性排序，补 5 个防回归单测
 - **28 个工具部分实现补完 / 16 个工具补全**：补齐参数校验、错误处理、边界输入与
   结果格式化，逐一对齐既有工具的接口风格（明细见 `docs/tool-audit-190-report.md`）
+- **`toolboxctl upgrade` 报「无法解析可用版本」**：v0.0.2 的 GitHub Release 缺少
+  `latest.txt` 与部署包附件（HTTPS 源无法列目录，没有 `latest.txt` 就解析不到版本）。
+  新增 `.github/workflows/release.yml`：推送 `v*` tag 时在 Linux 上自动跑
+  `build-bundle.sh` 并上传 `tar.gz` / `.sha256` / `latest.txt` / `index.json` /
+  `install.sh`，也支持手动为已存在的 tag 补附件，根治漏传附件导致的在线升级失败
 
 ### 变更
 
 - 全部 workspace 包与部署真源的版本号统一升到 **0.0.2**：根与各 `package.json`、
   `deploy/binary/VERSION`（打包与 `/healthz` 版本号的唯一来源）、README 当前版本徽章
+- 新增 Release 工作流（`.github/workflows/release.yml`），发布产物改为在 CI 的 Linux
+  环境构建并上传，不再依赖开发机手工打包
 
 ### 已知限制
 
