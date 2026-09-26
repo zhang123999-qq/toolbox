@@ -2,7 +2,7 @@ name: Release
 
 # 发布二进制部署 bundle（见 docs/RELEASE.md）。
 #
-# 完全自动化：推送 `v*` tag 后，本工作流在 Linux 上自动完成
+# 完全自动化：推送 `vX.Y.Z` 形态的 tag 后，本工作流在 Linux 上自动完成
 #   构建静态站 → 打自包含 bundle → 创建 GitHub Release（说明取自 CHANGELOG）
 #   → 上传全部部署附件。
 # 全程不需要在开发机手工构建，也不需要手工 `gh release create` / `gh release upload`。
@@ -15,7 +15,9 @@ name: Release
 on:
   push:
     tags:
-      - "v*"
+      # 只认真实版本号形态（v0.0.2 / v1.2.3 / v0.0.2-rc.1 都匹配），
+      # 避免 vanilla、v-test 之类随手打的 v 开头 tag 误触发正式发版。
+      - "v[0-9]*.[0-9]*.[0-9]*"
   # 仅用于给「已存在但附件缺失」的旧 tag 手动补发；正常发布走上面的 tag push，无需手动
   workflow_dispatch:
     inputs:
@@ -28,9 +30,17 @@ on:
 permissions:
   contents: write
 
+# 同一 tag 的发布串行：tag push 与手动补发若同时发生，不取消在跑的发布
+# （中途取消可能留下传了一半的附件），而是排队，避免 gh release upload 互相踩踏。
+concurrency:
+  group: release-${{ github.event.inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
 jobs:
   bundle:
     runs-on: ubuntu-latest
+    # 正常构建+打包+发布约 2 分钟；超过 15 分钟判定为卡死，避免空跑占用额度。
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
@@ -46,6 +56,23 @@ jobs:
 
       - name: Install
         run: pnpm install --frozen-lockfile --ignore-scripts
+
+      # 发版前强制对齐 tag 与 deploy/binary/VERSION：包名 / latest.txt / index.json
+      # 都取自 VERSION，一旦与 tag 不符就会「绿勾发错版」，把旧版本附件挂到新 tag 下，
+      # 直接搞乱 upgrade 源。这里在耗时构建之前就失败。
+      # 手动补发旧 tag 时 checkout 已切到该 tag 的提交，其 VERSION 仍是旧值，故不会误伤补发。
+      - name: Verify tag matches VERSION
+        env:
+          RELEASE_TAG: ${{ github.event.inputs.tag || github.ref_name }}
+        run: |
+          set -euo pipefail
+          VER=${RELEASE_TAG#v}
+          FILE_VER=$(tr -d ' \t\r\n' < deploy/binary/VERSION)
+          if [ "$FILE_VER" != "$VER" ]; then
+            echo "::error::tag 为 $RELEASE_TAG，但 deploy/binary/VERSION 为 $FILE_VER。发版前请先把 VERSION 改成 $VER 并提交。"
+            exit 1
+          fi
+          echo "版本一致：$RELEASE_TAG == $FILE_VER"
 
       - name: Build static site (sitemap -> client -> SSR -> prerender)
         env:
