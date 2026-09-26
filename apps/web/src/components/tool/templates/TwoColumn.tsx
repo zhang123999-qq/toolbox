@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import type { ChangeEvent } from 'react'
 import type { ToolMeta } from '@toolbox/catalog'
 import { useTranslate } from '../../../i18n'
 
@@ -21,6 +22,23 @@ export interface ExtraInputDef {
   readonly rows?: number
 }
 
+/**
+ * 可选的「选择文件」入口。
+ * 文件类工具（哈希 / 图片 / 音视频 / 归档）以二进制为输入，无法塞进 `text` 字段，
+ * 因此单独开一个入口：选中即算，结果直接进输出区。
+ */
+export interface FileInputDef<O> {
+  /** 已翻译好的标签 */
+  readonly label: string
+  /** input[accept]，例如 `image/*`、`.pem,.crt`；留空表示不限 */
+  readonly accept?: string
+  /**
+   * 读取文件并产出输出区文本；抛错即进入错误态。
+   * 第二个参数是当次选择的选项，便于文件模式也跟随算法 / 格式之类的开关。
+   */
+  readonly onFile: (file: File, options: O) => Promise<string>
+}
+
 interface TwoColumnProps<I extends { text: string }, O extends object> {
   readonly meta: ToolMeta
   readonly initialInput: I
@@ -32,6 +50,8 @@ interface TwoColumnProps<I extends { text: string }, O extends object> {
   readonly example?: I
   readonly optionDefs?: readonly OptionDef<O>[]
   readonly extraInputs?: readonly ExtraInputDef[]
+  /** 需要二进制输入的工具开启此项；与 text 文本区并存，二者互不覆盖语义 */
+  readonly fileInput?: FileInputDef<O>
   /**
    * 异步工具未运行时的占位文案。
    * 默认按「填好接口信息后点运行」写，但浏览器原生能力类工具（哈希 / 语音）
@@ -52,6 +72,19 @@ interface OutputView {
 export const SECONDARY_BUTTON =
   'rounded border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800'
 
+/** 字节数转人类可读体积：1024 → "1.00 KiB" */
+export function formatSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`
+  const units = ['KiB', 'MiB', 'GiB']
+  let value = bytes / 1024
+  let unit = 0
+  while (value >= 1024 && unit < units.length - 1) {
+    value /= 1024
+    unit += 1
+  }
+  return `${value.toFixed(2)} ${units[unit]}`
+}
+
 /**
  * T2 双栏模板（spec/06 §5）
  * 适用：输入输出同构的转换 / 对比类工具。
@@ -66,6 +99,7 @@ export function TwoColumn<I extends { text: string }, O extends object>({
   example,
   optionDefs,
   extraInputs,
+  fileInput,
   idleText,
 }: TwoColumnProps<I, O>) {
   const [input, setInput] = useState<I>(initialInput)
@@ -77,6 +111,12 @@ export function TwoColumn<I extends { text: string }, O extends object>({
     status: 'idle' | 'pending' | 'done' | 'error'
     value: string
   }>({ status: 'idle', value: '' })
+  // 文件入口的结果单独存：它只在选中文件时更新，与文本区互不干扰
+  const [fileState, setFileState] = useState<{
+    status: 'idle' | 'pending' | 'done' | 'error'
+    value: string
+  }>({ status: 'idle', value: '' })
+  const [fileName, setFileName] = useState('')
   const t = useTranslate()
 
   const computed = useMemo(() => {
@@ -117,14 +157,23 @@ export function TwoColumn<I extends { text: string }, O extends object>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nonce])
 
-  const view: OutputView = computed
-    ? { ok: computed.ok, pending: false, idle: false, value: computed.value }
-    : {
-        ok: asyncState.status !== 'error',
-        pending: asyncState.status === 'pending',
-        idle: asyncState.status === 'idle',
-        value: asyncState.value,
-      }
+  // 文件入口一旦用过就接管输出区，直到下一次交互（文本区仍可按「运行」切回去）
+  const view: OutputView =
+    fileState.status !== 'idle'
+      ? {
+          ok: fileState.status !== 'error',
+          pending: fileState.status === 'pending',
+          idle: false,
+          value: fileState.value,
+        }
+      : computed
+        ? { ok: computed.ok, pending: false, idle: false, value: computed.value }
+        : {
+            ok: asyncState.status !== 'error',
+            pending: asyncState.status === 'pending',
+            idle: asyncState.status === 'idle',
+            value: asyncState.value,
+          }
 
   const output = view.ok ? view.value : ''
 
@@ -135,6 +184,23 @@ export function TwoColumn<I extends { text: string }, O extends object>({
   function readExtra(key: string): string {
     const value = (input as Record<string, unknown>)[key]
     return typeof value === 'string' ? value : ''
+  }
+
+  /** 选中文件：立刻算，结果接管输出区 */
+  async function handleFile(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0]
+    if (!fileInput || !file) return
+    setFileName(`${file.name} · ${formatSize(file.size)}`)
+    setFileState({ status: 'pending', value: '' })
+    try {
+      const value = await fileInput.onFile(file, options)
+      setFileState({ status: 'done', value })
+    } catch (error) {
+      setFileState({
+        status: 'error',
+        value: error instanceof Error ? error.message : String(error),
+      })
+    }
   }
 
   async function copy() {
@@ -194,6 +260,32 @@ export function TwoColumn<I extends { text: string }, O extends object>({
             />
           </div>
         ))}
+        {fileInput ? (
+          <div className="mt-2">
+            <label
+              htmlFor="tool-file"
+              className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400"
+            >
+              {fileInput.label}
+            </label>
+            <input
+              id="tool-file"
+              data-testid="file"
+              type="file"
+              accept={fileInput.accept}
+              className="w-full text-sm text-slate-700 file:mr-2 file:rounded file:border file:border-slate-300 file:px-2 file:py-1 file:text-sm dark:text-slate-200"
+              onChange={handleFile}
+            />
+            {fileName === '' ? null : (
+              <p
+                data-testid="file-name"
+                className="mt-1 text-xs text-slate-500 dark:text-slate-400"
+              >
+                {fileName}
+              </p>
+            )}
+          </div>
+        ) : null}
         <div className="tool-actions mt-2 flex flex-wrap gap-2">
           <button
             type="button"

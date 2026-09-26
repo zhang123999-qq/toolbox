@@ -15,13 +15,13 @@ export const meta: ToolMeta = {
 
   category: 'encoding',
   group: 'dev',
-  tags: ['encoding', 'crypto', 'argon2', 'password', 'kdf', 'wasm'],
+  tags: ['encoding', 'crypto', 'argon2', 'password', 'kdf'],
 
   priority: 'P2',
   feasibility: 'B',
   template: 'T2',
 
-  inputs: ['text'],
+  inputs: ['text', 'hash'],
   outputs: ['text'],
   options: ['direction', 'iterations', 'memory', 'parallelism'],
 

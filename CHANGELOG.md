@@ -8,6 +8,79 @@
 每个版本对应一个 git tag（`vX.Y.Z`）与一个 GitHub Release，
 Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELEASE.md)）。
 
+## [0.0.2] - 2026-09-26
+
+第二个测试版。在 0.0.1-beta 的 75 个工具基础上，把「已交付工具数」推进到 **190 个**：
+编码 / 加密 / 安全域（02）与数据格式域（03）各 60 个全部落地，并对前 190 个工具做了一次
+逐工具的查漏补缺与真实浏览器全量回归。
+
+- **工具 190 / 870**：文本与内容 70 个、编码加密安全 60 个、数据格式 60 个，
+  每个工具沿用统一的 8 文件基线（`meta` / `schema` / `utils` / `Tool` / `test` /
+  `Tool.test` / `e2e` / `README`），全部提供中英双语标题与描述
+- **逐工具核查全绿**：对前 190 个工具按「路由存在、核心功能可操作、输入输出正确、
+  无占位符、无报错、有边界处理、本地可运行」逐项核对，190/190 通过
+  （清单见 `docs/step1-verification-190.md`，查漏补缺报告见 `docs/tool-audit-190-report.md`：
+  16 个补全、28 个部分修复、146 个本已完整）
+- **真实浏览器全量回归**：在局域网服务器上用系统 Edge 对 190 个工具跑 622 个端到端用例，
+  全部通过；单元 / 组件测试 3260 个全部通过（报告见 `docs/step2-lan-test-report.md`）
+
+### 新增
+
+**编码 / 加密 / 安全域（02）60 个**
+
+- 编解码：Base32 / Base58 / Base64 / Base85、URL / HTML / 正则转义、八进制、
+  编码转换、字符集探测、零宽字符、全半角等
+- 哈希与校验：MD5、SHA-1 / SHA-256 等标准摘要、BLAKE2 / BLAKE3（WASM）、CRC、checksum、
+  文件哈希
+- 加密体系：AES / DES 对称加密，RSA / ECC 加密与 ECDSA / Ed25519 签名，
+  PBKDF2 / scrypt 密钥派生，bcrypt / argon2 口令哈希，随机密钥与口令生成
+- 令牌与证书：JWT 生成 / 解码、JWS / JWE、PEM 解析、CSR 生成、X.509 查看、
+  OpenSSH 密钥、PGP 报文解析
+- 安全配置与杂项：CSP 生成、CORS 检查、Cookie 解析、密码强度、OTP/HOTP 等
+
+**数据格式域（03）60 个**
+
+- JSON 家族：格式化 / 压缩 / 校验 / 排序 / 差异 / 合并、JSONL、JSONPath、
+  大 JSON 流式扫描、JSON Schema 生成与校验、JSON 转 Go / Java / Python / Rust / TS /
+  XML / YAML / TOML / CSV
+- 表格与办公格式：CSV 格式化与互转、TSV、Excel 读取与转换
+- 通用序列化与数据文件：XML / YAML / TOML / INI / properties、SQL 互转与建表、
+  Protobuf / Avro / MessagePack / BSON、Parquet / SQLite / 二进制查看、MIME 查询、
+  Data URL、Mock 数据生成等
+
+**公共能力**
+
+- 抽出跨工具复用的 `lib/sql-ddl.ts`、`lib/x509.ts`、`lib/spreadsheet.ts`，
+  在保持「禁止跨工具 import」约束的同时消除重复实现
+
+### 修复
+
+- **`blake3-hash` 在浏览器内无法计算（严重）**：打包器按依赖包的 `browser` 字段
+  重定向到一个只导出哈希函数、却不注入 WebAssembly 的入口，页面报
+  “BLAKE3 webassembly not loaded”。浏览器改为官方异步入口 `blake3-wasm/browser-async`，
+  并以 Vite `?url` 资源地址实例化 WASM；Node / 测试环境继续使用原生入口跑官方向量。
+  生产构建已正确产出独立 `*.wasm` 资源与异步 chunk
+- **全局搜索永远找不到部分工具（如 `big-json`）**：结果上限固定为 20，而搜索 “json”
+  这类常见子串时有 20+ 个标题同分命中，按目录顺序把排在后面的同类工具直接截断。
+  现放宽上限并对同分结果增加按 slug 升序的确定性排序，补 5 个防回归单测
+- **28 个工具部分实现补完 / 16 个工具补全**：补齐参数校验、错误处理、边界输入与
+  结果格式化，逐一对齐既有工具的接口风格（明细见 `docs/tool-audit-190-report.md`）
+
+### 变更
+
+- 全部 workspace 包与部署真源的版本号统一升到 **0.0.2**：根与各 `package.json`、
+  `deploy/binary/VERSION`（打包与 `/healthz` 版本号的唯一来源）、README 当前版本徽章
+
+### 已知限制
+
+- 870 个规划工具中已实现 190 个，其余 680 个待后续批次铺量
+- 「离线」目前指**所有计算均在浏览器本地完成、运行期零外部网络请求**（实测 190 工具页
+  外部请求数为 0）；项目尚未注册 Service Worker / PWA，不支持离线安装，与 0.0.1-beta 相同
+- 静态预渲染产物固定中文口径，仍无 `/en` 路由（英文在客户端切换生效）
+- 个别大型工具 chunk 超过 500KB 打包告警阈值（构建成功，仅为体积提示），后续按需做代码分割
+
+[0.0.2]: https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.2
+
 ## [0.0.1-beta] - 2026-09-25
 
 首个对外测试版（beta）。本版合并了此前仅内部构建、未对外发布的 `0.0.1` 骨架版，

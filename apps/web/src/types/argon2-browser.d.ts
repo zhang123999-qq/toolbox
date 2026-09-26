@@ -41,3 +41,23 @@ declare module 'argon2-browser' {
 
   export default argon2
 }
+
+/**
+ * 自包含浏览器产物（wasm 以 base64 内联，无运行时 fetch / 顶层 await）。
+ * 生产构建（rolldown/vite）无法打包 CJS 主入口 lib/argon2.js —— 它在 Node 分支
+ * 静态 require('../dist/argon2.wasm')，而该 .wasm 经 vite 转换后含顶层 await，触发
+ * REQUIRE_TLA。因此工具统一改 import 这个 bundled 产物；对外 API 形状完全一致。
+ */
+declare module 'argon2-browser/dist/argon2-bundled.min.js' {
+  export type { Argon2HashParams, Argon2HashResult, Argon2VerifyParams } from 'argon2-browser'
+
+  const argon2: {
+    ArgonType: { Argon2d: number; Argon2i: number; Argon2id: number }
+    hash(
+      params: import('argon2-browser').Argon2HashParams,
+    ): Promise<import('argon2-browser').Argon2HashResult>
+    verify(params: import('argon2-browser').Argon2VerifyParams): Promise<void>
+  }
+
+  export default argon2
+}

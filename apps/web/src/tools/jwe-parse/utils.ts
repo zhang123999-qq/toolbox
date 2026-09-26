@@ -21,9 +21,13 @@ export async function deriveKey(secret: string): Promise<Bytes> {
  * jsdom 与 Node 的 Uint8Array 不在同一个 realm，`instanceof` 校验过不去。
  */
 export async function importAesKey(secret: string): Promise<CryptoKey> {
-  return globalThis.crypto.subtle.importKey('raw', await deriveKey(secret), { name: 'AES-GCM' }, true, [
-    'decrypt',
-  ])
+  return globalThis.crypto.subtle.importKey(
+    'raw',
+    await deriveKey(secret),
+    { name: 'AES-GCM' },
+    true,
+    ['decrypt'],
+  )
 }
 
 /** compact JWE 的形状：5 段 */

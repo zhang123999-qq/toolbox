@@ -43,13 +43,24 @@ function score(doc: SearchDoc, q: string): number {
   return 0
 }
 
+/**
+ * 返回结果上限。
+ *
+ * 不能太小：站内总共 190 个工具，像 "json" 这样的常见子串会有 20+ 个标题命中，
+ * 它们得分相同（title.includes=60）。早期 20 条上限会把排在 catalog 后部的同类
+ * 工具（如 big-json）直接截断，导致搜索永远进不去——这是真实可复现的可达性缺陷。
+ * 弹窗结果区本就可滚动，190 工具规模下放宽到 50 既能保证任何常见子串的命中都
+ * 完整呈现，又不至于一次性渲染全量索引。次级排序再按 slug 升序保证同分顺序确定。
+ */
+const DEFAULT_LIMIT = 50
+
 /** 空查询返回空数组，避免首页渲染全量列表 */
-export function searchTools(query: string, limit = 20): readonly SearchDoc[] {
+export function searchTools(query: string, limit = DEFAULT_LIMIT): readonly SearchDoc[] {
   const q = normalize(query)
   if (!q) return []
   return SEARCH_INDEX.map((doc) => ({ doc, s: score(doc, q) }))
     .filter((x) => x.s > 0)
-    .sort((a, b) => b.s - a.s)
+    .sort((a, b) => b.s - a.s || (a.doc.slug < b.doc.slug ? -1 : a.doc.slug > b.doc.slug ? 1 : 0))
     .slice(0, limit)
     .map((x) => x.doc)
 }

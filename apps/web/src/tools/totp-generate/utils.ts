@@ -46,7 +46,7 @@ export function generateTotp(
 /** 该周期内的剩余有效秒数（同样可注入时间戳） */
 export function remainingSeconds(period: string, timestamp: number = Date.now()): number {
   const window = Number(period)
-  return window - Math.floor(timestamp / 1000) % window
+  return window - (Math.floor(timestamp / 1000) % window)
 }
 
 export function transform(input: TotpInput, options: TotpOptions): string {

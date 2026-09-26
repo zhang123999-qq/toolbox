@@ -156,6 +156,8 @@ export const zh = {
   'tool.model': '模型名',
   'tool.textMine': '我的版本',
   'tool.textTheirs': '他人版本',
+  'tool.file': '选择文件（可选）',
+  'tool.proxy': '代理 / 探针地址（自建）',
 
   // —— 工具内选项 ——
   // 通用选项文案：铺量时多工具复用，避免每个工具各建一套 key
@@ -276,6 +278,17 @@ export const zh = {
   'option.recipient': '对方公钥',
   'option.origin': '来源（Origin）',
   'option.hash': '待校验哈希',
+  'option.commonName': '通用名（CN）',
+  'option.organization': '组织（O）',
+  'option.country': '国家（C，2 位）',
+  'option.organizationalUnit': '部门（OU）',
+  'option.keySize': '密钥长度',
+  'option.altNames': '备用域名（SAN，逗号分隔）',
+  'option.includePrivateKey': '同时输出私钥',
+  'option.credentials': '携带凭据（Cookie）',
+  'option.dialect': 'SQL 方言',
+  'option.rootName': '根元素名',
+  'option.xmlDeclaration': '包含 XML 声明',
   'jsonFormatter.option.indent': '缩进',
   'jsonFormatter.option.sortKeys': '排序键名',
 

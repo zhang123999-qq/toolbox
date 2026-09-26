@@ -93,7 +93,11 @@ export function describeClaims(payload: unknown, now = Date.now()): string[] {
 }
 
 /** 拼出输出文本 */
-export function formatDecoded(decoded: DecodedJwt, options: JwtDecodeOptions, now?: number): string {
+export function formatDecoded(
+  decoded: DecodedJwt,
+  options: JwtDecodeOptions,
+  now?: number,
+): string {
   const indent = options.format === 'compact' ? 0 : 2
   const body = {
     header: decoded.header,

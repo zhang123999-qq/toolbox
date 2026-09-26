@@ -21,7 +21,7 @@ export const meta: ToolMeta = {
   feasibility: 'C',
   template: 'T2',
 
-  inputs: ['text'],
+  inputs: ['text', 'publicKey', 'privateKey', 'signature'],
   outputs: ['text'],
   options: ['direction', 'hash', 'encoding'],
 

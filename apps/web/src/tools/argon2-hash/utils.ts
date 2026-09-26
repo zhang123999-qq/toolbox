@@ -58,9 +58,13 @@ export function buildParams(
 /**
  * 生成 Argon2id 哈希。
  * WASM 体积不小，故**按需动态 import**：只有真正点了运行才会去下载 argon2 模块。
+ *
+ * 这里显式走自包含产物 dist/argon2-bundled.min.js（wasm 以 base64 内联）：
+ * 包的 CJS 主入口在 Node 分支静态 require('../dist/argon2.wasm')，rolldown 生产构建
+ * 会因该 .wasm 含顶层 await 报 REQUIRE_TLA；bundled 产物没有这条 require，可正常打包。
  */
 export async function hashPassword(password: string, options: Argon2Options): Promise<string> {
-  const argon2 = (await import('argon2-browser')).default
+  const argon2 = (await import('argon2-browser/dist/argon2-bundled.min.js')).default
   const result = await argon2.hash({
     ...buildParams(password, randomSalt(), options, argon2.ArgonType?.Argon2id ?? 2),
   })
@@ -77,7 +81,7 @@ export async function verifyPassword(password: string, hashValue: string): Promi
   if (!PHC_PATTERN.test(hashValue.trim())) {
     throw new Error('不是合法的 Argon2 PHC 串：应形如 $argon2id$v=19$m=19456,t=2,p=1$…')
   }
-  const argon2 = (await import('argon2-browser')).default
+  const argon2 = (await import('argon2-browser/dist/argon2-bundled.min.js')).default
   try {
     await argon2.verify({ pass: password, encoded: hashValue.trim() })
     return '校验通过：口令与哈希匹配'

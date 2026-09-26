@@ -53,16 +53,32 @@ function replaceLiteral(text: string, find: string, replace: string, ignoreCase:
   return out + text.slice(i)
 }
 
-/** 应用一条规则；useRegex 时查找串按正则解析（始终带 g） */
+/**
+ * 应用一条规则；useRegex 时查找串按正则解析（始终带 g）。
+ * 非法正则来自用户输入，必须转成可读的中文提示（第几条、什么模式），
+ * 否则 UI 只会抛出 SyntaxError 的英文原文。
+ */
 export function applyRule(text: string, rule: Rule, options: BatchReplaceOptions): string {
-  if (options.useRegex) {
+  if (!options.useRegex) return replaceLiteral(text, rule.find, rule.replace, options.ignoreCase)
+  try {
     return text.replace(new RegExp(rule.find, options.ignoreCase ? 'gi' : 'g'), rule.replace)
+  } catch {
+    throw new Error(`正则非法：${rule.find}`)
   }
-  return replaceLiteral(text, rule.find, rule.replace, options.ignoreCase)
 }
 
-/** 按规则区里的顺序依次替换（后面的规则会看到前面的结果） */
+/** 按规则区里的顺序依次替换（后面的规则会看到前面的结果）；带序号便于定位出错的规则 */
 export function transform(input: BatchReplaceInput, options: BatchReplaceOptions): string {
   const { body, rulesText } = splitRules(input.text)
-  return parseRules(rulesText).reduce((text, rule) => applyRule(text, rule, options), body)
+  const rules = parseRules(rulesText)
+  return rules.reduce((text, rule, index) => {
+    try {
+      return applyRule(text, rule, options)
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : String(error)
+      throw new Error(`第 ${index + 1} 条规则（${rule.find}）无法应用：${detail}`, {
+        cause: error,
+      })
+    }
+  }, body)
 }

@@ -52,11 +52,12 @@ describe('jws-parse / 验签', () => {
   })
 
   it('输出：成功带 payload，失败只给结论', () => {
-    expect(formatResult({ valid: true, header: { alg: 'HS256' }, payload: { a: 1 }, reason: '' }))
-      .toContain('验签通过')
     expect(
-      formatResult({ valid: false, header: null, payload: null, reason: '签名不匹配' }),
-    ).toBe('验签失败：签名不匹配')
+      formatResult({ valid: true, header: { alg: 'HS256' }, payload: { a: 1 }, reason: '' }),
+    ).toContain('验签通过')
+    expect(formatResult({ valid: false, header: null, payload: null, reason: '签名不匹配' })).toBe(
+      '验签失败：签名不匹配',
+    )
   })
 })
 
@@ -73,9 +74,9 @@ describe('jws-parse / 报错翻译', () => {
 
 describe('jws-parse / transform', () => {
   it('整体流程：示例令牌验签通过', async () => {
-    await expect(transform({ text: TOKEN, secret: SECRET }, { algorithm: 'HS256' })).resolves.toContain(
-      '验签通过',
-    )
+    await expect(
+      transform({ text: TOKEN, secret: SECRET }, { algorithm: 'HS256' }),
+    ).resolves.toContain('验签通过')
   })
 
   it('空输入返回空串（不触发验签）', async () => {

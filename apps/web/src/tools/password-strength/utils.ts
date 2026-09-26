@@ -32,8 +32,8 @@ export function translateMessage(message: string): string {
     'A word by itself is easy to guess': '单个单词很好猜',
     'Names and surnames by themselves are easy to guess': '单独的姓名很好猜',
     'Common names and surnames are easy to guess': '常见姓名很好猜',
-    'Capitalization doesn\'t help very much': '只改大小写提升很有限',
-    "All-uppercase is almost as easy to guess as all-lowercase": '全大写几乎和全小写一样好猜',
+    "Capitalization doesn't help very much": '只改大小写提升很有限',
+    'All-uppercase is almost as easy to guess as all-lowercase': '全大写几乎和全小写一样好猜',
     "Reversed words aren't much harder to guess": '把单词倒过来并不会难多少',
     "Predictable substitutions like '@' instead of 'a' don't help very much":
       '用 @ 代替 a 这类可预测的替换提升很有限',
@@ -47,7 +47,7 @@ export function translateDuration(duration: string): string {
   const value = duration.trim()
   const table: Record<string, string> = {
     'less than a second': '不到 1 秒',
-    'centuries': '数百年',
+    centuries: '数百年',
   }
   if (table[value]) return table[value] as string
   const matched = /^(\d+)\s+(second|minute|hour|day|month|year)s?$/.exec(value)

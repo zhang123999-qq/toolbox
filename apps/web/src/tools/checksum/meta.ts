@@ -15,7 +15,7 @@ export const meta: ToolMeta = {
 
   category: 'encoding',
   group: 'dev',
-  tags: ['encoding', 'checksum', 'sum', 'xor', 'luhn', 'verify'],
+  tags: ['encoding', 'checksum', 'sum', 'xor', 'luhn'],
 
   priority: 'P1',
   feasibility: 'A',

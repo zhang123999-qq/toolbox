@@ -32,7 +32,11 @@ export function parseCounter(value: string): number {
 }
 
 /** 生成 HOTP：同样的密钥 + 计数器 + 参数，永远得到同样的口令（可复现） */
-export function generateHotp(secretText: string, counterValue: string, options: HotpOptions): string {
+export function generateHotp(
+  secretText: string,
+  counterValue: string,
+  options: HotpOptions,
+): string {
   const hotp = new HOTP({
     secret: parseSecret(secretText),
     algorithm: options.algorithm,

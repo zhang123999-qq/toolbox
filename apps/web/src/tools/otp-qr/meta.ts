@@ -15,13 +15,13 @@ export const meta: ToolMeta = {
 
   category: 'encoding',
   group: 'dev',
-  tags: ['encoding', 'otp', 'totp', 'hotp', 'qr', '2fa'],
+  tags: ['encoding', 'otp', 'totp', 'hotp', 'qr'],
 
   priority: 'P1',
   feasibility: 'A',
   template: 'T2',
 
-  inputs: ['text'],
+  inputs: ['text', 'issuer', 'account', 'counter'],
   outputs: ['text'],
   options: ['type', 'digits', 'period', 'algorithm'],
 

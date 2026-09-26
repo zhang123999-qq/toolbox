@@ -15,7 +15,7 @@ export const meta: ToolMeta = {
 
   category: 'encoding',
   group: 'dev',
-  tags: ['encoding', 'crypto', 'key', 'rsa', 'ecdsa', 'ed25519'],
+  tags: ['encoding', 'crypto', 'key', 'rsa', 'ecdsa'],
 
   priority: 'P1',
   feasibility: 'C',

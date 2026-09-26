@@ -1,12 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import {
-  ALGORITHMS,
-  DIGITS,
-  generateHotp,
-  parseCounter,
-  parseSecret,
-  transform,
-} from './utils'
+import { ALGORITHMS, DIGITS, generateHotp, parseCounter, parseSecret, transform } from './utils'
 
 const base = { digits: '6', algorithm: 'SHA1' } as const
 const eight = { ...base, digits: '8' } as const

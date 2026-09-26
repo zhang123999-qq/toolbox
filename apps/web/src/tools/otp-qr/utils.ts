@@ -25,7 +25,8 @@ export function parseSecret(text: string): Secret {
 /** 计数器：HOTP 必填非负整数 */
 export function parseCounter(value: string): number {
   const cleaned = value.trim()
-  if (!/^\d+$/.test(cleaned)) throw new Error('HOTP 需要非负整数的计数器，当前是「' + cleaned + '」')
+  if (!/^\d+$/.test(cleaned))
+    throw new Error('HOTP 需要非负整数的计数器，当前是「' + cleaned + '」')
   return Number(cleaned)
 }
 

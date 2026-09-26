@@ -21,7 +21,7 @@ export const meta: ToolMeta = {
   feasibility: 'C',
   template: 'T2',
 
-  inputs: ['text'],
+  inputs: ['text', 'secret'],
   outputs: ['text'],
   options: [],
 

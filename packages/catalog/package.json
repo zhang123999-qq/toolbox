@@ -1,6 +1,6 @@
 {
   "name": "@toolbox/catalog",
-  "version": "0.0.1-beta",
+  "version": "0.0.2",
   "private": true,
   "license": "MIT",
   "type": "module",

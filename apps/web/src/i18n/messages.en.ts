@@ -156,6 +156,8 @@ export const en: Record<MessageKey, string> = {
   'tool.model': 'Model',
   'tool.textMine': 'Mine',
   'tool.textTheirs': 'Theirs',
+  'tool.file': 'Choose a file (optional)',
+  'tool.proxy': 'Proxy / probe endpoint (self-hosted)',
 
   // —— Tool options ——
   // Shared option labels: reused by many tools so each tool needs no dedicated keys
@@ -276,6 +278,17 @@ export const en: Record<MessageKey, string> = {
   'option.recipient': 'Recipient public key',
   'option.origin': 'Origin',
   'option.hash': 'Hash to verify',
+  'option.commonName': 'Common name (CN)',
+  'option.organization': 'Organization (O)',
+  'option.country': 'Country (C, 2 letters)',
+  'option.organizationalUnit': 'Organizational unit (OU)',
+  'option.keySize': 'Key size',
+  'option.altNames': 'Subject alt names (SAN, comma-separated)',
+  'option.includePrivateKey': 'Also output private key',
+  'option.credentials': 'Send credentials (Cookie)',
+  'option.dialect': 'SQL dialect',
+  'option.rootName': 'Root element name',
+  'option.xmlDeclaration': 'Include XML declaration',
   'jsonFormatter.option.indent': 'Indent',
   'jsonFormatter.option.sortKeys': 'Sort keys',
 

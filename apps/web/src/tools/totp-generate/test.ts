@@ -66,7 +66,7 @@ describe('totp-generate / 参数生效', () => {
   })
 
   it('周期内剩余秒数可计算', () => {
-    expect(remainingSeconds('30', 59_000)).toBe(30 - 59 % 30)
+    expect(remainingSeconds('30', 59_000)).toBe(30 - (59 % 30))
     expect(remainingSeconds('60', 59_000)).toBe(1)
   })
 })

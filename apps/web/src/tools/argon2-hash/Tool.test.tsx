@@ -2,8 +2,8 @@
 /**
  * argon2-hash 组件测试（DEVELOPMENT.md §8.2 的 8 文件基线之一）
  *
- * argon2-browser 在 Node/jsdom 里无法加载 WASM（它用相对路径 fetch argon2.wasm），
- * 故这里用桩件替换，被测的是组件交互与错误态。
+ * argon2-browser 自包含 bundled 产物在 Node/jsdom 里不跑真实 WASM，
+ * 故这里用桩件替换（mock 路径与 utils.ts 动态 import 的自包含产物一致），被测的是组件交互与错误态。
  */
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
@@ -16,7 +16,7 @@ const hashMock = vi.fn(async () => ({
 }))
 const verifyMock = vi.fn(async () => undefined)
 
-vi.mock('argon2-browser', () => ({
+vi.mock('argon2-browser/dist/argon2-bundled.min.js', () => ({
   default: {
     ArgonType: { Argon2d: 0, Argon2i: 1, Argon2id: 2 },
     hash: hashMock,

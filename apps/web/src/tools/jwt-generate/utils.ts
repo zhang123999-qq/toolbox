@@ -13,7 +13,7 @@ export function parsePayload(text: string): Record<string, unknown> {
   try {
     parsed = JSON.parse(text)
   } catch (error) {
-    throw new Error('Payload 不是合法的 JSON：' + (error as Error).message)
+    throw new Error('Payload 不是合法的 JSON：' + (error as Error).message, { cause: error })
   }
   if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
     throw new Error('Payload 必须是 JSON 对象（如 {"sub":"123"}），不能是数组或标量')

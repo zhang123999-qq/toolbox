@@ -14,11 +14,11 @@
 
 ## Status
 
-| Item            | Value                                                                                     |
-| --------------- | ----------------------------------------------------------------------------------------- |
-| Planned tools   | **870 across 20 categories in 4 groups** (validated by script)                            |
-| Implemented     | **75** (70 in the text & content category, plus sample tools) — that category is complete |
-| Current release | [`v0.0.1-beta`](https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.1-beta)       |
+| Item            | Value                                                                                                                    |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Planned tools   | **870 across 20 categories in 4 groups** (validated by script)                                                           |
+| Implemented     | **190** — the first 190 tools delivered across text & content (70), encoding/crypto/security (60), and data formats (60) |
+| Current release | [`v0.0.2`](https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.2)                                                |
 
 ---
 

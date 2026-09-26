@@ -14,8 +14,9 @@ import {
 } from './utils'
 
 /**
- * argon2-browser 是 Emscripten 产物，靠 fetch 相对路径取 argon2.wasm，
- * 在 Node 测试环境里必然失败。这里用桩件替换它：被测的是「参数构造 / 结果处理 / 错误分类」。
+ * argon2-browser（自包含 bundled 产物）在 Node 测试环境不跑真实 wasm。
+ * 这里用桩件替换它：被测的是「参数构造 / 结果处理 / 错误分类」。
+ * mock 的模块名必须与 utils.ts 动态 import 的自包含产物路径一致。
  */
 const hashMock = vi.fn(async (_params: Argon2Params) => ({
   encoded: '$argon2id$v=19$m=19456,t=2,p=1$c2FsdHNhbHRzYWx0c2FsdA$Y2hlY2tjaGVja2NoZWNrY2hlY2s',
@@ -24,7 +25,7 @@ const hashMock = vi.fn(async (_params: Argon2Params) => ({
 }))
 const verifyMock = vi.fn(async () => undefined)
 
-vi.mock('argon2-browser', () => ({
+vi.mock('argon2-browser/dist/argon2-bundled.min.js', () => ({
   default: {
     ArgonType: { Argon2d: 0, Argon2i: 1, Argon2id: 2 },
     hash: hashMock,
