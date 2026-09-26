@@ -921,12 +921,16 @@ alone and uninstalling never disturbs other sites on the same host.
 
 ### 20.4 Cutting a release
 
-`deploy/binary/VERSION` (source of truth) → `deploy/binary/build-bundle.sh` →
-`git tag vX.Y.Z` → `gh release create` (the assets _are_ the artifact).
+Pushing a `vX.Y.Z` tag triggers `.github/workflows/release.yml`, which on a Linux CI runner
+runs `pnpm build:ssg` → `build-bundle.sh --skip-build` → creates the Release (notes from the
+CHANGELOG) → uploads the five assets (`latest.txt` / `index.json` / `install.sh` /
+`tar.gz` / `.sha256`). **No local packaging and no manual `gh release` are required.**
+Flow: update `deploy/binary/VERSION` (source of truth) and the CHANGELOG → commit and push to
+master (wait for CI gates) → `git tag -a vX.Y.Z` and `git push --tags`.
 The one-line install entry point always points at the **`install.sh` release asset**
 (tied to a tag, so it cannot drift with a branch).
-The five places a version number lives, plus changelog guidance, are in
-[`RELEASE.md`](RELEASE.md) §1 / §3.
+Where the version lives, changelog guidance, and the fallback for re-attaching assets to an
+existing tag are in [`RELEASE.md`](RELEASE.md) §1 / §2 / §3.
 
 ### 20.5 Where to read more
 

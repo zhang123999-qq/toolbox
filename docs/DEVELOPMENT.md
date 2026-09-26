@@ -889,10 +889,14 @@ CLI 运行的是**独立 nginx 实例**（自带 pid / 日志 / 临时目录 / M
 
 ### 20.4 发布新版本
 
-`deploy/binary/VERSION`（版本真源）→ `deploy/binary/build-bundle.sh` →
-`git tag vX.Y.Z` → `gh release create`（附件即产物）。
+推送 `vX.Y.Z` tag 即触发 `.github/workflows/release.yml`，在 CI 的 Linux runner 上自动
+`pnpm build:ssg` → `build-bundle.sh --skip-build` → 创建 Release（说明取自 CHANGELOG）→
+上传 5 个附件（`latest.txt` / `index.json` / `install.sh` / `tar.gz` / `.sha256`），
+**无需在开发机手工打包或 `gh release`**。流程：改 `deploy/binary/VERSION`（版本真源）与
+CHANGELOG → 提交推 master（等 CI 门禁绿）→ `git tag -a vX.Y.Z` 并 `git push --tags`。
 一键安装入口固定指向 **Release 资产的 `install.sh`**（与 tag 绑定，不随分支漂移）。
-版本号的五个落点与 changelog 撰写要点见 [`RELEASE.md`](RELEASE.md) §一 / §三。
+版本号的各落点、changelog 撰写要点与给旧 tag 补附件的兜底方法见
+[`RELEASE.md`](RELEASE.md) §一 / §二 / §三。
 
 ### 20.5 相关文档
 

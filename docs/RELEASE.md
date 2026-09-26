@@ -30,31 +30,51 @@
 - 采用**语义化版本** `MAJOR.MINOR.PATCH`；`0.y.z` 表示尚未稳定。
 - 打 tag 时带 `v` 前缀（`v0.0.1-beta`），资产文件名不带 `v`（`toolbox-0.0.1-beta-…`）；
   一键安装脚本会自动去掉前缀做映射。
-- 版本号**不在** `package.json` 里维护（那个 `version: 0.0.0` 只是占位），
-  避免两处真源不一致。
+- `deploy/binary/VERSION` 是打包 / 文件名 / bundle 内版本 / `/healthz` 的唯一真源；
+  各 workspace 的 `package.json` 版本号在发版时**同步**为同一版本（供工具链与包元数据使用），
+  一律以 `VERSION` 为准对齐，避免两处漂移。
 
-## 二、Release 构建流程
+## 二、发布流程（推 tag 全自动，无需手工打包 / 上传）
+
+发布已由 CI 工作流 `.github/workflows/release.yml` 全自动完成：**不需要在开发机手工打包，
+也不需要手工 `gh release create` / `gh release upload`**。推送 `v*` tag 后，工作流在
+Linux（ubuntu-latest）上依次执行：安装依赖 → `pnpm build:ssg`（sitemap → client → SSR →
+prerender）→ `deploy/binary/build-bundle.sh --skip-build` → 从 CHANGELOG 提取该版本说明
+创建 Release（CHANGELOG 缺该段时回落到 GitHub 自动生成说明）→ 上传全部附件
+（`gh release upload --clobber`，可重入）。
 
 ```bash
-# 1. 改版本号（真源）
+# 1. 改版本号 + 写 CHANGELOG
+#    真源：deploy/binary/VERSION；各 workspace package.json 同步为同一版本
 echo 0.0.2 > deploy/binary/VERSION
+#    手工把 CHANGELOG.md 的「未发布」段改为 `## [0.0.2] - YYYY-MM-DD`
 
-# 2. 打包（默认会先跑完整构建：client → SSR → prerender）
-deploy/binary/build-bundle.sh
+# 2. 提交并推到 master，先让 CI 门禁（pnpm verify / build:ssg）跑绿
+git add -A && git commit -m "chore(release): v0.0.2"
+git push origin master
 
-# 3. 在目标机验证（可选：容器内验 nginx 配置，不需要 systemd）
-docker run --rm -v "$PWD:/w" -w /w nginx:1.27-alpine \
-  sh /w/deploy/binary/tests/verify-nginx-config.sh /w/dist-release/toolbox-0.0.2-linux-amd64.tar.gz
-
-# 4. 打 tag + 建 Release（附件即产物）
+# 3. 打附注 tag 并推送 —— 这一步即触发自动发布，无需任何后续手工动作
 git tag -a v0.0.2 -m "v0.0.2"
 git push origin v0.0.2
-gh release create v0.0.2 \
-  dist-release/toolbox-0.0.2-linux-amd64.tar.gz \
-  dist-release/toolbox-0.0.2-linux-amd64.tar.gz.sha256 \
-  dist-release/latest.txt dist-release/index.json \
-  --title "v0.0.2" --notes-file CHANGELOG.md
+# 在 https://github.com/zhang123999-qq/toolbox/actions 查看 Release 工作流；
+# 成功后 Release 与 5 个附件自动就绪：
+#   toolbox-0.0.2-linux-amd64.tar.gz / .tar.gz.sha256 / latest.txt / index.json / install.sh
 ```
+
+> 打包发生在 CI 的 Linux runner 上，开发机不必具备 tar/gzip/sha256sum 等 Linux 工具链。
+> 仍想在本地出包做验证（可选）可跑 `deploy/binary/build-bundle.sh`（默认先 client→SSR→
+> prerender，产物在 `dist-release/`），但**不要手工上传**，对外发布一律以 CI 产物为准。
+> 容器内验证 nginx 配置（可选，不需要 systemd）：
+> `docker run --rm -v "$PWD:/w" -w /w nginx:1.27-alpine sh
+/w/deploy/binary/tests/verify-nginx-config.sh
+/w/dist-release/toolbox-0.0.2-linux-amd64.tar.gz`
+
+### 给已存在的 tag 补发 / 刷新附件（仅兜底，不用于常规发布）
+
+Release 已存在但附件缺失（历史漏传）时，无需删除 Release，手动重跑一次工作流即可：
+仓库 **Actions → Release → Run workflow → 填 tag（如 `v0.0.2`）**。该路径会保留现有
+Release 说明，仅以 `--clobber` 刷新 5 个附件。v0.0.2 曾因缺 `latest.txt` 导致
+`toolboxctl upgrade` 报「无法解析可用版本」，即由此途径补齐。
 
 > **tag 的两个细节**（首次发布时踩到过）：
 >

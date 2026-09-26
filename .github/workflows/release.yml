@@ -2,23 +2,29 @@ name: Release
 
 # 发布二进制部署 bundle（见 docs/RELEASE.md）。
 #
-# 为什么需要这个工作流：toolboxctl upgrade / 一键安装依赖 Release 附件里的
-# latest.txt、toolbox-<ver>-linux-amd64.tar.gz 及其 .sha256、index.json、install.sh。
-# 这些产物只能在 Linux 上由 deploy/binary/build-bundle.sh 打出（需要 tar/gzip/sha256sum），
-# 过去靠开发机手工构建上传，漏传附件时线上 `toolboxctl upgrade` 会直接报
-# 「无法解析可用版本（缺 latest.txt 且无包列表）」。改为推 tag 自动构建上传，根治漏传。
+# 完全自动化：推送 `v*` tag 后，本工作流在 Linux 上自动完成
+#   构建静态站 → 打自包含 bundle → 创建 GitHub Release（说明取自 CHANGELOG）
+#   → 上传全部部署附件。
+# 全程不需要在开发机手工构建，也不需要手工 `gh release create` / `gh release upload`。
+#
+# 为什么必须自动化：toolboxctl upgrade / 一键安装依赖 Release 附件里的
+# latest.txt、toolbox-<ver>-linux-amd64.tar.gz 及其 .sha256、index.json、install.sh；
+# HTTPS 源无法列目录，缺 latest.txt 时 `toolboxctl upgrade` 会报
+# 「无法解析可用版本（缺 latest.txt 且无包列表）」。这些产物只能在 Linux 上由
+# deploy/binary/build-bundle.sh 打出（需要 tar/gzip/sha256sum），手工上传必漏。
 on:
   push:
     tags:
       - "v*"
+  # 仅用于给「已存在但附件缺失」的旧 tag 手动补发；正常发布走上面的 tag push，无需手动
   workflow_dispatch:
     inputs:
       tag:
-        description: "要发布或补附件的版本 tag（如 v0.0.2）"
+        description: "要补发附件的版本 tag（如 v0.0.2）"
         required: true
         default: "v0.0.2"
 
-# gh release upload 需要对 contents 写权限
+# 创建 Release 与上传附件需要 contents 写权限
 permissions:
   contents: write
 
@@ -48,16 +54,43 @@ jobs:
 
       - name: Package self-contained bundle
         # 复用上面 build:ssg 已产出的 apps/web/dist（含 sitemap/robots/预渲染页），
-        # 只负责组装 + 校验和 + 打包，避免 build-bundle 内部再跑一遍不完整的构建。
+        # 这里只负责组装 + 校验和 + 打包，避免 build-bundle 内部再跑一遍不完整的构建。
         run: bash deploy/binary/build-bundle.sh --skip-build
 
-      - name: Upload assets to GitHub Release
+      - name: Create GitHub Release and upload assets
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_TAG: ${{ github.event.inputs.tag || github.ref_name }}
         run: |
-          gh release view "$RELEASE_TAG" >/dev/null 2>&1 ||
-            gh release create "$RELEASE_TAG" --title "$RELEASE_TAG" --notes "Release $RELEASE_TAG"
+          set -euo pipefail
+          # 去掉 v 前缀，对齐 CHANGELOG 标题与 bundle 文件名（0.0.2 而非 v0.0.2）
+          VER=${RELEASE_TAG#v}
+          NOTES_FILE=$(mktemp)
+
+          # Release 说明优先取 CHANGELOG.md 中 `## [<ver>]` 这一节（到下一个二级标题为止）；
+          # CHANGELOG 里没有该版本时，回落到 GitHub 自动生成的提交说明，不让发布失败。
+          awk -v header="## [$VER]" '
+            index($0, header) == 1 { cap = 1; print; next }
+            cap && $0 ~ /^## \[/ { exit }
+            cap { print }
+          ' CHANGELOG.md > "$NOTES_FILE"
+
+          if [ -s "$NOTES_FILE" ]; then
+            echo "使用 CHANGELOG 的 [$VER] 段落作为 Release 说明"
+            NOTE_ARGS=(--notes-file "$NOTES_FILE")
+          else
+            echo "CHANGELOG 未找到 [$VER] 段落，使用 GitHub 自动生成说明"
+            NOTE_ARGS=(--generate-notes)
+          fi
+
+          # Release 已存在（手动补发旧 tag）时保留原说明，只刷新附件；
+          # 不存在则随本次 tag push 一并创建，标题即 tag 名。
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            echo "Release $RELEASE_TAG 已存在：保留现有说明，仅刷新附件"
+          else
+            gh release create "$RELEASE_TAG" --title "$RELEASE_TAG" "${NOTE_ARGS[@]}"
+          fi
+
           gh release upload "$RELEASE_TAG" \
             dist-release/toolbox-*-linux-amd64.tar.gz \
             dist-release/toolbox-*-linux-amd64.tar.gz.sha256 \
@@ -65,3 +98,5 @@ jobs:
             dist-release/index.json \
             dist-release/install.sh \
             --clobber
+
+          echo "已发布：https://github.com/${GITHUB_REPOSITORY}/releases/tag/$RELEASE_TAG"
