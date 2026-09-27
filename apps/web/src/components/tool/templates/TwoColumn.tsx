@@ -20,6 +20,11 @@ export interface ExtraInputDef {
   readonly label: string
   /** 行数：凭据类填 1，正文类留空（默认 4 行） */
   readonly rows?: number
+  /**
+   * 凭据类输入置 true：渲染为 `type="password"` 的单行输入框，
+   * 避免 API Key 等明文展示（D 类工具用）。
+   */
+  readonly secret?: boolean
 }
 
 /**
@@ -250,14 +255,26 @@ export function TwoColumn<I extends { text: string }, O extends object>({
             >
               {def.label}
             </label>
-            <textarea
-              id={'tool-input-' + def.key}
-              data-testid={'input-' + def.key}
-              rows={def.rows ?? 4}
-              className="w-full resize-y rounded border border-slate-200 p-2 font-mono text-sm dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
-              value={readExtra(def.key)}
-              onChange={(event) => setInput({ ...input, [def.key]: event.target.value } as I)}
-            />
+            {def.secret ? (
+              <input
+                id={'tool-input-' + def.key}
+                data-testid={'input-' + def.key}
+                type="password"
+                autoComplete="off"
+                className="w-full rounded border border-slate-200 p-2 font-mono text-sm dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
+                value={readExtra(def.key)}
+                onChange={(event) => setInput({ ...input, [def.key]: event.target.value } as I)}
+              />
+            ) : (
+              <textarea
+                id={'tool-input-' + def.key}
+                data-testid={'input-' + def.key}
+                rows={def.rows ?? 4}
+                className="w-full resize-y rounded border border-slate-200 p-2 font-mono text-sm dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
+                value={readExtra(def.key)}
+                onChange={(event) => setInput({ ...input, [def.key]: event.target.value } as I)}
+              />
+            )}
           </div>
         ))}
         {fileInput ? (
