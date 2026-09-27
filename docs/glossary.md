@@ -23,22 +23,22 @@
 
 ## 二、产品与架构术语
 
-| 中文       | English             | 说明                                           | 禁用译法                                      |
-| ---------- | ------------------- | ---------------------------------------------- | --------------------------------------------- |
-| 工具库     | Toolbox             | 产品名（单数、首字母大写），同时是仓库名       | Tool Library, Toolkit                         |
-| 工具       | tool                | 单个可用的纯前端小工具                         | utility, widget                               |
-| 工具页     | tool page           | 每个工具的路由页 `/tools/<slug>`               | toolpage, tool-page                           |
-| 域         | category            | 一级分类，共 20 个，对应 `category` slug       | domain category, domain taxonomy              |
-| 大组       | group               | 4 个用户心智分组：dev / design / office / life | major group, big group                        |
-| 子类       | sub-category        | 60+ 二级分组，只作筛选器，不建独立页           | subcategory, sub category                     |
-| 纯前端     | client-side         | 全部逻辑在浏览器执行，无服务端计算             | pure front-end, pure frontend, front-end only |
-| 本地优先   | local-first         | 数据不离开设备                                 | local first, local priority                   |
-| 数据不上传 | nothing is uploaded | 隐私主张的准确表述                             | no data upload, data is not uploaded          |
-| 免登录     | no sign-in          | 无需账号                                       | no login, login-free                          |
-| 明暗主题   | light/dark theme    | 两套主题且可切换。只说「暗色」会漏掉一半功能   | dark mode                                     |
-| 预渲染     | pre-rendering       | 构建期产出静态 HTML（SSG）                     | prerenderization                              |
-| 真源       | source of truth     | 唯一权威数据来源                               | truth source                                  |
-| 元数据     | metadata            | 每个工具的 `meta.ts` 字段                      | meta data, meta-data                          |
+| 中文       | English             | 说明                                                    | 禁用译法                                      |
+| ---------- | ------------------- | ------------------------------------------------------- | --------------------------------------------- |
+| 工具库     | Toolbox             | 产品名（单数、首字母大写），同时是仓库名                | Tool Library, Toolkit                         |
+| 工具       | tool                | 单个可用的纯前端小工具                                  | utility, widget                               |
+| 工具页     | tool page           | 每个工具的路由页 `/tools/<slug>`                        | toolpage, tool-page                           |
+| 域         | category            | 一级分类，规划 20 个、已实现 5 个，对应 `category` slug | domain category, domain taxonomy              |
+| 大组       | group               | 4 个用户心智分组：dev / design / office / life          | major group, big group                        |
+| 子类       | sub-category        | 60+ 二级分组，只作筛选器，不建独立页                    | subcategory, sub category                     |
+| 纯前端     | client-side         | 全部逻辑在浏览器执行，无服务端计算                      | pure front-end, pure frontend, front-end only |
+| 本地优先   | local-first         | 数据不离开设备                                          | local first, local priority                   |
+| 数据不上传 | nothing is uploaded | 隐私主张的准确表述                                      | no data upload, data is not uploaded          |
+| 免登录     | no sign-in          | 无需账号                                                | no login, login-free                          |
+| 明暗主题   | light/dark theme    | 两套主题且可切换。只说「暗色」会漏掉一半功能            | dark mode                                     |
+| 预渲染     | pre-rendering       | 构建期产出静态 HTML（SSG）                              | prerenderization                              |
+| 真源       | source of truth     | 唯一权威数据来源                                        | truth source                                  |
+| 元数据     | metadata            | 每个工具的 `meta.ts` 字段                               | meta data, meta-data                          |
 
 ---
 

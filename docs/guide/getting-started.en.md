@@ -123,7 +123,7 @@ some Windows setups due to file locks, and its binary comes from the platform pa
 pnpm install --ignore-scripts
 pnpm dev          # development server
 pnpm verify       # full gate: metadata + docs + lint + format + types + tests
-pnpm build:ssg    # client build + SSR build + pre-render 27 static pages
+pnpm build:ssg    # client build + SSR build + pre-render 336 static pages + 404.html
 ```
 
 ---

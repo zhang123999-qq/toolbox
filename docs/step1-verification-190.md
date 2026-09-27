@@ -1,5 +1,7 @@
 # 第 1 步 · 前 190 个工具逐项核查表
 
+> 📦 **历史归档**：本文是 **v0.0.2 / 前 190 个工具** 里程碑时点的一次性记录，其中数字为当时快照，不再随版本更新。当前进度以根 [README](../README.md) 与 [CHANGELOG](../CHANGELOG.md) 为准。
+
 - 规划工具数：190；完成：190；未完成/缺失：0
 - 判定项：八文件齐全 · meta.id 与 slug 一致 · catalog 已注册（路由 /tools/:slug）· Tool 默认导出 · T2 含 transform（语音 tts/stt 为 Web Speech API 运行时型，按实际调用判定）· 实现文件无真实 TODO/FIXME/占位（已剔除 \uXXXX、U+XXXX、手机号 X 通配、PEM 泛标签等合法记法）· 单测断言≥3 · 组件测试与 e2e 存在。
 

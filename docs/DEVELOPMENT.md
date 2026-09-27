@@ -566,21 +566,76 @@ TBT 高 → Worker + 延迟执行；CLS 高 → 预留尺寸；图片大 → Web
 
 ---
 
-## 十二、SEO 要求（每个工具页）
+## 十二、独立路由与 SEO（870 个独立 URL，方案 A）
+
+> 已拍板（见 §十三决策 #2）：**1 个工具 = 1 条独立路由 `/tools/:slug` = 1 个独立静态页**。
+> 不做「单页 + 查询参数」，也不做 iframe 聚合。工具站靠搜索长尾词获客，独立 URL 是最大 SEO 资产。
+
+### 12.1 全自动链路（新增工具时零手写）
 
 ```text
-1. Title        ≤ 60 字符
-2. Description  ≤ 160 字符
-3. H1 + 正文     <h1>工具名</h1> + 一段说明
-4. JSON-LD      三块：SoftwareApplication + FAQPage + BreadcrumbList
-5. FAQ          2–4 条
-6. 内链         3–5 个相关工具
+apps/web/src/tools/<slug>/meta.ts
+        │  pnpm generate:catalog（scripts/generate-catalog.ts 扫描聚合）
+        ▼
+packages/catalog
+        ├── routes.ts        TOOL_ROUTES：每条 = { path:'/tools/:slug', tool }（自动生成，禁手写）
+        ├── search-index.ts  搜索索引（自动生成）
+        └── categories.ts / groups.ts
+        │
+        ├─→ apps/web/src/router.tsx   为每条 TOOL_ROUTES 挂 <ToolPage slug>
+        ├─→ ToolPage import.meta.glob('../tools/*/Tool.tsx')  按 id 懒加载该工具独立 chunk
+        ├─→ scripts/generate-sitemap.ts  全量 sitemap.xml（工具页 priority=0.8）+ robots.txt
+        └─→ pnpm build:ssg → scripts/prerender.ts
+                  把每条路由渲染成 apps/web/dist/<route>/index.html（1 slug 1 个静态 HTML）
 ```
 
-生成文件：`sitemap.xml`（脚本生成）、`robots.txt`（静态）、`rss.xml`（可选）。
+因此对任一工具：**1 个目录 ↔ 1 条路由 ↔ 1 个独立 JS chunk（按页懒加载）↔ 1 个静态 HTML ↔ sitemap 1 条**。
+新增工具只需建目录 + 写 `meta.ts` + `pnpm generate:catalog`，路由 / sitemap / 静态页 / head 全自动，无需改 router 或任何页面。
 
-> ⚠️ Vite 是 SPA，默认 SEO 不友好。**阶段 0 必须补 SSG 预渲染方案**，
-> 否则搜索引擎抓不到 870 个工具页的内容，SEO 目标直接落空。
+> Vite 默认产物是空壳 SPA（爬虫只看到 `<div id="root">`）。`entry-server.tsx` 用 React 19
+> `prerender`（等待 `React.lazy` 解析）+ `scripts/prerender.ts` 在构建期把全部路由落成静态 HTML，
+> 这是独立路由对爬虫可见的前提；`pnpm build:ssg` 一条命令完成 client + SSR + 预渲染。
+
+### 12.2 每个静态页的 `<head>`（由 prerender 统一注入，禁止逐页手写）
+
+| 标签               | 取值                                                                            |
+| ------------------ | ------------------------------------------------------------------------------- |
+| `<title>`          | 工具页 `工具名 · 站名`；首页 / 分类 / 大组页各有独立标题（目标 ≤ 60 字符）      |
+| `meta description` | 取 `meta.description`（目标 ≤ 160 字符）                                        |
+| `link canonical`   | `SITE_ORIGIN + 路由` 绝对地址，防重复收录                                       |
+| Open Graph         | `og:type / og:site_name / og:locale=zh_CN / og:title / og:description / og:url` |
+| Twitter Card       | `twitter:card=summary` + `twitter:title / twitter:description`                  |
+| JSON-LD            | 工具页 `SoftwareApplication`；**全站** `BreadcrumbList`（首页→大组→域→工具）    |
+
+- 改 `<head>` 的**唯一入口**是 `scripts/prerender.ts` 的 `metaFor / socialHead / breadcrumbsFor / applyMeta`，
+  路由集合 `allRoutes()` 与 `generate-sitemap.ts` 同源（都取自 catalog），避免两处漂移。
+- 当前**没有站点分享图素材**，故不输出 `og:image`，Twitter 用 `summary` 而非 `summary_large_image`
+  （后者会强制请求一张不存在的大图）。要升级为大图卡片，先产出统一 `og.png`，再在 `socialHead` 注入 `og:image`。
+- 正文 SEO 由 `ToolShell` 承担：`<h1>工具名</h1>` + `meta.description` 一段说明 + tags + 可视化面包屑导航。
+- 预渲染固定中文默认语言；英文由客户端实时切换，**不产生 `/en` 路由**（决策 #8）。
+
+### 12.3 可选增强（当前**未做**，勿当成已完成）
+
+```text
+1. FAQPage JSON-LD + 正文 2–4 条 FAQ
+2. 相关工具内链 3–5 个（同域互链，利于爬虫与停留）
+3. og:image 大图素材与 summary_large_image 卡片
+4. rss.xml（如需要）
+```
+
+### 12.4 验证方式
+
+```bash
+pnpm build:ssg                       # 构建并预渲染全部路由
+# 抽查单个工具页是否具备独立 head
+grep -E 'og:title|twitter:card|canonical|BreadcrumbList|SoftwareApplication' \
+  apps/web/dist/tools/<slug>/index.html
+# 覆盖率自检：每个工具页都应有 og:title / twitter:card / canonical / BreadcrumbList，
+# 仅真正的工具页有 SoftwareApplication
+```
+
+产物：`sitemap.xml`、`robots.txt`（均由 `generate-sitemap.ts` 生成进 `apps/web/public/`）、
+各路由 `index.html` + 根 `404.html`（静态托管直接可用）。
 
 ---
 

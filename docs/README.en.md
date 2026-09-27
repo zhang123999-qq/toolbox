@@ -1,9 +1,10 @@
 # Static Tool Site · Documentation Hub
 
-> Status: **stage 0 complete** (skeleton + sample tool + bilingual/theme support + container and
-> binary deployment paths)
-> Updated: 2026-09-24
-> Tools: **870 across 20 categories in 4 groups** (1 implemented)
+> Status: **v0.0.4 released** (2026-09-27, 310 tools shipped across domains 01–05; previous
+> release v0.0.3 had 280)
+> Updated: 2026-09-27
+> Planned total: **870 across 20 categories in 4 groups** (310 released; the planned figures
+> are in §3)
 
 > [中文](README.md) | **English**
 
@@ -122,16 +123,22 @@ The details live in the four usage guides rather than here — open the one you 
 
 These are **script-measured** values; the whole documentation set defers to them:
 
-| Dimension              | Value                                                                                                   |
-| ---------------------- | ------------------------------------------------------------------------------------------------------- |
-| Total tools            | **870**                                                                                                 |
-| Top-level categories   | **20**                                                                                                  |
-| Groups                 | **4** (dev / design / office / life)                                                                    |
-| Sub-categories         | **60+** (filters only, no dedicated pages)                                                              |
-| Priority distribution  | P0 148 / P1 322 / P2 332 / P3 68                                                                        |
-| Feasibility            | A 662 / B 59 / C 79 / D 58 / E 12                                                                       |
-| Client-side-only ratio | A+B+C = **92.0%**                                                                                       |
-| Total pages            | 870 tool pages + 4 group pages + 20 category pages + 10–20 collection pages + 10 static pages ≈ **924** |
+| Dimension              | Value                                                                                                             |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Total tools            | **870**                                                                                                           |
+| Top-level categories   | **20**                                                                                                            |
+| Groups                 | **4** (dev / design / office / life)                                                                              |
+| Sub-categories         | **60+** (filters only, no dedicated pages)                                                                        |
+| Priority distribution  | P0 148 / P1 322 / P2 332 / P3 68                                                                                  |
+| Feasibility            | A 662 / B 59 / C 79 / D 58 / E 12                                                                                 |
+| Client-side-only ratio | A+B+C = **92.0%** (planned)                                                                                       |
+| Total pages            | 870 tool pages + 4 group pages + 20 category pages + 10–20 collection pages + 10 static pages ≈ **924** (planned) |
+
+> **Progress (measured 2026-09-27)**: the latest release is **v0.0.4 = 310 tools** (domains
+> 01–05: 70/61/59/90/30); the previous release v0.0.3 had 280. Categories 06–20, 560 tools,
+> have not started. Tests: **5247 cases across 628 files** all green at v0.0.4 (4663 / 568 at
+> v0.0.3); build: `pnpm build:ssg` emits **336 static pages + 404.html** at v0.0.4 (306 at
+> v0.0.3). The 870 / 20 / 924 figures above are planning targets.
 
 > Statistics methodology and validation records live in [`catalog/README.md`](catalog/README.md).
 

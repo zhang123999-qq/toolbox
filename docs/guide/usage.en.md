@@ -16,12 +16,12 @@ highlights, the four groups, a 20-category overview, shipped tools, and a closin
 The top bar holds the site name, the four groups, all tools, search, the theme switch and the
 language switch.
 
-| I want to          | Do this                                                                               |
-| ------------------ | ------------------------------------------------------------------------------------- |
-| Browse by group    | In the top bar, pick `Development / Design & Media / Office & Docs / Life & Learning` |
-| Browse by category | Click any tile in "20 categories", or open `/c/<group>/<category>`                    |
-| See all 870 tools  | "All tools" in the top bar, or `/tools`                                               |
-| Start over         | Click the site name in the top-left corner                                            |
+| I want to             | Do this                                                                               |
+| --------------------- | ------------------------------------------------------------------------------------- |
+| Browse by group       | In the top bar, pick `Development / Design & Media / Office & Docs / Life & Learning` |
+| Browse by category    | Click any tile in "20 categories", or open `/c/<group>/<category>`                    |
+| See all shipped tools | "All tools" in the top bar, or `/tools`                                               |
+| Start over            | Click the site name in the top-left corner                                            |
 
 ### 1.2 Global search
 
@@ -127,7 +127,7 @@ import { CATEGORIES, GROUPS, TOOLS, getTool, groupOfCategory } from '@toolbox/ca
 const tool = getTool('json-formatter')
 console.log(tool?.title, tool && groupOfCategory(tool.category))
 console.log({ tools: TOOLS.length, categories: CATEGORIES.length, groups: GROUPS.length })
-// expected: JSON 格式化 dev / { tools: 1, categories: 20, groups: 4 }
+// expected: JSON 格式化 dev / { tools: 310, categories: 20, groups: 4 }
 ```
 
 It is the site-wide source of truth: the route table, the search index and the sitemap are all

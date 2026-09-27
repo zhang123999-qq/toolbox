@@ -4,6 +4,10 @@
 > This document covers **how to change the project**: environment, conventions, workflow and gates.
 > For what the project is and how to deploy it, see [`README.md`](README.md) and
 > [`docs/guide/`](docs/guide/README.md).
+>
+> The project currently registers **310 tools** (domains 01–05 shipped with **v0.0.4**; 560 tools across
+> domains 06–20 remain). The latest release is **v0.0.4 (310 tools)**; the previous v0.0.3 had 280. Routes are derived
+> automatically from the catalog — adding a tool only needs a directory plus `meta.ts`.
 
 ---
 

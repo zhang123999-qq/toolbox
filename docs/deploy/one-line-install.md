@@ -3,6 +3,8 @@
 > **中文** | [English](one-line-install.en.md)
 > 本文面向**运维与部署**：一条命令把 Toolbox 静态站装到 Linux 服务器上。
 > 开发期构建、Docker 链路见 [`../DEVELOPMENT.md`](../DEVELOPMENT.md) §20；命令行用法见 [`../../deploy/binary/README.md`](../../deploy/binary/README.md)。
+>
+> 当前最新 Release：**v0.0.4**（2026-09-27，**310 个工具**，域 01–05）；默认安装即取该 Release。下文命令里出现的 `0.0.1-beta` 仅作可运行示例，不代表当前版本。
 
 ---
 

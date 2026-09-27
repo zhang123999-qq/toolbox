@@ -14,12 +14,12 @@
 20 域速览、已上线工具、底部转化区。顶栏从左到右是站点名、4 个大组入口、全部工具、搜索、
 主题开关、语言开关。
 
-| 想做的事          | 操作                                               |
-| ----------------- | -------------------------------------------------- |
-| 按大组找工具      | 顶栏点 `开发编码 / 设计媒体 / 办公文档 / 生活学习` |
-| 按域找工具        | 首页「20 域速览」点任一域，或 `/c/<组>/<域>`       |
-| 看全部 870 个工具 | 顶栏「全部工具」或 `/tools`                        |
-| 换个入口重来      | 点左上角站点名回首页                               |
+| 想做的事         | 操作                                               |
+| ---------------- | -------------------------------------------------- |
+| 按大组找工具     | 顶栏点 `开发编码 / 设计媒体 / 办公文档 / 生活学习` |
+| 按域找工具       | 首页「20 域速览」点任一域，或 `/c/<组>/<域>`       |
+| 看全部已上线工具 | 顶栏「全部工具」或 `/tools`                        |
+| 换个入口重来     | 点左上角站点名回首页                               |
 
 ### 1.2 全局搜索
 
@@ -115,7 +115,7 @@ import { CATEGORIES, GROUPS, TOOLS, getTool, groupOfCategory } from '@toolbox/ca
 const tool = getTool('json-formatter')
 console.log(tool?.title, tool && groupOfCategory(tool.category))
 console.log({ tools: TOOLS.length, categories: CATEGORIES.length, groups: GROUPS.length })
-// 期望：JSON 格式化 dev / { tools: 1, categories: 20, groups: 4 }
+// 期望：JSON 格式化 dev / { tools: 310, categories: 20, groups: 4 }
 ```
 
 它是全站真源：路由表、搜索索引、sitemap 都由它派生，所以「文档里写的域数」与

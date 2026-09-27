@@ -582,22 +582,80 @@ images heavy → WebP/AVIF.
 
 ---
 
-## 12. SEO Requirements (per tool page)
+## 12. Independent Routes & SEO (870 standalone URLs, Option A)
+
+> Decided (see decision #2 in §13): **1 tool = 1 standalone route `/tools/:slug` = 1 standalone static page**.
+> No "single page + query param", no iframe hub. A tool site wins on long-tail search terms; the
+> standalone URL is the core SEO asset.
+
+### 12.1 Fully automatic pipeline (zero hand-writing when adding a tool)
 
 ```text
-1. Title        ≤ 60 characters
-2. Description  ≤ 160 characters
-3. H1 + body    <h1>Tool name</h1> plus a descriptive paragraph
-4. JSON-LD      three blocks: SoftwareApplication + FAQPage + BreadcrumbList
-5. FAQ          2–4 entries
-6. Internal links  3–5 related tools
+apps/web/src/tools/<slug>/meta.ts
+        │  pnpm generate:catalog (scripts/generate-catalog.ts scans & aggregates)
+        ▼
+packages/catalog
+        ├── routes.ts        TOOL_ROUTES: each = { path:'/tools/:slug', tool } (generated, never hand-edit)
+        ├── search-index.ts  search index (generated)
+        └── categories.ts / groups.ts
+        │
+        ├─→ apps/web/src/router.tsx   mounts <ToolPage slug> for every TOOL_ROUTES entry
+        ├─→ ToolPage import.meta.glob('../tools/*/Tool.tsx')  lazy-loads that tool's own chunk by id
+        ├─→ scripts/generate-sitemap.ts  full sitemap.xml (tool pages priority=0.8) + robots.txt
+        └─→ pnpm build:ssg → scripts/prerender.ts
+                  renders every route to apps/web/dist/<route>/index.html (1 slug = 1 static HTML)
 ```
 
-Generated assets: `sitemap.xml` (script), `robots.txt` (static), `rss.xml` (optional).
+So for any tool: **1 folder ↔ 1 route ↔ 1 standalone lazy-loaded JS chunk ↔ 1 static HTML ↔ 1 sitemap entry**.
+To add a tool you only create the folder, write `meta.ts`, and run `pnpm generate:catalog`; the route,
+sitemap, static page and head tags are all produced automatically—never edit the router or any page.
 
-> ⚠️ Vite ships an SPA, which search engines crawl poorly by default.
-> **Stage 0 must include an SSG pre-rendering solution**, otherwise the 870 tool pages
-> are effectively invisible to crawlers and the SEO goal fails outright.
+> Vite's default output is an empty SPA shell (crawlers only see `<div id="root">`). `entry-server.tsx`
+> uses React 19 `prerender` (which awaits `React.lazy`) and `scripts/prerender.ts` to materialize every
+> route to static HTML at build time—this is what makes the standalone routes crawlable.
+> `pnpm build:ssg` runs client + SSR + pre-render in one command.
+
+### 12.2 Per-page `<head>` (injected centrally by prerender; never hand-write per page)
+
+| Tag                | Value                                                                                                      |
+| ------------------ | ---------------------------------------------------------------------------------------------------------- |
+| `<title>`          | tool pages `Tool Name · Site Name`; home / category / group pages get their own titles (target ≤ 60 chars) |
+| `meta description` | from `meta.description` (target ≤ 160 chars)                                                               |
+| `link canonical`   | absolute `SITE_ORIGIN + route`, prevents duplicate indexing                                                |
+| Open Graph         | `og:type / og:site_name / og:locale=zh_CN / og:title / og:description / og:url`                            |
+| Twitter Card       | `twitter:card=summary` + `twitter:title / twitter:description`                                             |
+| JSON-LD            | tool pages `SoftwareApplication`; **site-wide** `BreadcrumbList` (home → group → domain → tool)            |
+
+- The **only** place to change `<head>` is `scripts/prerender.ts` (`metaFor / socialHead / breadcrumbsFor / applyMeta`).
+  The route set `allRoutes()` shares its source with `generate-sitemap.ts` (both read the catalog) to avoid drift.
+- There is currently **no site share-image asset**, so no `og:image` is emitted and Twitter uses `summary`
+  rather than `summary_large_image` (which would request a non-existent large image). To upgrade to large
+  cards, first produce a shared `og.png`, then inject `og:image` in `socialHead`.
+- Body SEO is handled by `ToolShell`: `<h1>tool name</h1>` + the `meta.description` paragraph + tags + a visible breadcrumb nav.
+- Pre-rendering is fixed to the default language (Chinese); English switches client-side and produces **no `/en` route** (decision #8).
+
+### 12.3 Optional enhancements (currently **not done**—do not assume they exist)
+
+```text
+1. FAQPage JSON-LD + 2–4 FAQ entries in the body
+2. 3–5 related-tool internal links (same-domain cross-linking for crawl & dwell time)
+3. og:image asset + summary_large_image card
+4. rss.xml (if needed)
+```
+
+### 12.4 How to verify
+
+```bash
+pnpm build:ssg                       # build and pre-render every route
+# Inspect one tool page for its standalone head
+grep -E 'og:title|twitter:card|canonical|BreadcrumbList|SoftwareApplication' \
+  apps/web/dist/tools/<slug>/index.html
+# Coverage sanity: every tool page should have og:title / twitter:card / canonical / BreadcrumbList;
+# only actual tool pages have SoftwareApplication
+```
+
+Outputs: `sitemap.xml`, `robots.txt` (both generated into `apps/web/public/` by `generate-sitemap.ts`),
+per-route `index.html`, and a root `404.html` (usable directly by static hosts).
 
 ---
 

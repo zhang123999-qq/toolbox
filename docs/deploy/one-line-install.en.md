@@ -3,6 +3,9 @@
 > [中文](one-line-install.md) | **English**
 > For **deployment**: install the Toolbox static site on a Linux server with one command.
 > For build and Docker paths see [`../DEVELOPMENT.en.md`](../DEVELOPMENT.en.md) §20; for CLI usage see [`../../deploy/binary/README.md`](../../deploy/binary/README.md).
+>
+> Latest release: **v0.0.4** (2026-09-27, **310 tools**, domains 01–05); a default install pulls that release. The
+> `0.0.1-beta` in the commands below is just a runnable example, not the current version.
 
 ---
 

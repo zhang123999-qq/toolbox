@@ -3,6 +3,9 @@
 把一个**预构建好的自包含 bundle** 部署到 Linux 服务器，并管理它的安装、卸载、
 日常运维与在线升级。目标机**不需要源码、不需要 Node/pnpm 工具链、不需要 Docker**。
 
+> 当前最新 Release：**v0.0.4**（2026-09-27，**310** 个工具，域 01–05）；上一版本 v0.0.3 为 280 个。
+> 下文示例里出现的 `0.0.1-beta` / `0.0.2` 仅作版本号占位，不代表当前版本。
+
 ---
 
 ## 最短路径（只想尽快装起来）
@@ -50,7 +53,7 @@ toolboxctl uninstall --purge
 
 ```
 dist-release/
-├── toolbox-0.0.1-beta-linux-amd64.tar.gz         自包含部署包（~700KB）
+├── toolbox-0.0.1-beta-linux-amd64.tar.gz         自包含部署包（静态产物 + toolboxctl + 配置模板）
 ├── toolbox-0.0.1-beta-linux-amd64.tar.gz.sha256  整包校验值（升级前校验）
 ├── latest.txt                                最新版本号（升级源用）
 └── index.json                                已发布版本索引
@@ -132,8 +135,8 @@ curl -fsSL http://<发布源>/install.sh | sudo bash -s -- --source http://<发�
 > [`docs/deploy/one-line-install.md`](../../docs/deploy/one-line-install.md)
 > （英文 [`one-line-install.en.md`](../../docs/deploy/one-line-install.en.md)）。
 
-> ⚠️ 仓库当前为 **private**：上面两条 GitHub 直连都会 404（已实测）。
-> 三选一——转 public、安装时带 `GITHUB_TOKEN`，或统一走内网发布源。
+> ✅ 仓库已转为 **public**：上面两条 GitHub 直连对匿名请求均可访问（已实测 200）。
+> 私有化 / 内网分发仍可带 `GITHUB_TOKEN`，或统一走内网发布源。
 > 发布与版本号规则见 [`docs/RELEASE.md`](../../docs/RELEASE.md)。
 
 **方式 B：手动安装**

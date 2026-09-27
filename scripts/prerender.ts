@@ -98,17 +98,101 @@ function allRoutes(): string[] {
   ]
 }
 
+/**
+ * 该路由的面包屑层级（首页 → 大组 → 域 → 工具）。
+ * 仅用于生成 BreadcrumbList 结构化数据；返回 null 表示无层级（首页）。
+ */
+function breadcrumbsFor(route: string): { readonly name: string; readonly path: string }[] | null {
+  const home = { name: '首页', path: '/' }
+  if (route === '/' || route === '/404') return null
+
+  if (route === '/tools') return [home, { name: '全部工具', path: '/tools' }]
+
+  const groupMatch = /^\/c\/([^/]+)$/.exec(route)
+  if (groupMatch) {
+    const group = getGroup(groupMatch[1])
+    return group ? [home, { name: group.name, path: `/c/${group.id}` }] : null
+  }
+
+  const categoryMatch = /^\/c\/([^/]+)\/([^/]+)$/.exec(route)
+  if (categoryMatch) {
+    const group = getGroup(categoryMatch[1])
+    const category = getCategory(categoryMatch[2])
+    if (!group || !category) return null
+    return [
+      home,
+      { name: group.name, path: `/c/${group.id}` },
+      { name: category.name, path: `/c/${group.id}/${category.id}` },
+    ]
+  }
+
+  const tool = getTool(route.replace(/^\/tools\//, ''))
+  if (tool) {
+    const group = getGroup(tool.group)
+    const category = getCategory(tool.category)
+    const crumbs = [home]
+    if (group) crumbs.push({ name: group.name, path: `/c/${group.id}` })
+    if (group && category) {
+      crumbs.push({ name: category.name, path: `/c/${group.id}/${category.id}` })
+    }
+    crumbs.push({ name: tool.title, path: route })
+    return crumbs
+  }
+
+  return null
+}
+
+/** 把面包屑层级序列化为 BreadcrumbList JSON-LD */
+function breadcrumbJsonLd(crumbs: { readonly name: string; readonly path: string }[]): string {
+  return JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: crumbs.map((crumb, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: crumb.name,
+      item: `${SITE_ORIGIN}${crumb.path}`,
+    })),
+  })
+}
+
+/**
+ * 每页独立的 head 标签（独立路由 SEO + 社交分享卡片）：
+ * canonical、Open Graph、Twitter Card。无站点分享图素材，故 twitter:card
+ * 用 `summary`（纯标题卡片），不用会请求一张不存在大图的 `summary_large_image`。
+ */
+function socialHead(route: string, meta: PageMeta): string {
+  const url = `${SITE_ORIGIN}${route}`
+  const title = escapeHtml(meta.title)
+  const description = escapeHtml(meta.description)
+  return [
+    `<link rel="canonical" href="${url}" />`,
+    `<meta property="og:type" content="website" />`,
+    `<meta property="og:site_name" content="${escapeHtml(SITE_NAME)}" />`,
+    `<meta property="og:locale" content="zh_CN" />`,
+    `<meta property="og:title" content="${title}" />`,
+    `<meta property="og:description" content="${description}" />`,
+    `<meta property="og:url" content="${url}" />`,
+    `<meta name="twitter:card" content="summary" />`,
+    `<meta name="twitter:title" content="${title}" />`,
+    `<meta name="twitter:description" content="${description}" />`,
+  ].join('\n    ')
+}
+
 function applyMeta(template: string, route: string, body: string, meta: PageMeta): string {
-  const canonical = `<link rel="canonical" href="${SITE_ORIGIN}${route}" />`
-  const jsonLd = meta.jsonLd
-    ? `\n    <script type="application/ld+json">${escapeHtml(meta.jsonLd)}</script>`
-    : ''
+  // 结构化数据：工具页的 SoftwareApplication（metaFor 已构建）+ 全站面包屑
+  const ldBlocks = [meta.jsonLd]
+  const crumbs = breadcrumbsFor(route)
+  if (crumbs) ldBlocks.push(breadcrumbJsonLd(crumbs))
+  const jsonLdTags = ldBlocks
+    .filter((block): block is string => Boolean(block))
+    .map((block) => `<script type="application/ld+json">${escapeHtml(block)}</script>`)
+    .join('\n    ')
+
+  const head = [socialHead(route, meta), jsonLdTags].filter(Boolean).join('\n    ')
 
   return template
-    .replace(
-      /<title>[\s\S]*?<\/title>/,
-      `<title>${escapeHtml(meta.title)}</title>\n    ${canonical}${jsonLd}`,
-    )
+    .replace(/<title>[\s\S]*?<\/title>/, `<title>${escapeHtml(meta.title)}</title>\n    ${head}`)
     .replace(
       /<meta\s+name="description"[\s\S]*?\/>/,
       `<meta name="description" content="${escapeHtml(meta.description)}" />`,

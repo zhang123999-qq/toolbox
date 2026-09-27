@@ -31,7 +31,7 @@ column 4 is what the checker reads.
 | 工具库     | Toolbox             | the product name (singular, capitalised); also the repository name                   | Tool Library, Toolkit                         |
 | 工具       | tool                | one self-contained client-side utility                                               | utility, widget                               |
 | 工具页     | tool page           | the route for a single tool, `/tools/<slug>`                                         | toolpage, tool-page                           |
-| 域         | category            | a top-level category, 20 of them, keyed by the `category` slug                       | domain category, domain taxonomy              |
+| 域         | category            | a top-level category; 20 planned, 5 implemented, keyed by the `category` slug        | domain category, domain taxonomy              |
 | 大组       | group               | one of the four mental-model groups: dev / design / office / life                    | major group, big group                        |
 | 子类       | sub-category        | one of 60+ second-level groupings, used only as a filter, never a page               | subcategory, sub category                     |
 | 纯前端     | client-side         | all logic runs in the browser; there is no server-side computation                   | pure front-end, pure frontend, front-end only |

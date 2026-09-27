@@ -119,7 +119,7 @@ Node ≥ 22.22、pnpm ≥ 9。`pnpm install` 用 `--ignore-scripts`：esbuild �
 pnpm install --ignore-scripts
 pnpm dev          # 开发服务器
 pnpm verify       # 全量门禁：元数据 + 文档 + lint + 格式 + 类型 + 测试
-pnpm build:ssg    # 构建 + SSR 构建 + 预渲染 27 个静态页
+pnpm build:ssg    # 构建 + SSR 构建 + 预渲染 336 个静态页 + 404.html
 ```
 
 ---

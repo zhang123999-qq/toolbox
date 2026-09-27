@@ -1,0 +1,22 @@
+import { TwoColumn } from '../../components/tool/templates/TwoColumn'
+import type { OptionDef } from '../../components/tool/templates/TwoColumn'
+import { meta } from './meta'
+import { transform } from './utils'
+import type { QuarterInput, QuarterOptions } from './schema'
+
+const EXAMPLE: QuarterInput = { text: '2026-09-27' }
+
+export default function Tool() {
+  const optionDefs: readonly OptionDef<QuarterOptions>[] = []
+
+  return (
+    <TwoColumn<QuarterInput, QuarterOptions>
+      meta={meta}
+      initialInput={{ text: '' }}
+      initialOptions={{}}
+      run={transform}
+      example={EXAMPLE}
+      optionDefs={optionDefs}
+    />
+  )
+}

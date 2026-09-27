@@ -8,6 +8,39 @@
 每个版本对应一个 git tag（`vX.Y.Z`）与一个 GitHub Release，
 Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELEASE.md)）。
 
+## [0.0.4] - 2026-09-27
+
+把「已交付工具数」从 280 推进到 **310 个**：新增时间 / 日期 / 调度域（05）30 个工具
+（编号 281–310），并完成三层（静态契约 → 真实浏览器逐页冒烟 → 逐工具深度逻辑）零 bug 审计；
+同时落地「1 工具 1 独立路由」的全站 SEO head 增强（Open Graph / Twitter Card / 面包屑结构化数据）。
+
+### 新增
+
+- **域 05 时间 / 日期 / 调度 30 个工具**（#281–#310）：时区转换、日期差 / 年龄计算、
+  停表 / 倒计时、农历（1900–2100 查表）、时间戳转换与生成、跨时区会议时间换算、
+  日出日落 / 月相（NOAA 算法）、cron 解析等
+- **零新增 npm 依赖**：时区用浏览器原生 `Intl`，农历查表 1900–2100，日出 / 月相走
+  NOAA 算法，cron 解析为自研实现，本批未引入任何新的运行时依赖
+
+### 修复（零 bug 审计坐实并补锁定测试）
+
+- `date-diff` 与 `age`：修复日期借位计算
+- `timezone-convert`：补非法日期校验
+- `stopwatch`：计时漂移改为时间戳锚定
+- `lunar`：修正月份数组与日期校验
+- `timestamp-convert` / `timestamp-gen` / `meeting-time`：修复静默进位
+
+### SEO / 元数据
+
+- 独立路由每页补全 Open Graph / Twitter Card（summary）/ `BreadcrumbList` JSON-LD；
+  工具页 head 现含 title / description / canonical / OG / Twitter Card / JSON-LD
+  （`SoftwareApplication` + `BreadcrumbList`）。`og:image` 暂缺，列为后续可选增强
+
+### 质量验证
+
+- 单元 / 组件测试 **5247 个全部通过**（628 个测试文件，较 v0.0.3 发布时的 4663 / 568 新增）
+- `pnpm build:ssg` 预渲染 **336 个静态页 + `404.html`**（v0.0.3 发布时为 306）
+
 ## [0.0.3] - 2026-09-27
 
 把「已交付工具数」从 190 推进到 **280 个**：新增开发 / 运维 / 云原生域（04）90 个工具
@@ -127,7 +160,8 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
 - 静态预渲染产物固定中文口径，仍无 `/en` 路由（英文在客户端切换生效）
 - 个别大型工具 chunk 超过 500KB 打包告警阈值（构建成功，仅为体积提示），后续按需做代码分割
 
-[Unreleased]: https://github.com/zhang123999-qq/toolbox/compare/v0.0.3...HEAD
+[Unreleased]: https://github.com/zhang123999-qq/toolbox/compare/v0.0.4...HEAD
+[0.0.4]: https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.4
 [0.0.3]: https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.3
 [0.0.2]: https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.2
 

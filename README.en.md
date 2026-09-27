@@ -14,11 +14,15 @@
 
 ## Status
 
-| Item            | Value                                                                                                                                              |
-| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Planned tools   | **870 across 20 categories in 4 groups** (validated by script)                                                                                     |
-| Implemented     | **280** — the first 280 tools delivered across text & content (70), encoding/crypto/security (60), data formats (60), and DevOps/cloud-native (90) |
-| Current release | [`v0.0.3`](https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.3)                                                                          |
+| Item             | Value                                                                                                                  |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Planned          | **870 tools across 20 categories in 4 groups** (dev / design / office / life; design goal, validated by script)        |
+| Latest release   | [`v0.0.4`](https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.4) (2026-09-27) — **310 tools** (domains 01–05) |
+| Previous release | [`v0.0.3`](https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.3) — 280 tools (domains 01–04)                  |
+
+> Registered per-domain on main: domain 01 text 70 · domain 02 encoding/crypto/security 61 ·
+> domain 03 data formats 59 · domain 04 DevOps/cloud-native 90 · domain 05 time/date 30 = 310;
+> domains 06–20 (560 tools) have not started.
 
 ---
 
@@ -40,6 +44,15 @@ offline — the vast majority of tools run entirely in the browser and need no o
 Only a handful of network tools (DNS / Whois / HTTP request / Webhook tester) require
 connectivity, and even then the browser talks directly to the public endpoint — no request
 passes through our servers and no input is collected.
+
+---
+
+## Free and open source / licence & privacy (operating stance)
+
+This project is **free forever, MIT-licensed, local-first: no ads, no paywall/subscription,
+no account, no selling of user data, no user-facing tracking.** Only the infrastructure
+necessary to run the build is operated. It is run as a public repository with community
+contributions that anyone can self-host.
 
 ---
 
@@ -178,6 +191,21 @@ deploy/docker/       container deployment (multi-stage build + nginx)
 deploy/binary/       binary deployment (bundle builder + toolboxctl + one-line installer)
 docs/                usage guides, developer handbook, specifications, release process
 ```
+
+## Stack and page model
+
+- **Engineering**: pnpm monorepo; Vite 6 + React 19 + TypeScript + Tailwind v4; search via
+  Orama; tests with vitest + Playwright (driving the system-installed Edge); SSG via React 19
+  `prerender` at build time.
+- **Bilingual & themes**: Chinese / English switch live on the client (no `/en` route); light &
+  dark themes are applied by an inline script before first paint, with no flash.
+- **Independent routes (Plan A, implemented)**: 1 tool = 1 route `/tools/<slug>` = 1 lazy
+  chunk = 1 static HTML = 1 sitemap entry; routes are derived automatically from the catalog —
+  no hand-written route table.
+- **Per-page head**: title / description / canonical / Open Graph / Twitter Card (summary) /
+  JSON-LD (tool pages `SoftwareApplication` + site-wide `BreadcrumbList`). `og:image` is not
+  set yet and is listed as an optional future enhancement.
+- **Build output**: mainline `pnpm build:ssg` pre-renders **336 static pages + `404.html`**.
 
 ## Documentation
 
