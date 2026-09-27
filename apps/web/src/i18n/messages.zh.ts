@@ -588,6 +588,248 @@ export const zh = {
   'currency.error.invalidDecimals': '小数位无效：{value}',
   'currency.error.formatFailed': '格式化失败，请检查货币与地区选项',
 
+  // —— 导出 PNG（#405–#409 通用）——
+  'export.png': '导出 PNG',
+  'export.exporting': '导出中…',
+  'export.failed': '导出失败：{reason}',
+
+  // —— 生成类通用 ——
+  'error.negativeAmount': '金额不能为负数',
+
+  // —— 简历生成（#405）——
+  'resume.field.name': '姓名',
+  'resume.field.title': '职位',
+  'resume.field.phone': '电话',
+  'resume.field.email': '邮箱',
+  'resume.field.summary': '个人简介',
+  'resume.field.experience': '工作经历',
+  'resume.field.education': '教育背景',
+  'resume.field.skills': '技能',
+  'resume.hint':
+    '各字段有长度上限（姓名 40 字、简介 500 字、经历 3000 字等）；预览区可导出 PNG 图片。',
+  'resume.empty': '填写左侧表单，右侧实时预览简历',
+  'resume.label.contact': '联系方式',
+  'resume.error.emptyName': '请填写姓名',
+  'resume.error.tooLong': '{field}超过 {max} 字符上限',
+
+  // —— 发票生成（#406）——
+  'invoice.field.seller': '销方',
+  'invoice.field.buyer': '购方',
+  'invoice.field.number': '发票号',
+  'invoice.field.date': '日期',
+  'invoice.field.items': '明细',
+  'invoice.field.taxRate': '税率（%）',
+  'invoice.field.notes': '备注',
+  'invoice.itemsHint': '每行一项，格式：名称,数量,单价（示例：设计服务,2,500）',
+  'invoice.label.item': '项目',
+  'invoice.label.quantity': '数量',
+  'invoice.label.unitPrice': '单价',
+  'invoice.label.amount': '金额',
+  'invoice.label.subtotal': '小计',
+  'invoice.label.tax': '税额',
+  'invoice.label.total': '总计',
+  'invoice.empty': '填写左侧表单，右侧实时预览发票',
+  'invoice.error.noItems': '请至少填写一项明细',
+  'invoice.error.badItem': '第 {line} 行格式错误，应为「名称,数量,单价」',
+  'invoice.error.invalidQuantity': '第 {line} 行数量无效：{value}',
+  'invoice.error.invalidPrice': '第 {line} 行单价无效：{value}',
+  'invoice.error.negativeValue': '第 {line} 行数值不能为负',
+  'invoice.error.invalidTaxRate': '税率无效：{value}（应为 0–100 的数字）',
+  'invoice.error.invalidDate': '日期无效：{value}（应为 YYYY-MM-DD）',
+  'invoice.error.tooLong': '{field}超过 {max} 字符上限',
+
+  // —— 收据生成（#407）——
+  'receipt.field.payer': '付款人',
+  'receipt.field.payee': '收款人',
+  'receipt.field.amount': '金额',
+  'receipt.field.date': '日期',
+  'receipt.field.reason': '事由',
+  'receipt.field.number': '收据号',
+  'receipt.method': '支付方式',
+  'receipt.method.cash': '现金',
+  'receipt.method.transfer': '转账',
+  'receipt.method.card': '刷卡',
+  'receipt.method.other': '其他',
+  'receipt.empty': '填写左侧表单，右侧实时预览收据',
+  'receipt.error.emptyAmount': '请填写金额',
+  'receipt.error.invalidDate': '日期无效：{value}（应为 YYYY-MM-DD）',
+  'receipt.error.tooLong': '{field}超过 {max} 字符上限',
+
+  // —— 名片生成（#408）——
+  'businessCard.field.name': '姓名',
+  'businessCard.field.title': '职位',
+  'businessCard.field.company': '公司',
+  'businessCard.field.phone': '电话',
+  'businessCard.field.email': '邮箱',
+  'businessCard.field.website': '网址',
+  'businessCard.hint': '输出为 SVG 矢量代码，可复制或下载后用浏览器打开、转为图片。',
+  'businessCard.error.emptyName': '请填写姓名',
+  'businessCard.error.tooLong': '{field}超过 {max} 字符上限',
+
+  // —— 海报生成（#409）——
+  'poster.field.title': '标题',
+  'poster.field.subtitle': '副标题',
+  'poster.field.body': '正文',
+  'poster.field.footer': '落款',
+  'poster.theme': '主题',
+  'poster.theme.blue': '深蓝',
+  'poster.theme.green': '墨绿',
+  'poster.theme.orange': '橙红',
+  'poster.theme.dark': '暗夜',
+  'poster.empty': '填写左侧表单，右侧实时预览海报',
+  'poster.error.emptyTitle': '请填写标题',
+  'poster.error.tooLong': '{field}超过 {max} 字符上限',
+  'poster.error.unknownTheme': '未知主题：{value}',
+
+  // —— 随机决定（#410）——
+  'randomDecision.extra.count': '抽取个数',
+  'randomDecision.option.allowRepeat': '允许重复抽中同一项',
+  'randomDecision.options': '候选项',
+  'randomDecision.count': '抽取个数',
+  'randomDecision.result': '决定结果',
+  'randomDecision.error.empty': '请先输入选项（每行一个）',
+  'randomDecision.error.countEmpty': '请填写抽取个数',
+  'randomDecision.error.countInvalid': '抽取个数无效：{value}（须为非负整数）',
+  'randomDecision.error.countTooLarge': '抽取个数过大：上限 {max}',
+  'randomDecision.error.countExceeds': '不允许重复时，抽取个数（{count}）不能大于选项数（{total}）',
+
+  // —— 抽签（#411）——
+  'lottery.extra.count': '抽取人数',
+  'lottery.option.withReplacement': '有放回（允许重复中奖）',
+  'lottery.pool': '候选人数',
+  'lottery.count': '抽取人数',
+  'lottery.result': '中奖名单',
+  'lottery.error.empty': '请先输入名单（每行一人）',
+  'lottery.error.countEmpty': '请填写抽取人数',
+  'lottery.error.countInvalid': '抽取人数无效：{value}（须为整数）',
+  'lottery.error.countNegative': '抽取人数不能为负数',
+  'lottery.error.countTooLarge': '抽取人数过大：上限 {max}',
+  'lottery.error.countExceeds': '不放回抽取时，人数（{count}）不能大于名单人数（{total}）',
+
+  // —— 转盘（#412）——
+  'wheel.extra.winners': '获奖人数',
+  'wheel.segments': '扇区数',
+  'wheel.winners': '获奖人数',
+  'wheel.result': '获奖名单',
+  'wheel.spin': '开始转盘',
+  'wheel.idle': '点「开始转盘」抽奖',
+  'wheel.error.empty': '请先输入选项（每行一个）',
+  'wheel.error.tooFew': '转盘至少需要 2 个选项',
+  'wheel.error.tooMany': '选项过多：上限 {max} 个',
+  'wheel.error.countEmpty': '请填写获奖人数',
+  'wheel.error.countInvalid': '获奖人数无效：{value}（须为非负整数）',
+  'wheel.error.countTooLarge': '获奖人数过大：上限 {max}',
+  'wheel.error.countExceeds': '获奖人数（{count}）不能大于选项数（{total}）',
+
+  // —— 投票（#413）——
+  'voting.error.empty': '请先输入投票选项（每行一个）',
+  'voting.error.tooFew': '投票至少需要 2 个选项',
+  'voting.error.badIndex': '选项序号越界：{index}',
+  'voting.start': '开始投票',
+  'voting.vote': '投票',
+  'voting.votes': '票',
+  'voting.total': '总票数',
+  'voting.reset': '重新计票',
+  'voting.result': '投票结果',
+  'voting.notice': '投票结果仅保存在本页，刷新后丢失',
+  'voting.idle': '点「开始投票」，再点击选项投票',
+
+  // —— 骰子（#414）——
+  'dice.extra.sides': '骰子面数',
+  'dice.count': '骰子个数',
+  'dice.sides': '骰子面数',
+  'dice.result': '掷骰结果',
+  'dice.total': '总点数',
+  'dice.roll': '掷骰子',
+  'dice.idle': '点「掷骰子」开始',
+  'dice.error.countEmpty': '请填写骰子个数',
+  'dice.error.countInvalid': '骰子个数无效：{value}（须为 1–100 的整数）',
+  'dice.error.countTooLarge': '骰子个数过大：上限 {max}',
+  'dice.error.sidesEmpty': '请填写骰子面数',
+  'dice.error.sidesInvalid': '骰子面数无效：{value}（须为 2–100 的整数）',
+  'dice.error.sidesTooLarge': '骰子面数过大：上限 {max}',
+
+  // —— 硬币（#415）——
+  'coin.count': '抛掷次数',
+  'coin.result': '抛掷结果',
+  'coin.heads': '正面',
+  'coin.tails': '反面',
+  'coin.headsCount': '正面 {count} 次',
+  'coin.tailsCount': '反面 {count} 次',
+  'coin.flip': '抛硬币',
+  'coin.idle': '点「抛硬币」开始',
+  'coin.error.countEmpty': '请填写抛掷次数',
+  'coin.error.countInvalid': '抛掷次数无效：{value}（须为 1–10000 的整数）',
+  'coin.error.countTooLarge': '抛掷次数过大：上限 {max}',
+
+  // —— 随机分组（#416）——
+  'randomGroup.groups': '分组数',
+  'randomGroup.groupHeader': '第 {n} 组（{count} 人）',
+  'randomGroup.error.invalidGroupCount': '分组数无效：{value}（须为正整数）',
+  'randomGroup.error.tooManyGroups': '分组数（{groups}）不能超过人数（{count}）',
+
+  // —— 随机颜色板（#418）——
+  'colorPalette.mode': '配色模式',
+  'colorPalette.count': '颜色数量',
+  'colorPalette.error.invalidColor': '无法解析的颜色：{value}（支持 #rgb / #rrggbb / CSS 颜色名）',
+  'colorPalette.error.invalidMode': '未知的配色模式：{value}',
+  'colorPalette.error.invalidCount': '颜色数量无效：{value}（须为 1–{max} 的整数）',
+
+  // —— 密码短语生成（#419）——
+  'passphraseGen.capitalize': '首字母大写',
+  'passphraseGen.note':
+    '本工具生成「多个英文单词组成的易记短语」（如 correct-horse-battery-staple），适合用作需要记忆的主密码；如需单个高强度随机字符串，请使用「随机密码」工具。',
+  'passphraseGen.error.invalidWordCount': '单词数无效：{value}（须为 1–{max} 的整数）',
+  'passphraseGen.error.separatorTooLong': '分隔符过长：上限 {max} 个字符',
+
+  // —— 随机密码批量（#420）——
+  'bulkPassword.count': '生成数量',
+  'bulkPassword.note':
+    '本工具一次生成多条随机密码（上限 {max} 条），适合批量发放与账号初始化；如只需一条密码，请使用「随机密码」工具。全部在本地生成，10000 条约 1 秒内完成。',
+  'bulkPassword.error.invalidCount': '数量无效：{value}（须为 1–{max} 的整数）',
+  'bulkPassword.error.invalidLength': '不支持的长度：{value}',
+  'bulkPassword.error.noCharset': '至少选择一类字符（小写 / 大写 / 数字 / 符号）',
+
+  // —— Mermaid 图预览通用（#400–#403）——
+  'mermaid.error.wrongDirective': '首行应为 "{expected}"，请检查是否粘错了图类型',
+  'mermaid.error.renderFailed': '渲染失败：请检查 Mermaid 语法是否正确',
+  'mermaid.notice.truncated': '代码超过 {max} 字符，已截断至前 {max} 字符再渲染',
+
+  // —— 时序图（#400）——
+  'sequence.error.emptyCode': '代码为空：请输入 Mermaid 时序图代码',
+  'sequence.preview.empty': '在左侧输入 Mermaid 时序图代码，右侧实时预览',
+  'sequence.preview.rendering': '渲染中…',
+
+  // —— ER 图生成（#401）——
+  'erGen.error.emptyCode': '代码为空：请输入 Mermaid ER 图代码',
+  'erGen.preview.empty': '在左侧输入 Mermaid ER 图代码，右侧实时预览',
+  'erGen.preview.rendering': '渲染中…',
+
+  // —— UML 图（#402）——
+  'uml.error.emptyCode': '代码为空：请输入 Mermaid UML 类图代码',
+  'uml.preview.empty': '在左侧输入 Mermaid UML 类图代码，右侧实时预览',
+  'uml.preview.rendering': '渲染中…',
+
+  // —— 甘特图（#403）——
+  'gantt.error.emptyCode': '代码为空：请输入 Mermaid 甘特图代码',
+  'gantt.preview.empty': '在左侧输入 Mermaid 甘特图代码，右侧实时预览',
+  'gantt.preview.rendering': '渲染中…',
+
+  // —— 时间线生成（#404）——
+  'timelineGen.error.badLine': '第 {line} 行格式错误：请写成「日期 | 标题」',
+  'timelineGen.error.emptyTitle': '第 {line} 行标题为空',
+  'timelineGen.error.badDate': '无法解析的日期：{value}（请用 YYYY-MM-DD 格式）',
+  'timelineGen.error.noValidEvents': '没有可解析的事件：请按「日期 | 标题」每行写一条',
+  'timelineGen.preview.empty': '在左侧按「日期 | 标题」输入事件，右侧生成时间线',
+  'timelineGen.direction': '排列方向',
+  'timelineGen.showGap': '显示事件间隔',
+  'timelineGen.gapDays': '与上个事件间隔 {days} 天',
+  'timelineGen.notice.truncated': '事件超过 {max} 条，仅展示前 {max} 条',
+
+  // —— 通用 ——
+  'error.cryptoUnavailable':
+    '当前环境不支持 crypto.getRandomValues，无法安全生成随机数（请使用现代浏览器的安全上下文访问）',
+
   // —— 可行性标签 ——
   'feasibility.A': '纯 JS',
   'feasibility.B': 'WASM',

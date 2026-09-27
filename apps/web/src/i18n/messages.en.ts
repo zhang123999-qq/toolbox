@@ -597,6 +597,263 @@ export const en: Record<MessageKey, string> = {
   'currency.error.invalidDecimals': 'Invalid decimals: {value}',
   'currency.error.formatFailed': 'Formatting failed; check the currency and locale options',
 
+  // —— Export PNG (shared by #405–#409) ——
+  'export.png': 'Export PNG',
+  'export.exporting': 'Exporting…',
+  'export.failed': 'Export failed: {reason}',
+
+  // —— Shared by generator tools ——
+  'error.negativeAmount': 'Amount cannot be negative',
+
+  // —— Resume (#405) ——
+  'resume.field.name': 'Name',
+  'resume.field.title': 'Job title',
+  'resume.field.phone': 'Phone',
+  'resume.field.email': 'Email',
+  'resume.field.summary': 'Summary',
+  'resume.field.experience': 'Experience',
+  'resume.field.education': 'Education',
+  'resume.field.skills': 'Skills',
+  'resume.hint':
+    'Each field has a length limit (name 40 chars, summary 500, experience 3000, etc.); export the preview as a PNG image.',
+  'resume.empty': 'Fill in the form on the left; the resume preview updates live on the right',
+  'resume.label.contact': 'Contact',
+  'resume.error.emptyName': 'Please enter a name',
+  'resume.error.tooLong': '{field} exceeds the {max}-character limit',
+
+  // —— Invoice (#406) ——
+  'invoice.field.seller': 'Seller',
+  'invoice.field.buyer': 'Buyer',
+  'invoice.field.number': 'Invoice no.',
+  'invoice.field.date': 'Date',
+  'invoice.field.items': 'Line items',
+  'invoice.field.taxRate': 'Tax rate (%)',
+  'invoice.field.notes': 'Notes',
+  'invoice.itemsHint': 'One item per line: name,quantity,unit price (e.g. Design service,2,500)',
+  'invoice.label.item': 'Item',
+  'invoice.label.quantity': 'Qty',
+  'invoice.label.unitPrice': 'Unit price',
+  'invoice.label.amount': 'Amount',
+  'invoice.label.subtotal': 'Subtotal',
+  'invoice.label.tax': 'Tax',
+  'invoice.label.total': 'Total',
+  'invoice.empty': 'Fill in the form on the left; the invoice preview updates live on the right',
+  'invoice.error.noItems': 'Please enter at least one line item',
+  'invoice.error.badItem': 'Line {line} is malformed; expected "name,quantity,unit price"',
+  'invoice.error.invalidQuantity': 'Invalid quantity on line {line}: {value}',
+  'invoice.error.invalidPrice': 'Invalid unit price on line {line}: {value}',
+  'invoice.error.negativeValue': 'Values on line {line} cannot be negative',
+  'invoice.error.invalidTaxRate': 'Invalid tax rate: {value} (expected a number between 0 and 100)',
+  'invoice.error.invalidDate': 'Invalid date: {value} (expected YYYY-MM-DD)',
+  'invoice.error.tooLong': '{field} exceeds the {max}-character limit',
+
+  // —— Receipt (#407) ——
+  'receipt.field.payer': 'Payer',
+  'receipt.field.payee': 'Payee',
+  'receipt.field.amount': 'Amount',
+  'receipt.field.date': 'Date',
+  'receipt.field.reason': 'Purpose',
+  'receipt.field.number': 'Receipt no.',
+  'receipt.method': 'Payment method',
+  'receipt.method.cash': 'Cash',
+  'receipt.method.transfer': 'Bank transfer',
+  'receipt.method.card': 'Card',
+  'receipt.method.other': 'Other',
+  'receipt.empty': 'Fill in the form on the left; the receipt preview updates live on the right',
+  'receipt.error.emptyAmount': 'Please enter an amount',
+  'receipt.error.invalidDate': 'Invalid date: {value} (expected YYYY-MM-DD)',
+  'receipt.error.tooLong': '{field} exceeds the {max}-character limit',
+
+  // —— Business card (#408) ——
+  'businessCard.field.name': 'Name',
+  'businessCard.field.title': 'Job title',
+  'businessCard.field.company': 'Company',
+  'businessCard.field.phone': 'Phone',
+  'businessCard.field.email': 'Email',
+  'businessCard.field.website': 'Website',
+  'businessCard.hint':
+    'Output is SVG vector code; copy or download it, open in a browser, or convert to an image.',
+  'businessCard.error.emptyName': 'Please enter a name',
+  'businessCard.error.tooLong': '{field} exceeds the {max}-character limit',
+
+  // —— Poster (#409) ——
+  'poster.field.title': 'Title',
+  'poster.field.subtitle': 'Subtitle',
+  'poster.field.body': 'Body',
+  'poster.field.footer': 'Footer',
+  'poster.theme': 'Theme',
+  'poster.theme.blue': 'Navy',
+  'poster.theme.green': 'Forest',
+  'poster.theme.orange': 'Ember',
+  'poster.theme.dark': 'Midnight',
+  'poster.empty': 'Fill in the form on the left; the poster preview updates live on the right',
+  'poster.error.emptyTitle': 'Please enter a title',
+  'poster.error.tooLong': '{field} exceeds the {max}-character limit',
+  'poster.error.unknownTheme': 'Unknown theme: {value}',
+
+  // —— Random decision (#410) ——
+  'randomDecision.extra.count': 'How many to pick',
+  'randomDecision.option.allowRepeat': 'Allow picking the same option twice',
+  'randomDecision.options': 'Options',
+  'randomDecision.count': 'Pick count',
+  'randomDecision.result': 'Decision',
+  'randomDecision.error.empty': 'Enter some options first (one per line)',
+  'randomDecision.error.countEmpty': 'Enter how many to pick',
+  'randomDecision.error.countInvalid':
+    'Invalid pick count: {value} (must be a non-negative integer)',
+  'randomDecision.error.countTooLarge': 'Pick count too large: max {max}',
+  'randomDecision.error.countExceeds':
+    'Without replacement, count ({count}) cannot exceed the number of options ({total})',
+
+  // —— Lottery draw (#411) ——
+  'lottery.extra.count': 'Winners to draw',
+  'lottery.option.withReplacement': 'With replacement (repeat wins allowed)',
+  'lottery.pool': 'Candidates',
+  'lottery.count': 'Winners to draw',
+  'lottery.result': 'Winners',
+  'lottery.error.empty': 'Enter the name list first (one per line)',
+  'lottery.error.countEmpty': 'Enter how many to draw',
+  'lottery.error.countInvalid': 'Invalid draw count: {value} (must be an integer)',
+  'lottery.error.countNegative': 'Draw count cannot be negative',
+  'lottery.error.countTooLarge': 'Draw count too large: max {max}',
+  'lottery.error.countExceeds':
+    'Without replacement, count ({count}) cannot exceed the name list size ({total})',
+
+  // —— Prize wheel (#412) ——
+  'wheel.extra.winners': 'Winners',
+  'wheel.segments': 'Segments',
+  'wheel.winners': 'Winners',
+  'wheel.result': 'Winners',
+  'wheel.spin': 'Spin the wheel',
+  'wheel.idle': 'Click “Spin the wheel” to draw',
+  'wheel.error.empty': 'Enter some options first (one per line)',
+  'wheel.error.tooFew': 'A wheel needs at least 2 options',
+  'wheel.error.tooMany': 'Too many options: max {max}',
+  'wheel.error.countEmpty': 'Enter how many winners',
+  'wheel.error.countInvalid': 'Invalid winner count: {value} (must be a non-negative integer)',
+  'wheel.error.countTooLarge': 'Winner count too large: max {max}',
+  'wheel.error.countExceeds': 'Winner count ({count}) cannot exceed the option count ({total})',
+
+  // —— Voting (#413) ——
+  'voting.error.empty': 'Enter the voting options first (one per line)',
+  'voting.error.tooFew': 'Voting needs at least 2 options',
+  'voting.error.badIndex': 'Option index out of range: {index}',
+  'voting.start': 'Start voting',
+  'voting.vote': 'Vote',
+  'voting.votes': 'votes',
+  'voting.total': 'Total votes',
+  'voting.reset': 'Reset votes',
+  'voting.result': 'Results',
+  'voting.notice': 'Results are kept only on this page and are lost on refresh',
+  'voting.idle': 'Click “Start voting”, then vote for an option',
+
+  // —— Dice (#414) ——
+  'dice.extra.sides': 'Sides per die',
+  'dice.count': 'Dice count',
+  'dice.sides': 'Sides per die',
+  'dice.result': 'Roll result',
+  'dice.total': 'Total',
+  'dice.roll': 'Roll the dice',
+  'dice.idle': 'Click “Roll the dice” to start',
+  'dice.error.countEmpty': 'Enter the dice count',
+  'dice.error.countInvalid': 'Invalid dice count: {value} (must be an integer from 1 to 100)',
+  'dice.error.countTooLarge': 'Dice count too large: max {max}',
+  'dice.error.sidesEmpty': 'Enter the number of sides',
+  'dice.error.sidesInvalid': 'Invalid sides: {value} (must be an integer from 2 to 100)',
+  'dice.error.sidesTooLarge': 'Too many sides: max {max}',
+
+  // —— Coin flip (#415) ——
+  'coin.count': 'Flip count',
+  'coin.result': 'Flip result',
+  'coin.heads': 'Heads',
+  'coin.tails': 'Tails',
+  'coin.headsCount': 'Heads × {count}',
+  'coin.tailsCount': 'Tails × {count}',
+  'coin.flip': 'Flip the coin',
+  'coin.idle': 'Click “Flip the coin” to start',
+  'coin.error.countEmpty': 'Enter the flip count',
+  'coin.error.countInvalid': 'Invalid flip count: {value} (must be an integer from 1 to 10000)',
+  'coin.error.countTooLarge': 'Flip count too large: max {max}',
+
+  // —— Random grouping (#416) ——
+  'randomGroup.groups': 'Group count',
+  'randomGroup.groupHeader': 'Group {n} ({count} people)',
+  'randomGroup.error.invalidGroupCount':
+    'Invalid group count: {value} (must be a positive integer)',
+  'randomGroup.error.tooManyGroups':
+    'Group count ({groups}) cannot exceed the number of people ({count})',
+
+  // —— Random color palette (#418) ——
+  'colorPalette.mode': 'Harmony mode',
+  'colorPalette.count': 'Color count',
+  'colorPalette.error.invalidColor':
+    'Unparsable color: {value} (supports #rgb / #rrggbb / CSS color names)',
+  'colorPalette.error.invalidMode': 'Unknown harmony mode: {value}',
+  'colorPalette.error.invalidCount': 'Invalid color count: {value} (must be an integer 1–{max})',
+
+  // —— Passphrase generator (#419) ——
+  'passphraseGen.capitalize': 'Capitalize words',
+  'passphraseGen.note':
+    'This tool generates memorable multi-word phrases (e.g. correct-horse-battery-staple), ideal as a master password you need to remember; for a single high-entropy random string, use the “Random Password” tool instead.',
+  'passphraseGen.error.invalidWordCount':
+    'Invalid word count: {value} (must be an integer 1–{max})',
+  'passphraseGen.error.separatorTooLong': 'Separator too long: max {max} characters',
+
+  // —— Bulk password generator (#420) ——
+  'bulkPassword.count': 'Count',
+  'bulkPassword.note':
+    'This tool generates many random passwords at once (up to {max}), ideal for bulk provisioning and account setup; if you only need one password, use the “Random Password” tool. Everything is generated locally; 10,000 passwords take about a second.',
+  'bulkPassword.error.invalidCount': 'Invalid count: {value} (must be an integer 1–{max})',
+  'bulkPassword.error.invalidLength': 'Unsupported length: {value}',
+  'bulkPassword.error.noCharset':
+    'Select at least one character class (lowercase / uppercase / digits / symbols)',
+
+  // —— Shared Mermaid diagram preview keys (#400–#403) ——
+  'mermaid.error.wrongDirective':
+    'The first line must be "{expected}" — check you pasted the right diagram type',
+  'mermaid.error.renderFailed': 'Render failed: please check your Mermaid syntax',
+  'mermaid.notice.truncated':
+    'Code exceeded {max} characters; truncated to the first {max} characters before rendering',
+
+  // —— Sequence diagram (#400) ——
+  'sequence.error.emptyCode': 'Code is empty: please enter Mermaid sequence diagram code',
+  'sequence.preview.empty':
+    'Enter Mermaid sequence diagram code on the left; the preview updates on the right',
+  'sequence.preview.rendering': 'Rendering…',
+
+  // —— ER diagram generator (#401) ——
+  'erGen.error.emptyCode': 'Code is empty: please enter Mermaid ER diagram code',
+  'erGen.preview.empty':
+    'Enter Mermaid ER diagram code on the left; the preview updates on the right',
+  'erGen.preview.rendering': 'Rendering…',
+
+  // —— UML diagram (#402) ——
+  'uml.error.emptyCode': 'Code is empty: please enter Mermaid UML class diagram code',
+  'uml.preview.empty':
+    'Enter Mermaid UML class diagram code on the left; the preview updates on the right',
+  'uml.preview.rendering': 'Rendering…',
+
+  // —— Gantt chart (#403) ——
+  'gantt.error.emptyCode': 'Code is empty: please enter Mermaid Gantt chart code',
+  'gantt.preview.empty':
+    'Enter Mermaid Gantt chart code on the left; the preview updates on the right',
+  'gantt.preview.rendering': 'Rendering…',
+
+  // —— Timeline generator (#404) ——
+  'timelineGen.error.badLine': 'Line {line} is malformed: use "date | title"',
+  'timelineGen.error.emptyTitle': 'Line {line} has an empty title',
+  'timelineGen.error.badDate': 'Unparseable date: {value} (use YYYY-MM-DD)',
+  'timelineGen.error.noValidEvents': 'No parsable events: write one "date | title" per line',
+  'timelineGen.preview.empty': 'Enter events as "date | title" on the left to build the timeline',
+  'timelineGen.direction': 'Direction',
+  'timelineGen.showGap': 'Show gaps',
+  'timelineGen.gapDays': '{days} days after the previous event',
+  'timelineGen.notice.truncated': 'More than {max} events; showing the first {max}',
+
+  // —— Shared ——
+  'error.cryptoUnavailable':
+    'This environment does not support crypto.getRandomValues, so secure random generation is unavailable (please use a modern browser in a secure context)',
+
   // —— Feasibility labels ——
   'feasibility.A': 'Pure JS',
   'feasibility.B': 'WASM',
