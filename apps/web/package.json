@@ -26,6 +26,7 @@
     "echarts": "^6.1.0",
     "jose": "^6.2.12",
     "markdown-it": "^15.0.2",
+    "mathjs": "^15.2.0",
     "node-forge": "^1.4.0",
     "opencc-js": "^1.4.2",
     "openpgp": "^6.3.1",
