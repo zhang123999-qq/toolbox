@@ -18,7 +18,7 @@
 | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Planned tools   | **870 across 20 categories in 4 groups** (validated by script)                                                                                     |
 | Implemented     | **280** — the first 280 tools delivered across text & content (70), encoding/crypto/security (60), data formats (60), and DevOps/cloud-native (90) |
-| Current release | [`v0.0.2`](https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.2)                                                                          |
+| Current release | [`v0.0.3`](https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.3)                                                                          |
 
 ---
 

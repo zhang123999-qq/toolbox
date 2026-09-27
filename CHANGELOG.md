@@ -8,7 +8,7 @@
 每个版本对应一个 git tag（`vX.Y.Z`）与一个 GitHub Release，
 Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELEASE.md)）。
 
-## [Unreleased]
+## [0.0.3] - 2026-09-27
 
 把「已交付工具数」从 190 推进到 **280 个**：新增开发 / 运维 / 云原生域（04）90 个工具
 （编号 191–280），并对这 90 个工具做了一次三层（静态契约 → 真实浏览器逐页冒烟 →
@@ -39,7 +39,7 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
 
 ### 质量验证
 
-- 单元 / 组件测试 **4661 个全部通过**（568 个测试文件，较上一版新增 69 个锁定用例）
+- 单元 / 组件测试 **4663 个全部通过**（568 个测试文件，较上一版新增 71 个锁定用例）
 - 系统 Edge 无头浏览器对 90 个新工具逐页冒烟：**90/90 通过、0 未捕获异常**
 - `typecheck` / `lint`（0 error）/ `format:check` / `check:tools` /
   `check:source-org` / `check:licenses` 与生产构建全部通过
@@ -127,7 +127,8 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
 - 静态预渲染产物固定中文口径，仍无 `/en` 路由（英文在客户端切换生效）
 - 个别大型工具 chunk 超过 500KB 打包告警阈值（构建成功，仅为体积提示），后续按需做代码分割
 
-[Unreleased]: https://github.com/zhang123999-qq/toolbox/compare/v0.0.2...HEAD
+[Unreleased]: https://github.com/zhang123999-qq/toolbox/compare/v0.0.3...HEAD
+[0.0.3]: https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.3
 [0.0.2]: https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.2
 
 ## [0.0.1-beta] - 2026-09-25

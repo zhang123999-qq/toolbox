@@ -24,7 +24,7 @@ on:
       tag:
         description: "要补发附件的版本 tag（如 v0.0.2）"
         required: true
-        default: "v0.0.2"
+        default: "v0.0.3"
 
 # 创建 Release 与上传附件需要 contents 写权限
 permissions:
