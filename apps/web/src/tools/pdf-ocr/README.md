@@ -1,41 +1,64 @@
-# PDF OCR pdf-ocr（#500）
+# PDF 文字识别（OCR）
 
-## 用途 | Purpose
+上传 PDF，工具把每一页渲染成图像，再用 tesseract.js（WASM）在浏览器本地做 OCR
+识别，输出可复制、可下载的文本，并显示识别进度条。
 
-- 上传 PDF，逐页渲染为图片（144 DPI）后在浏览器本地 OCR 识别中英文文字，合并为按页标注页码的可复制文本，可下载 `.txt`。
-- Upload a PDF to render each page as an image (144 DPI) and recognize Chinese/English text locally in the browser, merged into copyable text with page markers, downloadable as `.txt`.
-- 与「PDF 提取文本」（pdf-to-text #493）的区别：本工具识别的是**扫描版/图片型 PDF 的像素文字**；pdf-to-text 提取的是文本型 PDF 内嵌的文本层。
+## 用途
 
-## 输入 | Input
+扫描版 PDF、拍照的文档、图片型 PDF 没有可复制的文字层，用它逐页识别成文本，
+再复制到别处编辑或存档。
 
-- PDF 文件：`%PDF` 魔数校验，单文件上限 50MB。
-- PDF file: `%PDF` magic-number check, max 50MB per file.
+## 输入
 
-## 选项 | Options
+| 字段   | 类型 | 约束                  | 说明                                 |
+| ------ | ---- | --------------------- | ------------------------------------ |
+| `file` | File | PDF，≤100 MiB，≤50 页 | 通过右侧「选择文件」选取，**不上传** |
 
-| 选项            | 说明             | Option  | Description                  |
-| --------------- | ---------------- | ------- | ---------------------------- |
-| 简体中文 chiSim | 勾选识别简体中文 | Chinese | Recognize Simplified Chinese |
-| 英文 eng        | 勾选识别英文     | English | Recognize English            |
+## 输出
 
-至少选择一种语言。
+| 字段   | 类型   | 说明                                  |
+| ------ | ------ | ------------------------------------- |
+| `text` | string | 合并后的识别文本，按「第 x/y 页」分块 |
 
-## 输出 | Output
+```text
+第 1/2 页
+这是第一页识别出的文字
 
-- 合并文本：每页以 `—— 第 N 页 ——` 标注分隔，空页填 `（本页未识别出文字）` 占位行，识别失败的页面记为 `—— 第 N 页（识别失败：原因） ——` 并继续下一页。
-- 页数/字符数统计、失败页提示；一键复制、下载 `.txt`（原名去扩展名 + `-ocr.txt`）。
-- Merged text with `—— 第 N 页 ——` page markers; empty pages get a placeholder line; failed pages are recorded inline without aborting the whole job.
-- Page/character stats, failed-page notice; one-click copy and `.txt` download.
+第 2/2 页
+（本页未识别出文字）
+```
 
-## 边界 | Limits
+右侧面板按页展示每页的识别结果；「复制 / 下载」导出合并文本。
 
-- **加密 PDF 不支持**：会明确提示先解密（可用 #490 PDF 解密）。
-- 逐页进度条 + 当前页码，支持取消；取消后不保留部分结果。
-- 单页渲染尺寸超过 Canvas 像素上限（16384²）时该页记为失败并跳过。
-- 识别在单独的 tesseract worker 线程中进行；任务结束/取消/组件卸载时终止 worker，逐页释放 canvas 内存，PDF 文档及时销毁。
+## 选项
 
-## 数据流向 | Data flow
+| 选项       | 取值                        | 默认        | 说明               |
+| ---------- | --------------------------- | ----------- | ------------------ |
+| `language` | chi_sim+eng / eng / chi_sim | chi_sim+eng | tesseract 识别语言 |
 
-文件 → 内存（pdfjs 渲染 canvas → tesseract 识别 → 文本）→ 下载；**PDF 本身不上传**。
+## 限制
 
-例外：tesseract.js 的识别引擎与语言包在**首次使用时从 CDN 下载**（约十几 MB，之后浏览器缓存），页面顶部有显著告知（`pdfOcr.cdnNotice`）。
+- **页数上限 50 页**：tesseract 按页跑 WASM，大文档请拆分后分批识别
+- **文件上限 100 MiB**
+- **加密 PDF 不支持**：会中文提示请先去除密码
+- **首次使用需联网**：OCR 引擎（wasm core）与语言包走 tesseract.js 默认 CDN
+  配置下载；之后浏览器会缓存。离线或 CDN 不可达时给出明确中文错误，
+  已完成页面的结果会保留（优雅降级）
+- 识别率取决于原图清晰度；页面按 2x 倍率渲染以兼顾速度与精度
+
+## 数据流向
+
+**纯本地处理。** PDF 文件只在浏览器内存里渲染与识别，不上传到任何服务器
+（`meta.api = false`）。唯一的网络请求是首次加载时从 tesseract.js 官方 CDN
+下载 wasm core 与语言包。
+
+## 元信息
+
+| 项       | 值                         |
+| -------- | -------------------------- |
+| 全局编号 | #500                       |
+| 域       | `pdf`（PDF / 文档处理）    |
+| 大组     | `office`                   |
+| 优先级   | P0                         |
+| 可行性   | B（WASM）                  |
+| 模板     | T3（多面板，自定义输出区） |

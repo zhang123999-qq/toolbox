@@ -1,426 +1,251 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
-import * as pdfjsLib from 'pdfjs-dist'
-import type { PDFDocumentLoadingTask } from 'pdfjs-dist'
+import { useState } from 'react'
+import type { ChangeEvent } from 'react'
+// pdfjs worker 以 Vite `?url` 方式引入：构建时产出为独立 asset，只取 URL 字符串，
+// 不把 worker 代码打进主包。文件名已核实：node_modules/pdfjs-dist@6.3.289/build/pdf.worker.min.mjs
+import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
+import type { PDFDocumentProxy } from 'pdfjs-dist'
+import type { createWorker } from 'tesseract.js'
+import { MultiPanel } from '../../components/tool/templates/MultiPanel'
+import type { OptionDef } from '../../components/tool/templates/TwoColumn'
+import { SECONDARY_BUTTON } from '../../components/tool/templates/TwoColumn'
 import { useTranslate } from '../../i18n'
-import { downloadBlob } from '../../lib/image'
+import { meta } from './meta'
 import {
+  OCR_LANGUAGES,
+  OCR_LANGUAGE_LABELS,
   OCR_RENDER_SCALE,
-  assertFileSizeOk,
-  buildOutputFileName,
-  computeRenderDimensions,
-  errorMessage,
-  formatFailedBlock,
-  formatPageBlock,
-  isPasswordPdfError,
-  isPdfFile,
-  mergePageTexts,
-  parseLangs,
-  progressRatio,
-  terminateWorker,
+  checkOcrPageCount,
+  cleanOcrText,
+  describeOcrEngineError,
+  describePdfError,
+  mergeOcrPages,
+  ocrOverallProgress,
+  ocrStageText,
+  validateOcrFile,
 } from './utils'
-import type { OcrWorker } from './utils'
-import type { PdfOcrOptions } from './schema'
+import type { OcrPageResult, OcrStage } from './utils'
+import type { PdfOcrInput, PdfOcrOptions } from './schema'
 
-// pdfjs worker：与 pdfjs-dist 打包在一起的 min 版 worker，本地加载不经过网络 CDN
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.min.mjs',
-  import.meta.url,
-).toString()
+type RunStatus = 'idle' | 'busy' | 'done' | 'error'
 
-/** 识别结果：合并文本 + 下载文件名 + 页数 + 失败页（合并为一个 state，避免渲染条件分支） */
-interface OcrResult {
-  text: string
-  fileName: string
-  pageCount: number
-  failedPages: number[]
+interface OcrViewState {
+  readonly status: RunStatus
+  readonly fileName: string
+  readonly total: number
+  readonly done: number
+  readonly pageFraction: number
+  readonly stage: OcrStage | null
+  readonly pages: readonly OcrPageResult[]
+  readonly error: string
 }
 
-/** 逐页进度：current 为当前正在识别的页码（1 起），total 为总页数 */
-interface Progress {
-  current: number
-  total: number
+const IDLE_STATE: OcrViewState = {
+  status: 'idle',
+  fileName: '',
+  total: 0,
+  done: 0,
+  pageFraction: 0,
+  stage: null,
+  pages: [],
+  error: '',
+}
+
+const EXAMPLE: PdfOcrInput = {
+  text: '在右侧点「选择 PDF 文件」，逐页渲染后做 OCR 识别，全程在浏览器本地运行。',
+}
+
+/** 从 unknown 取中文错误文案 */
+function messageOf(error: unknown): string {
+  return error instanceof Error ? error.message : String(error)
 }
 
 export default function Tool() {
   const t = useTranslate()
-  const workerRef = useRef<OcrWorker | null>(null)
-  const runRef = useRef(0)
-  const [inputKey, setInputKey] = useState(0)
-  const [dragOver, setDragOver] = useState(false)
-  const [fileName, setFileName] = useState('')
-  const [processing, setProcessing] = useState(false)
-  const [engineLoading, setEngineLoading] = useState(false)
-  const [progress, setProgress] = useState<Progress | null>(null)
-  const [pageFrac, setPageFrac] = useState(0)
-  const [result, setResult] = useState<OcrResult | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [copied, setCopied] = useState(false)
-  const [options, setOptions] = useState<PdfOcrOptions>({ chiSim: '1', eng: '1' })
+  const [view, setView] = useState<OcrViewState>(IDLE_STATE)
 
-  // 卸载时终止残留 worker，避免后台继续占用线程
-  useEffect(() => {
-    return () => {
-      runRef.current += 1
-      const w = workerRef.current
-      workerRef.current = null
-      void terminateWorker(w)
+  const optionDefs: readonly OptionDef<PdfOcrOptions>[] = [
+    {
+      key: 'language',
+      label: '识别语言',
+      kind: 'select',
+      values: [...OCR_LANGUAGES],
+    },
+  ]
+
+  /** 核心流程：pdfjs 渲染页面 → tesseract 逐页识别；两处动态 import 都包 try/catch */
+  async function handleFile(file: File, language: PdfOcrOptions['language']): Promise<void> {
+    try {
+      validateOcrFile(file)
+    } catch (error) {
+      setView({ ...IDLE_STATE, status: 'error', fileName: file.name, error: messageOf(error) })
+      return
     }
-  }, [])
-
-  const runOcr = useCallback(
-    async (file: File, opts: PdfOcrOptions) => {
-      const myRun = runRef.current + 1
-      runRef.current = myRun
-      const alive = () => runRef.current === myRun
-
-      setProcessing(true)
-      setError(null)
-      setResult(null)
-      setCopied(false)
-      setFileName(file.name)
-      setProgress(null)
-      setPageFrac(0)
-      setEngineLoading(false)
-
-      // 同一时间只允许一个识别任务：新任务先终止旧 worker
-      const old = workerRef.current
-      workerRef.current = null
-      await terminateWorker(old)
-
-      let loadingTask: PDFDocumentLoadingTask | null = null
+    setView({ ...IDLE_STATE, status: 'busy', fileName: file.name, stage: 'loading-pdf' })
+    const completed: OcrPageResult[] = []
+    try {
+      // —— pdfjs-dist 只在此处动态加载，不进主包 ——
+      const pdfjs = await import('pdfjs-dist')
+      pdfjs.GlobalWorkerOptions.workerSrc = workerUrl
+      let pdf: PDFDocumentProxy
       try {
-        assertFileSizeOk(file.size)
-        const bytes = new Uint8Array(await file.arrayBuffer())
-        if (!isPdfFile(bytes)) throw new Error(t('pdfOcr.error.unsupported'))
-        const langs = parseLangs(opts.chiSim, opts.eng)
+        const doc = await pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) })
+          .promise
+        pdf = doc
+      } catch (error) {
+        throw new Error(describePdfError(error), { cause: error })
+      }
+      checkOcrPageCount(pdf.numPages)
+      const total = pdf.numPages
 
-        loadingTask = pdfjsLib.getDocument({ data: bytes })
-        const doc = await loadingTask.promise
-        if (!alive()) return
-        const total = doc.numPages
-        setProgress({ current: 0, total })
-
-        // tesseract.js 按需懒加载：首屏不打包识别引擎
-        setEngineLoading(true)
+      // —— tesseract.js 只在此处动态加载；语言包走 CDN 默认配置 ——
+      let worker: Awaited<ReturnType<typeof createWorker>>
+      try {
         const { createWorker } = await import('tesseract.js')
-        const worker = await createWorker(langs, undefined, {
+        setView((prev) => (prev.status === 'busy' ? { ...prev, stage: 'loading-engine' } : prev))
+        worker = await createWorker(language, undefined, {
           logger: (m) => {
-            if (!alive()) return
-            // 只取页内识别进度驱动进度条；引擎/语言包加载阶段显示静态文案
-            if (m.status === 'recognizing text') setPageFrac(m.progress)
+            if (m.status === 'recognizing text') {
+              setView((prev) =>
+                prev.status === 'busy' ? { ...prev, pageFraction: m.progress ?? 0 } : prev,
+              )
+            }
           },
         })
-        workerRef.current = worker
-        setEngineLoading(false)
-        if (!alive()) {
-          // 等待引擎期间被取消或被新任务取代：立即释放刚建好的 worker
-          workerRef.current = null
-          await terminateWorker(worker)
-          return
-        }
+      } catch (error) {
+        throw new Error(describeOcrEngineError(error), { cause: error })
+      }
 
-        const blocks: string[] = []
-        const failedPages: number[] = []
-        // 循环体内每次 await 后都有 alive 检查：取消/取代只能发生在 await 点，
-        // 因此此处不需要循环首尾的重复检查（其 false 分支不可达）
-        for (let n = 1; n <= total; n++) {
-          setProgress({ current: n, total })
-          setPageFrac(0)
-          try {
-            const page = await doc.getPage(n)
-            const viewport = page.getViewport({ scale: OCR_RENDER_SCALE })
-            const { width, height } = computeRenderDimensions(viewport.width, viewport.height)
-            const canvas = document.createElement('canvas')
-            canvas.width = width
-            canvas.height = height
-            await page.render({ canvas, viewport }).promise
-            if (!alive()) return
-            const { data } = await worker.recognize(canvas)
-            // 逐页释放 canvas 内存，避免大 PDF 常驻内存
-            canvas.width = 0
-            canvas.height = 0
-            if (!alive()) return
-            blocks.push(formatPageBlock(n, data.text))
-          } catch (err) {
-            // 任务已被取消/取代：不记录失败页，直接退出；单页失败不中断整体
-            if (alive()) {
-              failedPages.push(n)
-              blocks.push(formatFailedBlock(n, errorMessage(err)))
-            }
-          }
-        }
-        // 最后一个 await（recognize / 失败页的 catch）之后均为同步代码，
-        // alive 状态不可能再变化，直接合并结果
-        setResult({
-          text: mergePageTexts(blocks),
-          fileName: buildOutputFileName(file.name),
-          pageCount: total,
-          failedPages,
-        })
-      } catch (err) {
-        // 被取消/取代后不写入错误
-        if (alive()) {
-          if (isPasswordPdfError(err)) setError(t('pdfOcr.error.encrypted'))
-          else setError(errorMessage(err))
-          setResult(null)
+      try {
+        for (let i = 1; i <= total; i += 1) {
+          setView((prev) =>
+            prev.status === 'busy'
+              ? { ...prev, stage: 'recognizing', total, done: i - 1, pageFraction: 0 }
+              : prev,
+          )
+          const page = await pdf.getPage(i)
+          const viewport = page.getViewport({ scale: OCR_RENDER_SCALE })
+          const canvas = document.createElement('canvas')
+          canvas.width = Math.floor(viewport.width)
+          canvas.height = Math.floor(viewport.height)
+          const ctx = canvas.getContext('2d')
+          if (!ctx) throw new Error('当前环境不支持 Canvas，无法渲染 PDF 页面')
+          await page.render({ canvasContext: ctx, canvas, viewport }).promise
+          const { data } = await worker.recognize(canvas)
+          completed.push({ page: i, text: cleanOcrText(data.text) })
+          setView((prev) => (prev.status === 'busy' ? { ...prev, done: i } : prev))
         }
       } finally {
-        // 释放 pdfjs 加载任务：中止未完成的加载并销毁其 worker 线程；销毁失败静默
-        await loadingTask?.destroy().catch(() => undefined)
-        // 存活才做收尾：过期任务（被取消/被新任务取代）不碰任何状态
-        if (alive()) {
-          setProcessing(false)
-          setEngineLoading(false)
-          setProgress(null)
-          setPageFrac(0)
-          // 任务结束即释放 worker，下次识别重建（语言包有缓存，二次加载很快）
-          const w = workerRef.current
-          workerRef.current = null
-          await terminateWorker(w)
-        }
+        await worker.terminate()
       }
-    },
-    [t],
-  )
+      setView((prev) => ({ ...prev, status: 'done', stage: null, pages: completed }))
+    } catch (error) {
+      // 优雅降级：引擎/渲染失败时，已完成页面的结果保留在 pages 里
+      setView((prev) => ({ ...prev, status: 'error', error: messageOf(error), pages: completed }))
+    }
+  }
 
-  const handleFiles = useCallback(
-    (files: FileList | null) => {
-      const file = files?.[0]
-      if (!file) return
-      void runOcr(file, options)
-    },
-    [options, runOcr],
-  )
+  function onFileChange(event: ChangeEvent<HTMLInputElement>, language: PdfOcrOptions['language']) {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    if (file) void handleFile(file, language)
+  }
 
-  const handleLangChange = useCallback((key: 'chiSim' | 'eng', checked: boolean) => {
-    setOptions((prev) => ({ ...prev, [key]: checked ? '1' : '' }))
-  }, [])
-
-  const handleCancel = useCallback(async () => {
-    runRef.current += 1
-    const w = workerRef.current
-    workerRef.current = null
-    await terminateWorker(w)
-    setProcessing(false)
-    setEngineLoading(false)
-    setProgress(null)
-    setPageFrac(0)
-    setError(t('pdfOcr.cancelled'))
-  }, [t])
-
-  const handleCopy = useCallback(
-    async (value: string) => {
-      try {
-        await navigator.clipboard.writeText(value)
-        setCopied(true)
-      } catch {
-        // clipboard 不可用或被拒绝时降级为错误提示，用户可手动选择文本复制
-        setError(t('pdfOcr.error.copyFailed'))
-      }
-    },
-    [t],
-  )
-
-  const handleDownload = useCallback((text: string, name: string) => {
-    downloadBlob(new Blob([text], { type: 'text/plain;charset=utf-8' }), name)
-  }, [])
-
-  const handleReset = useCallback(async () => {
-    runRef.current += 1
-    const w = workerRef.current
-    workerRef.current = null
-    await terminateWorker(w)
-    setInputKey((k) => k + 1)
-    setResult(null)
-    setFileName('')
-    setError(null)
-    setProcessing(false)
-    setEngineLoading(false)
-    setProgress(null)
-    setPageFrac(0)
-    setCopied(false)
-  }, [])
+  const percent =
+    view.status === 'busy' ? ocrOverallProgress(view.done, view.total, view.pageFraction) : 100
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* 隐私告知：tesseract.js 从 CDN 下载引擎与语言包，PDF 本身不上传 —— 显著位置 */}
-      <p
-        data-testid="cdn-notice"
-        className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-200"
-      >
-        {t('pdfOcr.cdnNotice')}
-      </p>
-      <p className="text-sm text-slate-600 dark:text-slate-400">{t('pdfOcr.note')}</p>
-
-      {/* 文件投放区：用 label 包裹，原生可点击/键盘聚焦，无需额外 a11y 分支 */}
-      <label
-        data-testid="dropzone"
-        onDragOver={(e) => {
-          e.preventDefault()
-          setDragOver(true)
-        }}
-        onDragLeave={() => setDragOver(false)}
-        onDrop={(e) => {
-          e.preventDefault()
-          setDragOver(false)
-          handleFiles(e.dataTransfer.files)
-        }}
-        className={`cursor-pointer rounded-lg border-2 border-dashed p-8 text-center transition-colors ${
-          dragOver
-            ? 'border-blue-500 bg-blue-50 dark:bg-blue-950'
-            : 'border-slate-300 dark:border-slate-700'
-        }`}
-      >
-        <input
-          key={inputKey}
-          data-testid="file-input"
-          type="file"
-          accept="application/pdf,.pdf"
-          className="hidden"
-          onChange={(e) => handleFiles(e.target.files)}
-        />
-        <p className="text-sm text-slate-600 dark:text-slate-400">
-          {fileName ? fileName : t('pdfOcr.dropHint')}
-        </p>
-      </label>
-
-      {/* 语言选项 */}
-      <fieldset className="flex flex-wrap items-center gap-4">
-        <legend className="text-sm text-slate-600 dark:text-slate-400">
-          {t('pdfOcr.languages')}
-        </legend>
-        <label className="flex items-center gap-2 text-sm">
-          <input
-            data-testid="opt-chiSim"
-            type="checkbox"
-            checked={options.chiSim === '1'}
-            onChange={(e) => handleLangChange('chiSim', e.target.checked)}
-          />
-          {t('pdfOcr.lang.chiSim')}
-        </label>
-        <label className="flex items-center gap-2 text-sm">
-          <input
-            data-testid="opt-eng"
-            type="checkbox"
-            checked={options.eng === '1'}
-            onChange={(e) => handleLangChange('eng', e.target.checked)}
-          />
-          {t('pdfOcr.lang.eng')}
-        </label>
-      </fieldset>
-
-      {/* 进度：总进度条 + 当前页码 + 可取消 */}
-      {processing && (
-        <div data-testid="progress" className="flex flex-col gap-2">
-          <div className="h-2 overflow-hidden rounded bg-slate-200 dark:bg-slate-700">
-            <div
-              data-testid="progress-bar"
-              className="h-full rounded bg-blue-600 transition-all"
-              style={{
-                width: `${
-                  progress === null
-                    ? 0
-                    : Math.round(
-                        progressRatio(progress.current - 1, pageFrac, progress.total) * 100,
-                      )
-                }%`,
-              }}
+    <MultiPanel<PdfOcrInput, PdfOcrOptions>
+      meta={meta}
+      initialInput={{ text: '' }}
+      initialOptions={{ language: 'chi_sim+eng' }}
+      example={EXAMPLE}
+      optionDefs={optionDefs}
+      renderOutput={(_input, options) => (
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <label htmlFor="ocr-file" className={SECONDARY_BUTTON + ' cursor-pointer'}>
+              {t('tool.file')}
+            </label>
+            <input
+              id="ocr-file"
+              data-testid="file"
+              type="file"
+              accept=".pdf,application/pdf"
+              className="hidden"
+              onChange={(event) => onFileChange(event, options.language)}
             />
-          </div>
-          <div className="flex items-center justify-between gap-2">
-            <p data-testid="progress-label" className="text-sm text-slate-600 dark:text-slate-400">
-              {engineLoading && (
-                <span data-testid="engine-loading">{t('pdfOcr.loadingEngine')}</span>
-              )}
-              {!engineLoading && progress === null && (
-                <span data-testid="preparing">{t('pdfOcr.preparing')}</span>
-              )}
-              {!engineLoading && progress !== null && (
-                <>
-                  {t('pdfOcr.recognizing')}{' '}
-                  <span data-testid="progress-current">{progress.current}</span>/
-                  <span data-testid="progress-total">{progress.total}</span> {t('pdfOcr.pageUnit')}
-                </>
-              )}
-            </p>
-            <button
-              data-testid="cancel"
-              type="button"
-              onClick={() => void handleCancel()}
-              className="rounded border border-slate-300 px-3 py-1 text-sm dark:border-slate-700"
-            >
-              {t('pdfOcr.cancel')}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {error !== null && (
-        <p data-testid="error" role="alert" className="text-sm text-red-600 dark:text-red-400">
-          {error}
-        </p>
-      )}
-
-      {/* 结果：失败页提示 + 只读文本 + 统计 + 复制/下载 */}
-      {result && (
-        <div data-testid="result" className="flex flex-col gap-3">
-          {result.failedPages.length > 0 && (
-            <p
-              data-testid="failed-pages"
-              role="alert"
-              className="text-sm text-amber-700 dark:text-amber-300"
-            >
-              {t('pdfOcr.failedPages')}：{result.failedPages.join(', ')}
-            </p>
-          )}
-          <label className="flex flex-col gap-1 text-sm text-slate-600 dark:text-slate-400">
-            {t('pdfOcr.result')}
-            <textarea
-              data-testid="result-text"
-              readOnly
-              rows={12}
-              value={result.text}
-              className="rounded border border-slate-300 p-2 font-mono text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
-            />
-          </label>
-          <p data-testid="stats" className="text-sm text-slate-600 dark:text-slate-400">
-            {t('pdfOcr.statsPages')}: {result.pageCount} · {t('pdfOcr.statsChars')}:{' '}
-            {result.text.length}
-          </p>
-          <div className="flex items-center gap-3">
-            <button
-              data-testid="copy"
-              type="button"
-              onClick={() => void handleCopy(result.text)}
-              className="w-fit rounded bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
-            >
-              {t('pdfOcr.copy')}
-            </button>
-            {copied && (
-              <span data-testid="copied" className="text-sm text-green-600 dark:text-green-400">
-                {t('pdfOcr.copied')}
+            {view.fileName !== '' && (
+              <span data-testid="file-name" className="text-xs text-slate-500 dark:text-slate-400">
+                {view.fileName}
+                {view.total > 0 && ` · 共 ${view.total} 页`}
               </span>
             )}
-            <button
-              data-testid="download"
-              type="button"
-              // result 非空才渲染此按钮，TS 已收窄，无需空守卫
-              onClick={() => handleDownload(result.text, result.fileName)}
-              className="w-fit rounded bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
-            >
-              {t('pdfOcr.download')}
-            </button>
-            <button
-              data-testid="reset"
-              type="button"
-              onClick={() => void handleReset()}
-              className="rounded border border-slate-300 px-3 py-2 text-sm dark:border-slate-700"
-            >
-              {t('pdfOcr.reset')}
-            </button>
+            <span className="text-xs text-slate-400">
+              当前语言：{OCR_LANGUAGE_LABELS[options.language]}
+            </span>
           </div>
+
+          {view.status === 'busy' && view.stage !== null && (
+            <div>
+              <div
+                data-testid="progress"
+                role="progressbar"
+                aria-valuenow={percent}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label="OCR 进度"
+                className="h-2 w-full overflow-hidden rounded bg-slate-200 dark:bg-slate-800"
+              >
+                <div
+                  className="h-full rounded bg-brand transition-all"
+                  style={{ width: `${percent}%` }}
+                />
+              </div>
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                {ocrStageText(view.stage, view.done, view.total)}（{percent}%）
+              </p>
+            </div>
+          )}
+
+          {view.status === 'error' && view.error !== '' && (
+            <p
+              role="alert"
+              data-testid="ocr-error"
+              className="text-sm text-red-600 dark:text-red-400"
+            >
+              {view.error}
+            </p>
+          )}
+
+          {view.status === 'idle' && (
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              选择 PDF 文件后，工具会把每一页渲染成图像再做 OCR 识别。首次使用需从 CDN
+              下载识别引擎与语言包，请保持网络畅通；识别全程在本地进行，文件不上传。
+            </p>
+          )}
+
+          {view.pages.map((page) => (
+            <section
+              key={page.page}
+              className="rounded border border-slate-200 dark:border-slate-700"
+            >
+              <h4 className="border-b border-slate-200 px-2 py-1 text-xs font-medium text-slate-600 dark:border-slate-700 dark:text-slate-300">
+                第 {page.page}/{view.total > 0 ? view.total : view.pages.length} 页
+              </h4>
+              <pre
+                data-testid={'ocr-page-' + page.page}
+                className="max-h-48 overflow-auto whitespace-pre-wrap p-2 text-sm"
+              >
+                {page.text === '' ? '（本页未识别出文字）' : page.text}
+              </pre>
+            </section>
+          ))}
         </div>
       )}
-    </div>
+      toText={() => mergeOcrPages(view.pages)}
+      downloadExt="txt"
+    />
   )
 }
+
+/** 识别结果文本合并等纯函数见 ./utils；pdfjs/tesseract 的真实类型直接复用库自带声明 */

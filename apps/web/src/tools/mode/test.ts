@@ -67,3 +67,14 @@ describe('mode / transform', () => {
     expect(() => transform({ text: '1, x' }, empty)).toThrow(/无法识别的数字/)
   })
 })
+
+describe('mode / 边界补齐', () => {
+  it('超长输入抛错', () => {
+    expect(() => transform({ text: '1'.repeat(200001) }, empty)).toThrow(/超过 200,000 字符上限/)
+  })
+
+  it('全分隔符输入解析为空数组时返回空串', () => {
+    expect(transform({ text: ',' }, empty)).toBe('')
+    expect(transform({ text: ' , ; ' }, empty)).toBe('')
+  })
+})

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { averageOf, fmtFixed, parseNumbers, transform } from './utils'
+import type { AverageOptions } from './schema'
 
 const D4 = { decimals: '4' } as const
 
@@ -75,5 +76,32 @@ describe('average / transform', () => {
 
   it('非法输入报错', () => {
     expect(() => transform({ text: '1,x' }, { decimals: '4' })).toThrow(/不是有效数字/)
+  })
+})
+
+describe('average / 边界补齐', () => {
+  it('fmtFixed 非有限数直接返回字符串', () => {
+    expect(fmtFixed(Infinity, 4)).toBe('Infinity')
+    expect(fmtFixed(-Infinity, 2)).toBe('-Infinity')
+    expect(fmtFixed(NaN, 4)).toBe('NaN')
+  })
+
+  it('averageOf 后出现的更小值更新 min', () => {
+    expect(averageOf([5, 1, 9])).toMatchObject({
+      count: 3,
+      sum: 15,
+      mean: 5,
+      min: 1,
+      max: 9,
+    })
+  })
+
+  it('超长输入抛错', () => {
+    expect(() => transform({ text: '1'.repeat(200001) }, D4)).toThrow(/超过 200,000 字符上限/)
+  })
+
+  it('decimals 缺省时回退到 4', () => {
+    const out = transform({ text: '1 2' }, {} as AverageOptions)
+    expect(out).toContain('算术平均数：1.5')
   })
 })

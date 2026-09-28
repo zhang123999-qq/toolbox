@@ -73,3 +73,19 @@ describe('variance / transform', () => {
     expect(() => transform({ text: 'a' }, empty)).toThrow(/无法识别的数字/)
   })
 })
+
+describe('variance / 边界补齐', () => {
+  it('超长输入抛错', () => {
+    expect(() => transform({ text: '1'.repeat(200001) }, empty)).toThrow(/超过 200,000 字符上限/)
+  })
+
+  it('全分隔符输入解析为空数组时返回空串', () => {
+    expect(transform({ text: ',' }, empty)).toBe('')
+  })
+
+  it('sample 缺省时按总体方差计算', () => {
+    const out = transform({ text: '2, 4, 4, 4, 5, 5, 7, 9' }, {} as VarianceOptions)
+    expect(out).toContain('总体方差：4')
+    expect(out).toContain('（分母 n）')
+  })
+})
