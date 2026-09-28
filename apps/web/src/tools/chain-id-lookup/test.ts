@@ -2,8 +2,7 @@
  * chain-id-lookup（#715）utils 单测：十进制 / hex / 名称 / 符号查询、异常分支。
  */
 import { describe, expect, it } from 'vitest'
-import { CHAINS } from './chains'
-import { chainIdToHex, formatChainInfo, formatResults, lookupChain } from './utils'
+import { CHAINS, chainIdToHex, formatChainInfo, formatResults, lookupChain } from './utils'
 
 describe('chainIdToHex', () => {
   it('十进制转 hex', () => {
