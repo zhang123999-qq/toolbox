@@ -1,4 +1,8 @@
 import type { CsrGenerateInput, CsrGenerateOptions } from './schema'
+import type forgeDefault from 'node-forge'
+
+/** node-forge default 导出的类型（动态 import 按需加载，不占首屏） */
+type Forge = typeof forgeDefault
 
 /** 生成失败时抛出，由 UI 捕获展示 */
 export class CsrGenerateError extends Error {
@@ -7,8 +11,6 @@ export class CsrGenerateError extends Error {
     this.name = 'CsrGenerateError'
   }
 }
-
-type Forge = typeof import('node-forge').default
 
 /** 生成 RSA 密钥对（隔离便于说明耗时来源） */
 async function generateKeyPair(forge: Forge, bits: number) {
