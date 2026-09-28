@@ -92,10 +92,10 @@ function isApproved(name: string): boolean {
 }
 
 /**
- * 「已人工核实为宽松许可、但包的 package.json 漏写 SPDX 字段」的清单。
- * 仅在某包被判为 UNKNOWN（未声明 / SEE LICENSE IN）时，按**精确 name@version** 补登我们
- * 从随包 LICENSE 文件 / 源码核实到的 SPDX；补登值必须本身在 ALLOW 内。
- * 它**不能**覆盖任何已明确声明的拒绝许可（GPL/AGPL 等走到这里的前提是漏写而非声明），
+ * 「已人工核实为宽松许可、但包的 package.json 漏写或错写 SPDX 字段」的清单。
+ * 仅在某包被判为 deny、且按**精确 name@version** 命中本清单时，将 verdict 降为 allow；
+ * 补登值必须本身在 ALLOW 内。**它不能覆盖任何已明确声明的强 copyleft / 商业限制许可**
+ * （GPL / AGPL / SSPL / BUSL 等）：若包声明了这类许可，即使命中清单也不放行。
  * 登记需写清证据来源，改动走 PR 审查。
  */
 const VERIFIED_PERMISSIVE: Array<{
@@ -112,12 +112,28 @@ const VERIFIED_PERMISSIVE: Array<{
       'mermaid@12 的传递依赖；package.json 漏写 license 字段，但随包 license 文件与 readme 均标明 ' +
       'The MIT License（Copyright Fabio Spampinato, Andrew Maney），仓库 github:fabiospampinato/khroma',
   },
+  {
+    name: 'duck',
+    version: '0.1.12',
+    spdx: 'BSD-2-Clause',
+    reason:
+      'mammoth@1.13.0 经 lop@0.4.2 引入的传递依赖；package.json 的 license 字段仅写裸 "BSD"（非有效 SPDX），' +
+      '但随包 LICENSE 文件为标准 BSD 2-clause 文本（Copyright (c) 2013, Michael Williamson，仅 2 条再分发条件，无背书条款）',
+  },
 ]
 
 function verifiedPermissiveFor(name: string, version: string): boolean {
   return VERIFIED_PERMISSIVE.some(
     (e) => e.name === name && e.version === version && ALLOW.has(e.spdx),
   )
+}
+
+/**
+ * 包是否明确声明了强 copyleft / 商业限制许可（这类声明不可被 VERIFIED_PERMISSIVE 覆盖）。
+ * 只做 token 级粗判：命中即视为明确声明，交由 deny 流程处理。
+ */
+function declaresStrongCopyleft(raw: string): boolean {
+  return /GPL|AGPL|SSPL|BUSL|Commons[- ]Clause|OSL|CC-BY-NC|CC-BY-ND/i.test(raw)
 }
 
 type Verdict = 'allow' | 'warn' | 'deny'
@@ -311,8 +327,13 @@ function main(): void {
     if (verdict === 'warn' && isApproved(name)) {
       verdict = 'allow'
       approved += 1
-    } else if (verdict === 'deny' && reason === UNKNOWN && verifiedPermissiveFor(name, version)) {
-      // package.json 漏写 SPDX，但随包 LICENSE 文件/源码已人工核实为 ALLOW 内的宽松许可
+    } else if (
+      verdict === 'deny' &&
+      verifiedPermissiveFor(name, version) &&
+      !declaresStrongCopyleft(raw)
+    ) {
+      // package.json 漏写 / 错写 SPDX，但随包 LICENSE 文件/源码已人工核实为 ALLOW 内的宽松许可；
+      // 已明确声明强 copyleft 的包不在此列
       verdict = 'allow'
       reason = 'VERIFIED_PERMISSIVE'
       verified += 1
@@ -353,7 +374,7 @@ function main(): void {
     }
     if (verified) {
       console.log(
-        `  · ${verified} 个包漏写 SPDX 但已人工核实为宽松许可（VERIFIED_PERMISSIVE，仅对未声明包生效）`,
+        `  · ${verified} 个包 SPDX 缺失/不规范但已人工核实为宽松许可（VERIFIED_PERMISSIVE，不覆盖强 copyleft 声明）`,
       )
     }
 
