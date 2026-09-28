@@ -15,7 +15,16 @@ function inputEl(id: string): HTMLInputElement {
   return byTestId(id) as HTMLInputElement
 }
 
-const PLATFORM_NAMES = ['X', 'Facebook', 'LinkedIn', '微博', 'Telegram', 'WhatsApp', 'Reddit', '邮件']
+const PLATFORM_NAMES = [
+  'X',
+  'Facebook',
+  'LinkedIn',
+  '微博',
+  'Telegram',
+  'WhatsApp',
+  'Reddit',
+  '邮件',
+]
 
 /** 给 jsdom 补一个可 mock 的 navigator.clipboard */
 function mockClipboard(): ReturnType<typeof vi.fn> {
@@ -84,9 +93,7 @@ describe('social-share · Tool', () => {
       fireEvent.click(byTestId('run'))
       fireEvent.click(byTestId('copy-x'))
       await waitFor(() => {
-        expect(writeText).toHaveBeenCalledWith(
-          expect.stringContaining('twitter.com/intent/tweet'),
-        )
+        expect(writeText).toHaveBeenCalledWith(expect.stringContaining('twitter.com/intent/tweet'))
       })
     } finally {
       restoreClipboard()

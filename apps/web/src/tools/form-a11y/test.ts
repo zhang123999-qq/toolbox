@@ -12,7 +12,9 @@ describe('analyzeFormA11y 输入', () => {
     expect(() => analyzeFormA11y('   ', factory)).toThrow('请粘贴表单 HTML')
   })
   it('默认工厂可用（jsdom 提供 DOMParser）', () => {
-    const r = analyzeFormA11y('<form><input aria-label="q"><button type="submit">Go</button></form>')
+    const r = analyzeFormA11y(
+      '<form><input aria-label="q"><button type="submit">Go</button></form>',
+    )
     expect(r.controlCount).toBe(1)
   })
 })
@@ -28,7 +30,10 @@ describe('标签关联', () => {
     expect(r.labeledCount).toBe(1)
   })
   it('缺少标签报错误', () => {
-    const r = analyzeFormA11y('<form><input name="q"><button type="submit">Go</button></form>', factory)
+    const r = analyzeFormA11y(
+      '<form><input name="q"><button type="submit">Go</button></form>',
+      factory,
+    )
     expect(r.errorCount).toBe(1)
     expect(r.issues[0].message).toContain('缺少标签')
     expect(r.labeledCount).toBe(0)
@@ -41,13 +46,22 @@ describe('标签关联', () => {
     expect(r.errorCount).toBe(1)
   })
   it('包裹式 label 算关联', () => {
-    const r = analyzeFormA11y('<form><label>姓名<input name="n"></label><button type="submit">Go</button></form>', factory)
+    const r = analyzeFormA11y(
+      '<form><label>姓名<input name="n"></label><button type="submit">Go</button></form>',
+      factory,
+    )
     expect(r.issues).toEqual([])
   })
   it('aria-label 算关联，空白不算', () => {
-    const ok = analyzeFormA11y('<form><input aria-label="搜索"><button type="submit">Go</button></form>', factory)
+    const ok = analyzeFormA11y(
+      '<form><input aria-label="搜索"><button type="submit">Go</button></form>',
+      factory,
+    )
     expect(ok.issues).toEqual([])
-    const bad = analyzeFormA11y('<form><input aria-label="  "><button type="submit">Go</button></form>', factory)
+    const bad = analyzeFormA11y(
+      '<form><input aria-label="  "><button type="submit">Go</button></form>',
+      factory,
+    )
     expect(bad.errorCount).toBe(1)
   })
   it('aria-labelledby 有效/无效', () => {
@@ -56,11 +70,17 @@ describe('标签关联', () => {
       factory,
     )
     expect(ok.issues).toEqual([])
-    const bad = analyzeFormA11y('<form><input aria-labelledby="nope"><button type="submit">Go</button></form>', factory)
+    const bad = analyzeFormA11y(
+      '<form><input aria-labelledby="nope"><button type="submit">Go</button></form>',
+      factory,
+    )
     expect(bad.errorCount).toBe(1)
   })
   it('placeholder 不能替代 label', () => {
-    const r = analyzeFormA11y('<form><input placeholder="请输入"><button type="submit">Go</button></form>', factory)
+    const r = analyzeFormA11y(
+      '<form><input placeholder="请输入"><button type="submit">Go</button></form>',
+      factory,
+    )
     expect(r.errorCount).toBe(1)
     expect(r.warningCount).toBe(1)
     expect(r.issues[1].message).toContain('placeholder 不能替代 label')
@@ -98,7 +118,10 @@ describe('必填与描述关联', () => {
     expect(r.issues).toEqual([])
   })
   it('required 有 id 但无关联 label 时警告', () => {
-    const r = analyzeFormA11y('<form><input id="a" required aria-label="X"><button type="submit">Go</button></form>', factory)
+    const r = analyzeFormA11y(
+      '<form><input id="a" required aria-label="X"><button type="submit">Go</button></form>',
+      factory,
+    )
     expect(r.warningCount).toBe(1)
     expect(r.issues[0].message).toContain('必填标识')
   })
@@ -166,7 +189,10 @@ describe('结构检查', () => {
     expect(r.issues.some((i) => i.message.includes('页面缺少提交按钮'))).toBe(true)
   })
   it('无 type 的 button 视为提交', () => {
-    const r = analyzeFormA11y('<form><label for="a">X</label><input id="a"><button>Go</button></form>', factory)
+    const r = analyzeFormA11y(
+      '<form><label for="a">X</label><input id="a"><button>Go</button></form>',
+      factory,
+    )
     expect(r.issues).toEqual([])
   })
   it('type=button 不算提交', () => {
@@ -184,14 +210,20 @@ describe('结构检查', () => {
 
 describe('formatFormA11yResult', () => {
   it('渲染统计与明细', () => {
-    const r = analyzeFormA11y('<form><input name="q"><button type="submit">Go</button></form>', factory)
+    const r = analyzeFormA11y(
+      '<form><input name="q"><button type="submit">Go</button></form>',
+      factory,
+    )
     const text = formatFormA11yResult(r)
     expect(text).toContain('控件数：1')
     expect(text).toContain('[错误]')
     expect(text).toContain('<input name=q>')
   })
   it('无问题输出提示', () => {
-    const r = analyzeFormA11y('<form><label for="n">X</label><input id="n"><button type="submit">Go</button></form>', factory)
+    const r = analyzeFormA11y(
+      '<form><label for="n">X</label><input id="n"><button type="submit">Go</button></form>',
+      factory,
+    )
     expect(formatFormA11yResult(r)).toContain('未发现无障碍问题')
   })
   it('select/textarea 元素速写', () => {

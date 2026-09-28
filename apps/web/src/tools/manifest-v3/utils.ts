@@ -137,7 +137,9 @@ export function parseManifestConfig(json: string): ManifestV3Input {
     throw new Error('检测到 MV2 字段 background.persistent，MV3 请改用 service_worker')
   }
   const actionRaw = o.action as Record<string, unknown> | undefined
-  const csRaw = Array.isArray(o.contentScripts) ? (o.contentScripts as Record<string, unknown>[]) : []
+  const csRaw = Array.isArray(o.contentScripts)
+    ? (o.contentScripts as Record<string, unknown>[])
+    : []
   return {
     name: String(o.name ?? ''),
     version: String(o.version ?? ''),

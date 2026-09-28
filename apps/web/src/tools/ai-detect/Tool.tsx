@@ -168,8 +168,8 @@ export default function Tool() {
             </button>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            左侧粘贴待检测文本（至少 50 字符），点「开始检测」。结论仅供参考，AI
-            检测本身没有 100% 准确的方法。
+            左侧粘贴待检测文本（至少 50 字符），点「开始检测」。结论仅供参考，AI 检测本身没有 100%
+            准确的方法。
           </p>
           {error ? (
             <div
@@ -189,7 +189,10 @@ export default function Tool() {
                 >
                   {verdictLabel(result.verdict)}
                 </span>
-                <span data-testid="confidence" className="text-sm text-slate-600 dark:text-slate-400">
+                <span
+                  data-testid="confidence"
+                  className="text-sm text-slate-600 dark:text-slate-400"
+                >
                   置信度 {result.confidence}%
                 </span>
               </div>

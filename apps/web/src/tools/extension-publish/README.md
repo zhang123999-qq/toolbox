@@ -7,16 +7,16 @@ A 级工具：纯前端本地评估，无网络、无第三方 API。
 按目标商店（Chrome Web Store / Edge Add-ons / Firefox Add-ons）的要求，
 对扩展发布材料逐项检查：
 
-| 检查项 | 说明 |
-|---|---|
-| manifest.json 存在 | 打包 zip 根目录必须包含 |
-| manifest 合法（MV3） | 合法 JSON 且 `manifest_version` 为 3 |
-| 名称/版本/描述完整 | `name` / `version` / `description` |
-| 图标齐全 | 声明 128px 图标且文件存在 |
-| 安装包大小合规 | Chrome/Edge 上限 128MB，Firefox 上限 200MB |
-| 商店截图已准备 | 建议 1280×800 至少 1 张 |
-| 隐私政策（如需） | 声明敏感权限或处理用户数据时必须提供 |
-| 源码提交（Firefox） | 代码经混淆/压缩时需附可读源码 |
+| 检查项               | 说明                                       |
+| -------------------- | ------------------------------------------ |
+| manifest.json 存在   | 打包 zip 根目录必须包含                    |
+| manifest 合法（MV3） | 合法 JSON 且 `manifest_version` 为 3       |
+| 名称/版本/描述完整   | `name` / `version` / `description`         |
+| 图标齐全             | 声明 128px 图标且文件存在                  |
+| 安装包大小合规       | Chrome/Edge 上限 128MB，Firefox 上限 200MB |
+| 商店截图已准备       | 建议 1280×800 至少 1 张                    |
+| 隐私政策（如需）     | 声明敏感权限或处理用户数据时必须提供       |
+| 源码提交（Firefox）  | 代码经混淆/压缩时需附可读源码              |
 
 ## 使用说明
 

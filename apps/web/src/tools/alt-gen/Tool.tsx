@@ -199,7 +199,8 @@ export default function Tool() {
             </button>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            左侧可填补充说明（如“重点描述人物表情”），留空则按图片类型默认生成。选择图片后点「生成 Alt 文本」。
+            左侧可填补充说明（如“重点描述人物表情”），留空则按图片类型默认生成。选择图片后点「生成
+            Alt 文本」。
           </p>
           {error ? (
             <div

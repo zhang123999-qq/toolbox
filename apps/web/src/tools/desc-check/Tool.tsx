@@ -27,7 +27,9 @@ export default function Tool() {
         let body: React.ReactNode
         try {
           if (input.text.trim() === '') {
-            body = <p className="text-slate-500">在左侧粘贴 meta description 文本，分析结果实时显示</p>
+            body = (
+              <p className="text-slate-500">在左侧粘贴 meta description 文本，分析结果实时显示</p>
+            )
           } else {
             const a = analyzeDescription(input.text, input.keyword)
             body = (
@@ -54,15 +56,21 @@ export default function Tool() {
                   </div>
                   <div>
                     <dt className="inline font-medium">重复词：</dt>
-                    <dd className="inline">{a.repeatedWords.length > 0 ? a.repeatedWords.join('、') : '无'}</dd>
+                    <dd className="inline">
+                      {a.repeatedWords.length > 0 ? a.repeatedWords.join('、') : '无'}
+                    </dd>
                   </div>
                   <div>
                     <dt className="inline font-medium">行动号召词：</dt>
-                    <dd className="inline">{a.ctaFound.length > 0 ? a.ctaFound.join('、') : '无'}</dd>
+                    <dd className="inline">
+                      {a.ctaFound.length > 0 ? a.ctaFound.join('、') : '无'}
+                    </dd>
                   </div>
                 </dl>
                 <div>
-                  <p className="mb-1 text-sm font-medium text-slate-700 dark:text-slate-300">改写建议</p>
+                  <p className="mb-1 text-sm font-medium text-slate-700 dark:text-slate-300">
+                    改写建议
+                  </p>
                   <ul className="list-disc pl-5 text-sm text-slate-600 dark:text-slate-400">
                     {a.suggestions.map((s, i) => (
                       <li key={i}>{s}</li>
@@ -74,7 +82,11 @@ export default function Tool() {
           }
         } catch (err) {
           body = (
-            <div role="alert" data-testid="error" className="text-sm text-red-700 dark:text-red-300">
+            <div
+              role="alert"
+              data-testid="error"
+              className="text-sm text-red-700 dark:text-red-300"
+            >
               {err instanceof Error ? err.message : '分析失败'}
             </div>
           )

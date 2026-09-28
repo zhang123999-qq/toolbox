@@ -26,7 +26,17 @@ function fillPasteMode(): void {
 describe('link-check · Tool', () => {
   it('渲染后必需 data-testid 全部存在', () => {
     render(<Tool />)
-    for (const id of ['input', 'run', 'example', 'clear', 'output', 'copy', 'download', 'extract', 'check']) {
+    for (const id of [
+      'input',
+      'run',
+      'example',
+      'clear',
+      'output',
+      'copy',
+      'download',
+      'extract',
+      'check',
+    ]) {
       expect(byTestId(id)).toBeTruthy()
     }
   })

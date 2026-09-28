@@ -12,8 +12,12 @@ import {
 
 describe('validateBackgroundOptions', () => {
   it('合法配置通过', () => {
-    expect(() => validateBackgroundOptions({ events: ['alarms', 'runtime.onMessage'] })).not.toThrow()
-    expect(() => validateBackgroundOptions({ events: ['tabs.onUpdated'], keepAlive: true })).not.toThrow()
+    expect(() =>
+      validateBackgroundOptions({ events: ['alarms', 'runtime.onMessage'] }),
+    ).not.toThrow()
+    expect(() =>
+      validateBackgroundOptions({ events: ['tabs.onUpdated'], keepAlive: true }),
+    ).not.toThrow()
   })
   it('事件为空或缺失报错', () => {
     expect(() => validateBackgroundOptions({ events: [] })).toThrow('events 至少需要选择一个事件')
@@ -24,9 +28,9 @@ describe('validateBackgroundOptions', () => {
     expect(() => validateBackgroundOptions({ events: ['nope' as never] })).toThrow('未知事件')
   })
   it('keepAlive 非布尔报错', () => {
-    expect(() => validateBackgroundOptions({ events: ['alarms'], keepAlive: 'yes' as never })).toThrow(
-      'keepAlive 必须是布尔值',
-    )
+    expect(() =>
+      validateBackgroundOptions({ events: ['alarms'], keepAlive: 'yes' as never }),
+    ).toThrow('keepAlive 必须是布尔值')
   })
 })
 
@@ -53,7 +57,9 @@ describe('generateBackground', () => {
   })
   it('keepAlive 缺省或 false 时不追加说明', () => {
     expect(generateBackground({ events: ['alarms'] })).not.toContain('MV3 明确不支持 persistent')
-    expect(generateBackground({ events: ['alarms'], keepAlive: false })).not.toContain('MV3 明确不支持 persistent')
+    expect(generateBackground({ events: ['alarms'], keepAlive: false })).not.toContain(
+      'MV3 明确不支持 persistent',
+    )
   })
   it('事件标签覆盖全部事件值', () => {
     for (const e of EVENT_VALUES) {

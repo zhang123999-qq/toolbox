@@ -25,8 +25,8 @@ export interface BidiAnalysis {
  * - LTR：ASCII 拉丁、\u0370-\u03FF（希腊）、\u0400-\u04FF（西里尔）、\u4E00-\u9FFF（中日韩）
  * - 其余（数字、标点、空格、Emoji 等）为中性
  */
-const RTL_RE = /[\u0590-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
-const LTR_RE = /[A-Za-z\u0370-\u03FF\u0400-\u04FF\u4E00-\u9FFF]/;
+const RTL_RE = /[\u0590-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/
+const LTR_RE = /[A-Za-z\u0370-\u03FF\u0400-\u04FF\u4E00-\u9FFF]/
 
 export function charDir(ch: string): BidiDir {
   if (RTL_RE.test(ch)) return 'rtl'

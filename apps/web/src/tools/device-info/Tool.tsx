@@ -6,7 +6,8 @@ import type { DeviceInfo } from './utils'
 
 const BTN_CLASS =
   'rounded border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800'
-const ROW_CLASS = 'flex justify-between border-b border-slate-100 py-1.5 text-sm dark:border-slate-800'
+const ROW_CLASS =
+  'flex justify-between border-b border-slate-100 py-1.5 text-sm dark:border-slate-800'
 
 function row(label: string, value: string, testId: string): ReactNode {
   return (

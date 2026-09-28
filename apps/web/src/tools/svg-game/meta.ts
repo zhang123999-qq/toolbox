@@ -8,7 +8,8 @@ export const meta: ToolMeta = {
   id: 'svg-game',
   slug: 'svg-game',
   title: 'SVG 游戏资源',
-  description: '游戏精灵（角色/道具/地形）SVG 模板库：8 种预设精灵，支持主/副配色参数化替换并导出，非通用图案生成',
+  description:
+    '游戏精灵（角色/道具/地形）SVG 模板库：8 种预设精灵，支持主/副配色参数化替换并导出，非通用图案生成',
   titleEn: 'SVG Game Sprites',
   descriptionEn:
     'Game sprite (character/item/terrain) SVG template library: 8 preset sprites with primary/secondary color parameters, exportable; not a generic pattern generator',

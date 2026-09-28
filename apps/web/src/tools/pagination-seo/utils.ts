@@ -123,7 +123,10 @@ function checkNeighbor(
   if (target === null) {
     issues.push({ level: 'info', message: `rel="${kind}" 的 href 无法识别为分页 URL` })
   } else if (target !== expected) {
-    issues.push({ level: 'warning', message: `rel="${kind}" 未指向${dir}页（期望第 ${expected} 页）` })
+    issues.push({
+      level: 'warning',
+      message: `rel="${kind}" 未指向${dir}页（期望第 ${expected} 页）`,
+    })
   }
 }
 

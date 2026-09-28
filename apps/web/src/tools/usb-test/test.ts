@@ -2,13 +2,7 @@
  * usb-test 工具测试（#869）：navigator.usb 经参数注入字面 mock。
  */
 import { describe, expect, it, vi } from 'vitest'
-import {
-  listUsbDevices,
-  parseUSBDevice,
-  requestUSBDevice,
-  supportsUSB,
-  usbIdHex,
-} from './utils'
+import { listUsbDevices, parseUSBDevice, requestUSBDevice, supportsUSB, usbIdHex } from './utils'
 
 describe('usb-test · supportsUSB', () => {
   it('navigator 为空或无 usb 时返回 false', () => {

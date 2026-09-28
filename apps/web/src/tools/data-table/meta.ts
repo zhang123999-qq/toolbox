@@ -11,7 +11,8 @@ export const meta: ToolMeta = {
   title: '数据表格',
   description: 'CSV 粘贴成可交互表格：点击表头排序、关键词搜索、分页浏览、导出 CSV',
   titleEn: 'Data Table',
-  descriptionEn: 'Turn pasted CSV into an interactive table: sortable headers, keyword search, pagination, CSV export',
+  descriptionEn:
+    'Turn pasted CSV into an interactive table: sortable headers, keyword search, pagination, CSV export',
 
   category: 'random',
   group: 'design',

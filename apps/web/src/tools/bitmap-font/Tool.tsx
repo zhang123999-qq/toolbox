@@ -138,20 +138,42 @@ export default function Tool() {
         <div className="flex flex-col gap-3">
           <div className="flex flex-wrap items-center gap-2">
             <label className="text-xs text-slate-500">
-              文本 <input data-testid="bitmapfont-text" value={text} onChange={(e) => setText(e.target.value)} className={`${INPUT_CLS} w-40`} />
+              文本{' '}
+              <input
+                data-testid="bitmapfont-text"
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                className={`${INPUT_CLS} w-40`}
+              />
             </label>
             <label className="text-xs text-slate-500">
               字体{' '}
-              <select data-testid="bitmapfont-font" value={font} onChange={(e) => setFont(e.target.value)} className={INPUT_CLS}>
+              <select
+                data-testid="bitmapfont-font"
+                value={font}
+                onChange={(e) => setFont(e.target.value)}
+                className={INPUT_CLS}
+              >
                 <option value="monospace">等宽</option>
                 <option value="serif">衬线</option>
                 <option value="sans-serif">无衬线</option>
               </select>
             </label>
             <label className="text-xs text-slate-500">
-              字号 <input data-testid="bitmapfont-size" value={size} onChange={(e) => setSize(e.target.value)} className={`${INPUT_CLS} w-20`} />
+              字号{' '}
+              <input
+                data-testid="bitmapfont-size"
+                value={size}
+                onChange={(e) => setSize(e.target.value)}
+                className={`${INPUT_CLS} w-20`}
+              />
             </label>
-            <button type="button" data-testid="bitmapfont-run" onClick={handleRun} className={BTN_CLS}>
+            <button
+              type="button"
+              data-testid="bitmapfont-run"
+              onClick={handleRun}
+              className={BTN_CLS}
+            >
               生成位图
             </button>
             <label className="text-xs text-slate-500">
@@ -166,7 +188,13 @@ export default function Tool() {
                 <option value="c">C 数组</option>
               </select>
             </label>
-            <button type="button" data-testid="bitmapfont-download" onClick={handleDownload} disabled={!done} className={BTN_CLS}>
+            <button
+              type="button"
+              data-testid="bitmapfont-download"
+              onClick={handleDownload}
+              disabled={!done}
+              className={BTN_CLS}
+            >
               下载
             </button>
           </div>
@@ -186,8 +214,8 @@ export default function Tool() {
             {output === '' ? '点击「生成位图」后显示导出数据。' : output}
           </pre>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            说明：逐字光栅化为位图（自动裁剪空白边，重复字符去重），导出 JSON 或 C 数组供游戏引擎使用。
-            纯本地处理，不发送网络请求。
+            说明：逐字光栅化为位图（自动裁剪空白边，重复字符去重），导出 JSON 或 C
+            数组供游戏引擎使用。 纯本地处理，不发送网络请求。
           </p>
         </div>
       )}

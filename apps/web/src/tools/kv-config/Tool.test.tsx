@@ -19,7 +19,14 @@ function byTestId(id: string): HTMLElement {
 describe('kv-config · Tool', () => {
   it('渲染后必需元素全部存在', () => {
     render(<Tool />)
-    for (const id of ['input', 'input-namespaceId', 'input-previewId', 'output', 'copy', 'download']) {
+    for (const id of [
+      'input',
+      'input-namespaceId',
+      'input-previewId',
+      'output',
+      'copy',
+      'download',
+    ]) {
       expect(byTestId(id)).toBeTruthy()
     }
   })

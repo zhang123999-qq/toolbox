@@ -18,7 +18,16 @@ function byTestId(id: string): HTMLElement {
 describe('canonical-check · Tool', () => {
   it('渲染后必需 data-testid 全部存在', () => {
     render(<Tool />)
-    for (const id of ['input', 'input-pageUrl', 'run', 'example', 'clear', 'output', 'copy', 'download']) {
+    for (const id of [
+      'input',
+      'input-pageUrl',
+      'run',
+      'example',
+      'clear',
+      'output',
+      'copy',
+      'download',
+    ]) {
       expect(byTestId(id)).toBeTruthy()
     }
   })

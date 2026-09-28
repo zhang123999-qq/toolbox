@@ -1,12 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { meta } from './meta'
-import {
-  calcStats,
-  createCpsSession,
-  gradeCps,
-  recordClick,
-  type CpsSession,
-} from './utils'
+import { calcStats, createCpsSession, gradeCps, recordClick, type CpsSession } from './utils'
 
 const DURATIONS = [5, 10, 30]
 
@@ -72,7 +66,9 @@ export default function Tool() {
         onClick={onClickPad}
         className="flex h-56 w-full max-w-md select-none items-center justify-center rounded-lg bg-blue-100 text-lg font-medium dark:bg-blue-900"
       >
-        {phase === 'running' ? `点击！已点 ${session.clicks.length} 次` : '选择时长开始，疯狂点击这里'}
+        {phase === 'running'
+          ? `点击！已点 ${session.clicks.length} 次`
+          : '选择时长开始，疯狂点击这里'}
       </button>
       {phase === 'done' && (
         <div data-testid="cps-result" className="text-sm">
@@ -84,7 +80,9 @@ export default function Tool() {
           </p>
         </div>
       )}
-      <p className="text-xs text-slate-500">规则：选择时长后在蓝色区域内尽可能快地点击，时间到自动结算。</p>
+      <p className="text-xs text-slate-500">
+        规则：选择时长后在蓝色区域内尽可能快地点击，时间到自动结算。
+      </p>
     </div>
   )
 }

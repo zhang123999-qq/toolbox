@@ -10,7 +10,8 @@ export const meta: ToolMeta = {
   title: '分页 SEO',
   description: '检查分页页面的 rel prev/next、canonical 自指与分页 URL 一致性',
   titleEn: 'Pagination SEO',
-  descriptionEn: 'Check paginated pages: rel prev/next, canonical self-reference and URL consistency',
+  descriptionEn:
+    'Check paginated pages: rel prev/next, canonical self-reference and URL consistency',
 
   category: 'seo',
   group: 'dev',

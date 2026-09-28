@@ -57,13 +57,14 @@ export default function Tool() {
               <p data-testid="apicache-decision" className="text-base font-medium">
                 决策：{DECISION_TEXT[result.decision]}
               </p>
-              <p data-testid="apicache-reason" className="text-sm text-slate-600 dark:text-slate-400">
+              <p
+                data-testid="apicache-reason"
+                className="text-sm text-slate-600 dark:text-slate-400"
+              >
                 {result.reason}
               </p>
               {result.decision === 'fresh' && (
-                <p className="font-mono text-sm">
-                  剩余 TTL：{(result.ttlMs / 1000).toFixed(0)} 秒
-                </p>
+                <p className="font-mono text-sm">剩余 TTL：{(result.ttlMs / 1000).toFixed(0)} 秒</p>
               )}
               <details className="text-sm">
                 <summary className="cursor-pointer text-slate-500">解析出的指令</summary>
@@ -72,8 +73,8 @@ export default function Tool() {
             </div>
           )}
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            说明：按 s-maxage &gt; max-age &gt; Expires 优先级判断新鲜度；
-            no-store 直接判禁止缓存；过期资源给出条件请求建议。纯本地计算。
+            说明：按 s-maxage &gt; max-age &gt; Expires 优先级判断新鲜度； no-store
+            直接判禁止缓存；过期资源给出条件请求建议。纯本地计算。
           </p>
         </div>
       )}

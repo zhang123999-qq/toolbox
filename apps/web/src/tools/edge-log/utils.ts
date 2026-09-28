@@ -129,7 +129,10 @@ export function parseLogLine(line: string): ParsedLogLine {
 
 /** 批量解析多行日志，逐行标注序号的错误 */
 export function parseLogLines(text: string): ParsedLogLine[] {
-  const lines = text.split('\n').map((line) => line.trim()).filter((line) => line !== '')
+  const lines = text
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line !== '')
   if (lines.length === 0) throw new Error('没有可解析的日志行')
   return lines.map((line, index) => {
     try {

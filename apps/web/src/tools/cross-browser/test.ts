@@ -104,11 +104,15 @@ describe('scanChromeUsage', () => {
 
 describe('parseCrossBrowserInput / runCrossBrowser', () => {
   it('polyfill 任务端到端', () => {
-    const out = runCrossBrowser(parseCrossBrowserInput('{"task":"polyfill","apis":["storage.sync"]}'))
+    const out = runCrossBrowser(
+      parseCrossBrowserInput('{"task":"polyfill","apis":["storage.sync"]}'),
+    )
     expect(out).toContain('function storageSyncGet')
   })
   it('scan 任务端到端', () => {
-    const out = runCrossBrowser(parseCrossBrowserInput('{"task":"scan","code":"chrome.tabs.query({})"}'))
+    const out = runCrossBrowser(
+      parseCrossBrowserInput('{"task":"scan","code":"chrome.tabs.query({})"}'),
+    )
     expect(out).toContain('tabs.query')
     expect(out).toContain('1.')
   })
@@ -119,8 +123,10 @@ describe('parseCrossBrowserInput / runCrossBrowser', () => {
     expect(() => parseCrossBrowserInput('')).toThrow('输入不能为空')
     expect(() => parseCrossBrowserInput('{oops')).toThrow('输入不是合法 JSON')
     expect(() => parseCrossBrowserInput('[]')).toThrow('输入必须是 JSON 对象')
-    expect(() => parseCrossBrowserInput('{"task":"x"}')).toThrow("task 非法")
-    expect(() => parseCrossBrowserInput('{"task":"polyfill"}')).toThrow('polyfill 任务需要 apis 数组')
+    expect(() => parseCrossBrowserInput('{"task":"x"}')).toThrow('task 非法')
+    expect(() => parseCrossBrowserInput('{"task":"polyfill"}')).toThrow(
+      'polyfill 任务需要 apis 数组',
+    )
     expect(() => parseCrossBrowserInput('{"task":"scan"}')).toThrow('scan 任务需要 code 字符串')
   })
 })

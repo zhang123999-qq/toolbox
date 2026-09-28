@@ -26,7 +26,11 @@ export default function Tool() {
         let body: React.ReactNode
         try {
           if (input.text.trim() === '') {
-            body = <p className="text-slate-500">在左侧粘贴页面的 HTML 源码，标题大纲与检查结果实时显示</p>
+            body = (
+              <p className="text-slate-500">
+                在左侧粘贴页面的 HTML 源码，标题大纲与检查结果实时显示
+              </p>
+            )
           } else {
             const { headings, result } = analyzeHtml(input.text)
             body = (
@@ -41,7 +45,9 @@ export default function Tool() {
                   </span>
                 </div>
                 <div>
-                  <p className="mb-1 text-sm font-medium text-slate-700 dark:text-slate-300">大纲</p>
+                  <p className="mb-1 text-sm font-medium text-slate-700 dark:text-slate-300">
+                    大纲
+                  </p>
                   <pre className="whitespace-pre-wrap rounded bg-slate-100 p-2 font-mono text-xs text-slate-700 dark:bg-slate-900 dark:text-slate-300">
                     {renderOutline(headings)}
                   </pre>
@@ -51,7 +57,9 @@ export default function Tool() {
                     检查结果（{result.issues.length}）
                   </p>
                   {result.issues.length === 0 ? (
-                    <p className="text-sm text-green-700 dark:text-green-400">未发现问题，标题结构良好</p>
+                    <p className="text-sm text-green-700 dark:text-green-400">
+                      未发现问题，标题结构良好
+                    </p>
                   ) : (
                     <ul className="flex flex-col gap-1">
                       {result.issues.map((issue, i) => (
@@ -74,7 +82,11 @@ export default function Tool() {
           }
         } catch (err) {
           body = (
-            <div role="alert" data-testid="error" className="text-sm text-red-700 dark:text-red-300">
+            <div
+              role="alert"
+              data-testid="error"
+              className="text-sm text-red-700 dark:text-red-300"
+            >
               {err instanceof Error ? err.message : '分析失败'}
             </div>
           )

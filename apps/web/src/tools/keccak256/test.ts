@@ -3,13 +3,7 @@
  * 哈希向量由 Python pycryptodome 独立生成。
  */
 import { describe, expect, it } from 'vitest'
-import {
-  bytesToBase64,
-  bytesToHex,
-  hashKeccak256,
-  keccak256,
-  parseHashInput,
-} from './utils'
+import { bytesToBase64, bytesToHex, hashKeccak256, keccak256, parseHashInput } from './utils'
 
 function keccakHex(s: string): string {
   return bytesToHex(keccak256(new TextEncoder().encode(s)))
@@ -21,7 +15,9 @@ describe('keccak256 标准测试向量', () => {
   })
 
   it('"abc"', () => {
-    expect(keccakHex('abc')).toBe('4e03657aea45a94fc7d47ba826c8d667c0d1e6e33a64a036ec44f58fa12d6c45')
+    expect(keccakHex('abc')).toBe(
+      '4e03657aea45a94fc7d47ba826c8d667c0d1e6e33a64a036ec44f58fa12d6c45',
+    )
   })
 
   it('"hello"', () => {
@@ -49,7 +45,9 @@ describe('keccak256 标准测试向量', () => {
 
   it('与 SHA3-256 不同（padding 差异）', () => {
     // 若误用 0x06 padding，会得到 NIST SHA3 结果而非本向量
-    expect(keccakHex('abc')).not.toBe('3a985da74fe225b2045c172d6bd390bd855f086e3e9d525b46bfe24511431532')
+    expect(keccakHex('abc')).not.toBe(
+      '3a985da74fe225b2045c172d6bd390bd855f086e3e9d525b46bfe24511431532',
+    )
   })
 })
 

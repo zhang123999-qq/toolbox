@@ -47,7 +47,7 @@ export const CSP_PRESETS: Record<CspPresetName, { label: string; policy: string;
   development: {
     label: '开发放宽（含 WASM）',
     policy: "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'",
-    note: '允许 WebAssembly 编译；仍禁止远程代码与 \'unsafe-eval\'，发布前建议回到 minimal。',
+    note: "允许 WebAssembly 编译；仍禁止远程代码与 'unsafe-eval'，发布前建议回到 minimal。",
   },
 }
 
@@ -80,7 +80,8 @@ export function buildCspPolicy(opts: BuildCspOptions): string {
     }
     if (!script.includes(src)) script.push(src)
   }
-  const objectSrc = opts.objectSrc === undefined ? "'self'" : assertNonEmptyString(opts.objectSrc, 'objectSrc')
+  const objectSrc =
+    opts.objectSrc === undefined ? "'self'" : assertNonEmptyString(opts.objectSrc, 'objectSrc')
   let policy = `script-src ${script.join(' ')}; object-src ${objectSrc}`
   if (opts.styleSrc !== undefined) {
     if (!Array.isArray(opts.styleSrc) || opts.styleSrc.length === 0) {
@@ -98,7 +99,10 @@ export function parseCspPolicy(policy: unknown): Record<string, string[]> {
   }
   const out: Record<string, string[]> = {}
   for (const part of policy.split(';')) {
-    const tokens = part.trim().split(/\s+/).filter((t) => t !== '')
+    const tokens = part
+      .trim()
+      .split(/\s+/)
+      .filter((t) => t !== '')
     if (tokens.length === 0) continue
     out[tokens[0].toLowerCase()] = tokens.slice(1)
   }

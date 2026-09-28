@@ -34,7 +34,10 @@ export function bytesToHex(bytes: Uint8Array): string {
 /** 解析输入数据：text=原文 UTF-8，hex=hex 字节串 */
 export function parseData(text: string, format: DataFormat): Uint8Array {
   if (format === 'text') return new TextEncoder().encode(text)
-  const h = text.trim().startsWith('0x') || text.trim().startsWith('0X') ? text.trim().slice(2) : text.trim()
+  const h =
+    text.trim().startsWith('0x') || text.trim().startsWith('0X')
+      ? text.trim().slice(2)
+      : text.trim()
   const clean = h.replace(/\s+/g, '')
   if (clean === '') throw new Error('hex 输入为空')
   if (clean.length % 2 !== 0) throw new Error('hex 长度须为偶数')

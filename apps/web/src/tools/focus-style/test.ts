@@ -90,7 +90,13 @@ describe('checkFocusContrast', () => {
 })
 
 describe('generateFocusStyle', () => {
-  const params = { color: '#2563eb', width: 2, offset: 2, radius: 4, outlineStyle: 'solid' as const }
+  const params = {
+    color: '#2563eb',
+    width: 2,
+    offset: 2,
+    radius: 4,
+    outlineStyle: 'solid' as const,
+  }
 
   it('默认选择器生成标准 CSS', () => {
     const css = generateFocusStyle(params)

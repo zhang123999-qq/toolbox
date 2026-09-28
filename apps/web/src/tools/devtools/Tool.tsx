@@ -40,7 +40,8 @@ export default function Tool() {
       setOutput(
         issues.length === 0
           ? 'manifest 声明合法：manifest_version 为 3 且 devtools_page 指向 .html 文件。'
-          : `发现 ${issues.length} 个问题：\n` + issues.map((i, idx) => `${idx + 1}. ${i}`).join('\n'),
+          : `发现 ${issues.length} 个问题：\n` +
+              issues.map((i, idx) => `${idx + 1}. ${i}`).join('\n'),
       )
     } catch (err) {
       setError(err instanceof Error ? err.message : '执行失败')

@@ -8,9 +8,11 @@ export const meta: ToolMeta = {
   id: 'keyboard-nav',
   slug: 'keyboard-nav',
   title: '键盘导航分析',
-  description: '分析 HTML 的可聚焦元素与 Tab 顺序：正 tabindex、非法 tabindex、div 模拟按钮、跳过链接缺失等问题检查',
+  description:
+    '分析 HTML 的可聚焦元素与 Tab 顺序：正 tabindex、非法 tabindex、div 模拟按钮、跳过链接缺失等问题检查',
   titleEn: 'Keyboard Navigation Analyzer',
-  descriptionEn: 'Analyze focusable elements and tab order in HTML: positive/illegal tabindex, div-as-button, missing skip links',
+  descriptionEn:
+    'Analyze focusable elements and tab order in HTML: positive/illegal tabindex, div-as-button, missing skip links',
 
   category: 'a11y',
   group: 'life',

@@ -34,9 +34,13 @@ export interface ParsedList {
 /** 解析 URL 列表：每行一个，最多 200 行，去重（纯函数，可单测） */
 export function parseUrlList(text: string): ParsedList {
   const trimmed = text.trim()
-  if (trimmed === '') throw new DeadLinkError('请输入 URL 列表，每行一个，例如 https://example.com/')
+  if (trimmed === '')
+    throw new DeadLinkError('请输入 URL 列表，每行一个，例如 https://example.com/')
   if (trimmed.length > MAX_INPUT) throw new DeadLinkError(`输入超过 ${MAX_INPUT} 字符上限`)
-  const lines = trimmed.split(/\r?\n/).map((l) => l.trim()).filter((l) => l !== '')
+  const lines = trimmed
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter((l) => l !== '')
   if (lines.length > MAX_URLS) {
     throw new DeadLinkError(`URL 数量超过上限：共 ${lines.length} 行，最多支持 ${MAX_URLS} 行`)
   }
@@ -91,7 +95,10 @@ async function fetchSingle(url: string, fetchFn: FetchFn, timeoutMs: number): Pr
       if (error instanceof DOMException && error.name === 'AbortError') {
         throw new DeadLinkError(`请求超时（超过 ${timeoutMs} 毫秒）`, 'timeout')
       }
-      throw new DeadLinkError(`网络请求失败：${errorMessage(error)}（目标可能不允许跨域访问）`, 'network')
+      throw new DeadLinkError(
+        `网络请求失败：${errorMessage(error)}（目标可能不允许跨域访问）`,
+        'network',
+      )
     } finally {
       clearTimeout(timer)
     }
@@ -114,17 +121,52 @@ export async function checkUrl(
   try {
     const httpStatus = await fetchSingle(url, fetchFn, timeoutMs)
     if (httpStatus < 300) {
-      return { url, status: '存活', httpStatus, alive: true, note: `HTTP ${httpStatus}`, ms: Date.now() - started }
+      return {
+        url,
+        status: '存活',
+        httpStatus,
+        alive: true,
+        note: `HTTP ${httpStatus}`,
+        ms: Date.now() - started,
+      }
     }
     if (httpStatus < 400) {
-      return { url, status: '重定向', httpStatus, alive: true, note: `HTTP ${httpStatus}`, ms: Date.now() - started }
+      return {
+        url,
+        status: '重定向',
+        httpStatus,
+        alive: true,
+        note: `HTTP ${httpStatus}`,
+        ms: Date.now() - started,
+      }
     }
-    return { url, status: '死链', httpStatus, alive: false, note: `HTTP ${httpStatus}`, ms: Date.now() - started }
+    return {
+      url,
+      status: '死链',
+      httpStatus,
+      alive: false,
+      note: `HTTP ${httpStatus}`,
+      ms: Date.now() - started,
+    }
   } catch (error) {
     if (error instanceof DeadLinkError && error.kind === 'timeout') {
-      return { url, status: '超时', httpStatus: null, alive: false, note: error.message, ms: Date.now() - started }
+      return {
+        url,
+        status: '超时',
+        httpStatus: null,
+        alive: false,
+        note: error.message,
+        ms: Date.now() - started,
+      }
     }
-    return { url, status: '错误', httpStatus: null, alive: false, note: errorMessage(error), ms: Date.now() - started }
+    return {
+      url,
+      status: '错误',
+      httpStatus: null,
+      alive: false,
+      note: errorMessage(error),
+      ms: Date.now() - started,
+    }
   }
 }
 
@@ -185,7 +227,15 @@ export function toInvalidResult(item: InvalidUrl): DeadLinkResult {
 
 /** 汇总检测结果 */
 export function summarize(results: readonly DeadLinkResult[]): DeadLinkSummary {
-  const s = { total: results.length, alive: 0, redirect: 0, dead: 0, timeout: 0, error: 0, invalid: 0 }
+  const s = {
+    total: results.length,
+    alive: 0,
+    redirect: 0,
+    dead: 0,
+    timeout: 0,
+    error: 0,
+    invalid: 0,
+  }
   for (const r of results) {
     if (r.status === '存活') s.alive += 1
     else if (r.status === '重定向') s.redirect += 1

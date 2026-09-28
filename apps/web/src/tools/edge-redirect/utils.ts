@@ -32,7 +32,8 @@ export function validateFromPattern(from: string): string | null {
   if (stripped === '') return '来源地址格式非法'
   try {
     const url = new URL(stripped)
-    if (url.protocol !== 'http:' && url.protocol !== 'https:') return '来源地址须为 http/https 或以 / 开头的路径'
+    if (url.protocol !== 'http:' && url.protocol !== 'https:')
+      return '来源地址须为 http/https 或以 / 开头的路径'
     return null
   } catch {
     return '来源地址格式非法'

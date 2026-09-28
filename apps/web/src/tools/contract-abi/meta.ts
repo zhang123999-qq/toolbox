@@ -10,7 +10,8 @@ export const meta: ToolMeta = {
   title: '合约 ABI',
   description: '解析合约 ABI：浏览函数与事件接口，计算 4 字节选择器与事件主题',
   titleEn: 'Contract ABI',
-  descriptionEn: 'Parse contract ABIs: browse functions and events, compute selectors and topic hashes',
+  descriptionEn:
+    'Parse contract ABIs: browse functions and events, compute selectors and topic hashes',
 
   category: 'encoding',
   group: 'dev',

@@ -8,9 +8,11 @@ export const meta: ToolMeta = {
   id: 'color-a11y',
   slug: 'color-a11y',
   title: '颜色无障碍',
-  description: '颜色无障碍检查：红/绿/蓝/全色盲四种模拟下分别计算对比度，判定色盲用户是否仍能通过 WCAG AA（区别于 #716 对比度检测）',
+  description:
+    '颜色无障碍检查：红/绿/蓝/全色盲四种模拟下分别计算对比度，判定色盲用户是否仍能通过 WCAG AA（区别于 #716 对比度检测）',
   titleEn: 'Color Accessibility',
-  descriptionEn: 'Color accessibility: simulate protanopia/deuteranopia/tritanopia/achromatopsia and check WCAG AA for color-blind users',
+  descriptionEn:
+    'Color accessibility: simulate protanopia/deuteranopia/tritanopia/achromatopsia and check WCAG AA for color-blind users',
 
   category: 'a11y',
   group: 'life',

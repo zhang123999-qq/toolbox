@@ -73,11 +73,11 @@ describe('ai-detect · utils', () => {
     expect(() => parseVerdict('纯文本无 JSON')).toThrow('不是有效的 JSON')
     expect(() => parseVerdict('{不是 json}')).toThrow('不是有效的 JSON')
     expect(() => parseVerdict('null')).toThrow('verdict 字段无效')
-    expect(() => parseVerdict(JSON.stringify({ verdict: 'x', confidence: 1, reasons: [] }))).toThrow(
-      'verdict 字段无效',
-    )
-    expect(
-      () => parseVerdict(JSON.stringify({ verdict: 'ai', confidence: '高', reasons: [] })),
+    expect(() =>
+      parseVerdict(JSON.stringify({ verdict: 'x', confidence: 1, reasons: [] })),
+    ).toThrow('verdict 字段无效')
+    expect(() =>
+      parseVerdict(JSON.stringify({ verdict: 'ai', confidence: '高', reasons: [] })),
     ).toThrow('confidence 字段无效')
     expect(() =>
       parseVerdict(JSON.stringify({ verdict: 'ai', confidence: NaN, reasons: [] })),

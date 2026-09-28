@@ -10,7 +10,8 @@ export const meta: ToolMeta = {
   title: '规范链接检查',
   description: '检查页面 canonical 标签：缺失、重复、非绝对 URL 与是否自指',
   titleEn: 'Canonical Check',
-  descriptionEn: 'Check page canonical tags: missing, duplicates, non-absolute URLs and self-reference',
+  descriptionEn:
+    'Check page canonical tags: missing, duplicates, non-absolute URLs and self-reference',
 
   category: 'seo',
   group: 'dev',

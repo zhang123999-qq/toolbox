@@ -68,9 +68,9 @@ describe('getDeviceInfo', () => {
     expect(getDeviceInfo({ userAgent: DESKTOP_UA }).mobileHint).toBe(false)
   })
   it('userAgentData.mobile=true 时直接采用', () => {
-    expect(getDeviceInfo({ userAgent: DESKTOP_UA, userAgentData: { mobile: true } }).mobileHint).toBe(
-      true,
-    )
+    expect(
+      getDeviceInfo({ userAgent: DESKTOP_UA, userAgentData: { mobile: true } }).mobileHint,
+    ).toBe(true)
   })
   it('maxTouchPoints>0 → touch 为 true', () => {
     expect(getDeviceInfo({ maxTouchPoints: 5 }).touch).toBe(true)

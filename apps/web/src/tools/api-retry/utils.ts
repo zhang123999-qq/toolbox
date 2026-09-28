@@ -75,7 +75,10 @@ export function computeRetrySchedule(opts: RetryOptions): RetryStep[] {
   const steps: RetryStep[] = []
   let cumulative = 0
   for (let i = 0; i < opts.maxRetries; i++) {
-    const capped = Math.min(rawDelay(strategy, opts.baseDelayMs, opts.multiplier, i), opts.maxDelayMs)
+    const capped = Math.min(
+      rawDelay(strategy, opts.baseDelayMs, opts.multiplier, i),
+      opts.maxDelayMs,
+    )
     const delayMs = Math.round(capped)
     const minDelayMs = opts.jitter ? Math.round(capped * (1 - JITTER_RATIO)) : delayMs
     const maxDelayMs = opts.jitter ? Math.round(capped * (1 + JITTER_RATIO)) : delayMs

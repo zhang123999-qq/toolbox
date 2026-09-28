@@ -68,7 +68,9 @@ describe('radar · Tool', () => {
   it('未知指标进入错误态', () => {
     render(<Tool />)
     fireEvent.change(byTestId('input'), {
-      target: { value: '产品A, 速度:80, 力量:65, 耐力:90\n产品B, 体能:70, 速度:60, 力量:85, 耐力:70' },
+      target: {
+        value: '产品A, 速度:80, 力量:65, 耐力:90\n产品B, 体能:70, 速度:60, 力量:85, 耐力:70',
+      },
     })
     const alert = byTestId('output').querySelector('[role="alert"]')
     expect(alert).toBeTruthy()
@@ -79,9 +81,7 @@ describe('radar · Tool', () => {
     render(<Tool />)
     // 等待动态 import + init 完成，图表实例就绪
     await vi.waitFor(() => expect(init).toHaveBeenCalled())
-    const clickSpy = vi
-      .spyOn(HTMLAnchorElement.prototype, 'click')
-      .mockImplementation(() => {})
+    const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {})
     fireEvent.click(byTestId('download-png'))
     expect(getDataURL).toHaveBeenCalledWith({
       type: 'png',

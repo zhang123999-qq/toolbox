@@ -51,18 +51,28 @@ export default function Tool() {
             参数示例：{EXAMPLE}
           </p>
           <div>
-            <button type="button" data-testid="dmg-calc" onClick={() => handleCalc(input)} className={BTN_CLS}>
+            <button
+              type="button"
+              data-testid="dmg-calc"
+              onClick={() => handleCalc(input)}
+              className={BTN_CLS}
+            >
               计算伤害
             </button>
           </div>
           {error !== '' && (
-            <p data-testid="dmg-error" className="text-sm text-red-600 dark:text-red-400">{error}</p>
+            <p data-testid="dmg-error" className="text-sm text-red-600 dark:text-red-400">
+              {error}
+            </p>
           )}
           {output !== '' && (
-            <pre data-testid="dmg-output" className={PRE_CLS}>{output}</pre>
+            <pre data-testid="dmg-output" className={PRE_CLS}>
+              {output}
+            </pre>
           )}
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            说明：基础值 = atk²/(atk+def)；暴击时 × critMult；variance 为伤害浮动比例（最终 ×(1±variance)）；结果至少为 1。纯本地计算。
+            说明：基础值 = atk²/(atk+def)；暴击时 × critMult；variance 为伤害浮动比例（最终
+            ×(1±variance)）；结果至少为 1。纯本地计算。
           </p>
         </div>
       )}

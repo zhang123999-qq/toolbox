@@ -31,11 +31,10 @@ function req(over: Partial<GraphqlRequest> = {}): GraphqlRequest {
   }
 }
 
-function mockFetch(res: {
-  ok?: boolean
-  status?: number
-  text?: string
-}): { fetchImpl: FetchImpl; box: { captured: { url: string; init: RequestInit } | null } } {
+function mockFetch(res: { ok?: boolean; status?: number; text?: string }): {
+  fetchImpl: FetchImpl
+  box: { captured: { url: string; init: RequestInit } | null }
+} {
   const box: { captured: { url: string; init: RequestInit } | null } = { captured: null }
   const fetchImpl = vi.fn(async (url: string, init: RequestInit) => {
     box.captured = { url, init }
@@ -135,7 +134,9 @@ describe('sendGraphql', () => {
   })
   it('非法变量直接抛错', async () => {
     const { fetchImpl } = mockFetch({})
-    await expect(sendGraphql(req({ variables: '{' }), fetchImpl)).rejects.toThrow('变量不是合法 JSON')
+    await expect(sendGraphql(req({ variables: '{' }), fetchImpl)).rejects.toThrow(
+      '变量不是合法 JSON',
+    )
   })
   it('POST 请求体结构正确', async () => {
     let captured: { url: string; init: RequestInit } | null = null
@@ -196,9 +197,9 @@ describe('sendGraphql', () => {
 
 describe('formatGraphqlResult', () => {
   it('错误直接返回', () => {
-    expect(
-      formatGraphqlResult({ ok: false, status: 0, durationMs: 1, error: '请求失败：x' }),
-    ).toBe('请求失败：x')
+    expect(formatGraphqlResult({ ok: false, status: 0, durationMs: 1, error: '请求失败：x' })).toBe(
+      '请求失败：x',
+    )
   })
   it('data/errors 分开展示', async () => {
     const { fetchImpl } = mockFetch({ text: '{"data":{"a":1},"errors":[{"message":"w"}]}' })

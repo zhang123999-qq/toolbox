@@ -31,7 +31,10 @@ export default function Tool() {
             )}
             {view.json !== '' && (
               <div>
-                <p data-testid="vercel-summary" className="mb-1 text-xs text-slate-500 dark:text-slate-400">
+                <p
+                  data-testid="vercel-summary"
+                  className="mb-1 text-xs text-slate-500 dark:text-slate-400"
+                >
                   校验通过：{view.summary}
                 </p>
                 <pre data-testid="vercel-json" className="whitespace-pre-wrap font-mono text-sm">
@@ -40,8 +43,9 @@ export default function Tool() {
               </div>
             )}
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              说明：左侧粘贴或编写 vercel.json，右侧实时校验并输出格式化版本；source 须以 / 开头，destination
-              可为站内路径或 http(s) 外链。只处理 rewrites / redirects / headers 三节。
+              说明：左侧粘贴或编写 vercel.json，右侧实时校验并输出格式化版本；source 须以 /
+              开头，destination 可为站内路径或 http(s) 外链。只处理 rewrites / redirects / headers
+              三节。
             </p>
           </div>
         )

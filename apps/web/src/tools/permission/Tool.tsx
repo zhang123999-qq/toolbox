@@ -46,7 +46,9 @@ export default function Tool() {
       meta={meta}
       initialInput={{ text: JSON.stringify(EXAMPLE_PERMISSIONS, null, 2) }}
       initialOptions={{}}
-      example={{ text: JSON.stringify({ permissions: ['cookies', 'history'], hostPermissions: [] }, null, 2) }}
+      example={{
+        text: JSON.stringify({ permissions: ['cookies', 'history'], hostPermissions: [] }, null, 2),
+      }}
       renderOutput={(input) => (
         <div className="flex flex-col gap-3">
           <div>
@@ -90,9 +92,8 @@ export default function Tool() {
             </ul>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            说明：输入 JSON（permissions / hostPermissions），生成可直接并入
-            manifest.json 的权限片段。高风险权限会触发商店严格审核，请按需申请。
-            纯本地生成。
+            说明：输入 JSON（permissions / hostPermissions），生成可直接并入 manifest.json
+            的权限片段。高风险权限会触发商店严格审核，请按需申请。 纯本地生成。
           </p>
         </div>
       )}

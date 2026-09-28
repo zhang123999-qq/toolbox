@@ -24,7 +24,9 @@ describe('keyboard-nav · Tool', () => {
 
   it('输入 HTML 实时输出统计', () => {
     render(<Tool />)
-    fireEvent.change(byTestId('input'), { target: { value: '<a href="#c">跳过</a><button>确定</button>' } })
+    fireEvent.change(byTestId('input'), {
+      target: { value: '<a href="#c">跳过</a><button>确定</button>' },
+    })
     const out = byTestId('output').textContent ?? ''
     expect(out).toContain('可聚焦元素：2 个')
     expect(out).toContain('未发现问题 ✓')

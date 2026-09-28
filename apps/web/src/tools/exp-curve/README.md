@@ -4,10 +4,10 @@
 
 ## 模式与公式
 
-| 模式 | 参数 JSON | 单级所需经验 |
-|------|-----------|--------------|
-| linear | `{"base":100,"growth":50}` | `base + growth × (level-1)` |
-| exponential | `{"base":100,"growth":1.15}` | `base × growth^(level-1)` |
+| 模式        | 参数 JSON                    | 单级所需经验                |
+| ----------- | ---------------------------- | --------------------------- |
+| linear      | `{"base":100,"growth":50}`   | `base + growth × (level-1)` |
+| exponential | `{"base":100,"growth":1.15}` | `base × growth^(level-1)`   |
 
 - `base`：1 级升 2 级所需经验（> 0）
 - `growth`：线性为每级增量（≥ 0），指数为每级成长系数（> 0）

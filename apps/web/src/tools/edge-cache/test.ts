@@ -13,7 +13,12 @@ import {
 describe('buildCacheHeaders', () => {
   it('完整拼装', () => {
     expect(
-      buildCacheHeaders({ maxAge: 3600, sMaxAge: 86400, staleWhileRevalidate: 60, immutable: true }),
+      buildCacheHeaders({
+        maxAge: 3600,
+        sMaxAge: 86400,
+        staleWhileRevalidate: 60,
+        immutable: true,
+      }),
     ).toBe('max-age=3600, s-maxage=86400, stale-while-revalidate=60, immutable')
   })
   it('no-store 独占', () => {

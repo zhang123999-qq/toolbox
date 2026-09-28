@@ -116,9 +116,7 @@ describe('hashTypedData（Ether Mail 官方向量）', () => {
   })
   it('最终 digest 一致', () => {
     const res = hashTypedData(MAIL_INPUT)
-    expect(res.digestHex).toBe(
-      'be609aee343fb3c4b28e1df9e632fca64fcfaede20f02e86244efddf30957bd2',
-    )
+    expect(res.digestHex).toBe('be609aee343fb3c4b28e1df9e632fca64fcfaede20f02e86244efddf30957bd2')
   })
   it('encodedType 与 typeHash 自洽', () => {
     const res = hashTypedData(MAIL_INPUT)
@@ -216,7 +214,9 @@ describe('数组与嵌套', () => {
       keccak256(
         (() => {
           const parts: number[] = []
-          for (const n of [1, 2, 3]) for (const hx of [elem(n)]) for (let i = 0; i < 32; i++) parts.push(parseInt(hx.slice(i * 2, i * 2 + 2), 16))
+          for (const n of [1, 2, 3])
+            for (const hx of [elem(n)])
+              for (let i = 0; i < 32; i++) parts.push(parseInt(hx.slice(i * 2, i * 2 + 2), 16))
           return new Uint8Array(parts)
         })(),
       ),
@@ -265,7 +265,12 @@ describe('位宽校验分支补齐', () => {
   })
   it('嵌套数组类型走 checkAtomicType 递归分支', () => {
     const types: EIP712Types = { T: [{ name: 'm', type: 'uint8[2][2]' }] }
-    const data = { m: [[1, 2], [3, 4]] }
+    const data = {
+      m: [
+        [1, 2],
+        [3, 4],
+      ],
+    }
     expect(hexOf(encodeData('T', data, types))).toHaveLength(128)
   })
 })

@@ -124,7 +124,10 @@ describe('地标问题检查', () => {
     expect(issue?.suggestion).toContain('aria-label')
   })
   it('有名 region 不报错', () => {
-    const a = analyzeLandmarks('<div role="region" aria-label="评论区">x</div><main>M</main>', factory)
+    const a = analyzeLandmarks(
+      '<div role="region" aria-label="评论区">x</div><main>M</main>',
+      factory,
+    )
     expect(a.issues.some((i) => i.message.includes('region'))).toBe(false)
   })
 })

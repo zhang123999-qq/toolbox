@@ -8,7 +8,12 @@ describe('getBattery', () => {
   it('注入 mock 时返回电池信息', async () => {
     const r = await getBattery({
       getBattery: () =>
-        Promise.resolve({ level: 0.8, charging: true, chargingTime: 1800, dischargingTime: Infinity }),
+        Promise.resolve({
+          level: 0.8,
+          charging: true,
+          chargingTime: 1800,
+          dischargingTime: Infinity,
+        }),
     })
     expect(r).toEqual({ level: 0.8, charging: true, chargingTime: 1800, dischargingTime: Infinity })
   })
@@ -31,7 +36,12 @@ describe('batteryStatus', () => {
   })
   it('充电时间未知时显示未知', () => {
     expect(
-      batteryStatus({ level: 0.5, charging: true, chargingTime: Infinity, dischargingTime: Infinity }),
+      batteryStatus({
+        level: 0.5,
+        charging: true,
+        chargingTime: Infinity,
+        dischargingTime: Infinity,
+      }),
     ).toContain('未知')
   })
   it('使用电池显示预计可用时间', () => {
@@ -41,7 +51,12 @@ describe('batteryStatus', () => {
   })
   it('放电时间未知时显示未知', () => {
     expect(
-      batteryStatus({ level: 0.4, charging: false, chargingTime: Infinity, dischargingTime: Infinity }),
+      batteryStatus({
+        level: 0.4,
+        charging: false,
+        chargingTime: Infinity,
+        dischargingTime: Infinity,
+      }),
     ).toContain('未知')
   })
   it('电量钳制在 0-100 之间', () => {

@@ -50,19 +50,16 @@ describe('eip712 · Tool', () => {
 
   it('未知类型行内报错', () => {
     render(<Tool />)
-    fireEvent.change(
-      byTestId('input'),
-      {
-        target: {
-          value: JSON.stringify({
-            types: { EIP712Domain: [] },
-            domain: {},
-            primaryType: 'Nope',
-            message: {},
-          }),
-        },
+    fireEvent.change(byTestId('input'), {
+      target: {
+        value: JSON.stringify({
+          types: { EIP712Domain: [] },
+          domain: {},
+          primaryType: 'Nope',
+          message: {},
+        }),
       },
-    )
+    })
     expect(byTestId('output').textContent).toContain('未知类型')
   })
 })

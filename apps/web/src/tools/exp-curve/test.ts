@@ -2,7 +2,13 @@
  * exp-curve（#805）utils 单测：经验曲线。
  */
 import { describe, expect, it } from 'vitest'
-import { buildExpTable, expForLevel, formatExpTable, levelForTotalExp, type ExpCurveInput } from './utils'
+import {
+  buildExpTable,
+  expForLevel,
+  formatExpTable,
+  levelForTotalExp,
+  type ExpCurveInput,
+} from './utils'
 
 describe('expForLevel · linear', () => {
   const input: ExpCurveInput = { base: 100, growth: 50, mode: 'linear' }

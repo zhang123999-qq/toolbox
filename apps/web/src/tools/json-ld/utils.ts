@@ -123,7 +123,11 @@ function put(obj: Record<string, unknown>, key: string, value: string | undefine
 function buildArticle(f: JsonLdFields): Record<string, unknown> {
   const headline = field(f.headline)
   if (headline === '') throw new Error('Article 的 headline（标题）不能为空')
-  const obj: Record<string, unknown> = { '@context': 'https://schema.org', '@type': 'Article', headline }
+  const obj: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline,
+  }
   put(obj, 'description', f.description)
   const author = field(f.author)
   if (author !== '') obj.author = { '@type': 'Person', name: author }
@@ -136,7 +140,11 @@ function buildArticle(f: JsonLdFields): Record<string, unknown> {
 function buildProduct(f: JsonLdFields): Record<string, unknown> {
   const name = field(f.name)
   if (name === '') throw new Error('Product 的 name（商品名）不能为空')
-  const obj: Record<string, unknown> = { '@context': 'https://schema.org', '@type': 'Product', name }
+  const obj: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name,
+  }
   put(obj, 'description', f.description)
   put(obj, 'image', f.image)
   put(obj, 'url', f.url)
@@ -185,7 +193,11 @@ function buildBreadcrumbList(f: JsonLdFields): Record<string, unknown> {
 function buildOrganization(f: JsonLdFields): Record<string, unknown> {
   const name = field(f.name)
   if (name === '') throw new Error('Organization 的 name（组织名）不能为空')
-  const obj: Record<string, unknown> = { '@context': 'https://schema.org', '@type': 'Organization', name }
+  const obj: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name,
+  }
   put(obj, 'url', f.url)
   put(obj, 'logo', f.logo)
   put(obj, 'description', f.description)

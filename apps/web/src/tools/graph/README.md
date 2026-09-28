@@ -10,10 +10,10 @@
 
 ## 输入
 
-| 字段       | 类型   | 约束                                   |
-| ---------- | ------ | -------------------------------------- |
-| `text`     | string | 节点数据（留空用示例）                 |
-| `edgeText` | string | 边数据（留空用示例）                   |
+| 字段       | 类型   | 约束                   |
+| ---------- | ------ | ---------------------- |
+| `text`     | string | 节点数据（留空用示例） |
+| `edgeText` | string | 边数据（留空用示例）   |
 
 节点行格式（每行一个节点）：
 
@@ -83,15 +83,15 @@
 
 ## 元信息
 
-| 项       | 值                               |
-| -------- | -------------------------------- |
-| 全局编号 | #673                             |
-| 域       | `random`                         |
-| 大组     | `design`                         |
-| 优先级   | P2                               |
-| 可行性   | A（纯前端，echarts 动态导入）    |
-| 模板     | T3（图表可视化预览）             |
-| 依赖     | `echarts`（动态导入，独立分包）  |
+| 项       | 值                              |
+| -------- | ------------------------------- |
+| 全局编号 | #673                            |
+| 域       | `random`                        |
+| 大组     | `design`                        |
+| 优先级   | P2                              |
+| 可行性   | A（纯前端，echarts 动态导入）   |
+| 模板     | T3（图表可视化预览）            |
+| 依赖     | `echarts`（动态导入，独立分包） |
 
 ---
 
@@ -107,10 +107,10 @@ Enter nodes and edges, render a force-directed graph locally with ECharts. Nodes
 
 ## Input
 
-| Field      | Type   | Constraint                                |
-| ---------- | ------ | ----------------------------------------- |
-| `text`     | string | Node data (empty = example)               |
-| `edgeText` | string | Edge data (empty = example)               |
+| Field      | Type   | Constraint                  |
+| ---------- | ------ | --------------------------- |
+| `text`     | string | Node data (empty = example) |
+| `edgeText` | string | Edge data (empty = example) |
 
 Node line format (one node per line):
 
@@ -134,11 +134,11 @@ source -> target:weight
 
 ## Options
 
-| Option | Default | Constraint                 | Description        |
-| ------ | ------- | -------------------------- | ------------------ |
-| Title  | (empty) | any text                   | Empty = no title   |
-| Width  | `600`   | 100–2000                   | Canvas width (px)  |
-| Height | `400`   | 100–2000                   | Canvas height (px) |
+| Option | Default | Constraint | Description        |
+| ------ | ------- | ---------- | ------------------ |
+| Title  | (empty) | any text   | Empty = no title   |
+| Width  | `600`   | 100–2000   | Canvas width (px)  |
+| Height | `400`   | 100–2000   | Canvas height (px) |
 
 ## Output
 
@@ -161,12 +161,12 @@ Fully local: ECharts renders in the browser; nodes / edges are not uploaded.
 
 ## Meta
 
-| Item        | Value                              |
-| ----------- | ---------------------------------- |
-| Global No.  | #673                               |
-| Category    | `random`                           |
-| Group       | `design`                           |
-| Priority    | P2                                 |
+| Item        | Value                                |
+| ----------- | ------------------------------------ |
+| Global No.  | #673                                 |
+| Category    | `random`                             |
+| Group       | `design`                             |
+| Priority    | P2                                   |
 | Feasibility | A (frontend, echarts dynamic import) |
-| Template    | T3 (chart preview)                 |
-| Deps        | `echarts` (dynamic import)         |
+| Template    | T3 (chart preview)                   |
+| Deps        | `echarts` (dynamic import)           |

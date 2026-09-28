@@ -215,10 +215,7 @@ export async function sendGraphql(
       ok: false,
       status: 0,
       durationMs: Date.now() - started,
-      error:
-        '请求失败：' +
-        errorMessage(error) +
-        '（常见原因：目标未允许 CORS、地址不通）',
+      error: '请求失败：' + errorMessage(error) + '（常见原因：目标未允许 CORS、地址不通）',
     }
   }
   const text = await res.text()

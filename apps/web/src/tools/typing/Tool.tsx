@@ -47,7 +47,10 @@ export default function Tool() {
               </p>
             )}
             {view.detail !== '' && (
-              <p data-testid="typing-detail" className="whitespace-pre-wrap text-sm text-slate-700 dark:text-slate-300">
+              <p
+                data-testid="typing-detail"
+                className="whitespace-pre-wrap text-sm text-slate-700 dark:text-slate-300"
+              >
                 {view.detail}
               </p>
             )}

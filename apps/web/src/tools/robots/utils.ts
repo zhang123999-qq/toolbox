@@ -74,10 +74,7 @@ function assertSitemap(sitemap: string): void {
  * 同一 User-agent 的规则合并为一组（保持首次出现顺序），组之间空行分隔；
  * 末尾依次附加 Sitemap 与 Crawl-delay。
  */
-export function buildRobotsTxt(
-  rules: readonly RobotRule[],
-  opts: RobotsBuildOptions = {},
-): string {
+export function buildRobotsTxt(rules: readonly RobotRule[], opts: RobotsBuildOptions = {}): string {
   assertNotEmpty(rules)
   const sitemap = (opts.sitemap ?? '').trim()
   if (sitemap !== '') assertSitemap(sitemap)

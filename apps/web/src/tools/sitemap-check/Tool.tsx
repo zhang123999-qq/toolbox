@@ -55,12 +55,14 @@ export default function Tool() {
                     <span className="text-sm font-normal text-slate-500">%</span>
                   </span>
                   <span className="text-slate-600 dark:text-slate-400">
-                    {result.isIndex ? 'sitemap 索引' : 'urlset'} · 共 {result.entries.length} 条
-                    · 问题 {result.issues.length}
+                    {result.isIndex ? 'sitemap 索引' : 'urlset'} · 共 {result.entries.length} 条 ·
+                    问题 {result.issues.length}
                   </span>
                 </div>
                 {result.issues.length === 0 ? (
-                  <p className="text-sm text-green-700 dark:text-green-400">未发现问题，sitemap 符合规范</p>
+                  <p className="text-sm text-green-700 dark:text-green-400">
+                    未发现问题，sitemap 符合规范
+                  </p>
                 ) : (
                   <ul className="flex flex-col gap-1.5">
                     {result.issues.map((issue, i) => (
@@ -75,7 +77,11 @@ export default function Tool() {
           }
         } catch (err) {
           body = (
-            <div role="alert" data-testid="error" className="text-sm text-red-700 dark:text-red-300">
+            <div
+              role="alert"
+              data-testid="error"
+              className="text-sm text-red-700 dark:text-red-300"
+            >
               {err instanceof Error ? err.message : '检查失败'}
             </div>
           )

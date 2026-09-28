@@ -94,7 +94,9 @@ describe('funnel / buildFunnelOption', () => {
     const series = opt.series as Array<{ label: { formatter: (p: unknown) => string } }>
     const formatter = series[0].label.formatter
     expect(formatter({ dataIndex: 1, name: '注册', value: 3000 })).toBe('注册\n3000（转化率 30%）')
-    expect(formatter({ dataIndex: 0, name: '访问', value: 10000 })).toBe('访问\n10000（转化率 100%）')
+    expect(formatter({ dataIndex: 0, name: '访问', value: 10000 })).toBe(
+      '访问\n10000（转化率 100%）',
+    )
   })
 })
 

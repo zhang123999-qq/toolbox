@@ -10,9 +10,7 @@ const EXAMPLE: MixedContentInput = {
 }
 
 export default function Tool() {
-  const extraInputs: readonly ExtraInputDef[] = [
-    { key: 'pageUrl', label: '页面 URL', rows: 1 },
-  ]
+  const extraInputs: readonly ExtraInputDef[] = [{ key: 'pageUrl', label: '页面 URL', rows: 1 }]
 
   return (
     <TwoColumn<MixedContentInput, MixedContentOptions>

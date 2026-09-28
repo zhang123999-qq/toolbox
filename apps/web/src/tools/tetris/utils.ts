@@ -93,7 +93,11 @@ export function lockPiece(board: TetrisBoard, piece: Piece): TetrisBoard {
 }
 
 /** 消除满行并计分（n²×100） */
-export function clearLines(board: TetrisBoard): { board: TetrisBoard; cleared: number; score: number } {
+export function clearLines(board: TetrisBoard): {
+  board: TetrisBoard
+  cleared: number
+  score: number
+} {
   const w = board[0].length
   const kept = board.filter((row) => row.some((v) => v === 0))
   const cleared = board.length - kept.length

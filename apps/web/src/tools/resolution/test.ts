@@ -2,12 +2,7 @@
  * resolution（#858）utils 单测：屏幕信息读取、宽高比换算、常见分辨率表。
  */
 import { describe, expect, it } from 'vitest'
-import {
-  COMMON_RESOLUTIONS,
-  aspectRatio,
-  commonResolutionById,
-  getScreenInfo,
-} from './utils'
+import { COMMON_RESOLUTIONS, aspectRatio, commonResolutionById, getScreenInfo } from './utils'
 
 const fakeScreen = { width: 1920, height: 1080, colorDepth: 24 }
 const fakeWindow = { innerWidth: 1280, innerHeight: 720, devicePixelRatio: 2 }

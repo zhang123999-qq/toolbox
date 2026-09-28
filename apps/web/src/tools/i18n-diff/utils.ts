@@ -99,8 +99,10 @@ export function diffI18n(baseJson: string, targetJson: string): I18nDiffResult {
     }
   }
 
-  const translatedCount = base.size - missingKeys.length - emptyValues.length - untranslatedKeys.length
-  const completionRate = base.size === 0 ? 100 : Math.round((translatedCount / base.size) * 1000) / 10
+  const translatedCount =
+    base.size - missingKeys.length - emptyValues.length - untranslatedKeys.length
+  const completionRate =
+    base.size === 0 ? 100 : Math.round((translatedCount / base.size) * 1000) / 10
   return {
     missingKeys,
     extraKeys,

@@ -21,7 +21,11 @@ export interface TwitterCardFields {
 
 /** HTML 属性转义：& < > " */
 export function escapeHtmlAttr(raw: string): string {
-  return raw.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+  return raw
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
 }
 
 /** 取字段并去首尾空格，未传视为空字符串 */

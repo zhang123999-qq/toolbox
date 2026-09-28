@@ -50,7 +50,10 @@ function parseTabIndex(el: Element): number {
   return Number.isInteger(n) ? n : 0
 }
 
-function collect(html: string, createDoc?: DocFactory): { tag: string; label: string; tabIndex: number }[] {
+function collect(
+  html: string,
+  createDoc?: DocFactory,
+): { tag: string; label: string; tabIndex: number }[] {
   const doc = parseHtml(html, createDoc)
   const items: { tag: string; label: string; tabIndex: number }[] = []
   for (const el of Array.from(doc.body.querySelectorAll(FOCUSABLE_SELECTOR))) {

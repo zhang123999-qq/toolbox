@@ -8,9 +8,11 @@ export const meta: ToolMeta = {
   id: 'screen-reader',
   slug: 'screen-reader',
   title: '屏幕阅读器预览',
-  description: '模拟屏幕阅读器视角：解析 HTML 生成朗读大纲，检查标题层级、图片 alt、表单 label 与链接文本等问题',
+  description:
+    '模拟屏幕阅读器视角：解析 HTML 生成朗读大纲，检查标题层级、图片 alt、表单 label 与链接文本等问题',
   titleEn: 'Screen Reader Preview',
-  descriptionEn: 'Preview HTML from a screen reader perspective: reading outline plus heading, alt, label and link-text checks',
+  descriptionEn:
+    'Preview HTML from a screen reader perspective: reading outline plus heading, alt, label and link-text checks',
 
   category: 'a11y',
   group: 'life',

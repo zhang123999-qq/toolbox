@@ -2,7 +2,13 @@ import { useState } from 'react'
 import { MultiPanel } from '../../components/tool/templates/MultiPanel'
 import { meta } from './meta'
 import type { ExpCurveToolInput } from './schema'
-import { buildExpTable, formatExpTable, levelForTotalExp, type ExpCurveInput, type ExpMode } from './utils'
+import {
+  buildExpTable,
+  formatExpTable,
+  levelForTotalExp,
+  type ExpCurveInput,
+  type ExpMode,
+} from './utils'
 
 const BTN_CLS =
   'rounded bg-blue-600 px-4 py-1.5 text-sm text-white disabled:opacity-50 dark:bg-blue-500'
@@ -73,33 +79,64 @@ export default function Tool() {
                 type="button"
                 data-testid={`exp-mode-${m}`}
                 onClick={() => setMode(m)}
-                className={m === mode ? BTN_CLS : 'rounded border border-slate-300 px-4 py-1.5 text-sm dark:border-slate-600'}
+                className={
+                  m === mode
+                    ? BTN_CLS
+                    : 'rounded border border-slate-300 px-4 py-1.5 text-sm dark:border-slate-600'
+                }
               >
                 {m}
               </button>
             ))}
           </div>
-          <p className="font-mono text-xs text-slate-500 dark:text-slate-400">参数示例：{HINTS[mode]}</p>
+          <p className="font-mono text-xs text-slate-500 dark:text-slate-400">
+            参数示例：{HINTS[mode]}
+          </p>
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs text-slate-500">表上限</span>
-            <input data-testid="exp-maxlevel" value={maxLevel} onChange={(e) => setMaxLevel(e.target.value)} className={`${INPUT_CLS} w-20`} />
-            <button type="button" data-testid="exp-table" onClick={() => handleTable(input)} className={BTN_CLS}>
+            <input
+              data-testid="exp-maxlevel"
+              value={maxLevel}
+              onChange={(e) => setMaxLevel(e.target.value)}
+              className={`${INPUT_CLS} w-20`}
+            />
+            <button
+              type="button"
+              data-testid="exp-table"
+              onClick={() => handleTable(input)}
+              className={BTN_CLS}
+            >
               生成经验表
             </button>
             <span className="text-xs text-slate-500">累计经验</span>
-            <input data-testid="exp-totalexp" value={totalExp} onChange={(e) => setTotalExp(e.target.value)} className={`${INPUT_CLS} w-24`} />
-            <button type="button" data-testid="exp-lookup" onClick={() => handleLookup(input)} className="rounded border border-slate-300 px-4 py-1.5 text-sm dark:border-slate-600">
+            <input
+              data-testid="exp-totalexp"
+              value={totalExp}
+              onChange={(e) => setTotalExp(e.target.value)}
+              className={`${INPUT_CLS} w-24`}
+            />
+            <button
+              type="button"
+              data-testid="exp-lookup"
+              onClick={() => handleLookup(input)}
+              className="rounded border border-slate-300 px-4 py-1.5 text-sm dark:border-slate-600"
+            >
               反查等级
             </button>
           </div>
           {error !== '' && (
-            <p data-testid="exp-error" className="text-sm text-red-600 dark:text-red-400">{error}</p>
+            <p data-testid="exp-error" className="text-sm text-red-600 dark:text-red-400">
+              {error}
+            </p>
           )}
           {output !== '' && (
-            <pre data-testid="exp-output" className={PRE_CLS}>{output}</pre>
+            <pre data-testid="exp-output" className={PRE_CLS}>
+              {output}
+            </pre>
           )}
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            说明：linear 为 base + growth×(level-1)；exponential 为 base × growth^(level-1)。纯本地计算。
+            说明：linear 为 base + growth×(level-1)；exponential 为 base ×
+            growth^(level-1)。纯本地计算。
           </p>
         </div>
       )}

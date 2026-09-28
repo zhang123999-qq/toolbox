@@ -185,7 +185,8 @@ export async function fetchHtml(
   }
   if (!res.ok) throw new MobileFriendlyError(`目标站点返回 HTTP ${res.status}`)
   const html = await res.text()
-  if (html.length > 2000000) throw new MobileFriendlyError('页面过大（超过 2,000,000 字符），请改用粘贴关键片段分析')
+  if (html.length > 2000000)
+    throw new MobileFriendlyError('页面过大（超过 2,000,000 字符），请改用粘贴关键片段分析')
   return html
 }
 

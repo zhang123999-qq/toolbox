@@ -14,7 +14,8 @@ export const meta: ToolMeta = {
   title: '死链检查',
   description: '批量检测 URL 列表的存活状态：存活、重定向、死链、超时，输出死链清单与存活率',
   titleEn: 'Dead Link Checker',
-  descriptionEn: 'Batch-check a URL list for liveness: alive, redirect, dead, timeout, with dead list and survival rate',
+  descriptionEn:
+    'Batch-check a URL list for liveness: alive, redirect, dead, timeout, with dead list and survival rate',
 
   category: 'seo',
   group: 'dev',

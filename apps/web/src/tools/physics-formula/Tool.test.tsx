@@ -33,7 +33,9 @@ describe('physics-formula · Tool', () => {
   it('缺变量显示中文错误', () => {
     render(<Tool />)
     fireEvent.change(byTestId('input'), { target: { value: 'm=2' } })
-    expect(byTestId('physics-formula-error').textContent).toContain('缺少变量 a（加速度，单位 m/s²）')
+    expect(byTestId('physics-formula-error').textContent).toContain(
+      '缺少变量 a（加速度，单位 m/s²）',
+    )
   })
 
   it('赋值格式非法显示中文错误', () => {

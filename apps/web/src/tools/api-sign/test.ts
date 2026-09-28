@@ -164,9 +164,9 @@ describe('signRequest', () => {
     )
   })
   it('非字符串 path 抛错', async () => {
-    await expect(
-      signRequest({ ...FIXED, path: 42 as unknown as string }, subtle),
-    ).rejects.toThrow('path 必须以 / 开头')
+    await expect(signRequest({ ...FIXED, path: 42 as unknown as string }, subtle)).rejects.toThrow(
+      'path 必须以 / 开头',
+    )
   })
   it('缺省 timestamp/nonce 自动生成', async () => {
     const { timestamp: _ts, nonce: _nc, ...rest } = FIXED

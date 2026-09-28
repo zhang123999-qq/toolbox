@@ -109,22 +109,37 @@ export default function Tool() {
               </label>
             </div>
             {vp.error && (
-              <div role="alert" data-testid="param-error" className="rounded border border-red-300 bg-red-50 p-2 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300">
+              <div
+                role="alert"
+                data-testid="param-error"
+                className="rounded border border-red-300 bg-red-50 p-2 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300"
+              >
                 {vp.error}
               </div>
             )}
             {error ? (
-              <div role="alert" data-testid="extract-error" className="rounded border border-red-300 bg-red-50 p-2 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300">
+              <div
+                role="alert"
+                data-testid="extract-error"
+                className="rounded border border-red-300 bg-red-50 p-2 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300"
+              >
                 {error}
               </div>
             ) : article === null ? (
-              <div data-testid="article-empty" className="text-sm text-slate-500 dark:text-slate-400">
+              <div
+                data-testid="article-empty"
+                className="text-sm text-slate-500 dark:text-slate-400"
+              >
                 在上方输入框粘贴 HTML 后自动提取正文
               </div>
             ) : (
               <>
-                <div data-testid="article-stats" className="text-sm text-slate-500 dark:text-slate-400">
-                  {article.wordCount} 字 · 预计阅读 {article.readingMinutes} 分钟 · {article.paragraphs.length} 段
+                <div
+                  data-testid="article-stats"
+                  className="text-sm text-slate-500 dark:text-slate-400"
+                >
+                  {article.wordCount} 字 · 预计阅读 {article.readingMinutes} 分钟 ·{' '}
+                  {article.paragraphs.length} 段
                 </div>
                 <article
                   data-testid="article-view"

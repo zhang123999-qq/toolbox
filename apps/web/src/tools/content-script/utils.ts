@@ -87,7 +87,7 @@ function contextMenuBlock(): string {
     '  // —— 右键菜单协作：content script 不能直接创建 contextMenus，',
     '  //    把选中文本发给 background，由 background 调用 chrome.contextMenus ——',
     "  document.addEventListener('contextmenu', () => {",
-    '    const selection = window.getSelection ? window.getSelection().toString() : \'\';',
+    "    const selection = window.getSelection ? window.getSelection().toString() : '';",
     "    notifyBackground({ kind: 'contextmenu', selection });",
     '  });',
   ].join('\n')

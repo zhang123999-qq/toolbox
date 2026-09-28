@@ -1,12 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import {
-  EXAMPLE_CSV,
-  parseCsv,
-  pivotTable,
-  toPivotCsv,
-  transform,
-  type PivotResult,
-} from './utils'
+import { EXAMPLE_CSV, parseCsv, pivotTable, toPivotCsv, transform, type PivotResult } from './utils'
 import type { PivotInput } from './schema'
 
 const input = (o: Partial<PivotInput>): PivotInput => ({
@@ -141,7 +134,10 @@ describe('pivot / pivotTable', () => {
     })
     expect(r.rowHeaders).toEqual(['1', ''])
     expect(r.colHeaders).toEqual(['x', 'y'])
-    expect(r.matrix).toEqual([[1, null], [null, 1]])
+    expect(r.matrix).toEqual([
+      [1, null],
+      [null, 1],
+    ])
   })
   it('列维度缺列时按空字符串分组', () => {
     const r = pivotTable(parseCsv('R,C,V\nA,x,1\nB,y'), {
@@ -152,7 +148,10 @@ describe('pivot / pivotTable', () => {
     })
     expect(r.rowHeaders).toEqual(['A', 'B'])
     expect(r.colHeaders).toEqual(['1', ''])
-    expect(r.matrix).toEqual([[1, null], [null, 1]])
+    expect(r.matrix).toEqual([
+      [1, null],
+      [null, 1],
+    ])
   })
   it('值列缺列时报非数字错误', () => {
     const bad = parseCsv('R,C,V\nA,x,1\nB,y')

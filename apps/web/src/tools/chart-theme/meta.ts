@@ -11,7 +11,8 @@ export const meta: ToolMeta = {
   title: '图表主题',
   description: '定制 ECharts 主题：背景色、主色板、字体、标题字号，实时预览并导出主题 JSON',
   titleEn: 'Chart Theme',
-  descriptionEn: 'Customize an ECharts theme: background, palette, font and title size, with live preview and JSON export',
+  descriptionEn:
+    'Customize an ECharts theme: background, palette, font and title size, with live preview and JSON export',
 
   category: 'random',
   group: 'design',

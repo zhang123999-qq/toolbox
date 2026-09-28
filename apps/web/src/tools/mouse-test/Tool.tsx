@@ -60,7 +60,10 @@ export default function Tool() {
         data-testid="mouse-zone"
         className={`${PANEL_CLASS} flex min-h-40 cursor-crosshair select-none items-center justify-center`}
       >
-        <p data-testid="mouse-last" className="text-sm font-medium text-slate-800 dark:text-slate-200">
+        <p
+          data-testid="mouse-last"
+          className="text-sm font-medium text-slate-800 dark:text-slate-200"
+        >
           {lastAction}
         </p>
       </div>
@@ -68,11 +71,16 @@ export default function Tool() {
         <p data-testid="mouse-summary" className="mb-2 text-sm text-slate-500 dark:text-slate-400">
           点击记录（{clicks.length} 次，双击 {doubleCount} 次）：
         </p>
-        <ul data-testid="mouse-history" className="max-h-40 space-y-1 overflow-auto text-sm text-slate-700 dark:text-slate-300">
+        <ul
+          data-testid="mouse-history"
+          className="max-h-40 space-y-1 overflow-auto text-sm text-slate-700 dark:text-slate-300"
+        >
           {clicks.length === 0 ? (
             <li>（暂无）</li>
           ) : (
-            [...clicks].reverse().map((c, i) => <li key={clicks.length - 1 - i}>{formatClickRecord(c)}</li>)
+            [...clicks]
+              .reverse()
+              .map((c, i) => <li key={clicks.length - 1 - i}>{formatClickRecord(c)}</li>)
           )}
         </ul>
       </div>

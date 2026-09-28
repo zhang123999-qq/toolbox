@@ -31,14 +31,16 @@ const EXAMPLE_HTML = `<!doctype html>
 const ERROR_CLASS = 'text-sm text-red-700 dark:text-red-300'
 
 const BADGE_CLASS: Record<CheckStatus, string> = {
-  '通过': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-  '警告': 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200',
-  '问题': 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+  通过: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+  警告: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200',
+  问题: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
 }
 
 function badge(status: CheckStatus) {
   return (
-    <span className={`rounded px-2 py-0.5 text-xs font-medium whitespace-nowrap ${BADGE_CLASS[status]}`}>
+    <span
+      className={`rounded px-2 py-0.5 text-xs font-medium whitespace-nowrap ${BADGE_CLASS[status]}`}
+    >
       {status}
     </span>
   )
@@ -166,7 +168,12 @@ export default function Tool() {
           >
             {pending ? t('tool.running') : t('tool.run')}
           </button>
-          <button type="button" data-testid="example" className={SECONDARY_BUTTON} onClick={useExample}>
+          <button
+            type="button"
+            data-testid="example"
+            className={SECONDARY_BUTTON}
+            onClick={useExample}
+          >
             {t('tool.example')}
           </button>
           <button type="button" data-testid="clear" className={SECONDARY_BUTTON} onClick={clear}>
@@ -195,13 +202,14 @@ export default function Tool() {
             </p>
           ) : (
             <div>
-              <p className="mb-2 text-lg font-semibold">
-                总分：{result.score}/100
-              </p>
+              <p className="mb-2 text-lg font-semibold">总分：{result.score}/100</p>
               <table className="w-full border-collapse text-sm">
                 <tbody>
                   {result.items.map((item) => (
-                    <tr key={item.check} className="border-t border-slate-200 dark:border-slate-800">
+                    <tr
+                      key={item.check}
+                      className="border-t border-slate-200 dark:border-slate-800"
+                    >
                       <td className="py-1 pr-2 align-top">{badge(item.status)}</td>
                       <td className="py-1 align-top">
                         <span className="font-medium">{item.check}</span>

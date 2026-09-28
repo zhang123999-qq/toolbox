@@ -121,9 +121,7 @@ describe('parsePrivateKeyHex', () => {
 describe('privateToPublic（独立测试向量）', () => {
   it('k=1', () => {
     const { uncompressed, compressed } = privateToPublic(PRIV1)
-    expect(compressed).toBe(
-      '0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798',
-    )
+    expect(compressed).toBe('0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798')
     expect(uncompressed).toBe(
       '0479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798' +
         '483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8',
@@ -191,7 +189,9 @@ describe('keccak256 / hex 工具（与 #691 同构，标准向量）', () => {
   })
 
   it('"abc"', () => {
-    expect(keccakHex('abc')).toBe('4e03657aea45a94fc7d47ba826c8d667c0d1e6e33a64a036ec44f58fa12d6c45')
+    expect(keccakHex('abc')).toBe(
+      '4e03657aea45a94fc7d47ba826c8d667c0d1e6e33a64a036ec44f58fa12d6c45',
+    )
   })
 
   it('"hello"', () => {

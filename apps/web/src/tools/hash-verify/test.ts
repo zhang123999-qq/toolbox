@@ -66,7 +66,10 @@ describe('hash-verify · verifyHash（真实 WebCrypto）', () => {
   })
 
   it('期望值大小写/0x/空白均可', async () => {
-    const r = await verifyHash(input('abc'), opts({ expected: '  0X' + ABC_SHA256.toUpperCase() + '\n' }))
+    const r = await verifyHash(
+      input('abc'),
+      opts({ expected: '  0X' + ABC_SHA256.toUpperCase() + '\n' }),
+    )
     expect(r.match).toBe(true)
   })
 
@@ -97,11 +100,15 @@ describe('hash-verify · verifyHash（真实 WebCrypto）', () => {
   })
 
   it('期望哈希为空报错', async () => {
-    await expect(verifyHash(input('abc'), opts({ expected: '  ' }))).rejects.toThrow('期望哈希不能为空')
+    await expect(verifyHash(input('abc'), opts({ expected: '  ' }))).rejects.toThrow(
+      '期望哈希不能为空',
+    )
   })
 
   it('期望哈希非法字符报错', async () => {
-    await expect(verifyHash(input('abc'), opts({ expected: 'zz' }))).rejects.toThrow('期望哈希含非法 hex 字符')
+    await expect(verifyHash(input('abc'), opts({ expected: 'zz' }))).rejects.toThrow(
+      '期望哈希含非法 hex 字符',
+    )
   })
 
   it('SHA-384 算法分支', async () => {
@@ -123,7 +130,9 @@ describe('hash-verify · webCryptoDigest 异常分支', () => {
     const saved = g.crypto
     delete g.crypto
     try {
-      await expect(verifyHash(input('abc'), opts(), undefined as unknown as DigestFn)).rejects.toThrow()
+      await expect(
+        verifyHash(input('abc'), opts(), undefined as unknown as DigestFn),
+      ).rejects.toThrow()
     } finally {
       g.crypto = saved
     }
@@ -134,9 +143,9 @@ describe('hash-verify · webCryptoDigest 异常分支', () => {
     const saved = g.crypto
     g.crypto = {}
     try {
-      await expect(verifyHash(input('abc'), opts(), undefined as unknown as DigestFn)).rejects.toThrow(
-        '当前环境不支持 WebCrypto',
-      )
+      await expect(
+        verifyHash(input('abc'), opts(), undefined as unknown as DigestFn),
+      ).rejects.toThrow('当前环境不支持 WebCrypto')
     } finally {
       g.crypto = saved
     }

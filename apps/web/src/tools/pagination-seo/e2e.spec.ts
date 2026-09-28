@@ -19,11 +19,13 @@ test.describe('pagination-seo', () => {
   })
 
   test('规范分页页显示无问题结论', async ({ page }) => {
-    await page.getByTestId('input').fill(
-      '<link rel="canonical" href="https://example.com/list?page=2">' +
-        '<link rel="prev" href="https://example.com/list?page=1">' +
-        '<link rel="next" href="https://example.com/list?page=3">',
-    )
+    await page
+      .getByTestId('input')
+      .fill(
+        '<link rel="canonical" href="https://example.com/list?page=2">' +
+          '<link rel="prev" href="https://example.com/list?page=1">' +
+          '<link rel="next" href="https://example.com/list?page=3">',
+      )
     await page.getByTestId('input-pageUrl').fill('https://example.com/list?page=2')
     await expect(page.getByTestId('output')).toContainText('设置正确')
   })

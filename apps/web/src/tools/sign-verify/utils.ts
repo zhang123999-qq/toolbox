@@ -26,7 +26,7 @@ function rotr32(x: number, n: number): number {
 /** SHA-256，返回 32 字节 */
 export function sha256Bytes(data: Uint8Array): Uint8Array {
   const bitLen = data.length * 8
-  const padLen = (56 - (data.length + 1) % 64 + 64) % 64
+  const padLen = (56 - ((data.length + 1) % 64) + 64) % 64
   const msg = new Uint8Array(data.length + 1 + padLen + 8)
   msg.set(data)
   msg[data.length] = 0x80
@@ -35,8 +35,14 @@ export function sha256Bytes(data: Uint8Array): Uint8Array {
   dv.setUint32(msg.length - 4, bitLen >>> 0)
   dv.setUint32(msg.length - 8, Math.floor(bitLen / 0x100000000))
 
-  let h0 = 0x6a09e667, h1 = 0xbb67ae85, h2 = 0x3c6ef372, h3 = 0xa54ff53a
-  let h4 = 0x510e527f, h5 = 0x9b05688c, h6 = 0x1f83d9ab, h7 = 0x5be0cd19
+  let h0 = 0x6a09e667,
+    h1 = 0xbb67ae85,
+    h2 = 0x3c6ef372,
+    h3 = 0xa54ff53a
+  let h4 = 0x510e527f,
+    h5 = 0x9b05688c,
+    h6 = 0x1f83d9ab,
+    h7 = 0x5be0cd19
   const w = new Array<number>(64)
 
   for (let off = 0; off < msg.length; off += 64) {
@@ -46,7 +52,14 @@ export function sha256Bytes(data: Uint8Array): Uint8Array {
       const s1 = rotr32(w[i - 2], 17) ^ rotr32(w[i - 2], 19) ^ (w[i - 2] >>> 10)
       w[i] = (w[i - 16] + s0 + w[i - 7] + s1) | 0
     }
-    let a = h0, b = h1, c = h2, d = h3, e = h4, f = h5, g = h6, h = h7
+    let a = h0,
+      b = h1,
+      c = h2,
+      d = h3,
+      e = h4,
+      f = h5,
+      g = h6,
+      h = h7
     for (let i = 0; i < 64; i += 1) {
       const s1 = rotr32(e, 6) ^ rotr32(e, 11) ^ rotr32(e, 25)
       const ch = (e & f) ^ (~e & g)
@@ -54,31 +67,45 @@ export function sha256Bytes(data: Uint8Array): Uint8Array {
       const s0 = rotr32(a, 2) ^ rotr32(a, 13) ^ rotr32(a, 22)
       const maj = (a & b) ^ (a & c) ^ (b & c)
       const t2 = (s0 + maj) | 0
-      h = g; g = f; f = e; e = (d + t1) | 0; d = c; c = b; b = a; a = (t1 + t2) | 0
+      h = g
+      g = f
+      f = e
+      e = (d + t1) | 0
+      d = c
+      c = b
+      b = a
+      a = (t1 + t2) | 0
     }
-    h0 = (h0 + a) | 0; h1 = (h1 + b) | 0; h2 = (h2 + c) | 0; h3 = (h3 + d) | 0
-    h4 = (h4 + e) | 0; h5 = (h5 + f) | 0; h6 = (h6 + g) | 0; h7 = (h7 + h) | 0
+    h0 = (h0 + a) | 0
+    h1 = (h1 + b) | 0
+    h2 = (h2 + c) | 0
+    h3 = (h3 + d) | 0
+    h4 = (h4 + e) | 0
+    h5 = (h5 + f) | 0
+    h6 = (h6 + g) | 0
+    h7 = (h7 + h) | 0
   }
 
   const out = new Uint8Array(32)
   const odv = new DataView(out.buffer)
-  odv.setUint32(0, h0); odv.setUint32(4, h1); odv.setUint32(8, h2); odv.setUint32(12, h3)
-  odv.setUint32(16, h4); odv.setUint32(20, h5); odv.setUint32(24, h6); odv.setUint32(28, h7)
+  odv.setUint32(0, h0)
+  odv.setUint32(4, h1)
+  odv.setUint32(8, h2)
+  odv.setUint32(12, h3)
+  odv.setUint32(16, h4)
+  odv.setUint32(20, h5)
+  odv.setUint32(24, h6)
+  odv.setUint32(28, h7)
   return out
 }
 
-
 /** secp256k1 素数域 p */
-export const SECP256K1_P =
-  0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2fn
+export const SECP256K1_P = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2fn
 /** secp256k1 阶 n */
-export const SECP256K1_N =
-  0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141n
+export const SECP256K1_N = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141n
 /** 生成元 G */
-export const SECP256K1_GX =
-  0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798n
-export const SECP256K1_GY =
-  0x483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8n
+export const SECP256K1_GX = 0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798n
+export const SECP256K1_GY = 0x483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8n
 
 export interface ECPoint {
   x: bigint
@@ -133,8 +160,7 @@ export function pointAdd(p: ECPoint | null, q: ECPoint | null): ECPoint | null {
     if ((p.y + q.y) % SECP256K1_P === 0n) return null
     return pointDouble(p)
   }
-  const lambda =
-    (((q.y - p.y) % SECP256K1_P) + SECP256K1_P) % SECP256K1_P
+  const lambda = (((q.y - p.y) % SECP256K1_P) + SECP256K1_P) % SECP256K1_P
   const lam =
     (lambda * modInv((((q.x - p.x) % SECP256K1_P) + SECP256K1_P) % SECP256K1_P, SECP256K1_P)) %
     SECP256K1_P
@@ -200,12 +226,30 @@ export function privateToPublic(privHex: string): PublicKeyResult {
 const MASK64 = (1n << 64n) - 1n
 
 const RC: readonly bigint[] = [
-  0x0000000000000001n, 0x0000000000008082n, 0x800000000000808an, 0x8000000080008000n,
-  0x000000000000808bn, 0x0000000080000001n, 0x8000000080008081n, 0x8000000000008009n,
-  0x000000000000008an, 0x0000000000000088n, 0x0000000080008009n, 0x000000008000000an,
-  0x000000008000808bn, 0x800000000000008bn, 0x8000000000008089n, 0x8000000000008003n,
-  0x8000000000008002n, 0x8000000000000080n, 0x000000000000800an, 0x800000008000000an,
-  0x8000000080008081n, 0x8000000000008080n, 0x0000000080000001n, 0x8000000080008008n,
+  0x0000000000000001n,
+  0x0000000000008082n,
+  0x800000000000808an,
+  0x8000000080008000n,
+  0x000000000000808bn,
+  0x0000000080000001n,
+  0x8000000080008081n,
+  0x8000000000008009n,
+  0x000000000000008an,
+  0x0000000000000088n,
+  0x0000000080008009n,
+  0x000000008000000an,
+  0x000000008000808bn,
+  0x800000000000008bn,
+  0x8000000000008089n,
+  0x8000000000008003n,
+  0x8000000000008002n,
+  0x8000000000000080n,
+  0x000000000000800an,
+  0x800000008000000an,
+  0x8000000080008081n,
+  0x8000000000008080n,
+  0x0000000080000001n,
+  0x8000000080008008n,
 ]
 
 const ROT: readonly number[] = [
@@ -314,8 +358,6 @@ export function publicToAddress(uncompressedHex: string): string {
   const hash = keccak256(body)
   return toChecksumAddress(bytesToHex(hash.slice(12)))
 }
-
-
 
 /* ---------------- personal_sign / RFC6979 / ecrecover ---------------- */
 

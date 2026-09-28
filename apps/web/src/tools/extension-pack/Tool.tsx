@@ -82,8 +82,8 @@ export default function Tool() {
           )}
           <p className="text-xs text-slate-500 dark:text-slate-400">
             说明：输入 JSON 文件清单（files: [{'{'}name, content{'}'}]），必须包含
-            manifest.json；文件名不允许绝对路径、反斜杠或 ..。打包在浏览器本地完成，
-            可直接下载 zip 用于 Chrome 扩展开发者模式加载。
+            manifest.json；文件名不允许绝对路径、反斜杠或 ..。打包在浏览器本地完成， 可直接下载 zip
+            用于 Chrome 扩展开发者模式加载。
           </p>
         </div>
       )}

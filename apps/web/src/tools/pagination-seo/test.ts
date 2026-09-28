@@ -113,7 +113,8 @@ describe('checkPagination', () => {
 
   it('第一页（?page=1）出现 prev 警告', () => {
     const r = checkPagination(
-      '<link rel="prev" href="https://example.com/list">' + CANON('https://example.com/list?page=1'),
+      '<link rel="prev" href="https://example.com/list">' +
+        CANON('https://example.com/list?page=1'),
       'https://example.com/list?page=1',
     )
     expect(r.page).toBe(1)
@@ -121,14 +122,16 @@ describe('checkPagination', () => {
   })
 
   it('第 3 页缺少 prev 警告、缺少 next 提示', () => {
-    const r = checkPagination(CANON('https://example.com/list?page=3'), 'https://example.com/list?page=3')
+    const r = checkPagination(
+      CANON('https://example.com/list?page=3'),
+      'https://example.com/list?page=3',
+    )
     expect(r.issues.some((i) => i.message.includes('缺少 rel="prev"'))).toBe(true)
     expect(r.issues.some((i) => i.message.includes('缺少 rel="next"'))).toBe(true)
   })
 
   it('prev 未指向上页警告', () => {
-    const html =
-      CANON(page2) + '<link rel="prev" href="https://example.com/list?page=5">'
+    const html = CANON(page2) + '<link rel="prev" href="https://example.com/list?page=5">'
     const r = checkPagination(html, page2)
     expect(r.issues.some((i) => i.message.includes('未指向上页'))).toBe(true)
   })
@@ -182,10 +185,7 @@ describe('checkPagination', () => {
   })
 
   it('缺少 canonical 警告', () => {
-    const r = checkPagination(
-      '<link rel="prev" href="https://example.com/list?page=1">',
-      page2,
-    )
+    const r = checkPagination('<link rel="prev" href="https://example.com/list?page=1">', page2)
     expect(r.issues.some((i) => i.message.includes('缺少 canonical'))).toBe(true)
   })
 
@@ -231,7 +231,10 @@ describe('renderReport', () => {
 
   it('问题报告带级别标记', () => {
     const text = renderReport(
-      checkPagination('<link rel="prev" href="x"><link rel="prev" href="x">', 'https://example.com/l'),
+      checkPagination(
+        '<link rel="prev" href="x"><link rel="prev" href="x">',
+        'https://example.com/l',
+      ),
     )
     expect(text).toContain('❌')
     expect(text).toContain('（未能识别）')

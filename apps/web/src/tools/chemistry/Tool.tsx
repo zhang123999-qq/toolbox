@@ -40,7 +40,9 @@ export default function Tool() {
       initialInput={{ text: 'H2+O2=H2O' }}
       initialOptions={{ mode: 'balance' }}
       example={{ text: 'CH4+O2=CO2+H2O' }}
-      optionDefs={[{ key: 'mode', label: '模式', kind: 'select', values: ['balance', 'molar', 'parse'] }]}
+      optionDefs={[
+        { key: 'mode', label: '模式', kind: 'select', values: ['balance', 'molar', 'parse'] },
+      ]}
       renderOutput={(input, options) => {
         const view = buildView(input, options)
         return (
@@ -51,7 +53,10 @@ export default function Tool() {
               </p>
             )}
             {view.detail !== '' && (
-              <p data-testid="chemistry-detail" className="whitespace-pre-wrap text-sm text-slate-700 dark:text-slate-300">
+              <p
+                data-testid="chemistry-detail"
+                className="whitespace-pre-wrap text-sm text-slate-700 dark:text-slate-300"
+              >
                 {view.detail}
               </p>
             )}

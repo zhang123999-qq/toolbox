@@ -89,9 +89,24 @@ export default function Tool() {
           <div className="flex flex-col gap-3">
             <div className="flex flex-col gap-2 rounded border border-slate-200 p-2 dark:border-slate-700">
               <div className="text-sm font-medium text-slate-700 dark:text-slate-300">生成选项</div>
-              <CheckRow label="关闭 animation 动画" testId="opt-animations" checked={disableAnimations} onChange={setDisableAnimations} />
-              <CheckRow label="关闭 transition 过渡" testId="opt-transitions" checked={disableTransitions} onChange={setDisableTransitions} />
-              <CheckRow label="关闭平滑滚动" testId="opt-scroll" checked={disableSmoothScroll} onChange={setDisableSmoothScroll} />
+              <CheckRow
+                label="关闭 animation 动画"
+                testId="opt-animations"
+                checked={disableAnimations}
+                onChange={setDisableAnimations}
+              />
+              <CheckRow
+                label="关闭 transition 过渡"
+                testId="opt-transitions"
+                checked={disableTransitions}
+                onChange={setDisableTransitions}
+              />
+              <CheckRow
+                label="关闭平滑滚动"
+                testId="opt-scroll"
+                checked={disableSmoothScroll}
+                onChange={setDisableSmoothScroll}
+              />
               <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
                 <span className="shrink-0">额外选择器</span>
                 <input
@@ -105,13 +120,22 @@ export default function Tool() {
               </label>
             </div>
             {g.error ? (
-              <div role="alert" data-testid="gen-error" className="rounded border border-red-300 bg-red-50 p-2 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300">
+              <div
+                role="alert"
+                data-testid="gen-error"
+                className="rounded border border-red-300 bg-red-50 p-2 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300"
+              >
                 {g.error}
               </div>
             ) : (
               <div>
-                <div className="mb-1 text-sm font-medium text-slate-700 dark:text-slate-300">生成的 CSS</div>
-                <pre data-testid="css-output" className="whitespace-pre-wrap rounded bg-slate-100 p-2 font-mono text-xs text-slate-800 dark:bg-slate-800 dark:text-slate-100">
+                <div className="mb-1 text-sm font-medium text-slate-700 dark:text-slate-300">
+                  生成的 CSS
+                </div>
+                <pre
+                  data-testid="css-output"
+                  className="whitespace-pre-wrap rounded bg-slate-100 p-2 font-mono text-xs text-slate-800 dark:bg-slate-800 dark:text-slate-100"
+                >
                   {g.css}
                 </pre>
               </div>
@@ -121,22 +145,35 @@ export default function Tool() {
                 动画声明检测（扫描上方输入框的 CSS）
               </div>
               {f.error ? (
-                <div role="alert" data-testid="scan-error" className="rounded border border-red-300 bg-red-50 p-2 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300">
+                <div
+                  role="alert"
+                  data-testid="scan-error"
+                  className="rounded border border-red-300 bg-red-50 p-2 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300"
+                >
                   {f.error}
                 </div>
               ) : input.text.trim() === '' ? (
-                <div data-testid="scan-empty" className="text-sm text-slate-500 dark:text-slate-400">
+                <div
+                  data-testid="scan-empty"
+                  className="text-sm text-slate-500 dark:text-slate-400"
+                >
                   在上方输入框粘贴 CSS 后自动扫描 animation / transition / @keyframes 声明
                 </div>
               ) : (
                 <>
-                  <div data-testid="scan-summary" className="mb-1 text-sm text-slate-700 dark:text-slate-300">
+                  <div
+                    data-testid="scan-summary"
+                    className="mb-1 text-sm text-slate-700 dark:text-slate-300"
+                  >
                     {f.summary}
                   </div>
                   {f.list.length > 0 && (
                     <ul data-testid="scan-list" className="flex flex-col gap-1">
                       {f.list.map((item, i) => (
-                        <li key={i} className="rounded bg-slate-100 px-2 py-1 font-mono text-xs text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                        <li
+                          key={i}
+                          className="rounded bg-slate-100 px-2 py-1 font-mono text-xs text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                        >
                           第 {item.line} 行 [{item.kind}] {item.detail}
                         </li>
                       ))}

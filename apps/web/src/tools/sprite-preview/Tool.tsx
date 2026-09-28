@@ -108,7 +108,13 @@ export default function Tool() {
         <div className="flex flex-col gap-3">
           <div className="flex flex-wrap items-center gap-2">
             <label className="text-xs text-slate-500">
-              fps <input data-testid="spritepreview-fps" value={fps} onChange={(e) => setFps(e.target.value)} className={INPUT_CLS} />
+              fps{' '}
+              <input
+                data-testid="spritepreview-fps"
+                value={fps}
+                onChange={(e) => setFps(e.target.value)}
+                className={INPUT_CLS}
+              />
             </label>
             <label className="text-xs text-slate-500">
               <input
@@ -119,7 +125,12 @@ export default function Tool() {
               />{' '}
               循环
             </label>
-            <button type="button" data-testid="spritepreview-build" onClick={() => handleBuild(input.text)} className={BTN_CLS}>
+            <button
+              type="button"
+              data-testid="spritepreview-build"
+              onClick={() => handleBuild(input.text)}
+              className={BTN_CLS}
+            >
               构建预览
             </button>
             <button
@@ -159,7 +170,9 @@ export default function Tool() {
               : '点击「构建预览」后开始。'}
           </div>
           <pre data-testid="spritepreview-output" className={PRE_CLS}>
-            {player ? player.frames.map((f, i) => `#${i} ${f} ${colorForSprite(f)}`).join('\n') : '—'}
+            {player
+              ? player.frames.map((f, i) => `#${i} ${f} ${colorForSprite(f)}`).join('\n')
+              : '—'}
           </pre>
           <p className="text-xs text-slate-500 dark:text-slate-400">
             说明：输入帧的 spriteId 列表（逗号或换行分隔）；播放器为纯逻辑实现，时间由渲染循环传入。

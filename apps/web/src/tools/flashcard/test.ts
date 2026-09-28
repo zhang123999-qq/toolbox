@@ -82,9 +82,7 @@ describe('gradeCard', () => {
     expect(c.interval).toBe(0)
   })
   it.each([[-1], [6], [2.5], [NaN]])('非法评分 %s 抛中文错误', (q) => {
-    expect(() => gradeCard(newCard('a', 'b', NOW, 'c1'), q, NOW)).toThrow(
-      '评分必须为 0–5 的整数',
-    )
+    expect(() => gradeCard(newCard('a', 'b', NOW, 'c1'), q, NOW)).toThrow('评分必须为 0–5 的整数')
   })
 })
 

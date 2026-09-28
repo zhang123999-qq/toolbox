@@ -22,7 +22,12 @@ export interface OptionsFiles {
   js: string
 }
 
-export const FIELD_TYPE_VALUES: readonly OptionFieldType[] = ['text', 'checkbox', 'select', 'number']
+export const FIELD_TYPE_VALUES: readonly OptionFieldType[] = [
+  'text',
+  'checkbox',
+  'select',
+  'number',
+]
 
 const KEY_RE = /^[A-Za-z][A-Za-z0-9_]*$/
 
@@ -88,7 +93,10 @@ function fieldToHtml(f: OptionField): string {
   }
   if (f.type === 'select') {
     const opts = (f.options as string[])
-      .map((o) => `        <option value="${escapeHtml(o)}"${o === f.defaultValue ? ' selected' : ''}>${escapeHtml(o)}</option>`)
+      .map(
+        (o) =>
+          `        <option value="${escapeHtml(o)}"${o === f.defaultValue ? ' selected' : ''}>${escapeHtml(o)}</option>`,
+      )
       .join('\n')
     return `      <label>${label}\n        <select id="${id}">\n${opts}\n        </select>\n      </label>`
   }
@@ -218,7 +226,13 @@ export const EXAMPLE_INPUT = {
   fields: [
     { key: 'apiHost', label: '接口地址', type: 'text', defaultValue: 'https://api.example.com' },
     { key: 'enableNotify', label: '启用通知', type: 'checkbox', defaultValue: true },
-    { key: 'theme', label: '主题', type: 'select', options: ['light', 'dark'], defaultValue: 'light' },
+    {
+      key: 'theme',
+      label: '主题',
+      type: 'select',
+      options: ['light', 'dark'],
+      defaultValue: 'light',
+    },
     { key: 'refreshInterval', label: '刷新间隔（秒）', type: 'number', defaultValue: 60 },
   ] as OptionField[],
 }

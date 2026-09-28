@@ -184,7 +184,12 @@ export function parseLogic(raw: string): Logic {
  * 多条件过滤：条件中的列名必须存在于表头；
  * 命中规则按 logic（AND 全部命中 / OR 任一命中）。
  */
-export function applyFilters(headers: string[], rows: Row[], conds: Condition[], logic: Logic): Row[] {
+export function applyFilters(
+  headers: string[],
+  rows: Row[],
+  conds: Condition[],
+  logic: Logic,
+): Row[] {
   const colIndex = new Map(headers.map((h, i) => [h, i]))
   for (const cond of conds) {
     if (!colIndex.has(cond.column)) {

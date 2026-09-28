@@ -162,16 +162,18 @@ export default function Tool() {
                 <div className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">
                   实时预览（按 Tab 聚焦下面的控件查看效果）
                 </div>
-                <style>{generateFocusStyle(
-                  {
-                    color,
-                    width: toNum(width),
-                    offset: toNum(offset),
-                    radius: toNum(radius),
-                    outlineStyle,
-                  },
-                  PREVIEW_SELECTOR,
-                )}</style>
+                <style>
+                  {generateFocusStyle(
+                    {
+                      color,
+                      width: toNum(width),
+                      offset: toNum(offset),
+                      radius: toNum(radius),
+                      outlineStyle,
+                    },
+                    PREVIEW_SELECTOR,
+                  )}
+                </style>
                 <div className="flex flex-wrap items-center gap-3">
                   <button
                     type="button"

@@ -10,7 +10,8 @@ export const meta: ToolMeta = {
   title: '交易解码',
   description: '解码以太坊原始交易：RLP 解析 Legacy / EIP-2930 / EIP-1559，输出全部字段与交易哈希',
   titleEn: 'Transaction Decoder',
-  descriptionEn: 'Decode raw Ethereum transactions: RLP parsing for Legacy / EIP-2930 / EIP-1559 with all fields and tx hash',
+  descriptionEn:
+    'Decode raw Ethereum transactions: RLP parsing for Legacy / EIP-2930 / EIP-1559 with all fields and tx hash',
 
   category: 'encoding',
   group: 'dev',

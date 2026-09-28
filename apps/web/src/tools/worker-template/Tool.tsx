@@ -1,12 +1,7 @@
 import { MultiPanel } from '../../components/tool/templates/MultiPanel'
 import { meta } from './meta'
 import type { WorkerTemplateInput, WorkerTemplateOptions } from './schema'
-import {
-  EXAMPLE_ROUTES,
-  generateWorker,
-  parseRoutesText,
-  type WorkerFeature,
-} from './utils'
+import { EXAMPLE_ROUTES, generateWorker, parseRoutesText, type WorkerFeature } from './utils'
 
 const FEATURE_DEFS: { key: WorkerFeature; label: string }[] = [
   { key: 'router', label: '路由分发' },
@@ -19,7 +14,12 @@ const FEATURE_DEFS: { key: WorkerFeature; label: string }[] = [
 function buildCode(input: WorkerTemplateInput, options: WorkerTemplateOptions): string {
   const features = FEATURE_DEFS.filter((f) => options[f.key]).map((f) => f.key)
   const routes = parseRoutesText(input.text)
-  return generateWorker({ name: input.name.trim(), features, routes, cronSchedule: input.cronSchedule })
+  return generateWorker({
+    name: input.name.trim(),
+    features,
+    routes,
+    cronSchedule: input.cronSchedule,
+  })
 }
 
 export default function Tool() {
@@ -33,7 +33,11 @@ export default function Tool() {
         { key: 'name', label: 'Worker 名称', rows: 1 },
         { key: 'cronSchedule', label: 'Cron 表达式（启用 Cron 定时时必填）', rows: 1 },
       ]}
-      optionDefs={FEATURE_DEFS.map((f) => ({ key: f.key, label: f.label, kind: 'boolean' as const }))}
+      optionDefs={FEATURE_DEFS.map((f) => ({
+        key: f.key,
+        label: f.label,
+        kind: 'boolean' as const,
+      }))}
       renderOutput={(input, options) => {
         let code = ''
         let error = ''
@@ -56,8 +60,8 @@ export default function Tool() {
             )}
             <p className="text-xs text-slate-500 dark:text-slate-400">
               说明：生成的 worker.js 可直接使用；KV / D1 / R2 绑定需在 wrangler.toml 中声明
-              （可用本站 KV 配置 / D1 配置 / R2 配置工具生成）；cron 表达式需同步写入 wrangler.toml 的
-              [triggers] crons。
+              （可用本站 KV 配置 / D1 配置 / R2 配置工具生成）；cron 表达式需同步写入 wrangler.toml
+              的 [triggers] crons。
             </p>
           </div>
         )

@@ -8,9 +8,11 @@ export const meta: ToolMeta = {
   id: 'icu-message',
   slug: 'icu-message',
   title: 'ICU 消息预览',
-  description: 'ICU MessageFormat 消息预览：解析 plural / select / 数字 / 日期占位符，代入变量实时渲染，列出全部占位变量',
+  description:
+    'ICU MessageFormat 消息预览：解析 plural / select / 数字 / 日期占位符，代入变量实时渲染，列出全部占位变量',
   titleEn: 'ICU Message Preview',
-  descriptionEn: 'Preview ICU MessageFormat messages: parse plural/select/number/date placeholders, render with values',
+  descriptionEn:
+    'Preview ICU MessageFormat messages: parse plural/select/number/date placeholders, render with values',
 
   category: 'a11y',
   group: 'life',

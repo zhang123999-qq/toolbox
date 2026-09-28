@@ -9,7 +9,7 @@
 ```json
 [
   { "id": "spawn1", "type": "spawn", "x": 10, "y": 10 },
-  { "id": "exit1",  "type": "exit",  "x": 90, "y": 90 },
+  { "id": "exit1", "type": "exit", "x": 90, "y": 90 },
   { "id": "slime1", "type": "enemy", "x": 50, "y": 50, "props": { "hp": 100 } }
 ]
 ```

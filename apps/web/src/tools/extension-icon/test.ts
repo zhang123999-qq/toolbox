@@ -82,9 +82,7 @@ describe('validateIconParams', () => {
   })
   it('letter 非法报错', () => {
     expect(() => validateIconParams({ ...BASE, letter: '' })).toThrow('letter 需为 1～2 个字符')
-    expect(() => validateIconParams({ ...BASE, letter: 'abc' })).toThrow(
-      'letter 需为 1～2 个字符',
-    )
+    expect(() => validateIconParams({ ...BASE, letter: 'abc' })).toThrow('letter 需为 1～2 个字符')
   })
   it('shape 非法报错', () => {
     expect(() => validateIconParams({ ...BASE, shape: 'square' as never })).toThrow('shape 非法')

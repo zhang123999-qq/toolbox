@@ -162,7 +162,9 @@ describe('export/import', () => {
     expect(() => importTilemapJson('xxx')).toThrow('合法 JSON')
   })
   it('结构非法报错', () => {
-    expect(() => importTilemapJson('{"cols":2,"rows":2,"tileSize":16,"layers":[]}')).toThrow('至少需要 1 个图层')
+    expect(() => importTilemapJson('{"cols":2,"rows":2,"tileSize":16,"layers":[]}')).toThrow(
+      '至少需要 1 个图层',
+    )
   })
 })
 

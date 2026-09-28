@@ -97,7 +97,9 @@ export default function Tool() {
       ? '请选择 GIF 文件。'
       : `共 ${frames.length} 帧；` +
         frames.map((f, i) => `#${i} ${f.width}×${f.height} ${f.durationMs}ms`).join('；') +
-        (layout ? `\n布局：${layout.cols} 列 × ${layout.rows} 行，雪碧图 ${layout.sheetW}×${layout.sheetH}` : '')
+        (layout
+          ? `\n布局：${layout.cols} 列 × ${layout.rows} 行，雪碧图 ${layout.sheetW}×${layout.sheetH}`
+          : '')
 
   return (
     <MultiPanel<GifToSpriteToolInput, Record<string, never>>
@@ -120,12 +122,30 @@ export default function Tool() {
               }}
             />
             <label className="text-xs text-slate-500">
-              列数 <input data-testid="giftosprite-cols" value={cols} onChange={(e) => setCols(e.target.value)} className={INPUT_CLS} />
+              列数{' '}
+              <input
+                data-testid="giftosprite-cols"
+                value={cols}
+                onChange={(e) => setCols(e.target.value)}
+                className={INPUT_CLS}
+              />
             </label>
-            <button type="button" data-testid="giftosprite-layout" onClick={handleLayout} disabled={frames.length === 0 || busy} className={BTN_CLS}>
+            <button
+              type="button"
+              data-testid="giftosprite-layout"
+              onClick={handleLayout}
+              disabled={frames.length === 0 || busy}
+              className={BTN_CLS}
+            >
               生成雪碧图
             </button>
-            <button type="button" data-testid="giftosprite-export" onClick={handleExport} disabled={!layout} className={BTN_CLS}>
+            <button
+              type="button"
+              data-testid="giftosprite-export"
+              onClick={handleExport}
+              disabled={!layout}
+              className={BTN_CLS}
+            >
               导出 PNG
             </button>
           </div>
@@ -144,8 +164,8 @@ export default function Tool() {
             {info}
           </pre>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            说明：使用浏览器 WebCodecs ImageDecoder 逐帧解码（需要 Chrome/Edge 94+、Safari 18.4+ 或 Firefox 130+）；
-            单元格取各帧最大宽高，每帧左上角对齐。纯本地处理，不发送网络请求。
+            说明：使用浏览器 WebCodecs ImageDecoder 逐帧解码（需要 Chrome/Edge 94+、Safari 18.4+ 或
+            Firefox 130+）； 单元格取各帧最大宽高，每帧左上角对齐。纯本地处理，不发送网络请求。
           </p>
         </div>
       )}

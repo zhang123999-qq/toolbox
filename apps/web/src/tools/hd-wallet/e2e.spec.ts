@@ -20,7 +20,9 @@ test.describe('hd-wallet HD 钱包 (#703)', () => {
 
   test('示例种子派生首地址', async ({ page }) => {
     await page.getByTestId('example').click()
-    await expect(page.getByTestId('address-0')).toContainText('0x022b971dFF0C43305e691DEd7a14367AF19D6407')
+    await expect(page.getByTestId('address-0')).toContainText(
+      '0x022b971dFF0C43305e691DEd7a14367AF19D6407',
+    )
   })
 
   test('从首页搜索可达', async ({ page }) => {

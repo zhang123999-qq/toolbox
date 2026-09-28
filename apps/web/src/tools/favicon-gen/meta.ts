@@ -10,7 +10,8 @@ export const meta: ToolMeta = {
   id: 'favicon-gen',
   slug: 'favicon-gen',
   title: 'Favicon 生成',
-  description: '上传图片生成多尺寸 favicon（16/32/48/180/192/512）：打包 zip 一键下载，也可单独下载某个尺寸',
+  description:
+    '上传图片生成多尺寸 favicon（16/32/48/180/192/512）：打包 zip 一键下载，也可单独下载某个尺寸',
   titleEn: 'Favicon Multi-Size Generator',
   descriptionEn:
     'Upload an image to generate multi-size favicons (16/32/48/180/192/512): download as a zip or individual PNGs',

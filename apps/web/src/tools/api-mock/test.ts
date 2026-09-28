@@ -310,9 +310,7 @@ describe('errorMessage', () => {
 
 describe('validateRoutes 补充', () => {
   it('合法 delayMs 被保留', () => {
-    const [r] = validateRoutes(
-      '[{"method":"GET","pathPattern":"/a","status":200,"delayMs":150}]',
-    )
+    const [r] = validateRoutes('[{"method":"GET","pathPattern":"/a","status":200,"delayMs":150}]')
     expect(r.delayMs).toBe(150)
   })
 })

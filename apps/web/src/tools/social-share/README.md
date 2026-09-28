@@ -10,16 +10,16 @@
 
 ## 各平台链接模板
 
-| 平台     | 模板                                                       |
-| -------- | ---------------------------------------------------------- |
-| X        | `https://twitter.com/intent/tweet?url={u}&text={t}`         |
-| Facebook | `https://www.facebook.com/sharer/sharer.php?u={u}`          |
-| LinkedIn | `https://www.linkedin.com/sharing/share-offsite/?url={u}`   |
+| 平台     | 模板                                                          |
+| -------- | ------------------------------------------------------------- |
+| X        | `https://twitter.com/intent/tweet?url={u}&text={t}`           |
+| Facebook | `https://www.facebook.com/sharer/sharer.php?u={u}`            |
+| LinkedIn | `https://www.linkedin.com/sharing/share-offsite/?url={u}`     |
 | 微博     | `https://service.weibo.com/share/share.php?url={u}&title={t}` |
-| Telegram | `https://t.me/share/url?url={u}&text={t}`                   |
-| WhatsApp | `https://wa.me/?text={t}`（t = `标题 URL` 整体编码一次）     |
-| Reddit   | `https://www.reddit.com/submit?url={u}&title={t}`           |
-| 邮件     | `mailto:?subject={t}&body={摘要\nURL}`                      |
+| Telegram | `https://t.me/share/url?url={u}&text={t}`                     |
+| WhatsApp | `https://wa.me/?text={t}`（t = `标题 URL` 整体编码一次）      |
+| Reddit   | `https://www.reddit.com/submit?url={u}&title={t}`             |
+| 邮件     | `mailto:?subject={t}&body={摘要\nURL}`                        |
 
 `{u}` = URL 编码后的链接；`{t}` = URL 编码后的标题 / 摘要。
 标题或摘要为空时，对应的可选参数会被省略（不留空 `text=`）。
@@ -33,16 +33,16 @@
 
 ## 输入
 
-| 字段   | 类型   | 约束                              |
-| ------ | ------ | --------------------------------- |
+| 字段   | 类型   | 约束                                                 |
+| ------ | ------ | ---------------------------------------------------- |
 | `text` | string | 要分享的 URL，必须 `http(s)` 开头，最大 200,000 字符 |
 
 ## 选项
 
-| 选项       | 约束                        |
-| ---------- | --------------------------- |
-| 分享标题   | 最多 200 字符，默认为空     |
-| 分享摘要   | 最多 500 字符，默认为空     |
+| 选项     | 约束                    |
+| -------- | ----------------------- |
+| 分享标题 | 最多 200 字符，默认为空 |
+| 分享摘要 | 最多 500 字符，默认为空 |
 
 ## 输出
 
@@ -73,11 +73,11 @@ Reddit：https://www.reddit.com/submit?url=...&title=...
 
 ## 元信息
 
-| 项       | 值                 |
-| -------- | ------------------ |
-| 全局编号 | #652               |
+| 项       | 值                         |
+| -------- | -------------------------- |
+| 全局编号 | #652                       |
 | 域       | `seo`（网络 / SEO / 网站） |
-| 大组     | `dev`              |
-| 优先级   | P1                 |
-| 可行性   | A（纯 JS）         |
-| 模板     | T3（自定义 UI）    |
+| 大组     | `dev`                      |
+| 优先级   | P1                         |
+| 可行性   | A（纯 JS）                 |
+| 模板     | T3（自定义 UI）            |

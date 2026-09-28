@@ -99,9 +99,15 @@ export function validateBreadcrumb(items: readonly BreadcrumbItem[]): Breadcrumb
       issues.push({ level: 'error', message: `第 ${n} 条：名称不能为空` })
     }
     if (item.url === '') {
-      issues.push({ level: 'info', message: `第 ${n} 条：URL 为空（非末项建议填写；末项可代表当前页）` })
+      issues.push({
+        level: 'info',
+        message: `第 ${n} 条：URL 为空（非末项建议填写；末项可代表当前页）`,
+      })
     } else if (!isHttpUrl(item.url)) {
-      issues.push({ level: 'error', message: `第 ${n} 条：URL 不是合法的 http(s) 绝对地址：${item.url}` })
+      issues.push({
+        level: 'error',
+        message: `第 ${n} 条：URL 不是合法的 http(s) 绝对地址：${item.url}`,
+      })
     }
   })
   return issues

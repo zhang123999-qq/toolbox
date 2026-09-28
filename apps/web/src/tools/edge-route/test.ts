@@ -2,12 +2,7 @@
  * edge-route（#812）utils 单测：规则解析、校验与匹配优先级。
  */
 import { describe, expect, it } from 'vitest'
-import {
-  EXAMPLE_ROUTES,
-  matchRoute,
-  parseRoutesText,
-  validatePattern,
-} from './utils'
+import { EXAMPLE_ROUTES, matchRoute, parseRoutesText, validatePattern } from './utils'
 
 describe('validatePattern', () => {
   it('合法规则不抛错', () => {

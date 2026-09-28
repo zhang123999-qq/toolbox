@@ -2,7 +2,15 @@
  * data-sort（#690）utils 单测：规则解析 / 单元格比较 / 稳定多列排序。
  */
 import { describe, expect, it } from 'vitest'
-import { compareCells, multiSortRows, parseCsv, parseSortRule, parseSortSpec, toCsv, type Row } from './utils'
+import {
+  compareCells,
+  multiSortRows,
+  parseCsv,
+  parseSortRule,
+  parseSortSpec,
+  toCsv,
+  type Row,
+} from './utils'
 
 const HEADERS = ['姓名', '年龄', '城市', '销售额']
 const ROWS: Row[] = [
@@ -110,14 +118,20 @@ describe('multiSortRows', () => {
   })
 
   it('不存在的列抛错', () => {
-    expect(() => multiSortRows(HEADERS, ROWS, [{ column: '国家', dir: 'asc' }])).toThrowError('列「国家」不存在于表头')
+    expect(() => multiSortRows(HEADERS, ROWS, [{ column: '国家', dir: 'asc' }])).toThrowError(
+      '列「国家」不存在于表头',
+    )
   })
 
   it('缺列的行按空字符串处理（空值置后）', () => {
     const out = multiSortRows(HEADERS, [['张三'], ['李四', '35']], [{ column: '年龄', dir: 'asc' }])
     expect(out.map((r) => r[0])).toEqual(['李四', '张三'])
     // 缺列行在后插入：覆盖比较器 x 侧的缺列分支
-    const out2 = multiSortRows(HEADERS, [['李四', '35'], ['张三']], [{ column: '年龄', dir: 'asc' }])
+    const out2 = multiSortRows(
+      HEADERS,
+      [['李四', '35'], ['张三']],
+      [{ column: '年龄', dir: 'asc' }],
+    )
     expect(out2.map((r) => r[0])).toEqual(['李四', '张三'])
   })
 })
@@ -155,6 +169,8 @@ describe('toCsv', () => {
   })
 
   it('含逗号 / 引号 / 换行的字段加引号转义', () => {
-    expect(toCsv(['a'], [['x,y'], ['say "hi"'], ['l1\nl2']])).toBe('a\n"x,y"\n"say ""hi"""\n"l1\nl2"')
+    expect(toCsv(['a'], [['x,y'], ['say "hi"'], ['l1\nl2']])).toBe(
+      'a\n"x,y"\n"say ""hi"""\n"l1\nl2"',
+    )
   })
 })

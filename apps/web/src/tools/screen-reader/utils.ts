@@ -115,10 +115,7 @@ function landmarkName(el: Element, doc: Document): string {
  * 生成屏幕阅读器预览：朗读大纲 + 问题列表。
  * 大纲按「标题 → 地标 → 链接 → 按钮 → 图片 → 表单」的阅读顺序组织。
  */
-export function previewScreenReader(
-  html: string,
-  createDoc?: DocFactory,
-): ScreenReaderPreview {
+export function previewScreenReader(html: string, createDoc?: DocFactory): ScreenReaderPreview {
   const doc = parseHtml(html, createDoc)
   const body = doc.body
   const outline: OutlineItem[] = []

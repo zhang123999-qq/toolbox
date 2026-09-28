@@ -70,7 +70,8 @@ export function bigIntToBytes(v: bigint): Uint8Array {
 function parseUint(name: string, raw: string): bigint {
   const t = raw.trim()
   if (t === '') throw new Error(`${name}不能为空`)
-  if (!/^(0x[0-9a-fA-F]+|[0-9]+)$/.test(t)) throw new Error(`${name}格式非法：${raw}（十进制或 0x hex）`)
+  if (!/^(0x[0-9a-fA-F]+|[0-9]+)$/.test(t))
+    throw new Error(`${name}格式非法：${raw}（十进制或 0x hex）`)
   return BigInt(t)
 }
 
@@ -78,7 +79,8 @@ function parseAddress(raw: string): Uint8Array {
   const t = raw.trim()
   if (t === '') return new Uint8Array(0) // 合约创建：to 为空
   const h = t.startsWith('0x') || t.startsWith('0X') ? t.slice(2) : t
-  if (!/^[0-9a-fA-F]{40}$/.test(h)) throw new Error(`to 地址格式非法：${raw}（应为 0x + 40 位 hex，合约创建请留空）`)
+  if (!/^[0-9a-fA-F]{40}$/.test(h))
+    throw new Error(`to 地址格式非法：${raw}（应为 0x + 40 位 hex，合约创建请留空）`)
   return hexToBytes(h)
 }
 
@@ -105,7 +107,11 @@ export function buildUnsignedTx(input: TxBuildInput, options: TxBuildOptions): B
   if (chainId === 0n) throw new Error('chainId 不能为 0')
 
   const fields: Array<{ key: string; label: string; value: string }> = [
-    { key: 'type', label: '类型', value: options.txType === 'eip1559' ? 'EIP-1559 (Type 2)' : 'Legacy' },
+    {
+      key: 'type',
+      label: '类型',
+      value: options.txType === 'eip1559' ? 'EIP-1559 (Type 2)' : 'Legacy',
+    },
     { key: 'nonce', label: 'nonce', value: nonce.toString() },
     { key: 'gasLimit', label: 'gasLimit', value: gasLimit.toString() },
     { key: 'to', label: 'to', value: to.length === 0 ? '（合约创建）' : '0x' + bytesToHex(to) },
@@ -119,8 +125,16 @@ export function buildUnsignedTx(input: TxBuildInput, options: TxBuildOptions): B
     const maxPriority = parseUint('maxPriorityFeePerGas', input.maxPriorityFeePerGas)
     const maxFee = parseUint('maxFeePerGas', input.maxFeePerGas)
     if (maxFee < maxPriority) throw new Error('maxFeePerGas 不能小于 maxPriorityFeePerGas')
-    fields.splice(2, 0, { key: 'maxPriorityFeePerGas', label: 'maxPriorityFeePerGas (wei)', value: maxPriority.toString() })
-    fields.splice(3, 0, { key: 'maxFeePerGas', label: 'maxFeePerGas (wei)', value: maxFee.toString() })
+    fields.splice(2, 0, {
+      key: 'maxPriorityFeePerGas',
+      label: 'maxPriorityFeePerGas (wei)',
+      value: maxPriority.toString(),
+    })
+    fields.splice(3, 0, {
+      key: 'maxFeePerGas',
+      label: 'maxFeePerGas (wei)',
+      value: maxFee.toString(),
+    })
     const list = rlpEncodeList([
       rlpEncodeBytes(bigIntToBytes(chainId)),
       rlpEncodeBytes(bigIntToBytes(nonce)),

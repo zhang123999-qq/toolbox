@@ -20,7 +20,19 @@ describe('focus-style · Tool', () => {
     for (const id of ['input', 'run', 'example', 'clear', 'output', 'copy', 'download']) {
       expect(byTestId(id)).toBeTruthy()
     }
-    for (const id of ['color', 'bg', 'width', 'offset', 'radius', 'outline-style', 'css-output', 'contrast-result', 'demo-button', 'demo-link', 'demo-input']) {
+    for (const id of [
+      'color',
+      'bg',
+      'width',
+      'offset',
+      'radius',
+      'outline-style',
+      'css-output',
+      'contrast-result',
+      'demo-button',
+      'demo-link',
+      'demo-input',
+    ]) {
       expect(byTestId(id)).toBeTruthy()
     }
   })

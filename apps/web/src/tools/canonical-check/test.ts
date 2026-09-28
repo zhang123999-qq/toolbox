@@ -21,9 +21,7 @@ describe('extractCanonical', () => {
   })
 
   it('非 canonical 的 link 被忽略', () => {
-    expect(
-      extractCanonical('<link rel="stylesheet" href="a.css"><link href="b.css">'),
-    ).toEqual([])
+    expect(extractCanonical('<link rel="stylesheet" href="a.css"><link href="b.css">')).toEqual([])
   })
 
   it('无 href 的 canonical 记为空字符串', () => {

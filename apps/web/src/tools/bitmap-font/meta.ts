@@ -8,7 +8,8 @@ export const meta: ToolMeta = {
   id: 'bitmap-font',
   slug: 'bitmap-font',
   title: '字体位图',
-  description: '把文本逐字渲染为位图字体数据：可调字体与字号，导出 JSON 或 C 数组格式，供游戏引擎使用',
+  description:
+    '把文本逐字渲染为位图字体数据：可调字体与字号，导出 JSON 或 C 数组格式，供游戏引擎使用',
   titleEn: 'Bitmap Font',
   descriptionEn:
     'Rasterize text into bitmap font data: adjustable font and size, export as JSON or C array for game engines',

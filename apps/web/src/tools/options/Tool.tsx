@@ -28,7 +28,9 @@ export default function Tool() {
       meta={meta}
       initialInput={{ text: JSON.stringify(EXAMPLE_INPUT, null, 2) }}
       initialOptions={{}}
-      example={{ text: JSON.stringify({ fields: [{ key: 'name', label: '昵称', type: 'text' }] }, null, 2) }}
+      example={{
+        text: JSON.stringify({ fields: [{ key: 'name', label: '昵称', type: 'text' }] }, null, 2),
+      }}
       renderOutput={(input) => (
         <div className="flex flex-col gap-3">
           <div>
@@ -52,9 +54,9 @@ export default function Tool() {
             </pre>
           )}
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            说明：输入 JSON 的 fields 数组（key / label / type / options /
-            defaultValue），生成 options.html / options.js。type 可选 text /
-            checkbox / select / number，配置经 chrome.storage.sync 读写。纯本地生成。
+            说明：输入 JSON 的 fields 数组（key / label / type / options / defaultValue），生成
+            options.html / options.js。type 可选 text / checkbox / select / number，配置经
+            chrome.storage.sync 读写。纯本地生成。
           </p>
         </div>
       )}

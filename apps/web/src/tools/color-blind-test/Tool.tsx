@@ -113,7 +113,9 @@ export default function Tool() {
           </button>
         </div>
       )}
-      <p className="text-xs text-slate-500">本测试为色觉筛查小游戏，仅供娱乐参考，不能替代医院眼科的医学诊断。</p>
+      <p className="text-xs text-slate-500">
+        本测试为色觉筛查小游戏，仅供娱乐参考，不能替代医院眼科的医学诊断。
+      </p>
     </div>
   )
 }

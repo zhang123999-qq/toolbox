@@ -10,7 +10,8 @@ export const meta: ToolMeta = {
   title: '地址校验',
   description: '校验以太坊钱包地址：0x 格式检查与 EIP-55 checksum 校验，输出规范地址',
   titleEn: 'Address Validate',
-  descriptionEn: 'Validate Ethereum wallet addresses: 0x format check and EIP-55 checksum verification',
+  descriptionEn:
+    'Validate Ethereum wallet addresses: 0x format check and EIP-55 checksum verification',
 
   category: 'encoding',
   group: 'dev',

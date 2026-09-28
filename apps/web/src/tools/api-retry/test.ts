@@ -26,19 +26,33 @@ describe('validateRetryOptions', () => {
   })
   it('初始延迟非法抛错', () => {
     expect(() => validateRetryOptions({ ...BASE, baseDelayMs: 0 })).toThrow('初始延迟必须是正整数')
-    expect(() => validateRetryOptions({ ...BASE, baseDelayMs: 1.5 })).toThrow('初始延迟必须是正整数')
+    expect(() => validateRetryOptions({ ...BASE, baseDelayMs: 1.5 })).toThrow(
+      '初始延迟必须是正整数',
+    )
   })
   it('退避倍数非法抛错', () => {
-    expect(() => validateRetryOptions({ ...BASE, multiplier: 0.5 })).toThrow('退避倍数必须是不小于 1')
-    expect(() => validateRetryOptions({ ...BASE, multiplier: NaN })).toThrow('退避倍数必须是不小于 1')
+    expect(() => validateRetryOptions({ ...BASE, multiplier: 0.5 })).toThrow(
+      '退避倍数必须是不小于 1',
+    )
+    expect(() => validateRetryOptions({ ...BASE, multiplier: NaN })).toThrow(
+      '退避倍数必须是不小于 1',
+    )
   })
   it('最大延迟非法抛错', () => {
-    expect(() => validateRetryOptions({ ...BASE, maxDelayMs: 500 })).toThrow('最大延迟必须是不小于初始延迟')
+    expect(() => validateRetryOptions({ ...BASE, maxDelayMs: 500 })).toThrow(
+      '最大延迟必须是不小于初始延迟',
+    )
   })
   it('重试次数非法抛错', () => {
-    expect(() => validateRetryOptions({ ...BASE, maxRetries: -1 })).toThrow('最大重试次数必须是 0～20 的整数')
-    expect(() => validateRetryOptions({ ...BASE, maxRetries: 21 })).toThrow('最大重试次数必须是 0～20 的整数')
-    expect(() => validateRetryOptions({ ...BASE, maxRetries: 1.5 })).toThrow('最大重试次数必须是 0～20 的整数')
+    expect(() => validateRetryOptions({ ...BASE, maxRetries: -1 })).toThrow(
+      '最大重试次数必须是 0～20 的整数',
+    )
+    expect(() => validateRetryOptions({ ...BASE, maxRetries: 21 })).toThrow(
+      '最大重试次数必须是 0～20 的整数',
+    )
+    expect(() => validateRetryOptions({ ...BASE, maxRetries: 1.5 })).toThrow(
+      '最大重试次数必须是 0～20 的整数',
+    )
   })
   it('未知策略抛错', () => {
     expect(() => validateRetryOptions({ ...BASE, strategy: 'x' as never })).toThrow('未知策略')

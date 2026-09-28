@@ -52,8 +52,8 @@ export default function Tool() {
             </pre>
           )}
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            说明：输入 JSON 配置（matches / runAt / features），生成可直接放进扩展目录的
-            content.js 模板。features 可选 dom-observe / context-menu / storage-sync。
+            说明：输入 JSON 配置（matches / runAt / features），生成可直接放进扩展目录的 content.js
+            模板。features 可选 dom-observe / context-menu / storage-sync。
             纯本地生成，不发送网络请求。
           </p>
         </div>

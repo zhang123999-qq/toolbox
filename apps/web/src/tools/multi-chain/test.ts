@@ -91,7 +91,9 @@ describe('multi-chain · ethToTron', () => {
 
   it('非法 ETH 地址报错', () => {
     expect(() => ethToTron('0x1234')).toThrow('ETH 地址格式非法')
-    expect(() => ethToTron('0xzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz')).toThrow('ETH 地址格式非法')
+    expect(() => ethToTron('0xzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz')).toThrow(
+      'ETH 地址格式非法',
+    )
   })
 })
 

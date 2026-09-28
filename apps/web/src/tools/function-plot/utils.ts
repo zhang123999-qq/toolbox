@@ -262,9 +262,7 @@ export function mapToCanvas(
   const h = height - padding * 2
   const mapped = points.map((p) => {
     const cx = padding + ((p.x - xMin) / (xMax - xMin)) * w
-    const cy = Number.isFinite(p.y)
-      ? padding + (1 - (p.y - yMin) / (yMax - yMin)) * h
-      : NaN
+    const cy = Number.isFinite(p.y) ? padding + (1 - (p.y - yMin) / (yMax - yMin)) * h : NaN
     return { cx, cy }
   })
   return { points: mapped, xMin, xMax, yMin, yMax }

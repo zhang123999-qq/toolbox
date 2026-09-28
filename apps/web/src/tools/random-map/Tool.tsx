@@ -9,7 +9,11 @@ const BTN_CLS =
 const PRE_CLS =
   'max-h-80 overflow-auto rounded bg-slate-50 p-3 font-mono text-xs break-all whitespace-pre-wrap dark:bg-slate-900'
 
-const EXAMPLE_INPUT = JSON.stringify({ w: 40, h: 24, seed: 20260928, waterLevel: 0.45, mountainRate: 0.08 }, null, 2)
+const EXAMPLE_INPUT = JSON.stringify(
+  { w: 40, h: 24, seed: 20260928, waterLevel: 0.45, mountainRate: 0.08 },
+  null,
+  2,
+)
 
 const TERRAIN_COLORS = ['#3b82f6', '#86efac', '#a16207']
 

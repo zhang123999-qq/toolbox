@@ -1,12 +1,7 @@
 import { MultiPanel } from '../../components/tool/templates/MultiPanel'
 import { meta } from './meta'
 import type { EdgeLogInput, EdgeLogOptions } from './schema'
-import {
-  buildGraphqlQuery,
-  buildLogQuery,
-  EXAMPLE_LOG_LINE,
-  parseLogLines,
-} from './utils'
+import { buildGraphqlQuery, buildLogQuery, EXAMPLE_LOG_LINE, parseLogLines } from './utils'
 
 interface LogView {
   error: string
@@ -73,12 +68,18 @@ export default function Tool() {
               </p>
             )}
             {view.code !== '' && (
-              <pre data-testid="edge-log-code" className="whitespace-pre-wrap rounded bg-slate-100 p-3 font-mono text-xs dark:bg-slate-900">
+              <pre
+                data-testid="edge-log-code"
+                className="whitespace-pre-wrap rounded bg-slate-100 p-3 font-mono text-xs dark:bg-slate-900"
+              >
                 {view.code}
               </pre>
             )}
             {view.detail !== '' && (
-              <p data-testid="edge-log-detail" className="whitespace-pre-wrap text-sm text-slate-700 dark:text-slate-300">
+              <p
+                data-testid="edge-log-detail"
+                className="whitespace-pre-wrap text-sm text-slate-700 dark:text-slate-300"
+              >
                 {view.detail}
               </p>
             )}

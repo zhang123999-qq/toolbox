@@ -89,7 +89,10 @@ describe('map / parseRegionData', () => {
 describe('map / fetchMapGeoJson', () => {
   it('合法 geoJSON 返回数据', async () => {
     const data = { type: 'FeatureCollection', features: [{ type: 'Feature' }] }
-    const out = await fetchMapGeoJson('https://x/y.json', makeFetch(makeRes({ json: async () => data })))
+    const out = await fetchMapGeoJson(
+      'https://x/y.json',
+      makeFetch(makeRes({ json: async () => data })),
+    )
     expect(out).toBe(data)
   })
   it('fetch 抛错时报网络错误', async () => {
@@ -166,7 +169,7 @@ describe('map / buildMapOption', () => {
     expect(visualMap.min).toBe(0)
     expect(visualMap.max).toBe(100)
     expect(opt).not.toHaveProperty('title')
-    expect(((opt.series as Record<string, unknown>[])[0].data as unknown[])).toHaveLength(0)
+    expect((opt.series as Record<string, unknown>[])[0].data as unknown[]).toHaveLength(0)
   })
 })
 

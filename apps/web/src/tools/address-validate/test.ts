@@ -22,7 +22,9 @@ describe('keccak256 标准测试向量', () => {
   })
 
   it('"abc"', () => {
-    expect(keccakHex('abc')).toBe('4e03657aea45a94fc7d47ba826c8d667c0d1e6e33a64a036ec44f58fa12d6c45')
+    expect(keccakHex('abc')).toBe(
+      '4e03657aea45a94fc7d47ba826c8d667c0d1e6e33a64a036ec44f58fa12d6c45',
+    )
   })
 
   it('长输入（跨多个分组，136 字节速率）：确定性与长度', () => {
@@ -106,7 +108,9 @@ describe('validateAddress', () => {
   })
 
   it('含非法字符抛格式错误', () => {
-    expect(() => validateAddress('0xZZZZeb6053F3E94C9b9A09f33669435E7Ef1BeAed')).toThrowError('地址格式错误')
+    expect(() => validateAddress('0xZZZZeb6053F3E94C9b9A09f33669435E7Ef1BeAed')).toThrowError(
+      '地址格式错误',
+    )
   })
 
   it('首尾空白被容忍', () => {
@@ -126,7 +130,10 @@ describe('validateBatch', () => {
 
   it('空输入与超量抛错', () => {
     expect(() => validateBatch('  \n ')).toThrowError('至少输入 1 个地址')
-    const many = Array.from({ length: 501 }, () => '0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed').join('\n')
+    const many = Array.from(
+      { length: 501 },
+      () => '0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed',
+    ).join('\n')
     expect(() => validateBatch(many)).toThrowError('最多校验 500 个地址')
   })
 })

@@ -24,7 +24,11 @@ export default function Tool() {
         let body: React.ReactNode
         try {
           if (input.text.trim() === '') {
-            body = <p className="text-slate-500">在左侧粘贴页面的 HTML 源码，图片 alt 检查结果实时显示</p>
+            body = (
+              <p className="text-slate-500">
+                在左侧粘贴页面的 HTML 源码，图片 alt 检查结果实时显示
+              </p>
+            )
           } else {
             const { result } = analyzeHtml(input.text)
             body = (
@@ -35,11 +39,14 @@ export default function Tool() {
                     <span className="text-sm font-normal text-slate-500">%</span>
                   </span>
                   <span className="text-slate-600 dark:text-slate-400">
-                    共 {result.total} 张图片，通过 {result.passCount}，缺少 alt {result.missing}，alt 为空 {result.empty}
+                    共 {result.total} 张图片，通过 {result.passCount}，缺少 alt {result.missing}
+                    ，alt 为空 {result.empty}
                   </span>
                 </div>
                 {result.items.every((i) => i.issues.length === 0) ? (
-                  <p className="text-sm text-green-700 dark:text-green-400">未发现问题，所有图片的 alt 均符合要求</p>
+                  <p className="text-sm text-green-700 dark:text-green-400">
+                    未发现问题，所有图片的 alt 均符合要求
+                  </p>
                 ) : (
                   <ul className="flex flex-col gap-2">
                     {result.items.map((item) => (
@@ -71,7 +78,11 @@ export default function Tool() {
           }
         } catch (err) {
           body = (
-            <div role="alert" data-testid="error" className="text-sm text-red-700 dark:text-red-300">
+            <div
+              role="alert"
+              data-testid="error"
+              className="text-sm text-red-700 dark:text-red-300"
+            >
               {err instanceof Error ? err.message : '分析失败'}
             </div>
           )

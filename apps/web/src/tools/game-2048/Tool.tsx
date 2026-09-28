@@ -1,6 +1,14 @@
 import { useCallback, useEffect, useState } from 'react'
 import { meta } from './meta'
-import { boardScore, createBoard, isGameOver, moveBoard, spawnTile, type Board, type MoveDir } from './utils'
+import {
+  boardScore,
+  createBoard,
+  isGameOver,
+  moveBoard,
+  spawnTile,
+  type Board,
+  type MoveDir,
+} from './utils'
 
 const CELL = 72
 
@@ -72,7 +80,10 @@ export default function Tool() {
           重新开始
         </button>
       </div>
-      <div className="grid w-fit grid-cols-4 gap-2 rounded bg-stone-300 p-2 dark:bg-stone-700" data-testid="g2048-board">
+      <div
+        className="grid w-fit grid-cols-4 gap-2 rounded bg-stone-300 p-2 dark:bg-stone-700"
+        data-testid="g2048-board"
+      >
         {board.flatMap((row, r) =>
           row.map((v, c) => (
             <div

@@ -90,13 +90,19 @@ describe('decodeGifFrames', () => {
       close: () => {},
     }
     await expect(
-      decodeGifFrames(new ArrayBuffer(4), { decoderFactory: () => decoder, toBitmap: async () => ({}) }),
+      decodeGifFrames(new ArrayBuffer(4), {
+        decoderFactory: () => decoder,
+        toBitmap: async () => ({}),
+      }),
     ).rejects.toThrow('未从 GIF 中解析到任何帧')
   })
   it('零帧报错', async () => {
     const decoder = mockDecoder([])
     await expect(
-      decodeGifFrames(new ArrayBuffer(4), { decoderFactory: () => decoder, toBitmap: async () => ({}) }),
+      decodeGifFrames(new ArrayBuffer(4), {
+        decoderFactory: () => decoder,
+        toBitmap: async () => ({}),
+      }),
     ).rejects.toThrow('未从 GIF 中解析到任何帧')
   })
   it('无 ImageDecoder 时中文提示', async () => {
@@ -156,7 +162,9 @@ describe('layoutSpriteSheet', () => {
     expect(l.sheetW).toBe(30)
   })
   it('布局格子多于帧时跳过缺失帧', () => {
-    const frames: DecodedGifFrame[] = [{ bitmap: { id: 1 }, width: 10, height: 10, durationMs: 100 }]
+    const frames: DecodedGifFrame[] = [
+      { bitmap: { id: 1 }, width: 10, height: 10, durationMs: 100 },
+    ]
     const layout = layoutSpriteSheet(
       [
         { width: 10, height: 10 },
@@ -224,7 +232,9 @@ describe('sheetPngData', () => {
   it('空帧报错', () => {
     const layout = layoutSpriteSheet([{ width: 1, height: 1 }], 1)
     expect(() =>
-      sheetPngData([], layout, { create: () => ({ ctx: { drawImage() {} }, toDataURL: () => '' }) }),
+      sheetPngData([], layout, {
+        create: () => ({ ctx: { drawImage() {} }, toDataURL: () => '' }),
+      }),
     ).toThrow('没有帧可拼接')
   })
 })

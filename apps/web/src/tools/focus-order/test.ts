@@ -40,7 +40,10 @@ describe('Tab 顺序规则', () => {
     ])
   })
   it('同值正 tabindex 保持 DOM 先后（稳定）', () => {
-    const r = getTabOrder('<button tabindex="1">甲</button><button tabindex="1">乙</button>', factory)
+    const r = getTabOrder(
+      '<button tabindex="1">甲</button><button tabindex="1">乙</button>',
+      factory,
+    )
     expect(r.order.map((i) => i.label)).toEqual(['<button> "甲"', '<button> "乙"'])
   })
   it('tabindex=-1 跳过顺序单独列出', () => {

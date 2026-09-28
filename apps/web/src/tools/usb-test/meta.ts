@@ -10,8 +10,7 @@ export const meta: ToolMeta = {
   title: 'USB 测试',
   description: '通过 WebUSB API 检测 USB 能力、请求并列出已授权的 USB 设备（含厂商/产品 ID）',
   titleEn: 'USB Test',
-  descriptionEn:
-    'Detects WebUSB capability and requests authorized USB devices via the WebUSB API',
+  descriptionEn: 'Detects WebUSB capability and requests authorized USB devices via the WebUSB API',
 
   category: 'education',
   group: 'life',

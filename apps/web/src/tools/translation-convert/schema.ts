@@ -9,7 +9,12 @@ export const inputSchema = z.object({
   text: z.string().max(200000, '输入超过 200,000 字符上限'),
 })
 
-const formatEnum = z.union([z.literal('json'), z.literal('po'), z.literal('yaml'), z.literal('csv')])
+const formatEnum = z.union([
+  z.literal('json'),
+  z.literal('po'),
+  z.literal('yaml'),
+  z.literal('csv'),
+])
 
 export const optionsSchema = z.object({
   from: formatEnum,

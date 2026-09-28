@@ -26,7 +26,9 @@ export default function Tool() {
       initialInput={{ text: EXAMPLE_DNS_KV }}
       initialOptions={{ mode: 'dns' }}
       example={{ text: EXAMPLE_DNS_KV }}
-      optionDefs={[{ key: 'mode', label: '生成类型', kind: 'select', values: ['dns', 'page-rule'] }]}
+      optionDefs={[
+        { key: 'mode', label: '生成类型', kind: 'select', values: ['dns', 'page-rule'] },
+      ]}
       renderOutput={(input, options) => {
         let result = ''
         let error = ''
@@ -43,7 +45,10 @@ export default function Tool() {
               </p>
             )}
             {result !== '' && (
-              <pre data-testid="cloudflare-result" className="whitespace-pre-wrap font-mono text-sm">
+              <pre
+                data-testid="cloudflare-result"
+                className="whitespace-pre-wrap font-mono text-sm"
+              >
                 {result}
               </pre>
             )}

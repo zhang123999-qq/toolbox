@@ -77,10 +77,7 @@ function assertLastmod(raw: string): string {
  * 由 URL 列表生成标准 sitemap XML。
  * 空行忽略；空列表 / 非法 URL / 非法选项均抛中文错。
  */
-export function buildSitemapXml(
-  urls: readonly string[],
-  opts: SitemapBuildOptions = {},
-): string {
+export function buildSitemapXml(urls: readonly string[], opts: SitemapBuildOptions = {}): string {
   const cleaned: string[] = []
   for (let i = 0; i < urls.length; i++) {
     const t = urls[i].trim()

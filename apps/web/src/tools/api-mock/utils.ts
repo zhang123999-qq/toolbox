@@ -152,7 +152,11 @@ export function renderTemplate(tpl: string, ctx: TemplateContext): string {
     }
     if (keyPath === '') throw new Error(`模板变量缺少路径：{{${trimmedExpr}}}`)
     const value =
-      scope === 'query' ? ctx.query[keyPath] : scope === 'param' ? ctx.param[keyPath] : getByPath(ctx.body, keyPath)
+      scope === 'query'
+        ? ctx.query[keyPath]
+        : scope === 'param'
+          ? ctx.param[keyPath]
+          : getByPath(ctx.body, keyPath)
     if (value === undefined || value === null) {
       throw new Error(`模板变量缺失：${scope}.${keyPath}`)
     }

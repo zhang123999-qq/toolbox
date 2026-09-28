@@ -45,7 +45,11 @@ export default function Tool() {
         let body: React.ReactNode
         try {
           if (input.text.trim() === '') {
-            body = <p className="text-slate-500">在左侧输入面包屑层级（每行「名称 || URL」），预览与代码实时显示</p>
+            body = (
+              <p className="text-slate-500">
+                在左侧输入面包屑层级（每行「名称 || URL」），预览与代码实时显示
+              </p>
+            )
           } else {
             const items = parseBreadcrumbItems(input.text)
             const issues = validateBreadcrumb(items)
@@ -100,7 +104,11 @@ export default function Tool() {
           }
         } catch (err) {
           body = (
-            <div role="alert" data-testid="error" className="text-sm text-red-700 dark:text-red-300">
+            <div
+              role="alert"
+              data-testid="error"
+              className="text-sm text-red-700 dark:text-red-300"
+            >
               {err instanceof Error ? err.message : '生成失败'}
             </div>
           )

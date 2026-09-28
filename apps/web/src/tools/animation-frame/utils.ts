@@ -52,7 +52,10 @@ export function createClip(name = '未命名动画'): AnimationClip {
 /** 追加一帧（返回新片段） */
 export function addFrame(clip: AnimationClip, frame: ClipFrame): AnimationClip {
   validateFrame(frame)
-  return { ...clip, frames: [...clip.frames, { spriteId: frame.spriteId.trim(), durationMs: frame.durationMs }] }
+  return {
+    ...clip,
+    frames: [...clip.frames, { spriteId: frame.spriteId.trim(), durationMs: frame.durationMs }],
+  }
 }
 
 /** 删除指定索引的帧（返回新片段） */

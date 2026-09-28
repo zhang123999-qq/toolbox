@@ -30,5 +30,5 @@ A 级工具：纯前端本地生成，无网络、无第三方 API。
 ## 说明
 
 - 生成的文件在 manifest.json 中声明 `"options_page": "options.html"`
- （或 `options_ui`）即可使用（可用 #771 Manifest V3 生成工具）。
+  （或 `options_ui`）即可使用（可用 #771 Manifest V3 生成工具）。
 - 所有处理在浏览器本地完成，不发送任何网络请求。

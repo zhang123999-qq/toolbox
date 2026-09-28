@@ -284,13 +284,13 @@ describe('ecrecover', () => {
 
 describe('recoverAddress', () => {
   it('向量 1/2 恢复地址', () => {
-    expect(recoverAddress(hexToBytes(V1.hash), BigInt(`0x${V1.r}`), BigInt(`0x${V1.s}`), V1.v)).toBe(
-      V1.address,
-    )
+    expect(
+      recoverAddress(hexToBytes(V1.hash), BigInt(`0x${V1.r}`), BigInt(`0x${V1.s}`), V1.v),
+    ).toBe(V1.address)
     const addr2 = publicToAddress(privateToPublic(V2.priv).uncompressed)
-    expect(recoverAddress(hexToBytes(V2.hash), BigInt(`0x${V2.r}`), BigInt(`0x${V2.s}`), V2.v)).toBe(
-      addr2,
-    )
+    expect(
+      recoverAddress(hexToBytes(V2.hash), BigInt(`0x${V2.r}`), BigInt(`0x${V2.s}`), V2.v),
+    ).toBe(addr2)
   })
 })
 

@@ -126,8 +126,8 @@ export default function Tool() {
             </pre>
           )}
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            说明：输入矩形列表 JSON（rects 数组每项含 id/w/h，maxWidth 为图集最大宽度），
-            采用 shelf 装箱算法按高度降序排列打包。纯本地计算，不发送网络请求。
+            说明：输入矩形列表 JSON（rects 数组每项含 id/w/h，maxWidth 为图集最大宽度）， 采用 shelf
+            装箱算法按高度降序排列打包。纯本地计算，不发送网络请求。
           </p>
         </div>
       )}

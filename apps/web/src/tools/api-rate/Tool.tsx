@@ -34,13 +34,21 @@ export default function Tool() {
           capacity: cfg.capacity,
           refillPerSec: cfg.refillPerSec,
         })
-        setRows(out.map((r) => ({ time: r.time, allowed: r.allowed, extra: '剩余令牌 ' + r.tokensLeft })))
+        setRows(
+          out.map((r) => ({ time: r.time, allowed: r.allowed, extra: '剩余令牌 ' + r.tokensLeft })),
+        )
       } else {
         const out: SlidingWindowResult[] = simulateSlidingWindow(cfg.requests, {
           limit: cfg.limit,
           windowSec: cfg.windowSec,
         })
-        setRows(out.map((r) => ({ time: r.time, allowed: r.allowed, extra: '窗口内 ' + r.countInWindow })))
+        setRows(
+          out.map((r) => ({
+            time: r.time,
+            allowed: r.allowed,
+            extra: '窗口内 ' + r.countInWindow,
+          })),
+        )
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : '执行失败')

@@ -37,9 +37,12 @@ function computeText(input: AbiCodecInput, options: AbiCodecOptions): string {
     const { types } = parseSignature(sig)
     const calldata = encodeFunctionCall(sig, values)
     const typeList = types.map(canonicalType).join(', ')
-    return [`函数：${sig}`, `选择器：${functionSelector(sig)}`, `参数类型：${typeList}`, `calldata：${calldata}`].join(
-      '\n',
-    )
+    return [
+      `函数：${sig}`,
+      `选择器：${functionSelector(sig)}`,
+      `参数类型：${typeList}`,
+      `calldata：${calldata}`,
+    ].join('\n')
   }
   const hex = input.params === '' ? '' : input.params.replace(/\s+/g, '')
   const decoded = decodeFunctionCall(sig, hex)

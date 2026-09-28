@@ -14,7 +14,8 @@ export const meta: ToolMeta = {
   title: '重定向检测',
   description: '跟踪 URL 的重定向链：每跳状态码、跳转目标、跳数与成环检测',
   titleEn: 'Redirect Checker',
-  descriptionEn: 'Trace a URL redirect chain: per-hop status, targets, hop count and loop detection',
+  descriptionEn:
+    'Trace a URL redirect chain: per-hop status, targets, hop count and loop detection',
 
   category: 'seo',
   group: 'dev',

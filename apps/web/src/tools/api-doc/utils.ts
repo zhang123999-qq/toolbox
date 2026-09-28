@@ -53,7 +53,9 @@ export function normalizeApiDef(def: unknown): ApiDef {
   if (typeof d.name !== 'string' || d.name.trim() === '') throw new Error('接口名称不能为空')
   const method = typeof d.method === 'string' ? d.method.toUpperCase() : ''
   if (!(API_METHODS as readonly string[]).includes(method)) {
-    throw new Error('method 非法：' + String(d.method) + '，应为 ' + API_METHODS.join('/') + ' 之一')
+    throw new Error(
+      'method 非法：' + String(d.method) + '，应为 ' + API_METHODS.join('/') + ' 之一',
+    )
   }
   if (typeof d.path !== 'string' || !d.path.startsWith('/')) throw new Error('path 必须以 / 开头')
   return {
@@ -147,7 +149,9 @@ export function generateApiDoc(defs: ApiDef[], opts: DocOptions): string {
   lines.push('## 目录')
   lines.push('')
   defs.forEach((d, i) => {
-    lines.push((i + 1) + '. [' + d.method + ' ' + d.path + ' - ' + d.name + '](#' + anchorOf(d.name) + ')')
+    lines.push(
+      i + 1 + '. [' + d.method + ' ' + d.path + ' - ' + d.name + '](#' + anchorOf(d.name) + ')',
+    )
   })
   lines.push('')
   defs.forEach((d, i) => {
@@ -228,7 +232,9 @@ export const EXAMPLE_API_DEFS_JSON = JSON.stringify(
       path: '/api/users/{id}',
       description: '根据用户 ID 查询用户基本信息。',
       headers: [{ name: 'Authorization', required: true, description: 'Bearer 令牌' }],
-      queryParams: [{ name: 'verbose', type: 'boolean', required: false, description: '是否返回详情' }],
+      queryParams: [
+        { name: 'verbose', type: 'boolean', required: false, description: '是否返回详情' },
+      ],
       bodyExample: '',
       responseExample: '{\n  "id": 1,\n  "name": "张三"\n}',
     },

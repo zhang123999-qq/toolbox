@@ -10,10 +10,10 @@
 
 ## 输入
 
-| 字段      | 类型   | 约束                                                                 |
-| --------- | ------ | -------------------------------------------------------------------- |
+| 字段      | 类型   | 约束                                                                   |
+| --------- | ------ | ---------------------------------------------------------------------- |
 | `text`    | string | 数据行：每行一个系列，格式 `系列名, 指标1:值, 指标2:值…`（留空用示例） |
-| `maxText` | string | 指标最大值：格式 `指标1:最大值, 指标2:最大值…`（留空用示例）            |
+| `maxText` | string | 指标最大值：格式 `指标1:最大值, 指标2:最大值…`（留空用示例）           |
 
 数据行格式示例：
 
@@ -70,15 +70,15 @@
 
 ## 元信息
 
-| 项       | 值                               |
-| -------- | -------------------------------- |
-| 全局编号 | #670                             |
-| 域       | `random`                         |
-| 大组     | `design`                         |
-| 优先级   | P1                               |
-| 可行性   | A（纯前端，echarts 动态导入）    |
-| 模板     | T3（图表可视化预览）             |
-| 依赖     | `echarts`（动态导入，独立分包）  |
+| 项       | 值                              |
+| -------- | ------------------------------- |
+| 全局编号 | #670                            |
+| 域       | `random`                        |
+| 大组     | `design`                        |
+| 优先级   | P1                              |
+| 可行性   | A（纯前端，echarts 动态导入）   |
+| 模板     | T3（图表可视化预览）            |
+| 依赖     | `echarts`（动态导入，独立分包） |
 
 ---
 
@@ -94,10 +94,10 @@ Enter multi-series, multi-indicator data and render a radar chart locally with E
 
 ## Input
 
-| Field     | Type   | Constraint                                                                     |
-| --------- | ------ | ------------------------------------------------------------------------------ |
+| Field     | Type   | Constraint                                                                                     |
+| --------- | ------ | ---------------------------------------------------------------------------------------------- |
 | `text`    | string | Data rows: one series per row, `Series, Indicator1:value, Indicator2:value…` (empty = example) |
-| `maxText` | string | Indicator maxima: `Indicator1:max, Indicator2:max…` (empty = example)          |
+| `maxText` | string | Indicator maxima: `Indicator1:max, Indicator2:max…` (empty = example)                          |
 
 - Full-width punctuation (`：`, `，`) is normalized automatically
 - Every series must provide all indicators (any order); values must be within 0–max
@@ -105,11 +105,11 @@ Enter multi-series, multi-indicator data and render a radar chart locally with E
 
 ## Options
 
-| Option | Default | Constraint  | Description      |
-| ------ | ------- | ----------- | ---------------- |
-| Title  | (empty) | any text    | Empty = no title |
-| Width  | `600`   | 100–2000    | Canvas width (px)|
-| Height | `400`   | 100–2000    | Canvas height (px)|
+| Option | Default | Constraint | Description        |
+| ------ | ------- | ---------- | ------------------ |
+| Title  | (empty) | any text   | Empty = no title   |
+| Width  | `600`   | 100–2000   | Canvas width (px)  |
+| Height | `400`   | 100–2000   | Canvas height (px) |
 
 ## Output
 

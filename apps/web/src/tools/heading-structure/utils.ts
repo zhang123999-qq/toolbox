@@ -61,10 +61,7 @@ function short(text: string, max = 40): string {
  * - 检查：无标题 / 多 h1 / 层级跳跃 / 空标题 / 标题过长
  * - 输出 0–100 结构评分
  */
-export function analyzeHeadings(
-  html: string,
-  createDoc?: DocFactory,
-): HeadingAnalysis {
+export function analyzeHeadings(html: string, createDoc?: DocFactory): HeadingAnalysis {
   const doc = parseHtml(html, createDoc)
   const els = Array.from(doc.body.querySelectorAll('h1,h2,h3,h4,h5,h6'))
   const raw: RawHeading[] = els.map((el, i) => ({
@@ -178,7 +175,8 @@ export function formatHeadingReport(a: HeadingAnalysis): string {
   } else {
     lines.push(`发现 ${a.issues.length} 个问题：`)
     for (const issue of a.issues) {
-      const tag = issue.severity === 'error' ? '错误' : issue.severity === 'warning' ? '警告' : '提示'
+      const tag =
+        issue.severity === 'error' ? '错误' : issue.severity === 'warning' ? '警告' : '提示'
       lines.push(`[${tag}] ${issue.element}：${issue.message}`)
       lines.push(`  建议：${issue.suggestion}`)
     }

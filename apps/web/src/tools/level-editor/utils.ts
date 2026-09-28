@@ -64,7 +64,9 @@ export function makeLevelObject(
 
 /** 添加对象（id 不可重复） */
 export function addObject(objects: LevelObject[], obj: LevelObject): LevelObject[] {
-  if (objects.some((o) => o.id === obj.id)) { throw new Error(`对象 id "${obj.id}" 已存在`) }
+  if (objects.some((o) => o.id === obj.id)) {
+    throw new Error(`对象 id "${obj.id}" 已存在`)
+  }
   return [...objects, obj]
 }
 
@@ -75,7 +77,12 @@ export function removeObject(objects: LevelObject[], id: string): LevelObject[] 
 }
 
 /** 移动对象到新坐标 */
-export function moveObject(objects: LevelObject[], id: string, x: number, y: number): LevelObject[] {
+export function moveObject(
+  objects: LevelObject[],
+  id: string,
+  x: number,
+  y: number,
+): LevelObject[] {
   requireFinite(x, '坐标 x')
   requireFinite(y, '坐标 y')
   let found = false

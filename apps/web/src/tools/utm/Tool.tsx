@@ -25,7 +25,12 @@ export default function Tool() {
       optionDefs={[
         { key: 'source', label: 'utm_source（必填）', kind: 'text', placeholder: 'google' },
         { key: 'medium', label: 'utm_medium（必填）', kind: 'text', placeholder: 'cpc' },
-        { key: 'campaign', label: 'utm_campaign（必填）', kind: 'text', placeholder: 'spring_sale' },
+        {
+          key: 'campaign',
+          label: 'utm_campaign（必填）',
+          kind: 'text',
+          placeholder: 'spring_sale',
+        },
         { key: 'term', label: 'utm_term（可选）', kind: 'text', placeholder: '关键词' },
         { key: 'content', label: 'utm_content（可选）', kind: 'text', placeholder: '区分版本' },
       ]}

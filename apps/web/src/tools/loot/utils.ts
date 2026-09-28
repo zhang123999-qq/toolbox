@@ -109,7 +109,5 @@ export function simulateLoot(
 
 /** 格式化模拟结果为文本 */
 export function formatLootStats(rows: Array<{ id: string; count: number; rate: number }>): string {
-  return rows
-    .map((r) => `${r.id}\t${r.count} 次\t${(r.rate * 100).toFixed(2)}%`)
-    .join('\n')
+  return rows.map((r) => `${r.id}\t${r.count} 次\t${(r.rate * 100).toFixed(2)}%`).join('\n')
 }

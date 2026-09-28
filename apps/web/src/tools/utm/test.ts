@@ -56,9 +56,9 @@ describe('utm · utils', () => {
   })
 
   it('buildUtmUrl 非 http(s) 协议抛中文错', () => {
-    expect(() => buildUtmUrl('ftp://example.com', { source: 's', medium: 'm', campaign: 'c' })).toThrow(
-      '必须以 http:// 或 https:// 开头',
-    )
+    expect(() =>
+      buildUtmUrl('ftp://example.com', { source: 's', medium: 'm', campaign: 'c' }),
+    ).toThrow('必须以 http:// 或 https:// 开头')
   })
 
   it('buildUtmUrl 必填参数为空逐个抛中文错', () => {

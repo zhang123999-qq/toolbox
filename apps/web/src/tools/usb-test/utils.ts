@@ -75,10 +75,7 @@ export async function listUsbDevices(
  * 名称优先 productName，其次 manufacturerName，否则 "未知 USB 设备"。
  */
 export function parseUSBDevice(device?: UsbDeviceLike | null): UsbDeviceInfo {
-  const name =
-    device?.productName?.trim() ||
-    device?.manufacturerName?.trim() ||
-    '未知 USB 设备'
+  const name = device?.productName?.trim() || device?.manufacturerName?.trim() || '未知 USB 设备'
   return {
     vendorId: usbIdHex(device?.vendorId),
     productId: usbIdHex(device?.productId),

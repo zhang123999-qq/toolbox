@@ -2,13 +2,7 @@
  * chemistry（#823）utils 单测：化学式解析、配平、摩尔质量。
  */
 import { describe, expect, it } from 'vitest'
-import {
-  ATOMIC_MASS,
-  balanceEquation,
-  formatCounts,
-  molarMass,
-  parseFormula,
-} from './utils'
+import { ATOMIC_MASS, balanceEquation, formatCounts, molarMass, parseFormula } from './utils'
 
 describe('parseFormula', () => {
   it('解析 H2O', () => {
@@ -84,9 +78,7 @@ describe('balanceEquation', () => {
     expect(balanceEquation('Fe+O2=Fe2O3').coefficients).toEqual([4, 3, 2])
   })
   it('带括号：Ca(OH)2+H2SO4=CaSO4+H2O → 1,1,1,2', () => {
-    expect(balanceEquation('Ca(OH)2+H2SO4=CaSO4+H2O').coefficients).toEqual([
-      1, 1, 1, 2,
-    ])
+    expect(balanceEquation('Ca(OH)2+H2SO4=CaSO4+H2O').coefficients).toEqual([1, 1, 1, 2])
   })
   it('负主元消元：NaCl+ClF=NaF+Cl2 → 1,1,1,1', () => {
     const b = balanceEquation('NaCl+ClF=NaF+Cl2')

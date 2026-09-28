@@ -96,15 +96,17 @@ export function detectAnimations(cssText: string): AnimationFinding[] {
     if (kf) {
       findings.push({ kind: 'keyframes', detail: kf[1] as string, line: lineNo })
     }
-    const anim = /(^|[;{])\s*animation(?:-name|-duration|-timing-function|-delay|-iteration-count|-direction|-fill-mode|-play-state)?\s*:\s*([^;}{]+)/.exec(
-      line,
-    )
+    const anim =
+      /(^|[;{])\s*animation(?:-name|-duration|-timing-function|-delay|-iteration-count|-direction|-fill-mode|-play-state)?\s*:\s*([^;}{]+)/.exec(
+        line,
+      )
     if (anim) {
       findings.push({ kind: 'animation', detail: (anim[2] as string).trim(), line: lineNo })
     }
-    const trans = /(^|[;{])\s*transition(?:-property|-duration|-timing-function|-delay)?\s*:\s*([^;}{]+)/.exec(
-      line,
-    )
+    const trans =
+      /(^|[;{])\s*transition(?:-property|-duration|-timing-function|-delay)?\s*:\s*([^;}{]+)/.exec(
+        line,
+      )
     if (trans) {
       findings.push({ kind: 'transition', detail: (trans[2] as string).trim(), line: lineNo })
     }

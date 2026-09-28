@@ -1,12 +1,7 @@
 import { MultiPanel } from '../../components/tool/templates/MultiPanel'
 import { meta } from './meta'
 import type { NetlifyInput, NetlifyOptions } from './schema'
-import {
-  buildNetlifyToml,
-  EXAMPLE_NETLIFY_TOML,
-  parseNetlifyToml,
-  summarizeNetlify,
-} from './utils'
+import { buildNetlifyToml, EXAMPLE_NETLIFY_TOML, parseNetlifyToml, summarizeNetlify } from './utils'
 
 function buildResult(input: NetlifyInput): { toml: string; summary: string; error: string } {
   try {
@@ -36,7 +31,10 @@ export default function Tool() {
             )}
             {view.toml !== '' && (
               <div>
-                <p data-testid="netlify-summary" className="mb-1 text-xs text-slate-500 dark:text-slate-400">
+                <p
+                  data-testid="netlify-summary"
+                  className="mb-1 text-xs text-slate-500 dark:text-slate-400"
+                >
                   校验通过：{view.summary}
                 </p>
                 <pre data-testid="netlify-toml" className="whitespace-pre-wrap font-mono text-sm">
@@ -45,8 +43,9 @@ export default function Tool() {
               </div>
             )}
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              说明：左侧编写 netlify.toml，右侧实时校验并输出规范版本；支持 [build]、[[redirects]]、[[headers]]
-              与 [headers.values]；from / to / for 须以 / 开头。不引入 TOML 第三方依赖。
+              说明：左侧编写 netlify.toml，右侧实时校验并输出规范版本；支持
+              [build]、[[redirects]]、[[headers]] 与 [headers.values]；from / to / for 须以 /
+              开头。不引入 TOML 第三方依赖。
             </p>
           </div>
         )

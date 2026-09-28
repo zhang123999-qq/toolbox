@@ -2,7 +2,14 @@ import { useEffect, useRef, useState } from 'react'
 import { MultiPanel } from '../../components/tool/templates/MultiPanel'
 import type { OptionDef } from '../../components/tool/templates/TwoColumn'
 import { meta } from './meta'
-import { buildHeatmapOption, EXAMPLE_DATA, parseHeatmapData, parseSize, parseTitle, transform } from './utils'
+import {
+  buildHeatmapOption,
+  EXAMPLE_DATA,
+  parseHeatmapData,
+  parseSize,
+  parseTitle,
+  transform,
+} from './utils'
 import type { HeatmapInput, HeatmapOptions } from './schema'
 
 /** 示例：示例热力图数据 */

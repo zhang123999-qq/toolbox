@@ -21,7 +21,18 @@ function byTestId(id: string): HTMLElement {
 describe('data-filter · Tool', () => {
   it('渲染后必需 data-testid 存在', () => {
     render(<Tool />)
-    for (const id of ['input', 'input-conditions', 'run', 'example', 'clear', 'output', 'copy', 'download', 'result-grid', 'match-count']) {
+    for (const id of [
+      'input',
+      'input-conditions',
+      'run',
+      'example',
+      'clear',
+      'output',
+      'copy',
+      'download',
+      'result-grid',
+      'match-count',
+    ]) {
       expect(byTestId(id)).toBeTruthy()
     }
   })

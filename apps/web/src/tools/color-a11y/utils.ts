@@ -34,7 +34,9 @@ function toSrgb(c: number): number {
 }
 
 /** Machado（2009）色盲模拟矩阵（行主序，作用于线性 RGB） */
-const SIMULATION_MATRICES: Readonly<Record<ColorBlindType, readonly (readonly [number, number, number])[]>> = {
+const SIMULATION_MATRICES: Readonly<
+  Record<ColorBlindType, readonly (readonly [number, number, number])[]>
+> = {
   protanopia: [
     [0.567, 0.433, 0],
     [0.558, 0.442, 0],
@@ -140,7 +142,14 @@ export function colorBlindReport(fgInput: string, bgInput: string): ColorA11yRep
     const simFg = simulateColorBlindness(fgHex, type)
     const simBg = simulateColorBlindness(bgHex, type)
     const ratio = contrastRatioOf(simFg, simBg)
-    return { type, label: COLOR_BLIND_LABELS[type], fg: simFg, bg: simBg, ratio, passAA: ratio >= 4.5 }
+    return {
+      type,
+      label: COLOR_BLIND_LABELS[type],
+      fg: simFg,
+      bg: simBg,
+      ratio,
+      passAA: ratio >= 4.5,
+    }
   })
   return {
     fg: fgHex,
@@ -174,6 +183,11 @@ export function formatColorA11yReport(report: ColorA11yReport): string {
       `  ${s.label}：前景 ${s.fg} 背景 ${s.bg} 对比度 ${s.ratio.toFixed(2)}（AA ${s.passAA ? '通过' : '不通过'}）`,
     )
   }
-  lines.push('', report.colorBlindSafe ? '结论：色盲安全（四种色觉下均通过 AA）。' : '结论：存在色盲用户难以辨识的风险，建议调整配色。')
+  lines.push(
+    '',
+    report.colorBlindSafe
+      ? '结论：色盲安全（四种色觉下均通过 AA）。'
+      : '结论：存在色盲用户难以辨识的风险，建议调整配色。',
+  )
   return lines.join('\n')
 }

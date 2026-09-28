@@ -73,11 +73,16 @@ describe('radar / parseRadarData', () => {
   })
   it('空数据行抛错', () => {
     expect(() =>
-      parseRadarData('产品A, 速度:80, 力量:65, 耐力:90\n\n产品B, 速度:60, 力量:85, 耐力:70', EXAMPLE_MAX),
+      parseRadarData(
+        '产品A, 速度:80, 力量:65, 耐力:90\n\n产品B, 速度:60, 力量:85, 耐力:70',
+        EXAMPLE_MAX,
+      ),
     ).toThrow(/不能为空行/)
   })
   it('行少于两个单元抛错', () => {
-    expect(() => parseRadarData('产品A', EXAMPLE_MAX)).toThrow(/至少需要「系列名, 指标:值」两个单元/)
+    expect(() => parseRadarData('产品A', EXAMPLE_MAX)).toThrow(
+      /至少需要「系列名, 指标:值」两个单元/,
+    )
   })
   it('系列名重复抛错', () => {
     expect(() =>

@@ -54,7 +54,8 @@ function describeElement(el: Element): string {
 function hasAccessibleName(el: Element, doc: Document): boolean {
   if ((el.getAttribute('aria-label') ?? '').trim() !== '') return true
   const labelledBy = el.getAttribute('aria-labelledby') ?? ''
-  if (labelledBy.trim() !== '' && labelledBy.split(/\s+/).some((id) => doc.getElementById(id))) return true
+  if (labelledBy.trim() !== '' && labelledBy.split(/\s+/).some((id) => doc.getElementById(id)))
+    return true
   const id = el.getAttribute('id')
   if (id) {
     const labels = Array.from(doc.getElementsByTagName('label'))
@@ -77,7 +78,9 @@ function visibleText(el: Element): string {
 function associatedLabelText(el: Element, doc: Document): string {
   const id = el.getAttribute('id')
   if (id) {
-    const lb = Array.from(doc.getElementsByTagName('label')).find((l) => l.getAttribute('for') === id)
+    const lb = Array.from(doc.getElementsByTagName('label')).find(
+      (l) => l.getAttribute('for') === id,
+    )
     if (lb) return visibleText(lb)
   }
   const wrapped = el.closest('label')
@@ -87,7 +90,10 @@ function associatedLabelText(el: Element, doc: Document): string {
 /**
  * 分析表单 HTML，返回问题列表与统计。
  */
-export function analyzeFormA11y(html: string, createDoc: DocFactory = defaultDocFactory): FormA11yResult {
+export function analyzeFormA11y(
+  html: string,
+  createDoc: DocFactory = defaultDocFactory,
+): FormA11yResult {
   const doc = parseHtml(html, createDoc)
   const issues: FormA11yIssue[] = []
 
@@ -102,7 +108,11 @@ export function analyzeFormA11y(html: string, createDoc: DocFactory = defaultDoc
   }
   for (const [id, count] of seenIds) {
     if (count > 1) {
-      issues.push({ severity: 'error', message: `id「${id}」重复出现 ${count} 次`, element: `#${id}` })
+      issues.push({
+        severity: 'error',
+        message: `id「${id}」重复出现 ${count} 次`,
+        element: `#${id}`,
+      })
     }
   }
 
@@ -112,37 +122,56 @@ export function analyzeFormA11y(html: string, createDoc: DocFactory = defaultDoc
     if (labeled) {
       labeledCount += 1
     } else {
-      issues.push({ severity: 'error', message: '表单控件缺少标签：请用 <label>、aria-label 或 aria-labelledby 关联', element: desc })
+      issues.push({
+        severity: 'error',
+        message: '表单控件缺少标签：请用 <label>、aria-label 或 aria-labelledby 关联',
+        element: desc,
+      })
     }
 
     const placeholder = el.getAttribute('placeholder') ?? ''
     if (!labeled && placeholder.trim() !== '') {
-      issues.push({ severity: 'warning', message: 'placeholder 不能替代 label：占位符在输入后消失，读屏也常跳过', element: desc })
+      issues.push({
+        severity: 'warning',
+        message: 'placeholder 不能替代 label：占位符在输入后消失，读屏也常跳过',
+        element: desc,
+      })
     }
 
     // 必填标识：required 应有可见或无障碍的必填提示
     if (el.hasAttribute('required')) {
       const ariaRequired = el.getAttribute('aria-required')
-      const marked = ariaRequired === 'true' || /[*＊]|必填|required/i.test(associatedLabelText(el, doc))
+      const marked =
+        ariaRequired === 'true' || /[*＊]|必填|required/i.test(associatedLabelText(el, doc))
       if (!marked) {
-        issues.push({ severity: 'warning', message: '必填项缺少必填标识：建议加 aria-required="true" 或可见的 * / 必填字样', element: desc })
+        issues.push({
+          severity: 'warning',
+          message: '必填项缺少必填标识：建议加 aria-required="true" 或可见的 * / 必填字样',
+          element: desc,
+        })
       }
     }
 
     // aria-describedby 指向存在性
     const describedBy = el.getAttribute('aria-describedby') ?? ''
     if (describedBy.trim() !== '') {
-      const missing = describedBy
-        .split(/\s+/)
-        .filter((id) => id !== '' && !doc.getElementById(id))
+      const missing = describedBy.split(/\s+/).filter((id) => id !== '' && !doc.getElementById(id))
       if (missing.length > 0) {
-        issues.push({ severity: 'warning', message: `aria-describedby 指向不存在的 id：${missing.join('、')}`, element: desc })
+        issues.push({
+          severity: 'warning',
+          message: `aria-describedby 指向不存在的 id：${missing.join('、')}`,
+          element: desc,
+        })
       }
     }
 
     // aria-invalid=true 却无错误提示关联
     if (el.getAttribute('aria-invalid') === 'true' && describedBy.trim() === '') {
-      issues.push({ severity: 'warning', message: 'aria-invalid="true" 却未关联错误提示：建议用 aria-describedby 指向错误文本', element: desc })
+      issues.push({
+        severity: 'warning',
+        message: 'aria-invalid="true" 却未关联错误提示：建议用 aria-describedby 指向错误文本',
+        element: desc,
+      })
     }
   }
 
@@ -150,7 +179,11 @@ export function analyzeFormA11y(html: string, createDoc: DocFactory = defaultDoc
   for (const el of Array.from(doc.querySelectorAll('input[type="image"]'))) {
     const alt = el.getAttribute('alt') ?? ''
     if (alt.trim() === '') {
-      issues.push({ severity: 'error', message: '图片提交按钮缺少 alt 文本', element: describeElement(el) })
+      issues.push({
+        severity: 'error',
+        message: '图片提交按钮缺少 alt 文本',
+        element: describeElement(el),
+      })
     }
   }
 
@@ -158,20 +191,33 @@ export function analyzeFormA11y(html: string, createDoc: DocFactory = defaultDoc
   for (const fs of Array.from(doc.querySelectorAll('fieldset'))) {
     const hasLegend = Array.from(fs.children).some((c) => c.tagName.toLowerCase() === 'legend')
     if (!hasLegend) {
-      issues.push({ severity: 'warning', message: 'fieldset 缺少 legend：分组缺少无障碍名称', element: '<fieldset>' })
+      issues.push({
+        severity: 'warning',
+        message: 'fieldset 缺少 legend：分组缺少无障碍名称',
+        element: '<fieldset>',
+      })
     }
   }
 
   // 提交按钮存在性（每个 form 单独看）
   const forms = Array.from(doc.querySelectorAll('form'))
   const scopes: Array<{ root: Element | Document; label: string }> =
-    forms.length > 0 ? forms.map((f, i) => ({ root: f, label: `第 ${i + 1} 个表单` })) : [{ root: doc, label: '页面' }]
+    forms.length > 0
+      ? forms.map((f, i) => ({ root: f, label: `第 ${i + 1} 个表单` }))
+      : [{ root: doc, label: '页面' }]
   for (const { root, label } of scopes) {
     const hasSubmit =
-      root.querySelector('button[type="submit"], input[type="submit"], input[type="image"]') !== null ||
-      Array.from(root.querySelectorAll('button')).some((b) => !b.hasAttribute('type') || b.getAttribute('type') === 'submit')
+      root.querySelector('button[type="submit"], input[type="submit"], input[type="image"]') !==
+        null ||
+      Array.from(root.querySelectorAll('button')).some(
+        (b) => !b.hasAttribute('type') || b.getAttribute('type') === 'submit',
+      )
     if (!hasSubmit && root.querySelector(CONTROL_SELECTOR) !== null) {
-      issues.push({ severity: 'warning', message: `${label}缺少提交按钮：键盘用户可能无法提交`, element: '<form>' })
+      issues.push({
+        severity: 'warning',
+        message: `${label}缺少提交按钮：键盘用户可能无法提交`,
+        element: '<form>',
+      })
     }
   }
 

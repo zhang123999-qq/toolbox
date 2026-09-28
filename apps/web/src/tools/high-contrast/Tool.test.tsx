@@ -20,7 +20,15 @@ describe('high-contrast · Tool', () => {
     for (const id of ['input', 'run', 'example', 'clear', 'output', 'copy', 'download']) {
       expect(byTestId(id)).toBeTruthy()
     }
-    for (const id of ['background', 'foreground', 'link-color', 'mode', 'css-output', 'contrast-report', 'theme-preview']) {
+    for (const id of [
+      'background',
+      'foreground',
+      'link-color',
+      'mode',
+      'css-output',
+      'contrast-report',
+      'theme-preview',
+    ]) {
       expect(byTestId(id)).toBeTruthy()
     }
   })

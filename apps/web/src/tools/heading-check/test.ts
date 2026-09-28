@@ -10,7 +10,11 @@ import {
 } from './utils'
 import type { Heading } from './utils'
 
-const h = (order: number, level: Heading['level'], text: string): Heading => ({ order, level, text })
+const h = (order: number, level: Heading['level'], text: string): Heading => ({
+  order,
+  level,
+  text,
+})
 
 describe('heading-check / cleanHeadingText', () => {
   it('去掉内层标签并解码常见实体', () => {
@@ -86,7 +90,12 @@ describe('heading-check / checkHeadings', () => {
     expect(r.score).toBe(80)
   })
   it('结构良好满分', () => {
-    const r = checkHeadings([h(1, 1, '主标题'), h(2, 2, '副标题一'), h(3, 3, '小节'), h(4, 2, '副标题二')])
+    const r = checkHeadings([
+      h(1, 1, '主标题'),
+      h(2, 2, '副标题一'),
+      h(3, 3, '小节'),
+      h(4, 2, '副标题二'),
+    ])
     expect(r.score).toBe(100)
     expect(r.issues).toEqual([])
   })

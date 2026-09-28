@@ -33,7 +33,10 @@ function stubFetchOk(): void {
 }
 
 function stubFetchPending(): void {
-  vi.stubGlobal('fetch', vi.fn(() => new Promise<never>(() => {})))
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(() => new Promise<never>(() => {})),
+  )
 }
 
 function stubFetchReject(): void {
@@ -71,7 +74,9 @@ describe('map · Tool', () => {
   it('geo 就绪后注册地图并渲染容器', async () => {
     stubFetchOk()
     render(<Tool />)
-    await vi.waitFor(() => expect(registerMap).toHaveBeenCalledWith('toolbox-china', expect.anything()))
+    await vi.waitFor(() =>
+      expect(registerMap).toHaveBeenCalledWith('toolbox-china', expect.anything()),
+    )
     expect(byTestId('chart-container')).toBeTruthy()
     expect(init).toHaveBeenCalled()
     expect(setOption).toHaveBeenCalled()
@@ -119,11 +124,11 @@ describe('map · Tool', () => {
   it('点下载 PNG 触发 getDataURL 并下载 map.png', async () => {
     stubFetchOk()
     const clicked: HTMLAnchorElement[] = []
-    const clickSpy = vi
-      .spyOn(HTMLAnchorElement.prototype, 'click')
-      .mockImplementation(function (this: HTMLAnchorElement) {
-        clicked.push(this)
-      })
+    const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function (
+      this: HTMLAnchorElement,
+    ) {
+      clicked.push(this)
+    })
     try {
       render(<Tool />)
       await vi.waitFor(() => expect(init).toHaveBeenCalled())

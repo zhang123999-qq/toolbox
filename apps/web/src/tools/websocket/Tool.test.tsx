@@ -46,7 +46,14 @@ describe('websocket · Tool', () => {
     for (const id of ['input', 'run', 'example', 'clear', 'output', 'copy', 'download']) {
       expect(byTestId(id)).toBeTruthy()
     }
-    for (const id of ['ws-connect', 'ws-disconnect', 'ws-status', 'ws-send-input', 'ws-send', 'ws-log']) {
+    for (const id of [
+      'ws-connect',
+      'ws-disconnect',
+      'ws-status',
+      'ws-send-input',
+      'ws-send',
+      'ws-log',
+    ]) {
       expect(byTestId(id)).toBeTruthy()
     }
   })

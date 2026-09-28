@@ -34,7 +34,8 @@ describe('scanUserscript', () => {
     expect(issues.some((i) => i.message.includes('@version'))).toBe(true)
   })
   it('@version 非 x.y.z 报 warning', () => {
-    const code = '// ==UserScript==\n// @name x\n// @version 1.0\n// @match <all_urls>\n// ==/UserScript==\n'
+    const code =
+      '// ==UserScript==\n// @name x\n// @version 1.0\n// @match <all_urls>\n// ==/UserScript==\n'
     expect(scanUserscript(code).some((i) => i.message.includes('x.y.z'))).toBe(true)
   })
   it('未声明 @match 报 warning', () => {
@@ -42,26 +43,32 @@ describe('scanUserscript', () => {
     expect(scanUserscript(code).some((i) => i.message.includes('@match / @include'))).toBe(true)
   })
   it('非法 @match 报 error，合法写法通过', () => {
-    const bad = '// ==UserScript==\n// @name x\n// @version 1.0.0\n// @match not-a-url\n// @match https://foo..bar/*\n// ==/UserScript==\n'
+    const bad =
+      '// ==UserScript==\n// @name x\n// @version 1.0.0\n// @match not-a-url\n// @match https://foo..bar/*\n// ==/UserScript==\n'
     const issues = scanUserscript(bad)
     expect(issues.filter((i) => i.message.includes('非法 @match')).length).toBe(2)
-    const ok = '// ==UserScript==\n// @name x\n// @version 1.0.0\n// @match *://*.example.com/*\n// @match <all_urls>\n// ==/UserScript==\n'
+    const ok =
+      '// ==UserScript==\n// @name x\n// @version 1.0.0\n// @match *://*.example.com/*\n// @match <all_urls>\n// ==/UserScript==\n'
     expect(scanUserscript(ok).some((i) => i.message.includes('非法 @match'))).toBe(false)
   })
   it('同一元数据键出现多次可解析', () => {
-    const code = '// ==UserScript==\n// @name x\n// @version 1.0.0\n// @match https://a.com/*\n// @match https://b.com/*\n// ==/UserScript==\n'
+    const code =
+      '// ==UserScript==\n// @name x\n// @version 1.0.0\n// @match https://a.com/*\n// @match https://b.com/*\n// ==/UserScript==\n'
     expect(scanUserscript(code)).toEqual([])
   })
   it('元数据块内的普通注释行被忽略', () => {
-    const code = '// ==UserScript==\n// 这是一行普通注释\n// @name x\n// @version 1.0.0\n// @match *://*/*\n// ==/UserScript==\n'
+    const code =
+      '// ==UserScript==\n// 这是一行普通注释\n// @name x\n// @version 1.0.0\n// @match *://*/*\n// ==/UserScript==\n'
     expect(scanUserscript(code)).toEqual([])
   })
   it('@grant none 却用 GM_ 函数报 warning', () => {
-    const code = '// ==UserScript==\n// @name x\n// @version 1.0.0\n// @match <all_urls>\n// @grant none\n// ==/UserScript==\nGM_getValue("k");\n'
+    const code =
+      '// ==UserScript==\n// @name x\n// @version 1.0.0\n// @match <all_urls>\n// @grant none\n// ==/UserScript==\nGM_getValue("k");\n'
     expect(scanUserscript(code).some((i) => i.message.includes('@grant none'))).toBe(true)
   })
   it('未声明的 GM_ 函数逐个报 warning，已声明的不报', () => {
-    const code = '// ==UserScript==\n// @name x\n// @version 1.0.0\n// @match <all_urls>\n// @grant GM_setValue\n// ==/UserScript==\nGM_setValue("a", 1);\nGM_getValue("a");\nGM_getValue("b");\n'
+    const code =
+      '// ==UserScript==\n// @name x\n// @version 1.0.0\n// @match <all_urls>\n// @grant GM_setValue\n// ==/UserScript==\nGM_setValue("a", 1);\nGM_getValue("a");\nGM_getValue("b");\n'
     const issues = scanUserscript(code)
     expect(issues.filter((i) => i.message.includes('GM_getValue'))).toHaveLength(1)
     expect(issues.some((i) => i.message.includes('GM_setValue'))).toBe(false)

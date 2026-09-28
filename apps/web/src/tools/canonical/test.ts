@@ -59,15 +59,17 @@ describe('canonical · buildCanonicalTag', () => {
   })
 
   it('undefined 输入视为空并抛中文错', () => {
-    expect(() => buildCanonicalTag(undefined as unknown as string, 'https://example.com/c')).toThrow(
-      '页面 URL 不能为空',
-    )
-    expect(() => buildCanonicalTag('https://example.com/a', undefined as unknown as string)).toThrow(
-      '规范 URL 不能为空',
-    )
+    expect(() =>
+      buildCanonicalTag(undefined as unknown as string, 'https://example.com/c'),
+    ).toThrow('页面 URL 不能为空')
+    expect(() =>
+      buildCanonicalTag('https://example.com/a', undefined as unknown as string),
+    ).toThrow('规范 URL 不能为空')
   })
 
   it('输出换行结尾', () => {
-    expect(buildCanonicalTag('https://example.com/a', 'https://example.com/c').endsWith('\n')).toBe(true)
+    expect(buildCanonicalTag('https://example.com/a', 'https://example.com/c').endsWith('\n')).toBe(
+      true,
+    )
   })
 })

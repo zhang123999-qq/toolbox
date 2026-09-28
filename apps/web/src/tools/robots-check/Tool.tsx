@@ -45,8 +45,8 @@ export default function Tool() {
             body = (
               <div className="flex flex-col gap-3">
                 <div className="text-sm text-slate-600 dark:text-slate-400">
-                  共 {result.groups.length} 个分组 · {result.sitemaps.length} 个 Sitemap
-                  · 问题 {result.issues.length}
+                  共 {result.groups.length} 个分组 · {result.sitemaps.length} 个 Sitemap · 问题{' '}
+                  {result.issues.length}
                 </div>
                 {result.groups.map((g, gi) => (
                   <div
@@ -72,7 +72,9 @@ export default function Tool() {
                   </div>
                 ))}
                 {result.issues.length === 0 ? (
-                  <p className="text-sm text-green-700 dark:text-green-400">未发现问题，robots.txt 符合规范</p>
+                  <p className="text-sm text-green-700 dark:text-green-400">
+                    未发现问题，robots.txt 符合规范
+                  </p>
                 ) : (
                   <ul className="flex flex-col gap-1.5">
                     {result.issues.map((issue, i) => (
@@ -87,7 +89,11 @@ export default function Tool() {
           }
         } catch (err) {
           body = (
-            <div role="alert" data-testid="error" className="text-sm text-red-700 dark:text-red-300">
+            <div
+              role="alert"
+              data-testid="error"
+              className="text-sm text-red-700 dark:text-red-300"
+            >
               {err instanceof Error ? err.message : '检查失败'}
             </div>
           )

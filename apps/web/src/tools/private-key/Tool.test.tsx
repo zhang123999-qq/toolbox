@@ -18,7 +18,9 @@ function byTestId(id: string): HTMLElement {
 }
 
 function outputLines(): string[] {
-  return byTestId('output').textContent!.split('\n').filter((l) => l.length > 0)
+  return byTestId('output')
+    .textContent!.split('\n')
+    .filter((l) => l.length > 0)
 }
 
 describe('private-key · Tool', () => {

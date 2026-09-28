@@ -23,9 +23,19 @@ export default function Tool() {
       initialInput={{ text: '' }}
       initialOptions={{ changefreq: '', priority: '', lastmod: '' }}
       optionDefs={[
-        { key: 'changefreq', label: 'changefreq（可选）', kind: 'select', values: ['', ...CHANGEFREQS] },
+        {
+          key: 'changefreq',
+          label: 'changefreq（可选）',
+          kind: 'select',
+          values: ['', ...CHANGEFREQS],
+        },
         { key: 'priority', label: 'priority 0.0～1.0（可选）', kind: 'text', placeholder: '0.8' },
-        { key: 'lastmod', label: 'lastmod（可选，YYYY-MM-DD）', kind: 'text', placeholder: '2026-09-28' },
+        {
+          key: 'lastmod',
+          label: 'lastmod（可选，YYYY-MM-DD）',
+          kind: 'text',
+          placeholder: '2026-09-28',
+        },
       ]}
       run={run}
       example={EXAMPLE}

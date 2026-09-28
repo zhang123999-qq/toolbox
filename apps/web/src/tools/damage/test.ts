@@ -20,7 +20,14 @@ describe('calcDamage', () => {
   it('伤害浮动生效', () => {
     // rng 序列：暴击判定 0.99（不暴击），浮动 0 → 系数 1-0.2 = 0.8
     const seq = [0.99, 0]
-    const r = calcDamage({ atk: 100, def: 0, critRate: 0.5, critMult: 2, variance: 0.2, rng: () => seq.shift()! })
+    const r = calcDamage({
+      atk: 100,
+      def: 0,
+      critRate: 0.5,
+      critMult: 2,
+      variance: 0.2,
+      rng: () => seq.shift()!,
+    })
     expect(r.damage).toBe(80) // 100 × 0.8
   })
   it('伤害至少为 1', () => {
@@ -33,22 +40,32 @@ describe('calcDamage', () => {
   })
   it('攻击力非法报错', () => {
     expect(() => calcDamage({ atk: 0, def: 0, critRate: 0, critMult: 2 })).toThrow('正数')
-    expect(() => calcDamage({ atk: Number.NaN, def: 0, critRate: 0, critMult: 2 })).toThrow('有限数字')
+    expect(() => calcDamage({ atk: Number.NaN, def: 0, critRate: 0, critMult: 2 })).toThrow(
+      '有限数字',
+    )
   })
   it('防御力非法报错', () => {
     expect(() => calcDamage({ atk: 10, def: -1, critRate: 0, critMult: 2 })).toThrow('不能为负数')
   })
   it('暴击率非法报错', () => {
     expect(() => calcDamage({ atk: 10, def: 0, critRate: 1.5, critMult: 2 })).toThrow('[0, 1]')
-    expect(() => calcDamage({ atk: 10, def: 0, critRate: Number.NaN, critMult: 2 })).toThrow('有限数字')
+    expect(() => calcDamage({ atk: 10, def: 0, critRate: Number.NaN, critMult: 2 })).toThrow(
+      '有限数字',
+    )
   })
   it('暴击倍率非法报错', () => {
     expect(() => calcDamage({ atk: 10, def: 0, critRate: 0, critMult: 0.9 })).toThrow('≥ 1')
   })
   it('伤害浮动非法报错', () => {
-    expect(() => calcDamage({ atk: 10, def: 0, critRate: 0, critMult: 2, variance: -0.1 })).toThrow('[0, 1)')
-    expect(() => calcDamage({ atk: 10, def: 0, critRate: 0, critMult: 2, variance: 1 })).toThrow('[0, 1)')
-    expect(() => calcDamage({ atk: 10, def: 0, critRate: 0, critMult: 2, variance: Number.NaN })).toThrow('有限数字')
+    expect(() => calcDamage({ atk: 10, def: 0, critRate: 0, critMult: 2, variance: -0.1 })).toThrow(
+      '[0, 1)',
+    )
+    expect(() => calcDamage({ atk: 10, def: 0, critRate: 0, critMult: 2, variance: 1 })).toThrow(
+      '[0, 1)',
+    )
+    expect(() =>
+      calcDamage({ atk: 10, def: 0, critRate: 0, critMult: 2, variance: Number.NaN }),
+    ).toThrow('有限数字')
   })
 })
 

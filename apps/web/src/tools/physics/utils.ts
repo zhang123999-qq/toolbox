@@ -119,10 +119,7 @@ export function elasticCollision(input: CollisionInput): { v1p: number; v2p: num
 }
 
 /** 匀速圆周运动：向心加速度与周期 */
-export function circularMotion(
-  v: number,
-  r: number,
-): { centripetal: number; period: number } {
+export function circularMotion(v: number, r: number): { centripetal: number; period: number } {
   requireFinite(v, '线速度 v')
   requireFinite(r, '半径 r')
   requirePositive(v, '线速度 v')
@@ -130,7 +127,11 @@ export function circularMotion(
   return { centripetal: (v * v) / r, period: (2 * Math.PI * r) / v }
 }
 
-export function formatPhysicsResult(label: string, values: Record<string, number>, unit: string): string {
+export function formatPhysicsResult(
+  label: string,
+  values: Record<string, number>,
+  unit: string,
+): string {
   const lines = [`${label}：`]
   for (const [k, v] of Object.entries(values)) {
     lines.push(`  ${k} = ${Number(v.toFixed(4))} ${unit}`)

@@ -20,14 +20,29 @@ describe('font-size · Tool', () => {
     for (const id of ['input', 'run', 'example', 'clear', 'output', 'copy', 'download']) {
       expect(byTestId(id)).toBeTruthy()
     }
-    for (const id of ['min-px', 'max-px', 'min-vw', 'max-vw', 'fluid-output', 'fs-px', 'line-chars', 'line-height', 'readability-result', 'conv-value', 'conv-dir', 'conv-result']) {
+    for (const id of [
+      'min-px',
+      'max-px',
+      'min-vw',
+      'max-vw',
+      'fluid-output',
+      'fs-px',
+      'line-chars',
+      'line-height',
+      'readability-result',
+      'conv-value',
+      'conv-dir',
+      'conv-result',
+    ]) {
       expect(byTestId(id)).toBeTruthy()
     }
   })
 
   it('默认生成 clamp 流式字号', () => {
     render(<Tool />)
-    expect(byTestId('fluid-output').textContent).toContain('font-size: clamp(16px, 13.0909px + 0.9091vw, 24px);')
+    expect(byTestId('fluid-output').textContent).toContain(
+      'font-size: clamp(16px, 13.0909px + 0.9091vw, 24px);',
+    )
   })
 
   it('修改最大字号实时更新', () => {

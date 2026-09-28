@@ -38,7 +38,10 @@ function renderOutput(input: HdWalletInput, options: HdWalletOptions) {
             <p data-testid={`address-${e.index}`} className="font-mono text-xs break-all">
               {e.address}
             </p>
-            <p data-testid={`priv-${e.index}`} className="font-mono text-xs break-all text-gray-500 dark:text-gray-400">
+            <p
+              data-testid={`priv-${e.index}`}
+              className="font-mono text-xs break-all text-gray-500 dark:text-gray-400"
+            >
               {e.privHex}
             </p>
           </div>

@@ -108,10 +108,7 @@ function parseHtml(html: string, createDoc: DocFactory = defaultDocFactory): Doc
  * 检测 HTML 是否已有跳过链接：
  * href 以 # 开头，且文本含"跳过/skip"或 class 含 skip。
  */
-export function detectSkipLink(
-  html: string,
-  createDoc?: DocFactory,
-): SkipLinkDetection {
+export function detectSkipLink(html: string, createDoc?: DocFactory): SkipLinkDetection {
   const doc = parseHtml(html, createDoc)
   const matches: SkipLinkMatch[] = []
   for (const el of Array.from(doc.body.querySelectorAll('a[href^="#"]'))) {
@@ -140,7 +137,9 @@ export function formatSkipLinkReport(
   lines.push('配套 CSS：')
   lines.push(snippet.css)
   lines.push('')
-  lines.push('使用说明：将 HTML 放在 <body> 的最前面，并确保页面有对应 id 的主内容区（如 <main id="main-content">）。')
+  lines.push(
+    '使用说明：将 HTML 放在 <body> 的最前面，并确保页面有对应 id 的主内容区（如 <main id="main-content">）。',
+  )
   if (detection !== null) {
     lines.push('')
     if (detection.found) {

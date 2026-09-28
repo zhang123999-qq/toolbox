@@ -10,8 +10,7 @@ export const meta: ToolMeta = {
   title: 'OpenAPI 规范检查',
   description: '对 OpenAPI 3.x 规范做 lint 检查并打分（规范检查，非预览）',
   titleEn: 'OpenAPI Spec Linter',
-  descriptionEn:
-    'Lint an OpenAPI 3.x specification and score it (spec checking, not preview)',
+  descriptionEn: 'Lint an OpenAPI 3.x specification and score it (spec checking, not preview)',
 
   category: 'devops',
   group: 'dev',

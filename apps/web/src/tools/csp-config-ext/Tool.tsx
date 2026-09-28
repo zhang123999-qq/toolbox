@@ -34,7 +34,10 @@ export default function Tool() {
           ? `策略合法，无问题：\n${policy}`
           : `发现 ${issues.length} 个问题：\n` +
               issues
-                .map((i, idx) => `${idx + 1}. [${i.severity}] ${i.directive} ${i.source}：${i.message}`)
+                .map(
+                  (i, idx) =>
+                    `${idx + 1}. [${i.severity}] ${i.directive} ${i.source}：${i.message}`,
+                )
                 .join('\n') +
               `\n\n策略：\n${policy}`,
       )
@@ -48,7 +51,9 @@ export default function Tool() {
       meta={meta}
       initialInput={{ text: JSON.stringify(EXAMPLE_INPUT, null, 2) }}
       initialOptions={{}}
-      example={{ text: JSON.stringify({ scriptSrc: ["'wasm-unsafe-eval'"], styleSrc: ["'self'"] }, null, 2) }}
+      example={{
+        text: JSON.stringify({ scriptSrc: ["'wasm-unsafe-eval'"], styleSrc: ["'self'"] }, null, 2),
+      }}
       renderOutput={(input) => (
         <div className="flex flex-col gap-3">
           <div className="flex gap-2">
@@ -80,10 +85,9 @@ export default function Tool() {
             </pre>
           )}
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            说明：输入 JSON 配置（preset 取 minimal / development，或自定义 scriptSrc /
-            objectSrc / styleSrc），生成 manifest.json 中
-            content_security_policy.extension_pages 的策略字符串。MV3
-            仅允许 script-src 为 'self' / 'wasm-unsafe-eval'，禁止远程代码与
+            说明：输入 JSON 配置（preset 取 minimal / development，或自定义 scriptSrc / objectSrc /
+            styleSrc），生成 manifest.json 中 content_security_policy.extension_pages
+            的策略字符串。MV3 仅允许 script-src 为 'self' / 'wasm-unsafe-eval'，禁止远程代码与
             'unsafe-eval'。纯本地生成，不发送网络请求。
           </p>
         </div>

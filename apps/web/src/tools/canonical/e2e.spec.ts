@@ -21,7 +21,9 @@ test.describe('canonical', () => {
   test('填入双 URL 后输出 canonical 标签', async ({ page }) => {
     await page.getByTestId('input').fill('https://example.com/a?utm=1')
     await page.getByPlaceholder('https://example.com/blog/post').fill('https://example.com/a')
-    await expect(page.getByTestId('output')).toContainText('<link rel="canonical" href="https://example.com/a">')
+    await expect(page.getByTestId('output')).toContainText(
+      '<link rel="canonical" href="https://example.com/a">',
+    )
   })
 
   test('页面 URL 为空 → 中文错误提示', async ({ page }) => {

@@ -14,7 +14,8 @@ export const meta: ToolMeta = {
   title: '链接检查',
   description: '提取页面全部链接并逐个检测状态：正常、重定向、死链、超时，支持抓取页面或粘贴 HTML',
   titleEn: 'Link Checker',
-  descriptionEn: 'Extract all links from a page and check each: ok, redirect, dead, timeout; fetch page or paste HTML',
+  descriptionEn:
+    'Extract all links from a page and check each: ok, redirect, dead, timeout; fetch page or paste HTML',
 
   category: 'seo',
   group: 'dev',

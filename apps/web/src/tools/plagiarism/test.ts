@@ -17,8 +17,10 @@ import {
   validateDoc,
 } from './utils'
 
-const DOC_A = '人工智能是计算机科学的一个分支，它研究如何让机器模拟人类智能。机器学习是实现人工智能的重要方法。'
-const DOC_B = '人工智能是计算机科学的一个分支，它研究如何让机器模拟人类智能。深度学习近年来取得了突破性进展。'
+const DOC_A =
+  '人工智能是计算机科学的一个分支，它研究如何让机器模拟人类智能。机器学习是实现人工智能的重要方法。'
+const DOC_B =
+  '人工智能是计算机科学的一个分支，它研究如何让机器模拟人类智能。深度学习近年来取得了突破性进展。'
 const DOC_C = '今天天气很好，适合出去散步。公园里的花开得很漂亮。'
 
 describe('plagiarism · utils', () => {
@@ -59,7 +61,9 @@ describe('plagiarism · utils', () => {
   })
 
   it('splitSentences 按标点切分并过滤过短', () => {
-    const ss = splitSentences('第一句很长很长很长很长。第二句也很长很长很长！短\n第四句足够长足够长足够长')
+    const ss = splitSentences(
+      '第一句很长很长很长很长。第二句也很长很长很长！短\n第四句足够长足够长足够长',
+    )
     expect(ss).toHaveLength(3)
     expect(ss[0]).toContain('第一句')
   })
@@ -87,8 +91,10 @@ describe('plagiarism · utils', () => {
   })
 
   it('findSimilarSentences 多个相似句按分降序', () => {
-    const a = '人工智能是计算机科学的一个分支，它历史悠久。机器学习是实现人工智能的重要方法，应用广泛。'
-    const b = '人工智能是计算机科学的一个分支，它历史悠久。机器学习是实现人工智能的重要方法，应用广泛。深度学习是新方向。'
+    const a =
+      '人工智能是计算机科学的一个分支，它历史悠久。机器学习是实现人工智能的重要方法，应用广泛。'
+    const b =
+      '人工智能是计算机科学的一个分支，它历史悠久。机器学习是实现人工智能的重要方法，应用广泛。深度学习是新方向。'
     const sims = findSimilarSentences(a, b, 0.3)
     expect(sims.length).toBe(2)
     expect(sims[0].score).toBeGreaterThanOrEqual(sims[1].score)

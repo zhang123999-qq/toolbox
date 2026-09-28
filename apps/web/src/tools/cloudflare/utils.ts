@@ -39,7 +39,8 @@ export function buildDnsRecord(input: DnsRecordInput): DnsRecord {
   const content = input.content.trim()
   if (content === '') throw new Error('记录值不能为空')
   if (type === 'A' && !isIpv4(content)) throw new Error(`A 记录值须为 IPv4 地址：${content}`)
-  if (type === 'AAAA' && !content.includes(':')) throw new Error(`AAAA 记录值须为 IPv6 地址：${content}`)
+  if (type === 'AAAA' && !content.includes(':'))
+    throw new Error(`AAAA 记录值须为 IPv6 地址：${content}`)
   const ttl = input.ttl
   if (!Number.isInteger(ttl) || (ttl !== 1 && ttl < 30))
     throw new Error('TTL 须为 1（自动）或 ≥30 的整数秒')

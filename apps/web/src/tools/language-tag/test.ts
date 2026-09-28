@@ -18,7 +18,13 @@ describe('parseLanguageTag 基础', () => {
   })
   it('简单标签', () => {
     const p = parseLanguageTag('en')
-    expect(p).toMatchObject({ language: 'en', tag: 'en', variants: [], extensions: [], privateUse: [] })
+    expect(p).toMatchObject({
+      language: 'en',
+      tag: 'en',
+      variants: [],
+      extensions: [],
+      privateUse: [],
+    })
     expect(p.script).toBeUndefined()
     expect(p.region).toBeUndefined()
   })
@@ -95,7 +101,13 @@ describe('parseLanguageTag 各部件', () => {
 describe('buildLanguageTag', () => {
   it('完整构建', () => {
     expect(
-      buildLanguageTag({ language: 'zh', script: 'hant', region: 'tw', variants: ['rozaj'], privateUse: ['my'] }),
+      buildLanguageTag({
+        language: 'zh',
+        script: 'hant',
+        region: 'tw',
+        variants: ['rozaj'],
+        privateUse: ['my'],
+      }),
     ).toBe('zh-Hant-TW-rozaj-x-my')
   })
   it('仅语言', () => {
@@ -120,7 +132,9 @@ describe('buildLanguageTag', () => {
     expect(() => buildLanguageTag({ language: 'en', variants: ['ab'] })).toThrow('变体子标签')
   })
   it('非法私用子标签', () => {
-    expect(() => buildLanguageTag({ language: 'en', privateUse: ['ok', '!'] })).toThrow('私用子标签')
+    expect(() => buildLanguageTag({ language: 'en', privateUse: ['ok', '!'] })).toThrow(
+      '私用子标签',
+    )
   })
 })
 

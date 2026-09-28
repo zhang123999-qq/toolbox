@@ -43,12 +43,18 @@ export default function Tool() {
         return (
           <div className="flex flex-col gap-3">
             {view.error !== '' && (
-              <p data-testid="math-formula-error" className="text-sm text-red-600 dark:text-red-400">
+              <p
+                data-testid="math-formula-error"
+                className="text-sm text-red-600 dark:text-red-400"
+              >
                 {view.error}
               </p>
             )}
             {view.detail !== '' && (
-              <p data-testid="math-formula-detail" className="whitespace-pre-wrap text-sm text-slate-700 dark:text-slate-300">
+              <p
+                data-testid="math-formula-detail"
+                className="whitespace-pre-wrap text-sm text-slate-700 dark:text-slate-300"
+              >
                 {view.detail}
               </p>
             )}

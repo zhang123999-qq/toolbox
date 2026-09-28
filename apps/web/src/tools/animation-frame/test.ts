@@ -135,6 +135,8 @@ describe('exportClipJson / importClipJson', () => {
     expect(() => importClipJson('{"name":"x","frames":[],"loop":"yes"}')).toThrow('布尔值')
     expect(() => importClipJson('{"name":"","frames":[]}')).toThrow('名称不能为空')
     expect(() => importClipJson('{"name":"x","frames":{}}')).toThrow('数组')
-    expect(() => importClipJson('{"name":"x","frames":[{"spriteId":"a","durationMs":0}],"loop":true}')).toThrow('帧时长')
+    expect(() =>
+      importClipJson('{"name":"x","frames":[{"spriteId":"a","durationMs":0}],"loop":true}'),
+    ).toThrow('帧时长')
   })
 })

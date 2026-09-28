@@ -19,7 +19,14 @@ function byTestId(id: string): HTMLElement {
 describe('r2-config · Tool', () => {
   it('渲染后必需元素全部存在', () => {
     render(<Tool />)
-    for (const id of ['input', 'input-binding', 'input-previewBucketName', 'output', 'copy', 'download']) {
+    for (const id of [
+      'input',
+      'input-binding',
+      'input-previewBucketName',
+      'output',
+      'copy',
+      'download',
+    ]) {
       expect(byTestId(id)).toBeTruthy()
     }
   })

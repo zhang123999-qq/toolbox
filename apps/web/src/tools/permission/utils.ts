@@ -41,7 +41,11 @@ export const PERMISSIONS: readonly PermissionInfo[] = [
   { name: 'tabs', description: '读取标签页标题、URL 与 favicon', risk: 'medium' },
   { name: 'unlimitedStorage', description: '突破扩展存储配额限制', risk: 'medium' },
   { name: 'webNavigation', description: '监听页面导航事件', risk: 'medium' },
-  { name: 'webRequest', description: '观察网络请求（只读，不含修改需 webRequestBlocking）', risk: 'medium' },
+  {
+    name: 'webRequest',
+    description: '观察网络请求（只读，不含修改需 webRequestBlocking）',
+    risk: 'medium',
+  },
 ]
 
 const PERMISSION_MAP = new Map<string, PermissionInfo>(PERMISSIONS.map((p) => [p.name, p]))

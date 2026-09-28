@@ -65,8 +65,12 @@ export function generateJwtVerifySnippet(options: JwtOptions): string {
   const issuer = (options.issuer ?? '').trim()
   const audience = (options.audience ?? '').trim()
   const claimChecks = [
-    issuer !== '' ? `  if (payload.iss !== '${escapeJs(issuer)}') throw new Error('iss 不匹配')` : '',
-    audience !== '' ? `  if (payload.aud !== '${escapeJs(audience)}') throw new Error('aud 不匹配')` : '',
+    issuer !== ''
+      ? `  if (payload.iss !== '${escapeJs(issuer)}') throw new Error('iss 不匹配')`
+      : '',
+    audience !== ''
+      ? `  if (payload.aud !== '${escapeJs(audience)}') throw new Error('aud 不匹配')`
+      : '',
   ]
     .filter((line) => line !== '')
     .join('\n')
@@ -87,7 +91,8 @@ ${claimChecks === '' ? '  // 可在此追加 iss / aud 断言' : claimChecks}
 /** 解析 Authorization: Basic 头，返回用户名与密码；非法即抛中文错误 */
 export function parseBasicAuthHeader(header: string): { username: string; password: string } {
   const value = header.trim()
-  if (!value.toLowerCase().startsWith('basic ')) throw new Error('须为 Basic 类型的 Authorization 头')
+  if (!value.toLowerCase().startsWith('basic '))
+    throw new Error('须为 Basic 类型的 Authorization 头')
   const encoded = value.slice(6).trim()
   let decoded: string
   try {

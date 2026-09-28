@@ -10,13 +10,13 @@
 
 ## 输入
 
-| 字段          | 类型   | 约束                 |
-| ------------- | ------ | -------------------- |
-| `text`        | string | 组件名称（label）    |
-| 选项 `type`   | string | 组件类型（8 选 1）   |
-| 选项 `id`     | string | 元素 id（可选）      |
-| 选项 `describedBy` | string | 补充说明元素 id（可选） |
-| 选项 `min/max/value` | string | 滑块数值（滑块必填） |
+| 字段                 | 类型   | 约束                    |
+| -------------------- | ------ | ----------------------- |
+| `text`               | string | 组件名称（label）       |
+| 选项 `type`          | string | 组件类型（8 选 1）      |
+| 选项 `id`            | string | 元素 id（可选）         |
+| 选项 `describedBy`   | string | 补充说明元素 id（可选） |
+| 选项 `min/max/value` | string | 滑块数值（滑块必填）    |
 
 ## 说明
 

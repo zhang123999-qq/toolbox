@@ -62,7 +62,8 @@ export function patternStyle(id: string): Record<string, string> {
       }
     case 'gradient':
       return {
-        backgroundImage: 'linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000)',
+        backgroundImage:
+          'linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000)',
       }
     default:
       throw new Error(`未知测试图模式：${id}`)

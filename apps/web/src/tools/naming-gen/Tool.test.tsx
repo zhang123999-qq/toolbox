@@ -61,7 +61,7 @@ describe('naming-gen · Tool', () => {
   })
 
   it('返回解析不出候选 → 中文错误提示', async () => {
-    mockFetch(' - \n')  // trim 后非空，但拆不出候选名
+    mockFetch(' - \n') // trim 后非空，但拆不出候选名
     render(<Tool />)
     fireEvent.change(byTestId('input'), { target: { value: '用户的姓名' } })
     fireEvent.change(byTestId('api-key'), { target: { value: 'sk-x' } })

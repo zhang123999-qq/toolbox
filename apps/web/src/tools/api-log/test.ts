@@ -48,8 +48,7 @@ describe('parseAccessLog', () => {
     expect(entries[0].bytes).toBe(16)
   })
   it('bytes 为 - 时记 0', () => {
-    const line =
-      '127.0.0.1 - - [10/Oct/2000:13:55:36 -0700] "GET /x HTTP/1.1" 304 - "-" "curl/8.0"'
+    const line = '127.0.0.1 - - [10/Oct/2000:13:55:36 -0700] "GET /x HTTP/1.1" 304 - "-" "curl/8.0"'
     const { entries } = parseAccessLog(line)
     expect(entries[0].bytes).toBe(0)
     expect(entries[0].status).toBe(304)
@@ -60,8 +59,7 @@ describe('parseAccessLog', () => {
     expect(skipped).toBe(1)
   })
   it('时间非法行被跳过', () => {
-    const line =
-      '127.0.0.1 - - [bad-time] "GET /x HTTP/1.1" 200 10 "-" "curl/8.0"'
+    const line = '127.0.0.1 - - [bad-time] "GET /x HTTP/1.1" 200 10 "-" "curl/8.0"'
     const { entries, skipped } = parseAccessLog(line)
     expect(entries).toHaveLength(0)
     expect(skipped).toBe(1)

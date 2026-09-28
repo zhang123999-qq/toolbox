@@ -62,9 +62,9 @@ describe('validatePackFiles', () => {
     ).toThrow('重复文件名')
   })
   it('content 类型非法报错', () => {
-    expect(() =>
-      validatePackFiles([{ name: 'manifest.json', content: 42 as never }]),
-    ).toThrow('content 必须是字符串或 Uint8Array')
+    expect(() => validatePackFiles([{ name: 'manifest.json', content: 42 as never }])).toThrow(
+      'content 必须是字符串或 Uint8Array',
+    )
   })
   it('缺少 manifest.json 报错', () => {
     expect(() => validatePackFiles([{ name: 'content.js', content: 'x' }])).toThrow(

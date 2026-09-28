@@ -26,7 +26,18 @@ function firstColumnNames(): string[] {
 describe('data-sort · Tool', () => {
   it('渲染后必需 data-testid 存在', () => {
     render(<Tool />)
-    for (const id of ['input', 'input-sortSpec', 'run', 'example', 'clear', 'output', 'copy', 'download', 'result-grid', 'sort-info']) {
+    for (const id of [
+      'input',
+      'input-sortSpec',
+      'run',
+      'example',
+      'clear',
+      'output',
+      'copy',
+      'download',
+      'result-grid',
+      'sort-info',
+    ]) {
       expect(byTestId(id)).toBeTruthy()
     }
   })

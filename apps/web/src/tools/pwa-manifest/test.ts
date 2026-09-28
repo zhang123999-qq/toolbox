@@ -73,7 +73,9 @@ describe('pwa-manifest · buildManifestJson', () => {
   })
 
   it('name 为空抛中文错', () => {
-    expect(() => buildManifestJson({ name: '  ', shortName: '应用' })).toThrow('name（应用名称）不能为空')
+    expect(() => buildManifestJson({ name: '  ', shortName: '应用' })).toThrow(
+      'name（应用名称）不能为空',
+    )
   })
 
   it('short_name 为空抛中文错', () => {
@@ -119,7 +121,9 @@ describe('pwa-manifest · buildManifestJson', () => {
   })
 
   it('icons 格式错误透出中文错', () => {
-    expect(() => buildManifestJson({ name: 'A', shortName: 'B', icons: '坏行' })).toThrow('第 1 行格式错误')
+    expect(() => buildManifestJson({ name: 'A', shortName: 'B', icons: '坏行' })).toThrow(
+      '第 1 行格式错误',
+    )
   })
 
   it('输出是合法 JSON 且缩进 2 格、换行结尾', () => {

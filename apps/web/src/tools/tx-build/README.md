@@ -7,7 +7,7 @@
 - 交易类型：Legacy / EIP-1559（Type 2）
 - nonce、to（收款地址，留空表示合约创建）、value（wei）、data（hex）
 - gasLimit；Legacy 填 gasPrice；EIP-1559 填 maxPriorityFeePerGas / maxFeePerGas
-- chainId（默认 1；EIP-155  replay 保护）
+- chainId（默认 1；EIP-155 replay 保护）
 
 数值支持十进制或 `0x` hex。
 

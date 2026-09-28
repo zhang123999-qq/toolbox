@@ -22,7 +22,13 @@ describe('gif-to-sprite · Tool', () => {
     for (const id of ['input', 'run', 'example', 'clear', 'output', 'copy', 'download']) {
       expect(byTestId(id)).toBeTruthy()
     }
-    for (const id of ['giftosprite-file', 'giftosprite-cols', 'giftosprite-layout', 'giftosprite-export', 'giftosprite-canvas']) {
+    for (const id of [
+      'giftosprite-file',
+      'giftosprite-cols',
+      'giftosprite-layout',
+      'giftosprite-export',
+      'giftosprite-canvas',
+    ]) {
       expect(byTestId(id)).toBeTruthy()
     }
   })

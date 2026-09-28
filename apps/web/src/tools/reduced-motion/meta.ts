@@ -8,9 +8,11 @@ export const meta: ToolMeta = {
   id: 'reduced-motion',
   slug: 'reduced-motion',
   title: '减少动画',
-  description: '生成 prefers-reduced-motion 减少动画 CSS，并扫描现有 CSS 列出 animation / transition / @keyframes 声明',
+  description:
+    '生成 prefers-reduced-motion 减少动画 CSS，并扫描现有 CSS 列出 animation / transition / @keyframes 声明',
   titleEn: 'Reduced Motion CSS',
-  descriptionEn: 'Generate prefers-reduced-motion CSS and scan existing CSS for animation declarations',
+  descriptionEn:
+    'Generate prefers-reduced-motion CSS and scan existing CSS for animation declarations',
 
   category: 'a11y',
   group: 'life',

@@ -2,13 +2,7 @@
  * screen-test（#834）utils 单测：模式定义、样式生成、循环切换。
  */
 import { describe, expect, it } from 'vitest'
-import {
-  TEST_PATTERNS,
-  cyclePattern,
-  getPattern,
-  patternIds,
-  patternStyle,
-} from './utils'
+import { TEST_PATTERNS, cyclePattern, getPattern, patternIds, patternStyle } from './utils'
 
 describe('TEST_PATTERNS', () => {
   it('共 8 种模式且 id 不重复', () => {

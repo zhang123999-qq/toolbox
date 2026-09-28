@@ -28,7 +28,9 @@ export default function Tool() {
       meta={meta}
       initialInput={{ text: JSON.stringify(EXAMPLE_INPUT, null, 2) }}
       initialOptions={{}}
-      example={{ text: JSON.stringify({ ...EXAMPLE_INPUT, features: ['tabs', 'storage', 'i18n'] }, null, 2) }}
+      example={{
+        text: JSON.stringify({ ...EXAMPLE_INPUT, features: ['tabs', 'storage', 'i18n'] }, null, 2),
+      }}
       renderOutput={(input) => (
         <div className="flex flex-col gap-3">
           <div>
@@ -52,9 +54,9 @@ export default function Tool() {
             </pre>
           )}
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            说明：输入 JSON 配置（title / width / height / features），生成
-            popup.html / popup.js / popup.css。features 可选 tabs / storage /
-            i18n。尺寸上限 800×600（Chrome popup 限制）。纯本地生成。
+            说明：输入 JSON 配置（title / width / height / features），生成 popup.html / popup.js /
+            popup.css。features 可选 tabs / storage / i18n。尺寸上限 800×600（Chrome popup
+            限制）。纯本地生成。
           </p>
         </div>
       )}

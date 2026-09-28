@@ -14,7 +14,12 @@ const EXAMPLE_OPTIONS: HashVerifyOptions = {
 
 const OPTION_DEFS: readonly OptionDef<HashVerifyOptions>[] = [
   { key: 'expected', label: '期望哈希（hex）', kind: 'text', placeholder: '粘贴期望的哈希值' },
-  { key: 'algo', label: '算法', kind: 'select', values: ['SHA-256', 'SHA-384', 'SHA-512', 'SHA-1'] },
+  {
+    key: 'algo',
+    label: '算法',
+    kind: 'select',
+    values: ['SHA-256', 'SHA-384', 'SHA-512', 'SHA-1'],
+  },
   { key: 'format', label: '输入格式', kind: 'select', values: ['text', 'hex'] },
 ]
 

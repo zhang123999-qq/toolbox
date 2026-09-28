@@ -37,7 +37,10 @@ function reverseRows(board: Board): Board {
 }
 
 /** 向指定方向滑动整个棋盘 */
-export function moveBoard(board: Board, dir: MoveDir): { board: Board; gained: number; moved: boolean } {
+export function moveBoard(
+  board: Board,
+  dir: MoveDir,
+): { board: Board; gained: number; moved: boolean } {
   let b = board
   if (dir === 'up' || dir === 'down') b = transpose(b)
   if (dir === 'right' || dir === 'down') b = reverseRows(b)
@@ -57,9 +60,11 @@ export function moveBoard(board: Board, dir: MoveDir): { board: Board; gained: n
 /** 在随机空格生成新砖块（90% 为 2，10% 为 4） */
 export function spawnTile(board: Board, rng: TileRng = Math.random): Board {
   const empty: Array<[number, number]> = []
-  board.forEach((row, r) => row.forEach((v, c) => {
-    if (v === 0) empty.push([r, c])
-  }))
+  board.forEach((row, r) =>
+    row.forEach((v, c) => {
+      if (v === 0) empty.push([r, c])
+    }),
+  )
   if (empty.length === 0) return board
   const [r, c] = empty[Math.floor(rng() * empty.length)]
   const value = rng() < 0.9 ? 2 : 4

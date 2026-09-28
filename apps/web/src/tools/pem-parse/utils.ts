@@ -1,4 +1,5 @@
 import { DEMO_CERTIFICATE, daysBetween, formatAttrs } from '../../lib/x509'
+import type { default as Forge } from 'node-forge'
 import type { PemParseInput, PemParseOptions } from './schema'
 
 /** 演示证书 / 属性格式化 / 天数差已上提到 lib/x509，这里再导出以兼容本工具既有引用 */
@@ -49,7 +50,7 @@ export const KIND_NAMES: Record<PemKind, string> = {
  * `now` 可注入，让「是否已过期」这类时间判断在单测里可断言。
  */
 export async function parsePem(pem: string, now: number = Date.now()): Promise<string> {
-  const forge = (await import('node-forge')).default
+  const forge: Forge = (await import('node-forge')).default
   const kind = detectKind(pem)
   const lines: string[] = [`类型：${KIND_NAMES[kind]}（${readLabel(pem)}）`]
 
@@ -129,7 +130,7 @@ function describePublicKey(key: unknown): string {
 }
 
 /** 签名算法 OID → 名字 */
-function describeSignature(forge: typeof import('node-forge').default, oid: string): string {
+function describeSignature(forge: Forge, oid: string): string {
   const name = forge.pki.oids[oid]
   return name ? `${name}（${oid}）` : oid
 }

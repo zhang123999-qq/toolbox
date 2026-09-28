@@ -58,7 +58,7 @@ describe('calcFormula', () => {
     expect(calcFormula('heat', { c: 4200, m: 1, dT: 10 })).toBe(42000)
   })
   it('波速', () => {
-    expect(calcFormula('wave', { 'λ': 2, f: 440 })).toBe(880)
+    expect(calcFormula('wave', { λ: 2, f: 440 })).toBe(880)
   })
   it('未知公式抛错', () => {
     expect(() => calcFormula('nope', {})).toThrow('未知公式「nope」')

@@ -2,7 +2,12 @@
  * manifest-v3（#771）utils 单测：Manifest V3 生成与校验。
  */
 import { describe, expect, it } from 'vitest'
-import { buildManifestV3, parseManifestConfig, validateManifestV3, type ManifestV3Input } from './utils'
+import {
+  buildManifestV3,
+  parseManifestConfig,
+  validateManifestV3,
+  type ManifestV3Input,
+} from './utils'
 
 const BASE: ManifestV3Input = {
   name: '我的扩展',
@@ -40,9 +45,10 @@ describe('validateManifestV3', () => {
     expect(validateManifestV3({ ...BASE, hostPermissions: ['<all_urls>'] })).toEqual([])
   })
   it('content_scripts 缺字段报错', () => {
-    expect(
-      validateManifestV3({ ...BASE, contentScripts: [{ matches: [], js: [] }] }),
-    ).toEqual(['content_scripts[0].matches 不能为空', 'content_scripts[0].js 不能为空'])
+    expect(validateManifestV3({ ...BASE, contentScripts: [{ matches: [], js: [] }] })).toEqual([
+      'content_scripts[0].matches 不能为空',
+      'content_scripts[0].js 不能为空',
+    ])
   })
   it('content_scripts runAt 非法报错', () => {
     expect(
@@ -64,7 +70,9 @@ describe('buildManifestV3', () => {
     expect(out.content_scripts[0].matches).toEqual(['https://example.com/*'])
   })
   it('可选字段缺省时不输出', () => {
-    const out = JSON.parse(buildManifestV3({ name: 'x', version: '1', permissions: [], hostPermissions: [] }))
+    const out = JSON.parse(
+      buildManifestV3({ name: 'x', version: '1', permissions: [], hostPermissions: [] }),
+    )
     expect(out.description).toBeUndefined()
     expect(out.permissions).toBeUndefined()
     expect(out.action).toBeUndefined()
@@ -76,9 +84,7 @@ describe('buildManifestV3', () => {
     expect(out.action).toBeUndefined()
   })
   it('action 带 popup', () => {
-    const out = JSON.parse(
-      buildManifestV3({ ...BASE, action: { defaultPopup: 'popup.html' } }),
-    )
+    const out = JSON.parse(buildManifestV3({ ...BASE, action: { defaultPopup: 'popup.html' } }))
     expect(out.action.default_popup).toBe('popup.html')
   })
   it('content_scripts 带 css 与 runAt', () => {
@@ -116,9 +122,9 @@ describe('parseManifestConfig', () => {
     )
   })
   it('拦截 background.persistent', () => {
-    expect(() =>
-      parseManifestConfig('{"name":"x","background":{"persistent":true}}'),
-    ).toThrow('检测到 MV2 字段 background.persistent')
+    expect(() => parseManifestConfig('{"name":"x","background":{"persistent":true}}')).toThrow(
+      '检测到 MV2 字段 background.persistent',
+    )
   })
   it('非法 JSON 抛错', () => {
     expect(() => parseManifestConfig('{')).toThrow('配置不是合法 JSON')
@@ -141,9 +147,7 @@ describe('parseManifestConfig', () => {
     expect(() => buildManifestV3(o)).toThrow('name 不能为空')
   })
   it('action 缺 defaultTitle 时为 undefined', () => {
-    const o = parseManifestConfig(
-      '{"name":"x","version":"1","action":{"defaultPopup":"p.html"}}',
-    )
+    const o = parseManifestConfig('{"name":"x","version":"1","action":{"defaultPopup":"p.html"}}')
     expect(o.action?.defaultTitle).toBeUndefined()
     expect(o.action?.defaultPopup).toBe('p.html')
   })

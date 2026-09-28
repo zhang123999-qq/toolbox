@@ -8,7 +8,8 @@ export const meta: ToolMeta = {
   id: 'edge-route',
   slug: 'edge-route',
   title: '路由调试',
-  description: '模拟 Cloudflare Workers 路由匹配：按精确 > 前缀 > 通配符优先级测试 URL 命中哪条路由',
+  description:
+    '模拟 Cloudflare Workers 路由匹配：按精确 > 前缀 > 通配符优先级测试 URL 命中哪条路由',
   titleEn: 'Edge Route Tester',
   descriptionEn:
     'Simulate Cloudflare Workers route matching: test which route a URL hits by exact > prefix > wildcard priority',

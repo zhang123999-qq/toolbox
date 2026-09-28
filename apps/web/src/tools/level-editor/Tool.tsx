@@ -68,7 +68,11 @@ export default function Tool() {
     try {
       const objects = importLevelJson(input.text.trim() === '' ? '[]' : input.text)
       const issues = validateLevel(objects, parseBounds())
-      setOutput(issues.length === 0 ? '校验通过：关卡合法' : `发现 ${issues.length} 个问题：\n${issues.join('\n')}`)
+      setOutput(
+        issues.length === 0
+          ? '校验通过：关卡合法'
+          : `发现 ${issues.length} 个问题：\n${issues.join('\n')}`,
+      )
     } catch (err) {
       fail(err)
     }
@@ -92,38 +96,93 @@ export default function Tool() {
       renderOutput={(input) => (
         <div className="flex flex-col gap-3">
           <div className="flex flex-wrap items-center gap-2">
-            <input data-testid="level-id" value={objId} onChange={(e) => setObjId(e.target.value)} placeholder="对象 id" className={INPUT_CLS} />
-            <select data-testid="level-type" value={objType} onChange={(e) => setObjType(e.target.value as LevelObjectType)} className={INPUT_CLS}>
+            <input
+              data-testid="level-id"
+              value={objId}
+              onChange={(e) => setObjId(e.target.value)}
+              placeholder="对象 id"
+              className={INPUT_CLS}
+            />
+            <select
+              data-testid="level-type"
+              value={objType}
+              onChange={(e) => setObjType(e.target.value as LevelObjectType)}
+              className={INPUT_CLS}
+            >
               {OBJECT_TYPES.map((t) => (
-                <option key={t} value={t}>{t}</option>
+                <option key={t} value={t}>
+                  {t}
+                </option>
               ))}
             </select>
-            <input data-testid="level-x" value={objX} onChange={(e) => setObjX(e.target.value)} placeholder="x" className={`${INPUT_CLS} w-20`} />
-            <input data-testid="level-y" value={objY} onChange={(e) => setObjY(e.target.value)} placeholder="y" className={`${INPUT_CLS} w-20`} />
-            <button type="button" data-testid="level-add" onClick={() => handleAdd(input)} className={BTN_CLS}>
+            <input
+              data-testid="level-x"
+              value={objX}
+              onChange={(e) => setObjX(e.target.value)}
+              placeholder="x"
+              className={`${INPUT_CLS} w-20`}
+            />
+            <input
+              data-testid="level-y"
+              value={objY}
+              onChange={(e) => setObjY(e.target.value)}
+              placeholder="y"
+              className={`${INPUT_CLS} w-20`}
+            />
+            <button
+              type="button"
+              data-testid="level-add"
+              onClick={() => handleAdd(input)}
+              className={BTN_CLS}
+            >
               添加对象
             </button>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs text-slate-500">关卡尺寸</span>
-            <input data-testid="level-w" value={boundW} onChange={(e) => setBoundW(e.target.value)} className={`${INPUT_CLS} w-20`} />
+            <input
+              data-testid="level-w"
+              value={boundW}
+              onChange={(e) => setBoundW(e.target.value)}
+              className={`${INPUT_CLS} w-20`}
+            />
             <span className="text-xs">×</span>
-            <input data-testid="level-h" value={boundH} onChange={(e) => setBoundH(e.target.value)} className={`${INPUT_CLS} w-20`} />
-            <button type="button" data-testid="level-validate" onClick={() => handleValidate(input)} className={BTN_CLS}>
+            <input
+              data-testid="level-h"
+              value={boundH}
+              onChange={(e) => setBoundH(e.target.value)}
+              className={`${INPUT_CLS} w-20`}
+            />
+            <button
+              type="button"
+              data-testid="level-validate"
+              onClick={() => handleValidate(input)}
+              className={BTN_CLS}
+            >
               校验关卡
             </button>
-            <button type="button" data-testid="level-preview" onClick={() => handlePreview(input)} className="rounded border border-slate-300 px-4 py-1.5 text-sm dark:border-slate-600">
+            <button
+              type="button"
+              data-testid="level-preview"
+              onClick={() => handlePreview(input)}
+              className="rounded border border-slate-300 px-4 py-1.5 text-sm dark:border-slate-600"
+            >
               对象列表
             </button>
           </div>
           {error !== '' && (
-            <p data-testid="level-error" className="text-sm text-red-600 dark:text-red-400">{error}</p>
+            <p data-testid="level-error" className="text-sm text-red-600 dark:text-red-400">
+              {error}
+            </p>
           )}
           {output !== '' && (
-            <pre data-testid="level-output" className={PRE_CLS}>{output}</pre>
+            <pre data-testid="level-output" className={PRE_CLS}>
+              {output}
+            </pre>
           )}
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            说明：上方文本框为关卡对象 JSON 数组（导出/导入格式）；「添加对象」后把输出 JSON 复制回文本框继续编辑。纯本地计算。
+            说明：上方文本框为关卡对象 JSON 数组（导出/导入格式）；「添加对象」后把输出 JSON
+            复制回文本框继续编辑。纯本地计算。
           </p>
         </div>
       )}

@@ -42,7 +42,9 @@ describe('breadcrumb · Tool', () => {
     render(<Tool />)
     fireEvent.change(byTestId('input'), { target: { value: '首页 || https://example.com/' } })
     expect(byTestId('output').textContent).not.toContain('URL 为空')
-    fireEvent.change(byTestId('input'), { target: { value: '首页\n产品 || https://example.com/p' } })
+    fireEvent.change(byTestId('input'), {
+      target: { value: '首页\n产品 || https://example.com/p' },
+    })
     expect(byTestId('output').textContent).toContain('URL 为空')
   })
 

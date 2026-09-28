@@ -24,7 +24,9 @@ const hexOf = (b: Uint8Array) => Buffer.from(b).toString('hex')
 describe('sha256Bytes（手写）', () => {
   it('与 Node crypto 一致：空串/abc/长输入', () => {
     for (const msg of ['', 'abc', 'hello world', 'a'.repeat(1000)]) {
-      expect(hexOf(sha256Bytes(te.encode(msg)))).toBe(createHash('sha256').update(msg).digest('hex'))
+      expect(hexOf(sha256Bytes(te.encode(msg)))).toBe(
+        createHash('sha256').update(msg).digest('hex'),
+      )
     }
   })
   it('已知向量', () => {
@@ -37,7 +39,9 @@ describe('sha256Bytes（手写）', () => {
 describe('sha512Bytes（手写）', () => {
   it('与 Node crypto 一致', () => {
     for (const msg of ['', 'abc', 'hello world', 'x'.repeat(500)]) {
-      expect(hexOf(sha512Bytes(te.encode(msg)))).toBe(createHash('sha512').update(msg).digest('hex'))
+      expect(hexOf(sha512Bytes(te.encode(msg)))).toBe(
+        createHash('sha512').update(msg).digest('hex'),
+      )
     }
   })
   it('已知向量', () => {
@@ -93,10 +97,7 @@ const BIP39_VECTORS: Array<[string, string]> = [
     '0000000000000000000000000000000000000000000000000000000000000000',
     'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art',
   ],
-  [
-    'ffffffffffffffffffffffffffffffff',
-    'zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrong',
-  ],
+  ['ffffffffffffffffffffffffffffffff', 'zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrong'],
 ]
 
 describe('entropyToMnemonic', () => {

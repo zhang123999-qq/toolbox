@@ -22,7 +22,16 @@ describe('animation-frame · Tool', () => {
     for (const id of ['input', 'run', 'example', 'clear', 'output', 'copy', 'download']) {
       expect(byTestId(id)).toBeTruthy()
     }
-    for (const id of ['animframe-name', 'animframe-loop', 'animframe-sprite', 'animframe-duration', 'animframe-add', 'animframe-list', 'animframe-time', 'animframe-current']) {
+    for (const id of [
+      'animframe-name',
+      'animframe-loop',
+      'animframe-sprite',
+      'animframe-duration',
+      'animframe-add',
+      'animframe-list',
+      'animframe-time',
+      'animframe-current',
+    ]) {
       expect(byTestId(id)).toBeTruthy()
     }
   })

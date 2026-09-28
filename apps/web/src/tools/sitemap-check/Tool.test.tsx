@@ -41,8 +41,7 @@ describe('sitemap-check · Tool', () => {
     render(<Tool />)
     fireEvent.change(byTestId('input'), {
       target: {
-        value:
-          '<?xml version="1.0"?><urlset><url><loc>https://example.com/</loc></url></urlset>',
+        value: '<?xml version="1.0"?><urlset><url><loc>https://example.com/</loc></url></urlset>',
       },
     })
     expect(byTestId('output').textContent).toContain('符合规范')

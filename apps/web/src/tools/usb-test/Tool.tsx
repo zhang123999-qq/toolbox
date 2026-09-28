@@ -82,7 +82,8 @@ export default function Tool() {
         </p>
       )}
       <p className="text-xs text-slate-400">
-        需要 HTTPS 环境并在用户手势中调用；仅列出已授权的设备，未授权时如实提示。工具信息：{meta.title}（#869）
+        需要 HTTPS 环境并在用户手势中调用；仅列出已授权的设备，未授权时如实提示。工具信息：
+        {meta.title}（#869）
       </p>
     </div>
   )

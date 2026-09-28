@@ -10,7 +10,8 @@ export const meta: ToolMeta = {
   title: '私钥生成',
   description: '生成以太坊 secp256k1 私钥：Web Crypto 密码学安全随机，支持批量与 0x 前缀',
   titleEn: 'Private Key Generator',
-  descriptionEn: 'Generate Ethereum secp256k1 private keys with Web Crypto randomness, batch and 0x prefix supported',
+  descriptionEn:
+    'Generate Ethereum secp256k1 private keys with Web Crypto randomness, batch and 0x prefix supported',
 
   category: 'encoding',
   group: 'dev',

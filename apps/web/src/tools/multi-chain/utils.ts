@@ -159,8 +159,10 @@ function checksum4(payload: Uint8Array): Uint8Array {
 
 /** 校验并规范化 ETH 地址（返回不带 0x 的小写 40 hex） */
 function normalizeEth(hex: string): string {
-  const h = hex.trim().startsWith('0x') || hex.trim().startsWith('0X') ? hex.trim().slice(2) : hex.trim()
-  if (!/^[0-9a-fA-F]{40}$/.test(h)) throw new Error(`ETH 地址格式非法：${hex.trim()}（应为 0x + 40 位 hex）`)
+  const h =
+    hex.trim().startsWith('0x') || hex.trim().startsWith('0X') ? hex.trim().slice(2) : hex.trim()
+  if (!/^[0-9a-fA-F]{40}$/.test(h))
+    throw new Error(`ETH 地址格式非法：${hex.trim()}（应为 0x + 40 位 hex）`)
   return h.toLowerCase()
 }
 
@@ -179,7 +181,8 @@ export function ethToTron(ethHex: string): string {
 /** TRON base58 地址 → ETH 地址（0x 前缀小写 hex） */
 export function tronToEth(tronAddr: string): string {
   const raw = base58Decode(tronAddr)
-  if (raw.length !== 25) throw new Error(`TRON 地址长度非法：解码后 ${raw.length} 字节，应为 25 字节`)
+  if (raw.length !== 25)
+    throw new Error(`TRON 地址长度非法：解码后 ${raw.length} 字节，应为 25 字节`)
   if (raw[0] !== 0x41) throw new Error('TRON 地址前缀非法：首字节应为 0x41')
   const payload = raw.slice(0, 21)
   const check = raw.slice(21)

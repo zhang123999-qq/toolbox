@@ -101,10 +101,7 @@ export function assessReadability(input: ReadabilityInput): ReadabilityResult {
   } else {
     issues.push(`行高 ${lineHeight} 超出舒适区间`)
     suggestions.push('行高建议设为字号的 1.4–1.8 倍')
-    if (
-      (lineHeight >= 1.2 && lineHeight < 1.4) ||
-      (lineHeight > 1.8 && lineHeight <= 2.2)
-    ) {
+    if ((lineHeight >= 1.2 && lineHeight < 1.4) || (lineHeight > 1.8 && lineHeight <= 2.2)) {
       score += 20
     }
   }

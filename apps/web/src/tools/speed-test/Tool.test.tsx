@@ -33,7 +33,9 @@ describe('speed-test · Tool', () => {
     render(<Tool />)
     fireEvent.click(byTestId('example'))
     fireEvent.click(byTestId('run'))
-    await waitFor(() => expect(byTestId('output').textContent).toContain('目标：https://example.com/'))
+    await waitFor(() =>
+      expect(byTestId('output').textContent).toContain('目标：https://example.com/'),
+    )
     expect(byTestId('output').textContent).toContain('评级：')
     expect(byTestId('output').textContent).toContain('近似')
   })

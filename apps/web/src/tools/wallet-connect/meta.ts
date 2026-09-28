@@ -10,7 +10,8 @@ export const meta: ToolMeta = {
   title: '钱包连接',
   description: '连接浏览器注入的以太坊钱包（EIP-1193）：读取地址、链 ID 与余额，只读不交易',
   titleEn: 'Wallet Connect',
-  descriptionEn: 'Connect an injected EIP-1193 browser wallet: read address, chain ID and balance, read-only',
+  descriptionEn:
+    'Connect an injected EIP-1193 browser wallet: read address, chain ID and balance, read-only',
 
   category: 'encoding',
   group: 'dev',

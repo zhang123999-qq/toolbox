@@ -9,11 +9,7 @@
  */
 
 export type BackgroundEvent =
-  | 'alarms'
-  | 'runtime.onInstalled'
-  | 'contextMenus'
-  | 'runtime.onMessage'
-  | 'tabs.onUpdated'
+  'alarms' | 'runtime.onInstalled' | 'contextMenus' | 'runtime.onMessage' | 'tabs.onUpdated'
 
 export interface BackgroundOptions {
   events: BackgroundEvent[]
@@ -138,7 +134,9 @@ export function parseBackgroundInput(text: string): BackgroundOptions {
     throw new Error('输入必须是 JSON 对象')
   }
   const o = raw as Record<string, unknown>
-  const opts: BackgroundOptions = { events: Array.isArray(o.events) ? (o.events as BackgroundEvent[]) : [] }
+  const opts: BackgroundOptions = {
+    events: Array.isArray(o.events) ? (o.events as BackgroundEvent[]) : [],
+  }
   if (o.keepAlive !== undefined) {
     opts.keepAlive = o.keepAlive as boolean
   }

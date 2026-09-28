@@ -8,7 +8,11 @@
 
 /** HTML 属性转义：& < > " */
 export function escapeHtmlAttr(raw: string): string {
-  return raw.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+  return raw
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
 }
 
 /** 是否合法的 http(s) 绝对 URL */

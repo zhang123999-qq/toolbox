@@ -8,7 +8,11 @@ export interface ParsedGauge {
 }
 
 /** 三段色：低 / 中 / 高区间 */
-export const GAUGE_COLORS: readonly [readonly [number, string], readonly [number, string], readonly [number, string]] = [
+export const GAUGE_COLORS: readonly [
+  readonly [number, string],
+  readonly [number, string],
+  readonly [number, string],
+] = [
   [0.33, '#67e0e3'],
   [0.67, '#37a2da'],
   [1, '#fd666d'],

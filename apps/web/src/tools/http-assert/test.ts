@@ -134,7 +134,9 @@ describe('parseAssertions', () => {
     expect(() => parseAssertions('[1]')).toThrow('第 1 条断言必须是对象')
   })
   it('status 校验', () => {
-    expect(() => parseAssertions('[{"type":"status","expected":200.5}]')).toThrow('expected 必须是整数')
+    expect(() => parseAssertions('[{"type":"status","expected":200.5}]')).toThrow(
+      'expected 必须是整数',
+    )
     expect(parseAssertions('[{"type":"status","expected":200}]')).toEqual([
       { type: 'status', expected: 200 },
     ])
@@ -148,11 +150,15 @@ describe('parseAssertions', () => {
     ])
   })
   it('header 校验', () => {
-    expect(() => parseAssertions('[{"type":"header","name":"  "}]')).toThrow('name 必须是非空字符串')
+    expect(() => parseAssertions('[{"type":"header","name":"  "}]')).toThrow(
+      'name 必须是非空字符串',
+    )
     expect(() => parseAssertions('[{"type":"header","name":"x","expected":1}]')).toThrow(
       'expected 必须是字符串',
     )
-    expect(parseAssertions('[{"type":"header","name":"x"}]')).toEqual([{ type: 'header', name: 'x' }])
+    expect(parseAssertions('[{"type":"header","name":"x"}]')).toEqual([
+      { type: 'header', name: 'x' },
+    ])
     expect(parseAssertions('[{"type":"header","name":"x","expected":"y"}]')).toEqual([
       { type: 'header', name: 'x', expected: 'y' },
     ])
@@ -194,7 +200,8 @@ describe('checkAssertion', () => {
     expect(checkAssertion({ type: 'header', name: 'x-missing' }, ctx()).pass).toBe(false)
     expect(checkAssertion({ type: 'header', name: 'Content-Type' }, ctx()).pass).toBe(true)
     expect(
-      checkAssertion({ type: 'header', name: 'content-type', expected: 'application/json' }, ctx()).pass,
+      checkAssertion({ type: 'header', name: 'content-type', expected: 'application/json' }, ctx())
+        .pass,
     ).toBe(true)
     const r = checkAssertion({ type: 'header', name: 'content-type', expected: 'text/html' }, ctx())
     expect(r.pass).toBe(false)
@@ -206,14 +213,17 @@ describe('checkAssertion', () => {
   })
   it('bodyJsonPath 非 JSON/路径缺失/匹配/不等', () => {
     expect(
-      checkAssertion({ type: 'bodyJsonPath', path: 'ok', expected: true }, ctx({ bodyJson: undefined })).pass,
+      checkAssertion(
+        { type: 'bodyJsonPath', path: 'ok', expected: true },
+        ctx({ bodyJson: undefined }),
+      ).pass,
     ).toBe(false)
     const missing = checkAssertion({ type: 'bodyJsonPath', path: 'nope', expected: 1 }, ctx())
     expect(missing.pass).toBe(false)
     expect(missing.message).toContain('路径 nope 不存在')
-    expect(
-      checkAssertion({ type: 'bodyJsonPath', path: 'ok', expected: true }, ctx()).pass,
-    ).toBe(true)
+    expect(checkAssertion({ type: 'bodyJsonPath', path: 'ok', expected: true }, ctx()).pass).toBe(
+      true,
+    )
     const ne = checkAssertion({ type: 'bodyJsonPath', path: 'ok', expected: false }, ctx())
     expect(ne.pass).toBe(false)
     expect(ne.message).toContain('期望 false，实际 true')
@@ -265,7 +275,10 @@ describe('runHttpAssertions', () => {
   it('部分失败时 ok 为 false', async () => {
     const r = await runHttpAssertions(
       req(),
-      [{ type: 'status', expected: 200 }, { type: 'status', expected: 201 }],
+      [
+        { type: 'status', expected: 200 },
+        { type: 'status', expected: 201 },
+      ],
       mockFetch({ text: 'x' }),
     )
     expect(r.ok).toBe(false)
@@ -365,8 +378,6 @@ describe('parseAssertions 补充', () => {
     ])
   })
   it('合法 timeLt', () => {
-    expect(parseAssertions('[{"type":"timeLt","ms":100}]')).toEqual([
-      { type: 'timeLt', ms: 100 },
-    ])
+    expect(parseAssertions('[{"type":"timeLt","ms":100}]')).toEqual([{ type: 'timeLt', ms: 100 }])
   })
 })

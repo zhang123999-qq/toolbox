@@ -251,10 +251,7 @@ describe('abiEncode 动态类型（eth-abi 向量）', () => {
   })
 
   it('定长数组 address[2]', () => {
-    const got = abiEncode(
-      [parseType('address[2]')],
-      [`["${ADDRESS}","${ADDRESS_LOWER}"]`],
-    )
+    const got = abiEncode([parseType('address[2]')], [`["${ADDRESS}","${ADDRESS_LOWER}"]`])
     expect(got.slice(0, 66)).toBe(`0x${'0'.repeat(24)}${ADDRESS_LOWER.slice(2)}`)
     expect(got).toHaveLength(2 + 128)
   })
@@ -388,9 +385,7 @@ describe('abiDecode', () => {
   })
 
   it('calldata 过短 / 非 32 倍数抛错', () => {
-    expect(() => abiDecode([parseType('uint256'), parseType('uint256')], '0x1234')).toThrow(
-      '过短',
-    )
+    expect(() => abiDecode([parseType('uint256'), parseType('uint256')], '0x1234')).toThrow('过短')
     expect(() => abiDecode([parseType('uint256')], `0x${'00'.repeat(33)}`)).toThrow('32 字节的倍数')
   })
 

@@ -36,14 +36,12 @@ export default function Tool() {
 
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-sm text-slate-600 dark:text-slate-400">
-        {meta.description}
-      </p>
-      <div
-        data-testid="keyboard-zone"
-        className={`${PANEL_CLASS} min-h-24 focus:outline-none`}
-      >
-        <p data-testid="keyboard-last" className="text-sm font-medium text-slate-800 dark:text-slate-200">
+      <p className="text-sm text-slate-600 dark:text-slate-400">{meta.description}</p>
+      <div data-testid="keyboard-zone" className={`${PANEL_CLASS} min-h-24 focus:outline-none`}>
+        <p
+          data-testid="keyboard-last"
+          className="text-sm font-medium text-slate-800 dark:text-slate-200"
+        >
           {lastLabel}
         </p>
       </div>

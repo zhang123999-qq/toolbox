@@ -9,7 +9,13 @@ import {
 } from './utils'
 import type { GaugeInput } from './schema'
 
-const input = (o: Partial<GaugeInput>): GaugeInput => ({ text: '', value: '', min: '', max: '', ...o })
+const input = (o: Partial<GaugeInput>): GaugeInput => ({
+  text: '',
+  value: '',
+  min: '',
+  max: '',
+  ...o,
+})
 
 describe('gauge / parseGaugeInput', () => {
   it('正常解析', () => {
@@ -55,9 +61,7 @@ describe('gauge / buildGaugeOption', () => {
     expect(series[0].min).toBe(0)
     expect(series[0].max).toBe(100)
     expect(series[0].axisLine.lineStyle.width).toBe(20)
-    expect(series[0].axisLine.lineStyle.color).toEqual(
-      GAUGE_COLORS.map(([stop, c]) => [stop, c]),
-    )
+    expect(series[0].axisLine.lineStyle.color).toEqual(GAUGE_COLORS.map(([stop, c]) => [stop, c]))
     expect(series[0].data).toEqual([{ value: 75, name: '当前值' }])
   })
   it('空标题不带 title 字段', () => {

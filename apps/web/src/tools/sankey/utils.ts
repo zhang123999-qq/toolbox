@@ -85,10 +85,7 @@ export function parseSankeyData(text: string): ParsedSankey {
 }
 
 /** 从解析数据构建 echarts 桑基图 option（纯对象，不依赖 echarts 运行时） */
-export function buildSankeyOption(
-  parsed: ParsedSankey,
-  title: string,
-): Record<string, unknown> {
+export function buildSankeyOption(parsed: ParsedSankey, title: string): Record<string, unknown> {
   return {
     title: title === '' ? undefined : { text: title, left: 'center' },
     tooltip: { trigger: 'item' },

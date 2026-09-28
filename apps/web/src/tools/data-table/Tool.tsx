@@ -19,7 +19,8 @@ import type { DataTableInput, DataTableOptions } from './schema'
 const EXAMPLE: DataTableInput = { text: EXAMPLE_CSV }
 
 const ERROR_CLASS = 'text-sm text-red-700 dark:text-red-300'
-const TH_CLASS = 'cursor-pointer select-none border px-2 py-1 text-left hover:bg-gray-100 dark:hover:bg-gray-700'
+const TH_CLASS =
+  'cursor-pointer select-none border px-2 py-1 text-left hover:bg-gray-100 dark:hover:bg-gray-700'
 const TD_CLASS = 'border px-2 py-1'
 
 export default function Tool() {
@@ -98,7 +99,12 @@ export default function Tool() {
           <span data-testid="row-count" className="text-sm text-gray-600 dark:text-gray-300">
             {filtered.length} / {rows.length} 行
           </span>
-          <button type="button" data-testid="export-csv" onClick={downloadCsv} className="rounded border px-2 py-1 text-sm">
+          <button
+            type="button"
+            data-testid="export-csv"
+            onClick={downloadCsv}
+            className="rounded border px-2 py-1 text-sm"
+          >
             导出 CSV
           </button>
         </div>
@@ -107,9 +113,20 @@ export default function Tool() {
             <thead>
               <tr>
                 {headers.map((h, i) => (
-                  <th key={i} data-testid={`th-${i}`} className={TH_CLASS} onClick={() => toggleSort(i)}>
+                  <th
+                    key={i}
+                    data-testid={`th-${i}`}
+                    className={TH_CLASS}
+                    onClick={() => toggleSort(i)}
+                  >
                     {h}
-                    {sortCol === i ? (sortDir === 'asc' ? ' ▲' : sortDir === 'desc' ? ' ▼' : '') : ''}
+                    {sortCol === i
+                      ? sortDir === 'asc'
+                        ? ' ▲'
+                        : sortDir === 'desc'
+                          ? ' ▼'
+                          : ''
+                      : ''}
                   </th>
                 ))}
               </tr>
@@ -128,13 +145,25 @@ export default function Tool() {
           </table>
         </div>
         <div className="mt-2 flex items-center gap-2 text-sm">
-          <button type="button" data-testid="prev-page" disabled={cur <= 1} onClick={() => setPage(cur - 1)} className="rounded border px-2 py-1 disabled:opacity-40">
+          <button
+            type="button"
+            data-testid="prev-page"
+            disabled={cur <= 1}
+            onClick={() => setPage(cur - 1)}
+            className="rounded border px-2 py-1 disabled:opacity-40"
+          >
             上一页
           </button>
           <span data-testid="page-info">
             第 {cur} / {totalPages} 页
           </span>
-          <button type="button" data-testid="next-page" disabled={cur >= totalPages} onClick={() => setPage(cur + 1)} className="rounded border px-2 py-1 disabled:opacity-40">
+          <button
+            type="button"
+            data-testid="next-page"
+            disabled={cur >= totalPages}
+            onClick={() => setPage(cur + 1)}
+            className="rounded border px-2 py-1 disabled:opacity-40"
+          >
             下一页
           </button>
         </div>

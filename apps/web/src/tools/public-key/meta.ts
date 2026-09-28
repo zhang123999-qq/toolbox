@@ -10,7 +10,8 @@ export const meta: ToolMeta = {
   title: '公钥生成',
   description: '由 secp256k1 私钥推导公钥：压缩/非压缩两种格式，并计算对应以太坊地址',
   titleEn: 'Public Key Generator',
-  descriptionEn: 'Derive secp256k1 public keys from a private key: compressed/uncompressed formats plus the Ethereum address',
+  descriptionEn:
+    'Derive secp256k1 public keys from a private key: compressed/uncompressed formats plus the Ethereum address',
 
   category: 'encoding',
   group: 'dev',

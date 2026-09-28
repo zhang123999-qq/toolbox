@@ -77,9 +77,9 @@ describe('extractArticle', () => {
     expect(() => extractArticle('<body><div></div></body>', jsdomFactory)).toThrow('未能提取到正文')
   })
   it('过短文本被过滤', () => {
-    expect(() =>
-      extractArticle('<body><article><p>a</p></article></body>', jsdomFactory),
-    ).toThrow('未能提取到正文')
+    expect(() => extractArticle('<body><article><p>a</p></article></body>', jsdomFactory)).toThrow(
+      '未能提取到正文',
+    )
   })
   it('阅读时长按 400 字/分钟向上取整', () => {
     const long = '字'.repeat(801)

@@ -28,22 +28,38 @@ describe('buildVercelJson', () => {
   })
   it('source 不以 / 开头抛错', () => {
     expect(() =>
-      buildVercelJson({ rewrites: [{ source: 'api', destination: '/x' }], redirects: [], headers: [] }),
+      buildVercelJson({
+        rewrites: [{ source: 'api', destination: '/x' }],
+        redirects: [],
+        headers: [],
+      }),
     ).toThrow('rewrites[0].source 必须以 / 开头')
   })
   it('destination 非法抛错', () => {
     expect(() =>
-      buildVercelJson({ rewrites: [{ source: '/a', destination: 'ftp://x' }], redirects: [], headers: [] }),
+      buildVercelJson({
+        rewrites: [{ source: '/a', destination: 'ftp://x' }],
+        redirects: [],
+        headers: [],
+      }),
     ).toThrow('rewrites[0].destination 须以 / 开头或为合法 http(s) 地址')
   })
   it('destination 支持外链', () => {
     expect(() =>
-      buildVercelJson({ redirects: [{ source: '/o', destination: 'https://a.com', permanent: false }], rewrites: [], headers: [] }),
+      buildVercelJson({
+        redirects: [{ source: '/o', destination: 'https://a.com', permanent: false }],
+        rewrites: [],
+        headers: [],
+      }),
     ).not.toThrow()
   })
   it('headers 空 key 抛错', () => {
     expect(() =>
-      buildVercelJson({ rewrites: [], redirects: [], headers: [{ source: '/', headers: [{ key: ' ', value: 'v' }] }] }),
+      buildVercelJson({
+        rewrites: [],
+        redirects: [],
+        headers: [{ source: '/', headers: [{ key: ' ', value: 'v' }] }],
+      }),
     ).toThrow('headers[0].headers[0].key 不能为空')
   })
 })
@@ -112,14 +128,14 @@ describe('parseVercelJson', () => {
     )
   })
   it('headers 条目 value 非字符串抛错', () => {
-    expect(() => parseVercelJson('{"headers":[{"source":"/","headers":[{"key":"k","value":1}]}]}')).toThrow(
-      'headers[0].headers[0].value 须为字符串',
-    )
+    expect(() =>
+      parseVercelJson('{"headers":[{"source":"/","headers":[{"key":"k","value":1}]}]}'),
+    ).toThrow('headers[0].headers[0].value 须为字符串')
   })
   it('headers 条目空 key 抛错', () => {
-    expect(() => parseVercelJson('{"headers":[{"source":"/","headers":[{"key":"","value":"v"}]}]}')).toThrow(
-      'key 不能为空',
-    )
+    expect(() =>
+      parseVercelJson('{"headers":[{"source":"/","headers":[{"key":"","value":"v"}]}]}'),
+    ).toThrow('key 不能为空')
   })
 })
 

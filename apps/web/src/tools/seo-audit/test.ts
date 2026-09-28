@@ -105,7 +105,9 @@ describe('seo-audit / auditHtml', () => {
     expect(itemOf(auditHtml('<p>无标题</p>'), 'title 标签').status).toBe('问题')
     expect(itemOf(auditHtml('<p>无标题</p>'), 'title 标签').detail).toContain('缺少')
     expect(itemOf(auditHtml('<title>一二三四五六七八九</title>'), 'title 标签').status).toBe('问题')
-    expect(itemOf(auditHtml('<title>一二三四五六七八九十</title>'), 'title 标签').status).toBe('通过')
+    expect(itemOf(auditHtml('<title>一二三四五六七八九十</title>'), 'title 标签').status).toBe(
+      '通过',
+    )
     expect(itemOf(auditHtml(`<title>${'十'.repeat(60)}</title>`), 'title 标签').status).toBe('通过')
     expect(itemOf(auditHtml(`<title>${'十'.repeat(61)}</title>`), 'title 标签').status).toBe('警告')
   })
@@ -119,9 +121,13 @@ describe('seo-audit / auditHtml', () => {
   it('description 缺失为问题；160/161 字符边界', () => {
     expect(itemOf(auditHtml('<p>x</p>'), 'meta description').status).toBe('问题')
     const ok = '描'.repeat(160)
-    expect(itemOf(auditHtml(`<meta name="description" content="${ok}">`), 'meta description').status).toBe('通过')
+    expect(
+      itemOf(auditHtml(`<meta name="description" content="${ok}">`), 'meta description').status,
+    ).toBe('通过')
     const long = '描'.repeat(161)
-    expect(itemOf(auditHtml(`<meta name="description" content="${long}">`), 'meta description').status).toBe('警告')
+    expect(
+      itemOf(auditHtml(`<meta name="description" content="${long}">`), 'meta description').status,
+    ).toBe('警告')
   })
 
   it('meta 属性支持单引号、无引号与大小写不敏感', () => {
@@ -144,7 +150,9 @@ describe('seo-audit / auditHtml', () => {
 
   it('link 变体：无 rel、无 href、属性顺序颠倒都能正确处理', () => {
     // 无 rel 的 link 应被跳过 → 仍报缺失
-    expect(itemOf(auditHtml('<link href="https://example.com/x">'), 'canonical 链接').status).toBe('警告')
+    expect(itemOf(auditHtml('<link href="https://example.com/x">'), 'canonical 链接').status).toBe(
+      '警告',
+    )
     // 有 rel 无 href → 仍报缺失
     expect(itemOf(auditHtml('<link rel="canonical">'), 'canonical 链接').status).toBe('警告')
     // 属性顺序颠倒 + 大小写混写仍能命中
@@ -181,11 +189,17 @@ describe('seo-audit / auditHtml', () => {
 
   it('viewport 缺失为问题', () => {
     expect(itemOf(auditHtml('<p>x</p>'), 'viewport meta').status).toBe('问题')
-    expect(itemOf(auditHtml('<meta name="viewport" content="width=device-width">'), 'viewport meta').status).toBe('通过')
+    expect(
+      itemOf(auditHtml('<meta name="viewport" content="width=device-width">'), 'viewport meta')
+        .status,
+    ).toBe('通过')
   })
 
   it('JSON-LD 单引号 type 也能命中', () => {
-    const item = itemOf(auditHtml(`<script type='application/ld+json'>{}</script>`), 'JSON-LD 结构化数据')
+    const item = itemOf(
+      auditHtml(`<script type='application/ld+json'>{}</script>`),
+      'JSON-LD 结构化数据',
+    )
     expect(item.status).toBe('通过')
   })
 
@@ -221,7 +235,9 @@ describe('seo-audit / fetchHtml', () => {
   it('成功抓取返回 HTML 文本', async () => {
     const html = await fetchHtml(
       'https://example.com',
-      mockFetch(mockResponse({ contentType: 'text/html; charset=utf-8', body: '<title>t</title>' })),
+      mockFetch(
+        mockResponse({ contentType: 'text/html; charset=utf-8', body: '<title>t</title>' }),
+      ),
     )
     expect(html).toBe('<title>t</title>')
   })
@@ -238,7 +254,9 @@ describe('seo-audit / fetchHtml', () => {
 
   it('非法 URL 抛中文错', async () => {
     await expect(fetchHtml('not-a-url', mockFetch(mockResponse({})))).rejects.toThrow(/http/)
-    await expect(fetchHtml('ftp://example.com', mockFetch(mockResponse({})))).rejects.toThrow(/http/)
+    await expect(fetchHtml('ftp://example.com', mockFetch(mockResponse({})))).rejects.toThrow(
+      /http/,
+    )
     await expect(fetchHtml('', mockFetch(mockResponse({})))).rejects.toThrow(/http/)
   })
 
@@ -258,9 +276,9 @@ describe('seo-audit / fetchHtml', () => {
   })
 
   it('缺 content-type 时提示未知', async () => {
-    await expect(
-      fetchHtml('https://example.com/x', mockFetch(mockResponse({}))),
-    ).rejects.toThrow('未知')
+    await expect(fetchHtml('https://example.com/x', mockFetch(mockResponse({})))).rejects.toThrow(
+      '未知',
+    )
   })
 
   it('网络异常抛中文错并提示 CORS', async () => {

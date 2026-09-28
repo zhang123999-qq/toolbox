@@ -4,10 +4,19 @@ import { buildJsonLd } from './utils'
 import type { JsonLdFieldKey } from './schema'
 import type { JsonLdType } from './utils'
 
-const TYPES: readonly JsonLdType[] = ['Article', 'Product', 'FAQPage', 'BreadcrumbList', 'Organization']
+const TYPES: readonly JsonLdType[] = [
+  'Article',
+  'Product',
+  'FAQPage',
+  'BreadcrumbList',
+  'Organization',
+]
 
 /** 每种类型展示的字段：key / 标签 / 是否多行 / 占位 */
-const FIELDS: Record<JsonLdType, ReadonlyArray<{ key: JsonLdFieldKey; label: string; textarea?: boolean; placeholder: string }>> = {
+const FIELDS: Record<
+  JsonLdType,
+  ReadonlyArray<{ key: JsonLdFieldKey; label: string; textarea?: boolean; placeholder: string }>
+> = {
   Article: [
     { key: 'headline', label: 'headline（标题）*', placeholder: '文章标题' },
     { key: 'description', label: 'description', textarea: true, placeholder: '一句话摘要' },
@@ -26,26 +35,49 @@ const FIELDS: Record<JsonLdType, ReadonlyArray<{ key: JsonLdFieldKey; label: str
     { key: 'url', label: 'url（商品页 URL）', placeholder: 'https://example.com/p' },
   ],
   FAQPage: [
-    { key: 'questions', label: '问答列表 *（每行「问题 || 答案」）', textarea: true, placeholder: '支持退货吗 || 支持7天无理由\n运费谁承担 || 卖家承担' },
+    {
+      key: 'questions',
+      label: '问答列表 *（每行「问题 || 答案」）',
+      textarea: true,
+      placeholder: '支持退货吗 || 支持7天无理由\n运费谁承担 || 卖家承担',
+    },
   ],
   BreadcrumbList: [
-    { key: 'breadcrumbs', label: '面包屑 *（每行「名称 || URL」）', textarea: true, placeholder: '首页 || https://example.com/\n分类 || https://example.com/c' },
+    {
+      key: 'breadcrumbs',
+      label: '面包屑 *（每行「名称 || URL」）',
+      textarea: true,
+      placeholder: '首页 || https://example.com/\n分类 || https://example.com/c',
+    },
   ],
   Organization: [
     { key: 'name', label: 'name（组织名）*', placeholder: '某某科技有限公司' },
     { key: 'url', label: 'url（官网）', placeholder: 'https://example.com' },
     { key: 'logo', label: 'logo（URL）', placeholder: 'https://example.com/logo.png' },
     { key: 'description', label: 'description', textarea: true, placeholder: '公司简介' },
-    { key: 'sameAs', label: 'sameAs（每行一个社交主页 URL）', textarea: true, placeholder: 'https://weibo.com/xxx' },
+    {
+      key: 'sameAs',
+      label: 'sameAs（每行一个社交主页 URL）',
+      textarea: true,
+      placeholder: 'https://weibo.com/xxx',
+    },
   ],
 }
 
 const EXAMPLE_FIELDS: Record<JsonLdType, Record<string, string>> = {
-  Article: { headline: '如何做好 SEO：从零开始的完整指南', author: '张三', datePublished: '2026-09-28' },
+  Article: {
+    headline: '如何做好 SEO：从零开始的完整指南',
+    author: '张三',
+    datePublished: '2026-09-28',
+  },
   Product: { name: '无线蓝牙耳机', brand: '某品牌', price: '199', priceCurrency: 'CNY' },
   FAQPage: { questions: '支持退货吗 || 支持7天无理由退货\n运费谁承担 || 卖家承担运费' },
   BreadcrumbList: { breadcrumbs: '首页 || https://example.com/\n博客 || https://example.com/blog' },
-  Organization: { name: '某某科技有限公司', url: 'https://example.com', sameAs: 'https://weibo.com/xxx' },
+  Organization: {
+    name: '某某科技有限公司',
+    url: 'https://example.com',
+    sameAs: 'https://weibo.com/xxx',
+  },
 }
 
 const INPUT_CLASS =
@@ -155,7 +187,12 @@ export default function Tool() {
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <button type="button" data-testid="run" className={BTN_CLASS} onClick={() => run(type, fields)}>
+        <button
+          type="button"
+          data-testid="run"
+          className={BTN_CLASS}
+          onClick={() => run(type, fields)}
+        >
           生成
         </button>
         <button
@@ -185,7 +222,11 @@ export default function Tool() {
       </div>
 
       {error !== '' && (
-        <p role="alert" data-testid="output" className="rounded border border-red-200 bg-red-50 p-3 font-mono text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300">
+        <p
+          role="alert"
+          data-testid="output"
+          className="rounded border border-red-200 bg-red-50 p-3 font-mono text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300"
+        >
           {error}
         </p>
       )}
@@ -211,7 +252,12 @@ export default function Tool() {
             >
               {copied ? '已复制' : '复制'}
             </button>
-            <button type="button" data-testid="download" className={BTN_CLASS} onClick={() => downloadText('json-ld.html', output)}>
+            <button
+              type="button"
+              data-testid="download"
+              className={BTN_CLASS}
+              onClick={() => downloadText('json-ld.html', output)}
+            >
               下载
             </button>
           </div>

@@ -32,7 +32,16 @@ function installMockEthereum() {
 describe('wallet-connect · Tool', () => {
   it('渲染后必需 data-testid 存在', () => {
     render(<Tool />)
-    for (const id of ['input', 'example', 'clear', 'output', 'copy', 'download', 'results', 'connect']) {
+    for (const id of [
+      'input',
+      'example',
+      'clear',
+      'output',
+      'copy',
+      'download',
+      'results',
+      'connect',
+    ]) {
       expect(byTestId(id)).toBeTruthy()
     }
   })
@@ -50,7 +59,9 @@ describe('wallet-connect · Tool', () => {
     render(<Tool />)
     fireEvent.click(byTestId('connect'))
     await waitFor(() => {
-      expect(byTestId('value-address').textContent).toBe('0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf')
+      expect(byTestId('value-address').textContent).toBe(
+        '0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf',
+      )
     })
     expect(byTestId('value-chainId').textContent).toBe('1')
     expect(byTestId('value-balance').textContent).toContain('1 ETH')

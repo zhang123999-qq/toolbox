@@ -52,7 +52,9 @@ export default function Tool() {
                 '请求头：',
                 ...(() => {
                   const keys = Object.keys(detail.headers)
-                  return keys.length === 0 ? ['  (无)'] : keys.map((k) => `  ${k}: ${detail.headers[k]}`)
+                  return keys.length === 0
+                    ? ['  (无)']
+                    : keys.map((k) => `  ${k}: ${detail.headers[k]}`)
                 })(),
                 `请求体：${detail.body === '' ? '(空)' : detail.body}`,
               ].join('\n')

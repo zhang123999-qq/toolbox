@@ -10,7 +10,9 @@ const EXAMPLE: IcuMessageInput = {
   values: '{"n": 5}',
 }
 
-const extraInputs: readonly ExtraInputDef[] = [{ key: 'values', label: '变量取值（JSON 对象）', rows: 5 }]
+const extraInputs: readonly ExtraInputDef[] = [
+  { key: 'values', label: '变量取值（JSON 对象）', rows: 5 },
+]
 
 const ERROR_CLASS = 'text-sm text-red-700 dark:text-red-300'
 
@@ -28,7 +30,11 @@ function parseValues(raw: string): Record<string, string | number> {
   return parsed as Record<string, string | number>
 }
 
-function compute(input: IcuMessageInput): { preview: string; placeholders: string[]; nodeCount: number } {
+function compute(input: IcuMessageInput): {
+  preview: string
+  placeholders: string[]
+  nodeCount: number
+} {
   const text = input.text.trim() === '' ? EXAMPLE.text : input.text
   const values = parseValues(input.values)
   const preview = previewIcu(text, values)
@@ -61,7 +67,8 @@ export default function Tool() {
             {preview}
           </p>
           <p data-testid="result-placeholders" className="font-mono text-xs break-all">
-            占位变量（{placeholders.length}）：{placeholders.length === 0 ? '无' : placeholders.join(', ')}
+            占位变量（{placeholders.length}）：
+            {placeholders.length === 0 ? '无' : placeholders.join(', ')}
           </p>
           <p data-testid="result-nodes" className="text-xs text-gray-500">
             语法节点数：{nodeCount}

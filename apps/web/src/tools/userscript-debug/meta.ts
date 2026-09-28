@@ -8,7 +8,8 @@ export const meta: ToolMeta = {
   id: 'userscript-debug',
   slug: 'userscript-debug',
   title: '油猴调试',
-  description: '扫描油猴用户脚本的常见问题：元数据块缺失、非法 @match、GM_ 函数与 @grant 不一致及风险写法',
+  description:
+    '扫描油猴用户脚本的常见问题：元数据块缺失、非法 @match、GM_ 函数与 @grant 不一致及风险写法',
   titleEn: 'Userscript Debugger',
   descriptionEn:
     'Scan Tampermonkey userscripts for metadata issues, invalid @match, GM_/@grant mismatches and risky patterns',

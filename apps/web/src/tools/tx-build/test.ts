@@ -106,9 +106,7 @@ describe('tx-build · Legacy', () => {
     const built = buildUnsignedTx(baseInput({ gasPrice: '0' }), LEGACY_OPTS)
     // nonce=0,gasPrice=0,gasLimit=21000,to,value=0,data='',chainId=1,v=0,r=0,s=0
     // payload 31 字节 → 0xdf
-    expect(built.rlpHex).toBe(
-      '0xdf8080825208947e5f4552091a69125d5dfcb7b8c2659029395bdf8080018080',
-    )
+    expect(built.rlpHex).toBe('0xdf8080825208947e5f4552091a69125d5dfcb7b8c2659029395bdf8080018080')
   })
 
   it('round-trip 解码字段一致', () => {
@@ -133,7 +131,9 @@ describe('tx-build · Legacy', () => {
     const noPrefix = buildUnsignedTx(baseInput({ to: TO.slice(2) }), LEGACY_OPTS)
     const upperPrefix = buildUnsignedTx(baseInput({ to: '0X' + TO.slice(2) }), LEGACY_OPTS)
     expect(noPrefix.fields.find((f) => f.key === 'to')?.value.toLowerCase()).toBe(TO.toLowerCase())
-    expect(upperPrefix.fields.find((f) => f.key === 'to')?.value.toLowerCase()).toBe(TO.toLowerCase())
+    expect(upperPrefix.fields.find((f) => f.key === 'to')?.value.toLowerCase()).toBe(
+      TO.toLowerCase(),
+    )
   })
 
   it('data 非空参与编码', () => {
@@ -153,7 +153,9 @@ describe('tx-build · Legacy', () => {
   })
 
   it('to 非法报错', () => {
-    expect(() => buildUnsignedTx(baseInput({ to: '0x123' }), LEGACY_OPTS)).toThrow('to 地址格式非法')
+    expect(() => buildUnsignedTx(baseInput({ to: '0x123' }), LEGACY_OPTS)).toThrow(
+      'to 地址格式非法',
+    )
   })
 
   it('数值非法报错', () => {
@@ -162,7 +164,9 @@ describe('tx-build · Legacy', () => {
   })
 
   it('chainId 为 0 报错', () => {
-    expect(() => buildUnsignedTx(baseInput({ chainId: '0' }), LEGACY_OPTS)).toThrow('chainId 不能为 0')
+    expect(() => buildUnsignedTx(baseInput({ chainId: '0' }), LEGACY_OPTS)).toThrow(
+      'chainId 不能为 0',
+    )
   })
 })
 
@@ -198,7 +202,9 @@ describe('tx-build · EIP-1559', () => {
   })
 
   it('缺失费用字段报错', () => {
-    expect(() => buildUnsignedTx(baseInput({ maxFeePerGas: '' }), EIP1559_OPTS)).toThrow('maxFeePerGas不能为空')
+    expect(() => buildUnsignedTx(baseInput({ maxFeePerGas: '' }), EIP1559_OPTS)).toThrow(
+      'maxFeePerGas不能为空',
+    )
   })
 })
 

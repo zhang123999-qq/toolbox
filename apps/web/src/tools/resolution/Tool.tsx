@@ -5,7 +5,8 @@ import type { ScreenInfo } from './utils'
 
 const BTN_CLASS =
   'rounded border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800'
-const ROW_CLASS = 'flex justify-between border-b border-slate-100 py-1.5 text-sm dark:border-slate-800'
+const ROW_CLASS =
+  'flex justify-between border-b border-slate-100 py-1.5 text-sm dark:border-slate-800'
 
 /**
  * 屏幕分辨率：读取 window.screen / window，全部经 utils 纯函数；
@@ -40,7 +41,12 @@ export default function Tool() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3">
-        <button type="button" className={BTN_CLASS} data-testid="resolution-refresh" onClick={refresh}>
+        <button
+          type="button"
+          className={BTN_CLASS}
+          data-testid="resolution-refresh"
+          onClick={refresh}
+        >
           检测屏幕信息
         </button>
         {ratio && (
@@ -79,7 +85,9 @@ export default function Tool() {
         </dl>
       )}
       <div>
-        <h3 className="mb-2 text-sm font-medium text-slate-600 dark:text-slate-400">常见分辨率对照</h3>
+        <h3 className="mb-2 text-sm font-medium text-slate-600 dark:text-slate-400">
+          常见分辨率对照
+        </h3>
         <ul className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-3">
           {COMMON_RESOLUTIONS.map((r) => (
             <li
@@ -94,7 +102,9 @@ export default function Tool() {
           ))}
         </ul>
       </div>
-      <p className="text-xs text-slate-400">工具信息：{meta.title}（#{858}）</p>
+      <p className="text-xs text-slate-400">
+        工具信息：{meta.title}（#{858}）
+      </p>
     </div>
   )
 }

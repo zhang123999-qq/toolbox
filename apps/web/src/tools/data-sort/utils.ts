@@ -86,11 +86,16 @@ export function parseSortRule(line: string, lineNo: number): SortRule {
     dirRaw = 'asc'
   } else {
     column = trimmed.slice(0, idx).trim()
-    dirRaw = trimmed.slice(idx + 1).trim().toLowerCase()
+    dirRaw = trimmed
+      .slice(idx + 1)
+      .trim()
+      .toLowerCase()
   }
   if (column === '') throw new Error(`第 ${lineNo} 条规则列名为空`)
   if (dirRaw !== 'asc' && dirRaw !== 'desc') {
-    throw new Error(`第 ${lineNo} 条规则方向须为 asc 或 desc，当前为：${trimmed.slice(idx + 1).trim() || '（空）'}`)
+    throw new Error(
+      `第 ${lineNo} 条规则方向须为 asc 或 desc，当前为：${trimmed.slice(idx + 1).trim() || '（空）'}`,
+    )
   }
   return { column, dir: dirRaw }
 }

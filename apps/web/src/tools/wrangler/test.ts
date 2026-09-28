@@ -32,7 +32,9 @@ describe('parseArgsText', () => {
 describe('buildCommand', () => {
   it('deploy 无参/带 name', () => {
     expect(buildCommand('deploy', {})).toBe('npx wrangler deploy')
-    expect(buildCommand('deploy', { name: 'my-worker' })).toBe('npx wrangler deploy --name my-worker')
+    expect(buildCommand('deploy', { name: 'my-worker' })).toBe(
+      'npx wrangler deploy --name my-worker',
+    )
   })
   it('dev 无参/合法端口/非法端口', () => {
     expect(buildCommand('dev', {})).toBe('npx wrangler dev')
@@ -46,7 +48,9 @@ describe('buildCommand', () => {
     expect(buildCommand('kv-put', { binding: 'MY_KV', key: 'k', value: 'v' })).toBe(
       'npx wrangler kv:key put --binding=MY_KV k v',
     )
-    expect(() => buildCommand('kv-put', { binding: 'MY_KV', key: 'k' })).toThrow('缺少必填参数：value')
+    expect(() => buildCommand('kv-put', { binding: 'MY_KV', key: 'k' })).toThrow(
+      '缺少必填参数：value',
+    )
     expect(() => buildCommand('kv-put', { binding: '  ', key: 'k', value: 'v' })).toThrow(
       '缺少必填参数：binding',
     )

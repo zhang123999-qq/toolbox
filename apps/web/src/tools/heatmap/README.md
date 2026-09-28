@@ -10,8 +10,8 @@
 
 ## 输入
 
-| 字段   | 类型   | 约束                                                |
-| ------ | ------ | --------------------------------------------------- |
+| 字段   | 类型   | 约束                                                      |
+| ------ | ------ | --------------------------------------------------------- |
 | `text` | string | 每行 `X类目, Y类目, 数值`（留空用示例，全角逗号自动归一） |
 
 输入格式示例：
@@ -57,15 +57,15 @@
 
 ## 元信息
 
-| 项       | 值                             |
-| -------- | ------------------------------ |
-| 全局编号 | #671                           |
-| 域       | `random`                       |
-| 大组     | `design`                       |
-| 优先级   | P1                             |
-| 可行性   | A（纯前端，echarts 动态导入）  |
-| 模板     | T3（图表可视化预览）           |
-| 依赖     | `echarts`（动态导入，独立分包）|
+| 项       | 值                              |
+| -------- | ------------------------------- |
+| 全局编号 | #671                            |
+| 域       | `random`                        |
+| 大组     | `design`                        |
+| 优先级   | P1                              |
+| 可行性   | A（纯前端，echarts 动态导入）   |
+| 模板     | T3（图表可视化预览）            |
+| 依赖     | `echarts`（动态导入，独立分包） |
 
 ---
 
@@ -81,8 +81,8 @@ Render ECharts heatmaps from two-dimensional category values locally, with title
 
 ## Input
 
-| Field  | Type   | Constraint                                             |
-| ------ | ------ | ------------------------------------------------------ |
+| Field  | Type   | Constraint                                                                 |
+| ------ | ------ | -------------------------------------------------------------------------- |
 | `text` | string | One `X, Y, value` per line (empty = example; full-width commas normalized) |
 
 - Categories on both axes are ordered by first appearance
@@ -90,11 +90,11 @@ Render ECharts heatmaps from two-dimensional category values locally, with title
 
 ## Options
 
-| Option | Default | Constraint    | Description        |
-| ------ | ------- | ------------- | ------------------ |
-| Title  | (empty) | any text      | Empty = no title   |
-| Width  | `600`   | 100–2000      | Canvas width (px)  |
-| Height | `400`   | 100–2000      | Canvas height (px) |
+| Option | Default | Constraint | Description        |
+| ------ | ------- | ---------- | ------------------ |
+| Title  | (empty) | any text   | Empty = no title   |
+| Width  | `600`   | 100–2000   | Canvas width (px)  |
+| Height | `400`   | 100–2000   | Canvas height (px) |
 
 ## Output
 

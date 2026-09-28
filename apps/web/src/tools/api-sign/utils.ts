@@ -121,7 +121,9 @@ export function buildStringToSign(input: StringToSignInput): string {
   for (const m of found) {
     const key = m.slice(1, -1)
     if (!(TEMPLATE_KEYS as readonly string[]).includes(key)) {
-      throw new Error('模板占位非法：' + m + '，可用 ' + TEMPLATE_KEYS.map((k) => '{' + k + '}').join(' '))
+      throw new Error(
+        '模板占位非法：' + m + '，可用 ' + TEMPLATE_KEYS.map((k) => '{' + k + '}').join(' '),
+      )
     }
   }
   return tpl.replace(/\{([a-z]+)\}/g, (_m, key: string) => values[key])
@@ -148,7 +150,11 @@ function assertSignOptions(opts: SignOptions): {
   }
 }
 
-async function hmacSha256(secret: string, message: string, subtle: SubtleLike): Promise<Uint8Array> {
+async function hmacSha256(
+  secret: string,
+  message: string,
+  subtle: SubtleLike,
+): Promise<Uint8Array> {
   const key = await subtle.importKey(
     'raw',
     utf8(secret),
@@ -167,7 +173,14 @@ export async function signRequest(
 ): Promise<SignResult> {
   const { method, path, timestamp, nonce, encoding } = assertSignOptions(opts)
   const query = buildQueryString(opts.params ?? {})
-  const stringToSign = buildStringToSign({ method, path, query, timestamp, nonce, template: opts.template })
+  const stringToSign = buildStringToSign({
+    method,
+    path,
+    query,
+    timestamp,
+    nonce,
+    template: opts.template,
+  })
   const mac = await hmacSha256(opts.secret, stringToSign, subtle)
   const signatureHex = bytesToHex(mac)
   const signatureBase64 = bytesToBase64(mac)

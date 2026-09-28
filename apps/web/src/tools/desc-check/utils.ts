@@ -102,7 +102,8 @@ export function analyzeDescription(rawText: string, rawKeyword = ''): DescAnalys
   const keyword = rawKeyword.trim()
   const charCount = [...text].length
   const width = displayWidth(text)
-  const rating: LengthRating = width < WIDTH_TOO_SHORT ? '过短' : width > WIDTH_TOO_LONG ? '过长' : '合适'
+  const rating: LengthRating =
+    width < WIDTH_TOO_SHORT ? '过短' : width > WIDTH_TOO_LONG ? '过长' : '合适'
 
   let keywordFound = false
   let keywordFront = false
@@ -126,12 +127,22 @@ export function analyzeDescription(rawText: string, rawKeyword = ''): DescAnalys
   if (ctaFound.length > 0) score += 5
 
   const suggestions: string[] = []
-  if (rating === '过短') suggestions.push('描述过短：建议扩充到约 150–160 个字符（中文约 75–80 字），充分利用搜索结果展示位')
-  if (rating === '过长') suggestions.push('描述过长：Google 只展示约 155–160 个字符，超出部分会被截断，建议精简到展示范围内')
-  if (keyword !== '' && !keywordFound) suggestions.push(`未找到目标关键词「${keyword}」：建议在描述中自然融入一次`)
-  if (keyword !== '' && keywordFound && !keywordFront) suggestions.push('关键词出现位置靠后：建议尽量前置，搜索结果中更容易被注意到')
-  for (const w of repeatedWords) suggestions.push(`「${w}」重复出现：建议换用同义词或删减，避免关键词堆砌嫌疑`)
-  if (ctaFound.length === 0) suggestions.push('缺少行动号召：可加入如「免费」「立即了解」等 CTA 词提升点击率')
+  if (rating === '过短')
+    suggestions.push(
+      '描述过短：建议扩充到约 150–160 个字符（中文约 75–80 字），充分利用搜索结果展示位',
+    )
+  if (rating === '过长')
+    suggestions.push(
+      '描述过长：Google 只展示约 155–160 个字符，超出部分会被截断，建议精简到展示范围内',
+    )
+  if (keyword !== '' && !keywordFound)
+    suggestions.push(`未找到目标关键词「${keyword}」：建议在描述中自然融入一次`)
+  if (keyword !== '' && keywordFound && !keywordFront)
+    suggestions.push('关键词出现位置靠后：建议尽量前置，搜索结果中更容易被注意到')
+  for (const w of repeatedWords)
+    suggestions.push(`「${w}」重复出现：建议换用同义词或删减，避免关键词堆砌嫌疑`)
+  if (ctaFound.length === 0)
+    suggestions.push('缺少行动号召：可加入如「免费」「立即了解」等 CTA 词提升点击率')
   if (suggestions.length === 0) suggestions.push('描述长度与结构良好，关键词位置恰当')
 
   return {

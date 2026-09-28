@@ -3,12 +3,7 @@
  * heading-structure（#732）utils 单测：jsdom 真实 DOMParser + 可注入工厂。
  */
 import { describe, expect, it, vi } from 'vitest'
-import {
-  analyzeHeadings,
-  formatHeadingReport,
-  scoreGrade,
-  type DocFactory,
-} from './utils'
+import { analyzeHeadings, formatHeadingReport, scoreGrade, type DocFactory } from './utils'
 
 const factory: DocFactory = (html) => new DOMParser().parseFromString(html, 'text/html')
 

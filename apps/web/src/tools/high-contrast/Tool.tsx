@@ -90,12 +90,19 @@ export default function Tool() {
             </label>
           </div>
           {c.error ? (
-            <div role="alert" data-testid="param-error" className="rounded border border-red-300 bg-red-50 p-2 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300">
+            <div
+              role="alert"
+              data-testid="param-error"
+              className="rounded border border-red-300 bg-red-50 p-2 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300"
+            >
               {c.error}
             </div>
           ) : (
             <>
-              <div data-testid="contrast-report" className="whitespace-pre-wrap rounded border border-slate-200 p-2 text-sm text-slate-700 dark:border-slate-700 dark:text-slate-300">
+              <div
+                data-testid="contrast-report"
+                className="whitespace-pre-wrap rounded border border-slate-200 p-2 text-sm text-slate-700 dark:border-slate-700 dark:text-slate-300"
+              >
                 {c.report}
               </div>
               <div
@@ -115,8 +122,13 @@ export default function Tool() {
                 </a>
               </div>
               <div>
-                <div className="mb-1 text-sm font-medium text-slate-700 dark:text-slate-300">生成的 CSS</div>
-                <pre data-testid="css-output" className="whitespace-pre-wrap rounded bg-slate-100 p-2 font-mono text-xs text-slate-800 dark:bg-slate-800 dark:text-slate-100">
+                <div className="mb-1 text-sm font-medium text-slate-700 dark:text-slate-300">
+                  生成的 CSS
+                </div>
+                <pre
+                  data-testid="css-output"
+                  className="whitespace-pre-wrap rounded bg-slate-100 p-2 font-mono text-xs text-slate-800 dark:bg-slate-800 dark:text-slate-100"
+                >
                   {c.css}
                 </pre>
               </div>

@@ -6,8 +6,7 @@
  */
 
 /** secp256k1 曲线的阶 n */
-export const SECP256K1_N =
-  0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141n
+export const SECP256K1_N = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141n
 
 /** 默认随机源：crypto.getRandomValues */
 function defaultRandomSource(length: number): Uint8Array {

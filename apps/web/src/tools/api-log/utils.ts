@@ -36,8 +36,7 @@ const MONTHS: Record<string, number> = {
   dec: 11,
 }
 
-const TIME_RE =
-  /^(\d{2})\/([A-Za-z]{3})\/(\d{4}):(\d{2}):(\d{2}):(\d{2}) ([+-])(\d{2})(\d{2})$/
+const TIME_RE = /^(\d{2})\/([A-Za-z]{3})\/(\d{4}):(\d{2}):(\d{2}):(\d{2}) ([+-])(\d{2})(\d{2})$/
 
 /** 解析 "10/Oct/2000:13:55:36 -0700"（非法抛中文错） */
 export function parseLogTime(s: string): number {

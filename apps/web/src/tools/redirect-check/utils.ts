@@ -98,7 +98,11 @@ interface SingleResult {
 }
 
 /** 单次请求：HEAD 优先，405/501 时回退 GET；超时与网络失败抛中文错 */
-async function fetchSingle(url: string, fetchFn: FetchFn, timeoutMs: number): Promise<SingleResult> {
+async function fetchSingle(
+  url: string,
+  fetchFn: FetchFn,
+  timeoutMs: number,
+): Promise<SingleResult> {
   const doFetch = async (method: 'HEAD' | 'GET'): Promise<Response> => {
     const controller = new AbortController()
     const timer = setTimeout(() => controller.abort(), timeoutMs)
@@ -106,7 +110,9 @@ async function fetchSingle(url: string, fetchFn: FetchFn, timeoutMs: number): Pr
       return await fetchFn(url, { method, redirect: 'manual', signal: controller.signal })
     } catch (error) {
       if (error instanceof DOMException && error.name === 'AbortError') {
-        throw new RedirectCheckError(`请求超时（超过 ${timeoutMs} 毫秒），目标服务器响应太慢或不可达`)
+        throw new RedirectCheckError(
+          `请求超时（超过 ${timeoutMs} 毫秒），目标服务器响应太慢或不可达`,
+        )
       }
       throw new RedirectCheckError(
         `网络请求失败：${error instanceof Error ? error.message : String(error)}`,

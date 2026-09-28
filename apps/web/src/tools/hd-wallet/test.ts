@@ -86,7 +86,11 @@ describe('masterKeyFromSeed', () => {
 describe('parsePath', () => {
   it('解析硬化/非硬化', () => {
     expect(parsePath("m/44'/60'/0'/0/0")).toEqual([
-      44 + 0x80000000, 60 + 0x80000000, 0 + 0x80000000, 0, 0,
+      44 + 0x80000000,
+      60 + 0x80000000,
+      0 + 0x80000000,
+      0,
+      0,
     ])
     expect(parsePath('m')).toEqual([])
   })
@@ -176,7 +180,9 @@ describe('deriveAddressRange', () => {
   })
   it('非法参数抛错', () => {
     expect(() => deriveAddressRange(V2_SEED, "m/44'/60'/0'/0", -1, 2)).toThrow('非负整数')
-    expect(() => deriveAddressRange(V2_SEED, "m/44'/60'/0'/0", 3, 2)).toThrow('起始序号不能大于结束序号')
+    expect(() => deriveAddressRange(V2_SEED, "m/44'/60'/0'/0", 3, 2)).toThrow(
+      '起始序号不能大于结束序号',
+    )
     expect(() => deriveAddressRange(V2_SEED, "m/44'/60'/0'/0", 0, 20)).toThrow('最多 20 个')
     expect(() => deriveAddressRange(V2_SEED, 'bad', 0, 2)).toThrow('路径格式错误')
   })
@@ -264,8 +270,8 @@ describe('底层椭圆曲线 helpers（分支补齐）', () => {
   })
   it('压缩公钥 02/03 两种前缀', () => {
     const prefixes = new Set(
-      [1n, 2n, 3n, 4n, 5n, 6n, 7n, 8n].map(
-        (k) => privateToPublic(k.toString(16).padStart(64, '0')).compressed.slice(0, 2),
+      [1n, 2n, 3n, 4n, 5n, 6n, 7n, 8n].map((k) =>
+        privateToPublic(k.toString(16).padStart(64, '0')).compressed.slice(0, 2),
       ),
     )
     expect(prefixes.has('02')).toBe(true)

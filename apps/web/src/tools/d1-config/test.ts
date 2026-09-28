@@ -63,9 +63,9 @@ describe('buildD1Config', () => {
     ).toThrow('不能包含 ..')
   })
   it('空库名抛错', () => {
-    expect(() => buildD1Config({ databaseName: ' ', databaseId: EXAMPLE_D1_ID, binding: 'DB' })).toThrow(
-      '数据库名称不能为空',
-    )
+    expect(() =>
+      buildD1Config({ databaseName: ' ', databaseId: EXAMPLE_D1_ID, binding: 'DB' }),
+    ).toThrow('数据库名称不能为空')
   })
   it('绑定名非法抛错', () => {
     expect(() =>

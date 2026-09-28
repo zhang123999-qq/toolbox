@@ -38,9 +38,7 @@ describe('math-formula · Tool', () => {
       target: { value: 'circle-area' },
     })
     fireEvent.change(byTestId('input'), { target: { value: 'r=2' } })
-    expect(byTestId('math-formula-detail').textContent).toContain(
-      `结果：${Math.PI * 4}`,
-    )
+    expect(byTestId('math-formula-detail').textContent).toContain(`结果：${Math.PI * 4}`)
   })
 
   it('缺变量显示中文错误', () => {

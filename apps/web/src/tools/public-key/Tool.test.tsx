@@ -31,7 +31,9 @@ describe('public-key · Tool', () => {
     expect(byTestId('result-0').textContent).toContain(
       '0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798',
     )
-    expect(byTestId('result-1').textContent).toContain('0479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798')
+    expect(byTestId('result-1').textContent).toContain(
+      '0479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798',
+    )
     expect(byTestId('result-2').textContent).toContain('0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf')
   })
 

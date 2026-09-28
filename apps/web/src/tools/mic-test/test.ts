@@ -2,13 +2,7 @@
  * mic-test（#835）utils 单测：电平计算、状态文案、getUserMedia 封装。
  */
 import { describe, expect, it, vi } from 'vitest'
-import {
-  MIC_STATUS_TEXT,
-  computeLevel,
-  describeLevel,
-  formatLevel,
-  getMicStream,
-} from './utils'
+import { MIC_STATUS_TEXT, computeLevel, describeLevel, formatLevel, getMicStream } from './utils'
 
 describe('computeLevel', () => {
   it('全 128（静音基准）为 0', () => {

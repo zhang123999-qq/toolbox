@@ -8,8 +8,7 @@ export const meta: ToolMeta = {
   id: 'api-mock',
   slug: 'api-mock',
   title: 'API Mock 端点模拟',
-  description:
-    '定义 mock 路由规则，模拟请求匹配并返回预设响应（端点行为模拟，非 mock 数据生成）',
+  description: '定义 mock 路由规则，模拟请求匹配并返回预设响应（端点行为模拟，非 mock 数据生成）',
   titleEn: 'API Mock Endpoint Simulator',
   descriptionEn:
     'Define mock routes and simulate request matching with preset responses (endpoint behavior simulation, not mock data generation)',

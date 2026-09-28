@@ -123,7 +123,10 @@ export function renderUserscriptIssues(issues: UserscriptIssue[]): string {
   return (
     `发现 ${issues.length} 个问题：\n` +
     issues
-      .map((i, idx) => `${idx + 1}. [${label[i.level]}]${i.line > 0 ? ` 第 ${i.line} 行` : ''}：${i.message}`)
+      .map(
+        (i, idx) =>
+          `${idx + 1}. [${label[i.level]}]${i.line > 0 ? ` 第 ${i.line} 行` : ''}：${i.message}`,
+      )
       .join('\n')
   )
 }

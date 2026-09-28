@@ -67,7 +67,8 @@ export default function Tool() {
             )}
             <p className="text-xs text-slate-500 dark:text-slate-400">
               说明：将 TOML 片段追加到 wrangler.toml；数据库 ID 来自 `npx wrangler d1 create
-              &lt;名称&gt;` 的输出；示例 SQL 保存为迁移文件后用 `wrangler d1 migrations apply` 应用。
+              &lt;名称&gt;` 的输出；示例 SQL 保存为迁移文件后用 `wrangler d1 migrations apply`
+              应用。
             </p>
           </div>
         )

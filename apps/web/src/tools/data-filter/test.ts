@@ -2,7 +2,16 @@
  * data-filter（#689）utils 单测：条件解析 / 运算符语义 / 多条件过滤。
  */
 import { describe, expect, it } from 'vitest'
-import { applyFilters, matchCondition, parseCondition, parseConditions, parseCsv, parseLogic, toCsv, type Row } from './utils'
+import {
+  applyFilters,
+  matchCondition,
+  parseCondition,
+  parseConditions,
+  parseCsv,
+  parseLogic,
+  toCsv,
+  type Row,
+} from './utils'
 
 const HEADERS = ['姓名', '年龄', '城市', '备注']
 const ROWS: Row[] = [
@@ -17,11 +26,19 @@ describe('parseCondition', () => {
   })
 
   it('值内部可含空格', () => {
-    expect(parseCondition('城市 包含 上海 市', 2)).toEqual({ column: '城市', op: '包含', value: '上海 市' })
+    expect(parseCondition('城市 包含 上海 市', 2)).toEqual({
+      column: '城市',
+      op: '包含',
+      value: '上海 市',
+    })
   })
 
   it('列名含运算符文本不误判', () => {
-    expect(parseCondition('不包含测试 = 1', 3)).toEqual({ column: '不包含测试', op: '=', value: '1' })
+    expect(parseCondition('不包含测试 = 1', 3)).toEqual({
+      column: '不包含测试',
+      op: '=',
+      value: '1',
+    })
   })
 
   it('为空 / 不为空可省略值', () => {
@@ -90,7 +107,9 @@ describe('matchCondition', () => {
   })
 
   it('缺失单元格按空字符串处理', () => {
-    expect(matchCondition(undefined as unknown as string, { column: '备注', op: '为空', value: '' })).toBe(true)
+    expect(
+      matchCondition(undefined as unknown as string, { column: '备注', op: '为空', value: '' }),
+    ).toBe(true)
   })
 })
 
@@ -124,16 +143,26 @@ describe('applyFilters', () => {
   })
 
   it('不存在的列抛错', () => {
-    expect(() => applyFilters(HEADERS, ROWS, [{ column: '国家', op: '=', value: 'x' }], 'AND')).toThrowError(
-      '列「国家」不存在于表头',
-    )
+    expect(() =>
+      applyFilters(HEADERS, ROWS, [{ column: '国家', op: '=', value: 'x' }], 'AND'),
+    ).toThrowError('列「国家」不存在于表头')
   })
 
   it('缺列的行按空字符串处理', () => {
-    const out = applyFilters(HEADERS, [['张三', '28']], [{ column: '城市', op: '为空', value: '' }], 'AND')
+    const out = applyFilters(
+      HEADERS,
+      [['张三', '28']],
+      [{ column: '城市', op: '为空', value: '' }],
+      'AND',
+    )
     expect(out).toEqual([['张三', '28']])
     // OR 分支同样处理缺列
-    const outOr = applyFilters(HEADERS, [['张三', '28']], [{ column: '城市', op: '为空', value: '' }], 'OR')
+    const outOr = applyFilters(
+      HEADERS,
+      [['张三', '28']],
+      [{ column: '城市', op: '为空', value: '' }],
+      'OR',
+    )
     expect(outOr).toEqual([['张三', '28']])
   })
 })
@@ -172,6 +201,8 @@ describe('toCsv', () => {
   })
 
   it('含逗号 / 引号 / 换行的字段加引号转义', () => {
-    expect(toCsv(['a'], [['x,y'], ['say "hi"'], ['l1\nl2']])).toBe('a\n"x,y"\n"say ""hi"""\n"l1\nl2"')
+    expect(toCsv(['a'], [['x,y'], ['say "hi"'], ['l1\nl2']])).toBe(
+      'a\n"x,y"\n"say ""hi"""\n"l1\nl2"',
+    )
   })
 })

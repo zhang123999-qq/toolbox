@@ -35,7 +35,12 @@ describe('favicon-gen · scaleSizes', () => {
   it('首个与末个计划内容精确', () => {
     const plans = scaleSizes()
     expect(plans[0]).toEqual({ size: 16, width: 16, height: 16, entryName: 'favicon-16x16.png' })
-    expect(plans[5]).toEqual({ size: 512, width: 512, height: 512, entryName: 'favicon-512x512.png' })
+    expect(plans[5]).toEqual({
+      size: 512,
+      width: 512,
+      height: 512,
+      entryName: 'favicon-512x512.png',
+    })
   })
 })
 

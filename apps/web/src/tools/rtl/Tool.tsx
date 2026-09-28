@@ -131,19 +131,25 @@ export default function Tool() {
         </h2>
         <div className="grid gap-4 md:grid-cols-3">
           <div className={PANEL}>
-            <p className="mb-1 text-xs text-slate-500 dark:text-slate-400">强制 RTL（dir=&quot;rtl&quot;）</p>
+            <p className="mb-1 text-xs text-slate-500 dark:text-slate-400">
+              强制 RTL（dir=&quot;rtl&quot;）
+            </p>
             <p data-testid="preview-rtl" dir="rtl" className="text-sm">
               {display}
             </p>
           </div>
           <div className={PANEL}>
-            <p className="mb-1 text-xs text-slate-500 dark:text-slate-400">强制 LTR（dir=&quot;ltr&quot;）</p>
+            <p className="mb-1 text-xs text-slate-500 dark:text-slate-400">
+              强制 LTR（dir=&quot;ltr&quot;）
+            </p>
             <p data-testid="preview-ltr" dir="ltr" className="text-sm">
               {display}
             </p>
           </div>
           <div className={PANEL}>
-            <p className="mb-1 text-xs text-slate-500 dark:text-slate-400">自动（dir=&quot;auto&quot;）</p>
+            <p className="mb-1 text-xs text-slate-500 dark:text-slate-400">
+              自动（dir=&quot;auto&quot;）
+            </p>
             <p data-testid="preview-auto" dir="auto" className="text-sm">
               {display}
             </p>

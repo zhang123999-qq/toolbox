@@ -8,9 +8,11 @@ export const meta: ToolMeta = {
   id: 'focus-style',
   slug: 'focus-style',
   title: '焦点样式生成',
-  description: '生成 :focus-visible 焦点样式 CSS：自定义颜色、宽度、偏移、圆角，实时预览并校验与背景的对比度',
+  description:
+    '生成 :focus-visible 焦点样式 CSS：自定义颜色、宽度、偏移、圆角，实时预览并校验与背景的对比度',
   titleEn: 'Focus Style Generator',
-  descriptionEn: 'Generate :focus-visible CSS: color, width, offset, radius; live preview and contrast check',
+  descriptionEn:
+    'Generate :focus-visible CSS: color, width, offset, radius; live preview and contrast check',
 
   category: 'a11y',
   group: 'life',

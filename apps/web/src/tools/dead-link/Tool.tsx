@@ -1,13 +1,7 @@
 import { useState } from 'react'
 import { MultiPanel } from '../../components/tool/templates/MultiPanel'
 import { meta } from './meta'
-import {
-  checkBatch,
-  parseUrlList,
-  renderReport,
-  summarize,
-  toInvalidResult,
-} from './utils'
+import { checkBatch, parseUrlList, renderReport, summarize, toInvalidResult } from './utils'
 import type { DeadLinkInput, DeadLinkOptions } from './schema'
 import type { DeadLinkResult } from './utils'
 
@@ -84,8 +78,8 @@ export default function Tool() {
             </button>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            每行一个 URL（最多 200 行），浏览器逐个发送 HEAD 请求检测（不支持时自动回退
-            GET），并发 5 个。跨域被拦截的记为「错误」并注明原因，不编造成「死链」。
+            每行一个 URL（最多 200 行），浏览器逐个发送 HEAD 请求检测（不支持时自动回退 GET），并发
+            5 个。跨域被拦截的记为「错误」并注明原因，不编造成「死链」。
           </p>
           {error ? (
             <div
@@ -103,9 +97,13 @@ export default function Tool() {
           ) : null}
           {summary ? (
             <div className="flex flex-wrap items-center gap-3">
-              <p data-testid="summary" className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                共 {summary.total} 个：存活 {summary.alive} 重定向 {summary.redirect} 死链 {summary.dead}
-                 超时 {summary.timeout} 错误 {summary.error} 无效 {summary.invalid} 
+              <p
+                data-testid="summary"
+                className="text-sm font-medium text-slate-700 dark:text-slate-300"
+              >
+                共 {summary.total} 个：存活 {summary.alive} 重定向 {summary.redirect} 死链{' '}
+                {summary.dead}
+                超时 {summary.timeout} 错误 {summary.error} 无效 {summary.invalid}
                 存活率 {Math.round(summary.aliveRate * 100)}%
               </p>
               <label className="flex items-center gap-1 text-xs text-slate-600 dark:text-slate-400">
@@ -129,7 +127,9 @@ export default function Tool() {
                   <span className={`rounded px-1.5 py-0.5 font-medium ${statusBadge(r.status)}`}>
                     {r.status}
                   </span>
-                  <span className="break-all font-mono text-slate-700 dark:text-slate-300">{r.url}</span>
+                  <span className="break-all font-mono text-slate-700 dark:text-slate-300">
+                    {r.url}
+                  </span>
                   {r.httpStatus !== null ? (
                     <span className="text-slate-500">HTTP {r.httpStatus}</span>
                   ) : (

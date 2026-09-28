@@ -10,7 +10,8 @@ export const meta: ToolMeta = {
   title: '语言标签',
   description: 'BCP 47 语言标签解析、构建与校验：拆解语言/文字/地区/变体/扩展/私用，并给出中文含义',
   titleEn: 'Language Tag',
-  descriptionEn: 'Parse, build and validate BCP 47 language tags: language/script/region/variant/extension/private-use with Chinese glosses',
+  descriptionEn:
+    'Parse, build and validate BCP 47 language tags: language/script/region/variant/extension/private-use with Chinese glosses',
 
   category: 'a11y',
   group: 'life',

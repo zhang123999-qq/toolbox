@@ -118,7 +118,13 @@ describe('buildThemeJson', () => {
 
 describe('resolveTheme', () => {
   it('空选项回退默认值并组装主题', () => {
-    const { theme, title } = resolveTheme({ title: '演示', background: '', palette: '', fontFamily: '', titleSize: '' })
+    const { theme, title } = resolveTheme({
+      title: '演示',
+      background: '',
+      palette: '',
+      fontFamily: '',
+      titleSize: '',
+    })
     expect(title).toBe('演示')
     expect(theme.backgroundColor).toBe('#ffffff')
     expect((theme.color as string[]).length).toBe(5)
@@ -138,9 +144,9 @@ describe('resolveTheme', () => {
   })
 
   it('非法值抛中文错', () => {
-    expect(() => resolveTheme({ title: '', background: 'red', palette: '', fontFamily: '', titleSize: '' })).toThrowError(
-      '背景色须为 #RGB 或 #RRGGBB 格式',
-    )
+    expect(() =>
+      resolveTheme({ title: '', background: 'red', palette: '', fontFamily: '', titleSize: '' }),
+    ).toThrowError('背景色须为 #RGB 或 #RRGGBB 格式')
   })
 })
 

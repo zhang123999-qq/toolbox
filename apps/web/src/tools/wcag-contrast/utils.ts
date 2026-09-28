@@ -33,9 +33,7 @@ function linearize(v: number): number {
 
 /** WCAG 相对亮度 */
 export function relativeLuminance(color: Rgb01): number {
-  return (
-    0.2126 * linearize(color.r) + 0.7152 * linearize(color.g) + 0.0722 * linearize(color.b)
-  )
+  return 0.2126 * linearize(color.r) + 0.7152 * linearize(color.g) + 0.0722 * linearize(color.b)
 }
 
 /** WCAG 对比度（保留 2 位小数） */

@@ -99,7 +99,9 @@ export function reveal(board: MsBoard, x: number, y: number): { board: MsBoard; 
 export function toggleFlag(board: MsBoard, x: number, y: number): MsBoard {
   if (!inBounds(board, x, y)) throw new Error('坐标越界')
   return board.map((row, ry) =>
-    row.map((c, cx) => (ry === y && cx === x && !c.revealed ? { ...c, flagged: !c.flagged } : { ...c })),
+    row.map((c, cx) =>
+      ry === y && cx === x && !c.revealed ? { ...c, flagged: !c.flagged } : { ...c },
+    ),
   )
 }
 

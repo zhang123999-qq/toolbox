@@ -10,7 +10,8 @@ export const meta: ToolMeta = {
   title: '哈希校验',
   description: '计算数据哈希并与期望值比对：SHA-2 / SHA-1 完整性验证，长度不符直接提示',
   titleEn: 'Hash Verify',
-  descriptionEn: 'Verify data integrity: compute SHA-2 / SHA-1 digests and compare against expected values',
+  descriptionEn:
+    'Verify data integrity: compute SHA-2 / SHA-1 digests and compare against expected values',
 
   category: 'encoding',
   group: 'dev',

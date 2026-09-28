@@ -7,16 +7,12 @@
  */
 
 /** secp256k1 素数域 p */
-export const SECP256K1_P =
-  0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2fn
+export const SECP256K1_P = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2fn
 /** secp256k1 阶 n */
-export const SECP256K1_N =
-  0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141n
+export const SECP256K1_N = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141n
 /** 生成元 G */
-export const SECP256K1_GX =
-  0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798n
-export const SECP256K1_GY =
-  0x483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8n
+export const SECP256K1_GX = 0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798n
+export const SECP256K1_GY = 0x483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8n
 
 export interface ECPoint {
   x: bigint
@@ -71,8 +67,7 @@ export function pointAdd(p: ECPoint | null, q: ECPoint | null): ECPoint | null {
     if ((p.y + q.y) % SECP256K1_P === 0n) return null
     return pointDouble(p)
   }
-  const lambda =
-    (((q.y - p.y) % SECP256K1_P) + SECP256K1_P) % SECP256K1_P
+  const lambda = (((q.y - p.y) % SECP256K1_P) + SECP256K1_P) % SECP256K1_P
   const lam =
     (lambda * modInv((((q.x - p.x) % SECP256K1_P) + SECP256K1_P) % SECP256K1_P, SECP256K1_P)) %
     SECP256K1_P
@@ -138,12 +133,30 @@ export function privateToPublic(privHex: string): PublicKeyResult {
 const MASK64 = (1n << 64n) - 1n
 
 const RC: readonly bigint[] = [
-  0x0000000000000001n, 0x0000000000008082n, 0x800000000000808an, 0x8000000080008000n,
-  0x000000000000808bn, 0x0000000080000001n, 0x8000000080008081n, 0x8000000000008009n,
-  0x000000000000008an, 0x0000000000000088n, 0x0000000080008009n, 0x000000008000000an,
-  0x000000008000808bn, 0x800000000000008bn, 0x8000000000008089n, 0x8000000000008003n,
-  0x8000000000008002n, 0x8000000000000080n, 0x000000000000800an, 0x800000008000000an,
-  0x8000000080008081n, 0x8000000000008080n, 0x0000000080000001n, 0x8000000080008008n,
+  0x0000000000000001n,
+  0x0000000000008082n,
+  0x800000000000808an,
+  0x8000000080008000n,
+  0x000000000000808bn,
+  0x0000000080000001n,
+  0x8000000080008081n,
+  0x8000000000008009n,
+  0x000000000000008an,
+  0x0000000000000088n,
+  0x0000000080008009n,
+  0x000000008000000an,
+  0x000000008000808bn,
+  0x800000000000008bn,
+  0x8000000000008089n,
+  0x8000000000008003n,
+  0x8000000000008002n,
+  0x8000000000000080n,
+  0x000000000000800an,
+  0x800000008000000an,
+  0x8000000080008081n,
+  0x8000000000008080n,
+  0x0000000080000001n,
+  0x8000000080008008n,
 ]
 
 const ROT: readonly number[] = [

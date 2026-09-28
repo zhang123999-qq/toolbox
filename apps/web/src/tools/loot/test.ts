@@ -56,7 +56,13 @@ describe('rollLoot', () => {
     expect(r.id).toBe('gem')
   })
   it('兜底分支：末项无 min 时数量为 1', () => {
-    const r = rollLoot([{ id: 'a', weight: 1 }, { id: 'b', weight: 1 }], () => 1)
+    const r = rollLoot(
+      [
+        { id: 'a', weight: 1 },
+        { id: 'b', weight: 1 },
+      ],
+      () => 1,
+    )
     expect(r).toEqual({ id: 'b', count: 1 })
   })
   it('只给 min 时 max 取 min', () => {

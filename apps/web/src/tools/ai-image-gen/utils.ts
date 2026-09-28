@@ -73,8 +73,7 @@ interface ImagesResponseLike {
 
 /** 生成结果：远端 url 或 base64 二选一 */
 export type ImageResult =
-  | { readonly kind: 'url'; readonly url: string }
-  | { readonly kind: 'b64'; readonly b64: string }
+  { readonly kind: 'url'; readonly url: string } | { readonly kind: 'b64'; readonly b64: string }
 
 /** 从响应 JSON 取出图片；结构异常抛中文错 */
 export function extractImageResult(data: unknown): ImageResult {

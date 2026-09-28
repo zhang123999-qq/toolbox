@@ -8,10 +8,10 @@ ENS 域名 namehash 计算（本地）与链上正向解析：`registry.resolver
 
 ## 输入
 
-| 字段     | 类型   | 约束                           |
-| -------- | ------ | ------------------------------ |
-| `text`   | string | ENS 名称                       |
-| `rpcUrl` | string | 公共 RPC 地址（默认 eth.llamarpc.com）|
+| 字段     | 类型   | 约束                                   |
+| -------- | ------ | -------------------------------------- |
+| `text`   | string | ENS 名称                               |
+| `rpcUrl` | string | 公共 RPC 地址（默认 eth.llamarpc.com） |
 
 ## 网络与限制
 

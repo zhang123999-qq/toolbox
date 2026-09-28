@@ -19,7 +19,11 @@ export interface MetaFields {
 
 /** HTML 转义：& < > "（用于属性值与元素文本） */
 export function escapeHtml(raw: string): string {
-  return raw.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+  return raw
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
 }
 
 /** 取字段并去首尾空格，未传视为空字符串 */

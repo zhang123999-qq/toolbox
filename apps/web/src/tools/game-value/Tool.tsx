@@ -2,7 +2,13 @@ import { useState } from 'react'
 import { MultiPanel } from '../../components/tool/templates/MultiPanel'
 import { meta } from './meta'
 import type { GameValueToolInput } from './schema'
-import { buildGrowthTable, formatGrowthTable, growthValue, type GrowthInput, type GrowthMode } from './utils'
+import {
+  buildGrowthTable,
+  formatGrowthTable,
+  growthValue,
+  type GrowthInput,
+  type GrowthMode,
+} from './utils'
 
 const BTN_CLS =
   'rounded bg-blue-600 px-4 py-1.5 text-sm text-white disabled:opacity-50 dark:bg-blue-500'
@@ -80,33 +86,64 @@ export default function Tool() {
                 type="button"
                 data-testid={`gv-mode-${m}`}
                 onClick={() => setMode(m)}
-                className={m === mode ? BTN_CLS : 'rounded border border-slate-300 px-4 py-1.5 text-sm dark:border-slate-600'}
+                className={
+                  m === mode
+                    ? BTN_CLS
+                    : 'rounded border border-slate-300 px-4 py-1.5 text-sm dark:border-slate-600'
+                }
               >
                 {m}
               </button>
             ))}
           </div>
-          <p className="font-mono text-xs text-slate-500 dark:text-slate-400">参数示例：{HINTS[mode]}</p>
+          <p className="font-mono text-xs text-slate-500 dark:text-slate-400">
+            参数示例：{HINTS[mode]}
+          </p>
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs text-slate-500">等级</span>
-            <input data-testid="gv-level" value={level} onChange={(e) => setLevel(e.target.value)} className={`${INPUT_CLS} w-20`} />
+            <input
+              data-testid="gv-level"
+              value={level}
+              onChange={(e) => setLevel(e.target.value)}
+              className={`${INPUT_CLS} w-20`}
+            />
             <span className="text-xs text-slate-500">表上限</span>
-            <input data-testid="gv-maxlevel" value={maxLevel} onChange={(e) => setMaxLevel(e.target.value)} className={`${INPUT_CLS} w-20`} />
-            <button type="button" data-testid="gv-calc" onClick={() => handleCalc(input)} className={BTN_CLS}>
+            <input
+              data-testid="gv-maxlevel"
+              value={maxLevel}
+              onChange={(e) => setMaxLevel(e.target.value)}
+              className={`${INPUT_CLS} w-20`}
+            />
+            <button
+              type="button"
+              data-testid="gv-calc"
+              onClick={() => handleCalc(input)}
+              className={BTN_CLS}
+            >
               计算单级
             </button>
-            <button type="button" data-testid="gv-table" onClick={() => handleTable(input)} className="rounded border border-slate-300 px-4 py-1.5 text-sm dark:border-slate-600">
+            <button
+              type="button"
+              data-testid="gv-table"
+              onClick={() => handleTable(input)}
+              className="rounded border border-slate-300 px-4 py-1.5 text-sm dark:border-slate-600"
+            >
               生成等级表
             </button>
           </div>
           {error !== '' && (
-            <p data-testid="gv-error" className="text-sm text-red-600 dark:text-red-400">{error}</p>
+            <p data-testid="gv-error" className="text-sm text-red-600 dark:text-red-400">
+              {error}
+            </p>
           )}
           {output !== '' && (
-            <pre data-testid="gv-output" className={PRE_CLS}>{output}</pre>
+            <pre data-testid="gv-output" className={PRE_CLS}>
+              {output}
+            </pre>
           )}
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            说明：linear 为 base + perLevel×(level-1)；exponential 为 base × perLevel^(level-1)；piecewise 用 breakpoints 拐点线性插值。纯本地计算。
+            说明：linear 为 base + perLevel×(level-1)；exponential 为 base ×
+            perLevel^(level-1)；piecewise 用 breakpoints 拐点线性插值。纯本地计算。
           </p>
         </div>
       )}

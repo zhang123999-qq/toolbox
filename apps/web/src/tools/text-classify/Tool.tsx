@@ -74,9 +74,8 @@ export default function Tool() {
   }
 
   function set<K extends keyof TextClassifyForm>(k: K) {
-    return (
-      e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    ): void => setForm({ ...form, [k]: e.target.value })
+    return (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void =>
+      setForm({ ...form, [k]: e.target.value })
   }
 
   async function handleClassify(input: TextClassifyInput): Promise<void> {
@@ -192,7 +191,8 @@ export default function Tool() {
           {result ? (
             <div data-testid="result" className="flex flex-col gap-1 text-sm">
               <div>
-                分类结果：<strong className="text-slate-900 dark:text-slate-100">{result.label}</strong>
+                分类结果：
+                <strong className="text-slate-900 dark:text-slate-100">{result.label}</strong>
               </div>
               <div className="text-slate-600 dark:text-slate-400">
                 置信度：{(result.confidence * 100).toFixed(1)}%

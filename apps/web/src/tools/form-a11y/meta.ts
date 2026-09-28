@@ -8,9 +8,11 @@ export const meta: ToolMeta = {
   id: 'form-a11y',
   slug: 'form-a11y',
   title: '表单无障碍',
-  description: '表单 HTML 无障碍检查：控件标签关联、placeholder 冒充、必填标识、错误提示关联、fieldset 分组、提交按钮与重复 id',
+  description:
+    '表单 HTML 无障碍检查：控件标签关联、placeholder 冒充、必填标识、错误提示关联、fieldset 分组、提交按钮与重复 id',
   titleEn: 'Form Accessibility',
-  descriptionEn: 'Form accessibility audit: label association, required markers, error linkage, fieldset grouping, submit button',
+  descriptionEn:
+    'Form accessibility audit: label association, required markers, error linkage, fieldset grouping, submit button',
 
   category: 'a11y',
   group: 'life',

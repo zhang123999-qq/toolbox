@@ -10,8 +10,8 @@
 
 ## 输入
 
-| 字段   | 类型   | 约束                                        |
-| ------ | ------ | ------------------------------------------- |
+| 字段   | 类型   | 约束                                       |
+| ------ | ------ | ------------------------------------------ |
 | `text` | string | 地区数据：每行 `地区名:数值`（留空用示例） |
 
 格式示例：
@@ -32,9 +32,9 @@
 
 本工具为 D 级：地图 geoJSON 不打包进前端，运行时从 CDN 获取（每个地图类型只加载一次，之后走内存缓存）：
 
-| 地图 | 数据源 URL |
-| ---- | ---------- |
-| 中国 | `https://geo.datav.aliyun.com/areas_v3/bound/100000.json` |
+| 地图 | 数据源 URL                                                       |
+| ---- | ---------------------------------------------------------------- |
+| 中国 | `https://geo.datav.aliyun.com/areas_v3/bound/100000.json`        |
 | 世界 | `https://cdn.jsdelivr.net/npm/echarts@4.9.0/map/json/world.json` |
 
 - 离线或 CDN 不可达时，输出区明确报错（`地图数据加载失败：…，地图 geoJSON 需联网加载`）
@@ -42,12 +42,12 @@
 
 ## 选项
 
-| 选项 | 默认值  | 范围 / 约束      | 说明         |
-| ---- | ------- | ---------------- | ------------ |
-| 地图 | `china` | china / world    | 地图类型     |
-| 标题 | （空）  | 任意文本         | 留空则无标题 |
-| 宽度 | `600`   | 100–2000         | 画布宽（px） |
-| 高度 | `400`   | 100–2000         | 画布高（px） |
+| 选项 | 默认值  | 范围 / 约束   | 说明         |
+| ---- | ------- | ------------- | ------------ |
+| 地图 | `china` | china / world | 地图类型     |
+| 标题 | （空）  | 任意文本      | 留空则无标题 |
+| 宽度 | `600`   | 100–2000      | 画布宽（px） |
+| 高度 | `400`   | 100–2000      | 画布高（px） |
 
 ## 输出
 
@@ -73,16 +73,16 @@
 
 ## 元信息
 
-| 项       | 值                                             |
-| -------- | ---------------------------------------------- |
-| 全局编号 | #674                                           |
-| 域       | `random`                                       |
-| 大组     | `design`                                       |
-| 优先级   | P2                                             |
-| 可行性   | D（地图 geoJSON 运行时从 CDN 加载）            |
-| 模板     | T3（图表可视化预览）                           |
-| 依赖     | `echarts`（动态导入，独立分包）                |
-| API      | 是（运行时请求 CDN）                           |
+| 项       | 值                                  |
+| -------- | ----------------------------------- |
+| 全局编号 | #674                                |
+| 域       | `random`                            |
+| 大组     | `design`                            |
+| 优先级   | P2                                  |
+| 可行性   | D（地图 geoJSON 运行时从 CDN 加载） |
+| 模板     | T3（图表可视化预览）                |
+| 依赖     | `echarts`（动态导入，独立分包）     |
+| API      | 是（运行时请求 CDN）                |
 
 ---
 
@@ -98,8 +98,8 @@ Render ECharts choropleth maps of China / world from region values, with title a
 
 ## Input
 
-| Field  | Type   | Constraint                                  |
-| ------ | ------ | ------------------------------------------- |
+| Field  | Type   | Constraint                                                 |
+| ------ | ------ | ---------------------------------------------------------- |
 | `text` | string | Region values: one `name:value` per line (empty = example) |
 
 - Full-width colons `：` are normalized automatically
@@ -111,9 +111,9 @@ Render ECharts choropleth maps of China / world from region values, with title a
 
 This is a feasibility-D tool: map GeoJSON is not bundled; it is fetched at runtime from a CDN (once per map kind, then cached in memory):
 
-| Map   | Source URL |
-| ----- | ---------- |
-| China | `https://geo.datav.aliyun.com/areas_v3/bound/100000.json` |
+| Map   | Source URL                                                       |
+| ----- | ---------------------------------------------------------------- |
+| China | `https://geo.datav.aliyun.com/areas_v3/bound/100000.json`        |
 | World | `https://cdn.jsdelivr.net/npm/echarts@4.9.0/map/json/world.json` |
 
 - Offline or unreachable CDN → clear Chinese error (`地图数据加载失败：…`)
@@ -121,12 +121,12 @@ This is a feasibility-D tool: map GeoJSON is not bundled; it is fetched at runti
 
 ## Options
 
-| Option | Default | Constraint   | Description        |
-| ------ | ------- | ------------ | ------------------ |
-| Map    | `china` | china/world  | Map kind           |
-| Title  | (empty) | any text     | Empty = no title   |
-| Width  | `600`   | 100–2000     | Canvas width (px)  |
-| Height | `400`   | 100–2000     | Canvas height (px) |
+| Option | Default | Constraint  | Description        |
+| ------ | ------- | ----------- | ------------------ |
+| Map    | `china` | china/world | Map kind           |
+| Title  | (empty) | any text    | Empty = no title   |
+| Width  | `600`   | 100–2000    | Canvas width (px)  |
+| Height | `400`   | 100–2000    | Canvas height (px) |
 
 ## Output
 
@@ -148,13 +148,13 @@ Region values render locally; only the map-shape GeoJSON is fetched from the CDN
 
 ## Meta
 
-| Item        | Value                                      |
-| ----------- | ------------------------------------------ |
-| Global No.  | #674                                       |
-| Category    | `random`                                   |
-| Group       | `design`                                   |
-| Priority    | P2                                         |
-| Feasibility | D (GeoJSON loaded from CDN at runtime)     |
-| Template    | T3 (chart preview)                         |
-| Deps        | `echarts` (dynamic import)                 |
-| API         | true (runtime CDN requests)                |
+| Item        | Value                                  |
+| ----------- | -------------------------------------- |
+| Global No.  | #674                                   |
+| Category    | `random`                               |
+| Group       | `design`                               |
+| Priority    | P2                                     |
+| Feasibility | D (GeoJSON loaded from CDN at runtime) |
+| Template    | T3 (chart preview)                     |
+| Deps        | `echarts` (dynamic import)             |
+| API         | true (runtime CDN requests)            |

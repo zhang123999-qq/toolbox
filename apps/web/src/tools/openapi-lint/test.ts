@@ -37,7 +37,7 @@ describe('stripComment', () => {
   it('双引号内的 # 保留', () => {
     expect(stripComment('key: "a#b" # c')).toBe('key: "a#b" ')
   })
-  it("单引号内的 # 保留", () => {
+  it('单引号内的 # 保留', () => {
     expect(stripComment("key: 'a#b'")).toBe("key: 'a#b'")
   })
   it('转义引号不切换状态', () => {
@@ -88,7 +88,7 @@ describe('parseSimpleYaml', () => {
     expect(() => parseSimpleYaml('-\n- 1')).toThrow('缺少缩进内容')
   })
   it('引号与转义', () => {
-    expect(parseSimpleYaml('a: "x\\"y\\nz"\nb: \'it\'\'s\'')).toEqual({ a: 'x"y\nz', b: "it's" })
+    expect(parseSimpleYaml("a: \"x\\\"y\\nz\"\nb: 'it''s'")).toEqual({ a: 'x"y\nz', b: "it's" })
   })
   it('映射行缺少冒号抛错', () => {
     expect(() => parseSimpleYaml('just text')).toThrow('缺少冒号')
@@ -171,9 +171,15 @@ describe('lintOpenApi', () => {
     const spec = {
       ...GOOD_SPEC,
       paths: {
-        '/UserList': { get: { summary: 's', operationId: 'a', responses: { 200: { description: 'ok' } } } },
-        '/user_list': { get: { summary: 's', operationId: 'b', responses: { 200: { description: 'ok' } } } },
-        '/users/{userId}': { get: { summary: 's', operationId: 'c', responses: { 200: { description: 'ok' } } } },
+        '/UserList': {
+          get: { summary: 's', operationId: 'a', responses: { 200: { description: 'ok' } } },
+        },
+        '/user_list': {
+          get: { summary: 's', operationId: 'b', responses: { 200: { description: 'ok' } } },
+        },
+        '/users/{userId}': {
+          get: { summary: 's', operationId: 'c', responses: { 200: { description: 'ok' } } },
+        },
       },
     }
     const r = lintOpenApi(spec)
@@ -204,13 +210,22 @@ describe('lintOpenApi', () => {
       ...GOOD_SPEC,
       paths: { '/a': { get: { summary: 's', responses: { 200: { description: 'ok' } } } } },
     })
-    expect(r.issues.some((i) => i.severity === 'info' && i.message.includes('operationId'))).toBe(true)
+    expect(r.issues.some((i) => i.severity === 'info' && i.message.includes('operationId'))).toBe(
+      true,
+    )
   })
   it('parameters 非数组报 error', () => {
     const r = lintOpenApi({
       ...GOOD_SPEC,
       paths: {
-        '/a': { get: { summary: 's', operationId: 'x', parameters: {}, responses: { 200: { description: 'ok' } } } },
+        '/a': {
+          get: {
+            summary: 's',
+            operationId: 'x',
+            parameters: {},
+            responses: { 200: { description: 'ok' } },
+          },
+        },
       },
     })
     expect(r.issues.some((i) => i.message.includes('parameters 必须是数组'))).toBe(true)
@@ -281,7 +296,12 @@ describe('lintOpenApi', () => {
       ...GOOD_SPEC,
       paths: {
         '/a': {
-          post: { summary: 's', operationId: 'x', requestBody: {}, responses: { 200: { description: 'ok' } } },
+          post: {
+            summary: 's',
+            operationId: 'x',
+            requestBody: {},
+            responses: { 200: { description: 'ok' } },
+          },
         },
       },
     })
@@ -292,7 +312,9 @@ describe('lintOpenApi', () => {
       ...GOOD_SPEC,
       paths: { '/a': { get: { summary: 's', operationId: 'x' } } },
     })
-    expect(r.issues.some((i) => i.severity === 'error' && i.message.includes('缺少 responses'))).toBe(true)
+    expect(
+      r.issues.some((i) => i.severity === 'error' && i.message.includes('缺少 responses')),
+    ).toBe(true)
   })
   it('响应 $ref 不可解析与缺 description', () => {
     const r = lintOpenApi({
@@ -315,7 +337,9 @@ describe('lintOpenApi', () => {
     const r = lintOpenApi({
       ...GOOD_SPEC,
       paths: {
-        '/a': { get: { summary: 's', operationId: 'x', responses: { 400: { description: 'bad' } } } },
+        '/a': {
+          get: { summary: 's', operationId: 'x', responses: { 400: { description: 'bad' } } },
+        },
       },
     })
     expect(r.issues.some((i) => i.message.includes('缺少 2xx 成功响应'))).toBe(true)
@@ -363,9 +387,7 @@ describe('parseSimpleYaml 补充', () => {
     expect(parseSimpleYaml('- name:\n  age: 1')).toEqual([{ name: null, age: 1 }])
   })
   it('列表项内缩进嵌套块', () => {
-    expect(parseSimpleYaml('- name: a\n  meta:\n    x: 1')).toEqual([
-      { name: 'a', meta: { x: 1 } },
-    ])
+    expect(parseSimpleYaml('- name: a\n  meta:\n    x: 1')).toEqual([{ name: 'a', meta: { x: 1 } }])
   })
   it('列表项内空 key 视为 null', () => {
     expect(parseSimpleYaml('- name: a\n  empty:\n- name: b')).toEqual([

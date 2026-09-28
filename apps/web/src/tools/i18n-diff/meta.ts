@@ -8,9 +8,11 @@ export const meta: ToolMeta = {
   id: 'i18n-diff',
   slug: 'i18n-diff',
   title: 'i18n JSON 对比',
-  description: '对比基准语言与目标语言的 i18n JSON：检出缺失、多余、空值与未翻译的键，给出翻译完成率',
+  description:
+    '对比基准语言与目标语言的 i18n JSON：检出缺失、多余、空值与未翻译的键，给出翻译完成率',
   titleEn: 'i18n JSON Diff',
-  descriptionEn: 'Diff base vs target i18n JSON: missing, extra, empty and untranslated keys with completion rate',
+  descriptionEn:
+    'Diff base vs target i18n JSON: missing, extra, empty and untranslated keys with completion rate',
 
   category: 'a11y',
   group: 'life',

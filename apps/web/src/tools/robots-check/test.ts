@@ -27,7 +27,9 @@ describe('parseRobots', () => {
   })
 
   it('连续多个 User-agent 归属同一组，规则后出现新 User-agent 另起一组', () => {
-    const data = parseRobots('User-agent: a\nUser-agent: b\nDisallow: /x\nUser-agent: c\nDisallow: /y')
+    const data = parseRobots(
+      'User-agent: a\nUser-agent: b\nDisallow: /x\nUser-agent: c\nDisallow: /y',
+    )
     expect(data.groups).toHaveLength(2)
     expect(data.groups[0].userAgents).toEqual(['a', 'b'])
     expect(data.groups[1].userAgents).toEqual(['c'])
@@ -61,13 +63,17 @@ describe('parseRobots', () => {
 
 describe('checkRobots', () => {
   it('规范文件无问题', () => {
-    const r = checkRobots(parseRobots('User-agent: *\nDisallow: /admin/\nSitemap: https://example.com/s.xml'))
+    const r = checkRobots(
+      parseRobots('User-agent: *\nDisallow: /admin/\nSitemap: https://example.com/s.xml'),
+    )
     expect(r.issues).toHaveLength(0)
   })
 
   it('无分组时报错', () => {
     const r = checkRobots(parseRobots('Sitemap: https://example.com/s.xml'))
-    expect(r.issues.some((i) => i.level === 'error' && i.message.includes('User-agent 分组'))).toBe(true)
+    expect(r.issues.some((i) => i.level === 'error' && i.message.includes('User-agent 分组'))).toBe(
+      true,
+    )
   })
 
   it('无名分组报错', () => {
@@ -110,7 +116,9 @@ describe('checkRobots', () => {
     const bad = checkRobots(parseRobots('User-agent: *\nSitemap: /sitemap.xml'))
     expect(bad.issues.some((i) => i.level === 'error' && i.message.includes('Sitemap'))).toBe(true)
     const dup = checkRobots(
-      parseRobots('User-agent: *\nSitemap: https://example.com/s.xml\nSitemap: https://example.com/s.xml'),
+      parseRobots(
+        'User-agent: *\nSitemap: https://example.com/s.xml\nSitemap: https://example.com/s.xml',
+      ),
     )
     expect(dup.issues.some((i) => i.level === 'warning' && i.message.includes('重复'))).toBe(true)
   })
@@ -131,7 +139,9 @@ describe('renderReport', () => {
   })
 
   it('含 Crawl-delay 的分组正常渲染', () => {
-    const text = renderReport(checkRobots(parseRobots('User-agent: *\nCrawl-delay: 10\nDisallow: /x')))
+    const text = renderReport(
+      checkRobots(parseRobots('User-agent: *\nCrawl-delay: 10\nDisallow: /x')),
+    )
     expect(text).toContain('Crawl-delay: 10')
   })
 })

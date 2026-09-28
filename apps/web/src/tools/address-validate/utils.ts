@@ -185,7 +185,10 @@ export function validateAddress(input: string): AddressResult {
 
 /** 批量校验（每行一个地址），返回每行结果 */
 export function validateBatch(text: string): { input: string; result: AddressResult }[] {
-  const lines = text.split('\n').map((l) => l.trim()).filter((l) => l !== '')
+  const lines = text
+    .split('\n')
+    .map((l) => l.trim())
+    .filter((l) => l !== '')
   if (lines.length === 0) throw new Error('至少输入 1 个地址')
   if (lines.length > 500) throw new Error('单次最多校验 500 个地址')
   return lines.map((line) => {

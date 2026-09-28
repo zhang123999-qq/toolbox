@@ -106,7 +106,11 @@ export function filterRows(rows: Row[], keyword: string): Row[] {
 }
 
 /** 分页：返回当页数据与总页数（页码从 1 开始，越界钳制） */
-export function paginate(rows: Row[], page: number, pageSize: number): { pageRows: Row[]; totalPages: number; page: number } {
+export function paginate(
+  rows: Row[],
+  page: number,
+  pageSize: number,
+): { pageRows: Row[]; totalPages: number; page: number } {
   const size = Math.max(1, Math.floor(pageSize))
   const totalPages = Math.max(1, Math.ceil(rows.length / size))
   const p = Math.min(Math.max(1, Math.floor(page)), totalPages)

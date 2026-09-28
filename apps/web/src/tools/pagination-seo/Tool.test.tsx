@@ -18,7 +18,16 @@ function byTestId(id: string): HTMLElement {
 describe('pagination-seo · Tool', () => {
   it('渲染后必需 data-testid 全部存在', () => {
     render(<Tool />)
-    for (const id of ['input', 'input-pageUrl', 'run', 'example', 'clear', 'output', 'copy', 'download']) {
+    for (const id of [
+      'input',
+      'input-pageUrl',
+      'run',
+      'example',
+      'clear',
+      'output',
+      'copy',
+      'download',
+    ]) {
       expect(byTestId(id)).toBeTruthy()
     }
   })
@@ -44,7 +53,9 @@ describe('pagination-seo · Tool', () => {
           '<link rel="next" href="https://example.com/list?page=3">',
       },
     })
-    fireEvent.change(byTestId('input-pageUrl'), { target: { value: 'https://example.com/list?page=2' } })
+    fireEvent.change(byTestId('input-pageUrl'), {
+      target: { value: 'https://example.com/list?page=2' },
+    })
     expect(byTestId('output').textContent).toContain('设置正确')
   })
 

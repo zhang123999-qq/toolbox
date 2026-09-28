@@ -261,13 +261,16 @@ function lintRequestBody(
 ): void {
   const rb = op.requestBody
   if (rb === undefined) return
-  const resolved =
-    isRecord(rb) && typeof rb.$ref === 'string' ? resolveLocalRef(spec, rb.$ref) : rb
+  const resolved = isRecord(rb) && typeof rb.$ref === 'string' ? resolveLocalRef(spec, rb.$ref) : rb
   if (resolved === undefined) {
     push('warning', opPath, 'requestBody 的 $ref 无法解析')
     return
   }
-  if (!isRecord(resolved) || !isRecord(resolved.content) || Object.keys(resolved.content).length === 0) {
+  if (
+    !isRecord(resolved) ||
+    !isRecord(resolved.content) ||
+    Object.keys(resolved.content).length === 0
+  ) {
     push('warning', opPath, 'requestBody 缺少 content')
   }
 }

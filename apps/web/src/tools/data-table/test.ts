@@ -2,7 +2,15 @@
  * data-table（#688）utils 单测：CSV 解析 / 排序 / 搜索 / 分页 / 导出。
  */
 import { describe, expect, it } from 'vitest'
-import { compareCells, filterRows, paginate, parseCsv, parsePageSize, sortRows, toCsv } from './utils'
+import {
+  compareCells,
+  filterRows,
+  paginate,
+  parseCsv,
+  parsePageSize,
+  sortRows,
+  toCsv,
+} from './utils'
 
 describe('parseCsv', () => {
   it('解析基本 CSV', () => {
@@ -173,6 +181,8 @@ describe('toCsv', () => {
   })
 
   it('含逗号 / 引号 / 换行的字段加引号转义', () => {
-    expect(toCsv(['a'], [['x,y'], ['say "hi"'], ['l1\nl2']])).toBe('a\n"x,y"\n"say ""hi"""\n"l1\nl2"')
+    expect(toCsv(['a'], [['x,y'], ['say "hi"'], ['l1\nl2']])).toBe(
+      'a\n"x,y"\n"say ""hi"""\n"l1\nl2"',
+    )
   })
 })

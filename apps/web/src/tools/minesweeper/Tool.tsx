@@ -51,7 +51,9 @@ export default function Tool() {
             ))}
           </select>
         </label>
-        <span data-testid="ms-flags">旗帜：{countFlags(board)}/{diff.mines}</span>
+        <span data-testid="ms-flags">
+          旗帜：{countFlags(board)}/{diff.mines}
+        </span>
         <button
           type="button"
           data-testid="ms-restart"
@@ -73,11 +75,21 @@ export default function Tool() {
                 onClick={() => open(x, y)}
                 onContextMenu={(e) => flag(x, y, e)}
                 className={`flex items-center justify-center border border-slate-300 text-sm font-bold dark:border-slate-600 ${
-                  cell.revealed ? 'bg-stone-200 dark:bg-stone-800' : 'bg-stone-400 hover:bg-stone-500'
+                  cell.revealed
+                    ? 'bg-stone-200 dark:bg-stone-800'
+                    : 'bg-stone-400 hover:bg-stone-500'
                 } ${dead && cell.mine ? 'bg-red-300' : ''}`}
                 style={{ width: CELL, height: CELL }}
               >
-                {cell.revealed ? (cell.mine ? '💣' : cell.adjacent > 0 ? cell.adjacent : '') : cell.flagged ? '🚩' : ''}
+                {cell.revealed
+                  ? cell.mine
+                    ? '💣'
+                    : cell.adjacent > 0
+                      ? cell.adjacent
+                      : ''
+                  : cell.flagged
+                    ? '🚩'
+                    : ''}
               </button>
             ))}
           </div>

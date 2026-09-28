@@ -108,7 +108,10 @@ export function checkRobots(data: RobotsData): RobotsCheckResult {
   data.groups.forEach((group, index) => {
     const n = index + 1
     if (group.userAgents.length === 0) {
-      issues.push({ level: 'error', message: `第 ${n} 组：缺少 User-agent（规则出现在 User-agent 之前）` })
+      issues.push({
+        level: 'error',
+        message: `第 ${n} 组：缺少 User-agent（规则出现在 User-agent 之前）`,
+      })
     } else if (group.userAgents.some((a) => a === '')) {
       issues.push({ level: 'error', message: `第 ${n} 组：User-agent 为空` })
     }
@@ -121,9 +124,7 @@ export function checkRobots(data: RobotsData): RobotsCheckResult {
         message: `第 ${n} 组：Disallow: / 且无 Allow 例外，将禁止抓取全站，请确认是否为有意`,
       })
     }
-    const allows = new Set(
-      group.rules.filter((r) => r.directive === 'allow').map((r) => r.path),
-    )
+    const allows = new Set(group.rules.filter((r) => r.directive === 'allow').map((r) => r.path))
     for (const r of group.rules) {
       if (r.directive === 'disallow' && allows.has(r.path)) {
         issues.push({
@@ -135,7 +136,10 @@ export function checkRobots(data: RobotsData): RobotsCheckResult {
     if (group.crawlDelay !== undefined) {
       const d = Number(group.crawlDelay)
       if (!Number.isFinite(d) || d < 0) {
-        issues.push({ level: 'warning', message: `第 ${n} 组：Crawl-delay 不是合法数字：${group.crawlDelay}` })
+        issues.push({
+          level: 'warning',
+          message: `第 ${n} 组：Crawl-delay 不是合法数字：${group.crawlDelay}`,
+        })
       }
     }
   })

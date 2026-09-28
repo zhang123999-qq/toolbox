@@ -120,7 +120,9 @@ export default function Tool() {
       initialInput={{ text: '' }}
       initialOptions={{ language: DEFAULT_LANGUAGE }}
       optionDefs={[{ key: 'language', label: '代码语言', kind: 'select', values: LANGUAGES }]}
-      example={{ text: 'def fib(n):\n    a, b = 0, 1\n    for _ in range(n):\n        a, b = b, a + b\n    return a' }}
+      example={{
+        text: 'def fib(n):\n    a, b = 0, 1\n    for _ in range(n):\n        a, b = b, a + b\n    return a',
+      }}
       renderOutput={(input, options) => (
         <div className="flex flex-col gap-3">
           <div className="flex flex-col gap-2 rounded border border-slate-200 p-2 dark:border-slate-700">
@@ -169,8 +171,8 @@ export default function Tool() {
             </button>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            左侧粘贴代码，右上角选择语言（默认自动识别），点「开始解释」。解释按功能概述 /
-            关键逻辑 / 注意事项三段输出。
+            左侧粘贴代码，右上角选择语言（默认自动识别），点「开始解释」。解释按功能概述 / 关键逻辑
+            / 注意事项三段输出。
           </p>
           {error ? (
             <div
@@ -192,7 +194,9 @@ export default function Tool() {
         </div>
       )}
       toText={() =>
-        explanation === '' ? '' : buildReport(checkedCode, checkedLang, form.model.trim(), explanation)
+        explanation === ''
+          ? ''
+          : buildReport(checkedCode, checkedLang, form.model.trim(), explanation)
       }
       downloadExt="md"
     />

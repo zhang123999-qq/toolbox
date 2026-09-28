@@ -56,7 +56,10 @@ export default function Tool() {
                 >
                   {view.matched}
                 </p>
-                <p data-testid="edge-route-detail" className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                <p
+                  data-testid="edge-route-detail"
+                  className="mt-1 text-xs text-slate-500 dark:text-slate-400"
+                >
                   {view.detail}
                 </p>
               </div>

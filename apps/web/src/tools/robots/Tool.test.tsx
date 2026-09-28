@@ -52,9 +52,7 @@ describe('robots · Tool', () => {
     fireEvent.change(screen.getByPlaceholderText('https://example.com/sitemap.xml'), {
       target: { value: 'https://example.com/sitemap.xml' },
     })
-    expect(byTestId('output').textContent).toContain(
-      'Sitemap: https://example.com/sitemap.xml',
-    )
+    expect(byTestId('output').textContent).toContain('Sitemap: https://example.com/sitemap.xml')
   })
 
   it('Sitemap 非法时中文错误提示', () => {

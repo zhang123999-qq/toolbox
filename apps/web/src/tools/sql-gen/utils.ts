@@ -136,12 +136,7 @@ export function extractSqlCodeBlock(text: string): string {
 }
 
 /** 生成可复制 / 下载的 SQL 报告 */
-export function buildReport(
-  desc: string,
-  dialect: Dialect,
-  model: string,
-  sql: string,
-): string {
+export function buildReport(desc: string, dialect: Dialect, model: string, sql: string): string {
   return [
     '## SQL 生成',
     '',

@@ -8,7 +8,8 @@ export const meta: ToolMeta = {
   id: 'edge-log',
   slug: 'edge-log',
   title: '边缘日志',
-  description: '构造边缘日志查询参数并解析访问日志行：时间范围校验、状态码/节点过滤、combined 格式转 JSON',
+  description:
+    '构造边缘日志查询参数并解析访问日志行：时间范围校验、状态码/节点过滤、combined 格式转 JSON',
   titleEn: 'Edge Log Query & Parser',
   descriptionEn:
     'Build edge log query params and parse access log lines: time range validation, status/colo filters, combined format to JSON',

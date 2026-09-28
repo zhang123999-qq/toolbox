@@ -12,12 +12,30 @@
 const MASK64 = (1n << 64n) - 1n
 
 const RC: readonly bigint[] = [
-  0x0000000000000001n, 0x0000000000008082n, 0x800000000000808an, 0x8000000080008000n,
-  0x000000000000808bn, 0x0000000080000001n, 0x8000000080008081n, 0x8000000000008009n,
-  0x000000000000008an, 0x0000000000000088n, 0x0000000080008009n, 0x000000008000000an,
-  0x000000008000808bn, 0x800000000000008bn, 0x8000000000008089n, 0x8000000000008003n,
-  0x8000000000008002n, 0x8000000000000080n, 0x000000000000800an, 0x800000008000000an,
-  0x8000000080008081n, 0x8000000000008080n, 0x0000000080000001n, 0x8000000080008008n,
+  0x0000000000000001n,
+  0x0000000000008082n,
+  0x800000000000808an,
+  0x8000000080008000n,
+  0x000000000000808bn,
+  0x0000000080000001n,
+  0x8000000080008081n,
+  0x8000000000008009n,
+  0x000000000000008an,
+  0x0000000000000088n,
+  0x0000000080008009n,
+  0x000000008000000an,
+  0x000000008000808bn,
+  0x800000000000008bn,
+  0x8000000000008089n,
+  0x8000000000008003n,
+  0x8000000000008002n,
+  0x8000000000000080n,
+  0x000000000000800an,
+  0x800000008000000an,
+  0x8000000080008081n,
+  0x8000000000008080n,
+  0x0000000080000001n,
+  0x8000000080008008n,
 ]
 
 const ROT: readonly number[] = [
@@ -233,11 +251,23 @@ export async function resolveEnsName(
   const nodeBytes = namehash(normalized)
   const nodeHex = bytesToHex(nodeBytes)
 
-  const resolverWord = await ethCall(rpcUrl, ENS_REGISTRY, `0x${SELECTOR_RESOLVER}${nodeHex}`, fetchFn, timeoutMs)
+  const resolverWord = await ethCall(
+    rpcUrl,
+    ENS_REGISTRY,
+    `0x${SELECTOR_RESOLVER}${nodeHex}`,
+    fetchFn,
+    timeoutMs,
+  )
   const resolver = wordToAddress(resolverWord)
   if (resolver === ZERO_ADDRESS) throw new Error(`该名称未设置 resolver：${normalized}`)
 
-  const addrWord = await ethCall(rpcUrl, resolver, `0x${SELECTOR_ADDR}${nodeHex}`, fetchFn, timeoutMs)
+  const addrWord = await ethCall(
+    rpcUrl,
+    resolver,
+    `0x${SELECTOR_ADDR}${nodeHex}`,
+    fetchFn,
+    timeoutMs,
+  )
   const address = wordToAddress(addrWord)
   if (address === ZERO_ADDRESS) throw new Error(`该名称未设置地址记录：${normalized}`)
 

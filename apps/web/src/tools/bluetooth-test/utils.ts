@@ -37,7 +37,9 @@ export function supportsBluetooth(nav?: BluetoothNavigatorLike | null): boolean 
  * 无 API 或 requestDevice 缺失时抛中文错。
  */
 export async function requestDevice(
-  bt?: { requestDevice?: (options?: Record<string, unknown>) => Promise<BluetoothDeviceLike> } | null,
+  bt?: {
+    requestDevice?: (options?: Record<string, unknown>) => Promise<BluetoothDeviceLike>
+  } | null,
   options: Record<string, unknown> = { acceptAllDevices: true },
 ): Promise<BluetoothDeviceInfo> {
   if (bt == null || typeof bt.requestDevice !== 'function') {

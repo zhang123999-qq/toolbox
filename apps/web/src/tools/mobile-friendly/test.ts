@@ -1,13 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { MobileFriendlyOptions } from './schema'
 import type { FetchFn } from './utils'
-import {
-  analyzeMobileFriendly,
-  fetchHtml,
-  renderReport,
-  transform,
-  validateUrl,
-} from './utils'
+import { analyzeMobileFriendly, fetchHtml, renderReport, transform, validateUrl } from './utils'
 
 afterEach(() => {
   vi.unstubAllGlobals()
@@ -74,9 +68,7 @@ describe('mobile-friendly / analyzeMobileFriendly', () => {
   })
 
   it('多问题：低分结论', () => {
-    const r = analyzeMobileFriendly(
-      '<html><body><div style="width:1200px"></div></body></html>',
-    )
+    const r = analyzeMobileFriendly('<html><body><div style="width:1200px"></div></body></html>')
     expect(r.score).toBe(40) // -25 viewport，-25 固定宽度，-10 media
     expect(r.summary).toContain('移动体验较差')
   })

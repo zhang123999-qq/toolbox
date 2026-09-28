@@ -120,7 +120,11 @@ export function parseVerdict(raw: string): DetectionResult {
       throw new Error('模型返回的不是有效的 JSON，无法解析检测结果')
     }
   }
-  const obj = parsed as { readonly verdict?: unknown; readonly confidence?: unknown; readonly reasons?: unknown } | null
+  const obj = parsed as {
+    readonly verdict?: unknown
+    readonly confidence?: unknown
+    readonly reasons?: unknown
+  } | null
   const verdict = obj?.verdict
   if (verdict !== 'ai' && verdict !== 'human' && verdict !== 'uncertain') {
     throw new Error('模型返回的 verdict 字段无效')

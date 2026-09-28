@@ -8,9 +8,11 @@ export const meta: ToolMeta = {
   id: 'chain-id-lookup',
   slug: 'chain-id-lookup',
   title: '链 ID 查询',
-  description: '查询区块链网络 ID：内置 60 余条主流公链，支持十进制、0x 十六进制、名称与代币符号搜索',
+  description:
+    '查询区块链网络 ID：内置 60 余条主流公链，支持十进制、0x 十六进制、名称与代币符号搜索',
   titleEn: 'Chain ID Lookup',
-  descriptionEn: 'Look up blockchain network IDs: 60+ built-in mainnets, search by decimal, 0x hex, name or token symbol',
+  descriptionEn:
+    'Look up blockchain network IDs: 60+ built-in mainnets, search by decimal, 0x hex, name or token symbol',
 
   category: 'encoding',
   group: 'dev',

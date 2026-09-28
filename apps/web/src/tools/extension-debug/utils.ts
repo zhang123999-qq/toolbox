@@ -22,7 +22,12 @@ const MV2_TOP_LEVEL_FIELDS: ReadonlyArray<{ field: string; fix: string }> = [
   { field: 'page_action', fix: '改用 MV3 的 action 字段' },
 ]
 
-const BROAD_HOST_PATTERNS: readonly string[] = ['<all_urls>', '*://*/*', 'http://*/*', 'https://*/*']
+const BROAD_HOST_PATTERNS: readonly string[] = [
+  '<all_urls>',
+  '*://*/*',
+  'http://*/*',
+  'https://*/*',
+]
 
 function invalidManifest(message: string, fix: string): DebugIssue[] {
   return [{ level: 'error', message, fix }]
@@ -143,10 +148,18 @@ export function diagnoseExtension(manifestText: string, files: string[]): DebugI
     })
   }
   if (typeof o.name !== 'string' || o.name.trim() === '') {
-    issues.push({ level: 'error', message: '缺少扩展名称 name', fix: '在 manifest.json 顶层添加 name 字段' })
+    issues.push({
+      level: 'error',
+      message: '缺少扩展名称 name',
+      fix: '在 manifest.json 顶层添加 name 字段',
+    })
   }
   if (typeof o.version !== 'string' || o.version.trim() === '') {
-    issues.push({ level: 'error', message: '缺少版本号 version', fix: '在 manifest.json 顶层添加 version 字段' })
+    issues.push({
+      level: 'error',
+      message: '缺少版本号 version',
+      fix: '在 manifest.json 顶层添加 version 字段',
+    })
   }
 
   return issues
@@ -157,7 +170,11 @@ export function renderDebugIssues(issues: DebugIssue[]): string {
   if (issues.length === 0) {
     return '未发现问题：manifest 结构符合 Manifest V3 基本要求。'
   }
-  const levelLabel: Record<DebugIssueLevel, string> = { error: '错误', warning: '警告', info: '提示' }
+  const levelLabel: Record<DebugIssueLevel, string> = {
+    error: '错误',
+    warning: '警告',
+    info: '提示',
+  }
   return (
     `发现 ${issues.length} 个问题：\n` +
     issues

@@ -129,7 +129,8 @@ export default function Tool() {
     }
   }
 
-  const src = result?.kind === 'url' ? result.url : result ? `data:image/png;base64,${result.b64}` : ''
+  const src =
+    result?.kind === 'url' ? result.url : result ? `data:image/png;base64,${result.b64}` : ''
 
   return (
     <MultiPanel<AiImageGenInput, Record<string, never>>
@@ -235,7 +236,9 @@ export default function Tool() {
         </div>
       )}
       toText={() =>
-        result === null || usedPrompt === '' ? '' : buildReport(usedPrompt, form.model.trim(), size, result)
+        result === null || usedPrompt === ''
+          ? ''
+          : buildReport(usedPrompt, form.model.trim(), size, result)
       }
       downloadExt="md"
     />

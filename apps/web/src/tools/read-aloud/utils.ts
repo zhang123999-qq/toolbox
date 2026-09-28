@@ -69,7 +69,8 @@ export function validateSpeechOptions(opts: SpeechOptions): {
   const pitch = validateNum(opts.pitch, '音调', 0, 2)
   const volume = validateNum(opts.volume, '音量', 0, 1)
   const lang = opts.lang === undefined || opts.lang.trim() === '' ? 'zh-CN' : opts.lang.trim()
-  const voiceURI = opts.voiceURI === undefined || opts.voiceURI.trim() === '' ? undefined : opts.voiceURI.trim()
+  const voiceURI =
+    opts.voiceURI === undefined || opts.voiceURI.trim() === '' ? undefined : opts.voiceURI.trim()
   return { rate, pitch, volume, lang, voiceURI }
 }
 

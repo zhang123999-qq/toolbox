@@ -133,7 +133,11 @@ export default function Tool() {
       </div>
 
       {error !== '' && (
-        <p role="alert" data-testid="output" className="rounded border border-red-200 bg-red-50 p-3 font-mono text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300">
+        <p
+          role="alert"
+          data-testid="output"
+          className="rounded border border-red-200 bg-red-50 p-3 font-mono text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300"
+        >
           {error}
         </p>
       )}
@@ -159,7 +163,12 @@ export default function Tool() {
             >
               {copied ? '已复制' : '复制'}
             </button>
-            <button type="button" data-testid="download" className={BTN_CLASS} onClick={() => downloadText('hreflang.html', output)}>
+            <button
+              type="button"
+              data-testid="download"
+              className={BTN_CLASS}
+              onClick={() => downloadText('hreflang.html', output)}
+            >
               下载
             </button>
           </div>

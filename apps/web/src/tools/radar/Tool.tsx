@@ -128,9 +128,7 @@ export default function Tool() {
       initialOptions={{ title: '', width: '600', height: '400' }}
       example={EXAMPLE}
       optionDefs={optionDefs}
-      extraInputs={[
-        { key: 'maxText', label: '指标最大值（格式：指标1:最大值, 指标2:最大值…）' },
-      ]}
+      extraInputs={[{ key: 'maxText', label: '指标最大值（格式：指标1:最大值, 指标2:最大值…）' }]}
       renderOutput={renderOutput}
       toText={(input) => {
         try {

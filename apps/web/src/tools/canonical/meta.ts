@@ -10,7 +10,8 @@ export const meta: ToolMeta = {
   id: 'canonical',
   slug: 'canonical',
   title: 'Canonical',
-  description: '生成规范链接标签：填写页面 URL 与规范 URL，校验合法后输出 <link rel="canonical"> 代码',
+  description:
+    '生成规范链接标签：填写页面 URL 与规范 URL，校验合法后输出 <link rel="canonical"> 代码',
   titleEn: 'Canonical Tag Generator',
   descriptionEn:
     'Generate a canonical link tag: enter the page URL and the canonical URL, validated before output',

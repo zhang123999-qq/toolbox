@@ -44,8 +44,12 @@ describe('assessReadability', () => {
     expect(r.suggestions).toEqual([])
   })
   it('边界值满分', () => {
-    expect(assessReadability({ fontSizePx: 16, lineLengthChars: 45, lineHeight: 1.4 }).score).toBe(100)
-    expect(assessReadability({ fontSizePx: 20, lineLengthChars: 75, lineHeight: 1.8 }).score).toBe(100)
+    expect(assessReadability({ fontSizePx: 16, lineLengthChars: 45, lineHeight: 1.4 }).score).toBe(
+      100,
+    )
+    expect(assessReadability({ fontSizePx: 20, lineLengthChars: 75, lineHeight: 1.8 }).score).toBe(
+      100,
+    )
   })
   it('小字号扣分并给建议', () => {
     const r = assessReadability({ fontSizePx: 12, lineLengthChars: 60, lineHeight: 1.6 })
@@ -80,15 +84,15 @@ describe('assessReadability', () => {
     expect(r.score).toBe(80)
   })
   it('非法输入抛错', () => {
-    expect(() => assessReadability({ fontSizePx: 0, lineLengthChars: 60, lineHeight: 1.6 })).toThrow(
-      '字号必须大于 0',
-    )
-    expect(() => assessReadability({ fontSizePx: 16, lineLengthChars: -1, lineHeight: 1.6 })).toThrow(
-      '行宽必须大于 0',
-    )
-    expect(() => assessReadability({ fontSizePx: 16, lineLengthChars: 60, lineHeight: NaN })).toThrow(
-      '行高必须是数字',
-    )
+    expect(() =>
+      assessReadability({ fontSizePx: 0, lineLengthChars: 60, lineHeight: 1.6 }),
+    ).toThrow('字号必须大于 0')
+    expect(() =>
+      assessReadability({ fontSizePx: 16, lineLengthChars: -1, lineHeight: 1.6 }),
+    ).toThrow('行宽必须大于 0')
+    expect(() =>
+      assessReadability({ fontSizePx: 16, lineLengthChars: 60, lineHeight: NaN }),
+    ).toThrow('行高必须是数字')
     expect(() => assessReadability({ fontSizePx: 16, lineLengthChars: 60, lineHeight: 0 })).toThrow(
       '行高必须大于 0',
     )

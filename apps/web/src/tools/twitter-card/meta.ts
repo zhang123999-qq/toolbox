@@ -10,7 +10,8 @@ export const meta: ToolMeta = {
   title: 'Twitter Card',
   description: '选择卡片类型并填写标题 / 描述 / 图片，生成 Twitter Card 标签代码',
   titleEn: 'Twitter Card Generator',
-  descriptionEn: 'Pick a card type and fill in title, description and image to generate Twitter Card tags',
+  descriptionEn:
+    'Pick a card type and fill in title, description and image to generate Twitter Card tags',
 
   category: 'seo',
   group: 'dev',

@@ -208,9 +208,7 @@ export function calcFormula(id: string, vars: Record<string, number>): number {
 
 /** 公式的可读摘要（含变量说明） */
 export function describeFormula(formula: PhysicsFormula): string {
-  const varLines = formula.vars
-    .map((v) => `  ${v.symbol}：${v.name}（${v.unit}）`)
-    .join('\n')
+  const varLines = formula.vars.map((v) => `  ${v.symbol}：${v.name}（${v.unit}）`).join('\n')
   return `${formula.name}（${formula.nameEn}）\n${formula.expr}\n变量：\n${varLines}`
 }
 

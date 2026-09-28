@@ -33,9 +33,7 @@ describe('validateFromPattern', () => {
     expect(validateFromPattern('*')).toBe('来源地址格式非法')
   })
   it('非 http 协议报错', () => {
-    expect(validateFromPattern('ftp://a.com/*')).toBe(
-      '来源地址须为 http/https 或以 / 开头的路径',
-    )
+    expect(validateFromPattern('ftp://a.com/*')).toBe('来源地址须为 http/https 或以 / 开头的路径')
   })
   it('畸形 URL 报错', () => {
     expect(validateFromPattern('https://')).toBe('来源地址格式非法')
@@ -62,9 +60,9 @@ describe('validateRedirectRule', () => {
     expect(validateRedirectRule(EXAMPLE_RULE)).toBeNull()
   })
   it('非法状态码报错', () => {
-    expect(
-      validateRedirectRule({ from: '/a', to: 'https://b.com', status: 200 as never }),
-    ).toBe('重定向状态码须为 301/302/307/308')
+    expect(validateRedirectRule({ from: '/a', to: 'https://b.com', status: 200 as never })).toBe(
+      '重定向状态码须为 301/302/307/308',
+    )
   })
   it('来源非法透出', () => {
     expect(validateRedirectRule({ from: '', to: 'https://b.com', status: 302 })).toBe(
@@ -72,15 +70,16 @@ describe('validateRedirectRule', () => {
     )
   })
   it('目标非法透出', () => {
-    expect(validateRedirectRule({ from: '/a', to: 'bad', status: 302 })).toBe(
-      '目标地址格式非法',
-    )
+    expect(validateRedirectRule({ from: '/a', to: 'bad', status: 302 })).toBe('目标地址格式非法')
   })
 })
 
 describe('buildRedirectRules', () => {
   it('生成 JSON 结构', () => {
-    const json = buildRedirectRules([EXAMPLE_RULE, { from: '/x', to: 'https://b.com/y', status: 308 }])
+    const json = buildRedirectRules([
+      EXAMPLE_RULE,
+      { from: '/x', to: 'https://b.com/y', status: 308 },
+    ])
     const parsed = JSON.parse(json)
     expect(parsed.redirects).toHaveLength(2)
     expect(parsed.redirects[0].source_url).toBe('https://old.example.com/*')
@@ -104,7 +103,9 @@ describe('parseRedirectRulesJson', () => {
   })
   it('解析 {redirects} 包裹', () => {
     const rules = parseRedirectRulesJson(
-      JSON.stringify({ redirects: [{ source_url: '/a', target_url: 'https://b.com', status_code: 307 }] }),
+      JSON.stringify({
+        redirects: [{ source_url: '/a', target_url: 'https://b.com', status_code: 307 }],
+      }),
     )
     expect(rules[0].from).toBe('/a')
     expect(rules[0].status).toBe(307)
@@ -113,7 +114,9 @@ describe('parseRedirectRulesJson', () => {
     expect(() => parseRedirectRulesJson('{bad')).toThrow('输入不是合法 JSON')
   })
   it('非数组结构抛错', () => {
-    expect(() => parseRedirectRulesJson('{"a":1}')).toThrow('JSON 须为规则数组或 {redirects: [...]} 结构')
+    expect(() => parseRedirectRulesJson('{"a":1}')).toThrow(
+      'JSON 须为规则数组或 {redirects: [...]} 结构',
+    )
   })
   it('规则非法带序号抛错', () => {
     expect(() => parseRedirectRulesJson('[{"from":"/a","to":"","status":301}]')).toThrow(
@@ -121,7 +124,9 @@ describe('parseRedirectRulesJson', () => {
     )
   })
   it('空对象规则带序号抛错', () => {
-    expect(() => parseRedirectRulesJson('[{}]')).toThrow('第 1 条规则：重定向状态码须为 301/302/307/308')
+    expect(() => parseRedirectRulesJson('[{}]')).toThrow(
+      '第 1 条规则：重定向状态码须为 301/302/307/308',
+    )
   })
 })
 

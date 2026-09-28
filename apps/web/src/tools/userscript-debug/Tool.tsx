@@ -67,9 +67,9 @@ export default function Tool() {
             </pre>
           )}
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            说明：在上方输入框粘贴用户脚本源码，点击「开始扫描」检查元数据块、
-            @match 写法、GM_ 函数与 @grant 声明一致性，以及 document.write /
-            eval 等风险写法。纯本地扫描，不发送网络请求。
+            说明：在上方输入框粘贴用户脚本源码，点击「开始扫描」检查元数据块、 @match 写法、GM_
+            函数与 @grant 声明一致性，以及 document.write / eval
+            等风险写法。纯本地扫描，不发送网络请求。
           </p>
         </div>
       )}

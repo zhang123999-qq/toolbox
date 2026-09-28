@@ -78,12 +78,18 @@ export default function Tool() {
               </p>
             )}
             {view.code !== '' && (
-              <pre data-testid="edge-auth-code" className="whitespace-pre-wrap rounded bg-slate-100 p-3 font-mono text-xs dark:bg-slate-900">
+              <pre
+                data-testid="edge-auth-code"
+                className="whitespace-pre-wrap rounded bg-slate-100 p-3 font-mono text-xs dark:bg-slate-900"
+              >
                 {view.code}
               </pre>
             )}
             {view.detail !== '' && (
-              <p data-testid="edge-auth-detail" className="whitespace-pre-wrap text-sm text-slate-700 dark:text-slate-300">
+              <p
+                data-testid="edge-auth-detail"
+                className="whitespace-pre-wrap text-sm text-slate-700 dark:text-slate-300"
+              >
                 {view.detail}
               </p>
             )}

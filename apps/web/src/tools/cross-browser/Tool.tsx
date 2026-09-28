@@ -54,9 +54,9 @@ export default function Tool() {
             </pre>
           )}
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            说明：task 取 polyfill 时按 apis 生成跨浏览器垫片（browser.* 优先，Chrome
-            回调转 Promise）；task 取 scan 时扫描 code 中的 chrome.* 调用并给出
-            Firefox / Safari 兼容性建议。可用 API：{listApis().join('、')}。纯本地处理。
+            说明：task 取 polyfill 时按 apis 生成跨浏览器垫片（browser.* 优先，Chrome 回调转
+            Promise）；task 取 scan 时扫描 code 中的 chrome.* 调用并给出 Firefox / Safari
+            兼容性建议。可用 API：{listApis().join('、')}。纯本地处理。
           </p>
         </div>
       )}

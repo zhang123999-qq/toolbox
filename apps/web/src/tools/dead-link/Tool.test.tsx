@@ -39,7 +39,10 @@ describe('dead-link · Tool', () => {
     const gate = new Promise<Response>((res) => {
       release = res
     })
-    vi.stubGlobal('fetch', vi.fn(() => gate))
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => gate),
+    )
     render(<Tool />)
     fireEvent.click(byTestId('example'))
     fireEvent.click(byTestId('check'))
@@ -52,7 +55,8 @@ describe('dead-link · Tool', () => {
     vi.stubGlobal(
       'fetch',
       vi.fn((url: string) =>
-        Promise.resolve(new Response('', { status: String(url).includes('b.com') ? 200 : 404 }))),
+        Promise.resolve(new Response('', { status: String(url).includes('b.com') ? 200 : 404 })),
+      ),
     )
     render(<Tool />)
     fireEvent.change(byTestId('input'), { target: { value: 'https://a.com/\nhttps://b.com/' } })

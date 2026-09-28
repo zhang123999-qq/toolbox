@@ -71,8 +71,14 @@ describe('pivot · Tool', () => {
     fireEvent.click(byTestId('example'))
     const createObjectURL = vi.fn(() => 'blob:mock')
     const revokeObjectURL = vi.fn()
-    Object.defineProperty(window.URL, 'createObjectURL', { value: createObjectURL, configurable: true })
-    Object.defineProperty(window.URL, 'revokeObjectURL', { value: revokeObjectURL, configurable: true })
+    Object.defineProperty(window.URL, 'createObjectURL', {
+      value: createObjectURL,
+      configurable: true,
+    })
+    Object.defineProperty(window.URL, 'revokeObjectURL', {
+      value: revokeObjectURL,
+      configurable: true,
+    })
     const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {})
     fireEvent.click(byTestId('download-csv'))
     expect(createObjectURL).toHaveBeenCalled()

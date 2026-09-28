@@ -19,7 +19,8 @@ interface RedirectView {
 function buildView(input: EdgeRedirectInput, options: EdgeRedirectOptions): RedirectView {
   try {
     if (options.mode === 'parse') {
-      if (input.text.trim() === '') return { error: '', json: '', summary: '左侧粘贴规则 JSON 后解析' }
+      if (input.text.trim() === '')
+        return { error: '', json: '', summary: '左侧粘贴规则 JSON 后解析' }
       const rules = parseRedirectRulesJson(input.text)
       return { error: '', json: '', summary: describeRules(rules) }
     }
@@ -60,17 +61,26 @@ export default function Tool() {
         return (
           <div className="flex flex-col gap-3">
             {view.error !== '' && (
-              <p data-testid="edge-redirect-error" className="text-sm text-red-600 dark:text-red-400">
+              <p
+                data-testid="edge-redirect-error"
+                className="text-sm text-red-600 dark:text-red-400"
+              >
                 {view.error}
               </p>
             )}
             {view.json !== '' && (
-              <pre data-testid="edge-redirect-json" className="whitespace-pre-wrap rounded bg-slate-100 p-3 font-mono text-xs dark:bg-slate-900">
+              <pre
+                data-testid="edge-redirect-json"
+                className="whitespace-pre-wrap rounded bg-slate-100 p-3 font-mono text-xs dark:bg-slate-900"
+              >
                 {view.json}
               </pre>
             )}
             {view.summary !== '' && (
-              <p data-testid="edge-redirect-summary" className="whitespace-pre-wrap text-sm text-slate-700 dark:text-slate-300">
+              <p
+                data-testid="edge-redirect-summary"
+                className="whitespace-pre-wrap text-sm text-slate-700 dark:text-slate-300"
+              >
                 {view.summary}
               </p>
             )}

@@ -20,7 +20,16 @@ function byTestId(id: string): HTMLElement {
 describe('abi-codec · Tool', () => {
   it('渲染后必需 data-testid 存在', () => {
     render(<Tool />)
-    for (const id of ['input', 'input-params', 'example', 'clear', 'output', 'copy', 'download', 'results']) {
+    for (const id of [
+      'input',
+      'input-params',
+      'example',
+      'clear',
+      'output',
+      'copy',
+      'download',
+      'results',
+    ]) {
       expect(byTestId(id)).toBeTruthy()
     }
     // MultiPanel 的 select 选项通过 label 文本定位

@@ -1,11 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { meta } from './meta'
-import {
-  CAMERA_STATUS_TEXT,
-  RESOLUTION_PRESETS,
-  getCameraStream,
-  listCameras,
-} from './utils'
+import { CAMERA_STATUS_TEXT, RESOLUTION_PRESETS, getCameraStream, listCameras } from './utils'
 import type { CameraDevice, CameraStatus } from './utils'
 
 const BTN_CLASS =
@@ -91,7 +86,10 @@ export default function Tool() {
   return (
     <div className="flex flex-col gap-4">
       <p className="text-sm text-slate-600 dark:text-slate-400">{meta.description}</p>
-      <p data-testid="camera-status" className="text-sm font-medium text-slate-800 dark:text-slate-200">
+      <p
+        data-testid="camera-status"
+        className="text-sm font-medium text-slate-800 dark:text-slate-200"
+      >
         状态：{CAMERA_STATUS_TEXT[status]}
       </p>
       <video
@@ -152,7 +150,12 @@ export default function Tool() {
             开始预览
           </button>
         )}
-        <button type="button" data-testid="camera-refresh" className={BTN_CLASS} onClick={refreshDevices}>
+        <button
+          type="button"
+          data-testid="camera-refresh"
+          className={BTN_CLASS}
+          onClick={refreshDevices}
+        >
           刷新设备列表
         </button>
       </div>

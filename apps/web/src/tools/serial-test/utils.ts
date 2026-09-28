@@ -71,10 +71,7 @@ export async function listPorts(
  * 端口信息描述：usbVendorId/usbProductId → 十六进制；
  * label 为 "串口 #N（0xVVVV:0xPPPP）"，无信息时为 "串口 #N"。
  */
-export function describePort(
-  port?: SerialPortLike | null,
-  index = 0,
-): SerialPortInfo {
+export function describePort(port?: SerialPortLike | null, index = 0): SerialPortInfo {
   const info = port?.getInfo?.()
   const base = `串口 #${index + 1}`
   if (info == null) {
@@ -99,10 +96,7 @@ export function hex4(n?: number | null): string {
  * 打开端口（波特率可配置）。open 缺失时抛中文错。
  * 打开失败时浏览器抛出的错误如实透出。
  */
-export async function openPort(
-  port?: SerialPortLike | null,
-  baudRate = 9600,
-): Promise<void> {
+export async function openPort(port?: SerialPortLike | null, baudRate = 9600): Promise<void> {
   if (port == null || typeof port.open !== 'function') {
     throw new Error('当前串口对象不支持打开（open 不可用）')
   }

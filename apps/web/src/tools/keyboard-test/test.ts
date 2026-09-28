@@ -2,13 +2,7 @@
  * keyboard-test（#832）utils 单测：按键归一化、分区查询、按下集合。
  */
 import { describe, expect, it } from 'vitest'
-import {
-  KEY_ZONES,
-  formatKeyLabel,
-  normalizeKey,
-  trackPressed,
-  zoneOfCode,
-} from './utils'
+import { KEY_ZONES, formatKeyLabel, normalizeKey, trackPressed, zoneOfCode } from './utils'
 
 describe('normalizeKey', () => {
   it('完整事件提取三字段', () => {

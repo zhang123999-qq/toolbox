@@ -52,8 +52,8 @@ export default function Tool() {
             </pre>
           )}
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            说明：强制 manifest_version 为 3；拦截 MV2 遗留字段（browser_action /
-            page_action / background.persistent）；未知权限会报错提示。纯本地生成。
+            说明：强制 manifest_version 为 3；拦截 MV2 遗留字段（browser_action / page_action /
+            background.persistent）；未知权限会报错提示。纯本地生成。
           </p>
         </div>
       )}

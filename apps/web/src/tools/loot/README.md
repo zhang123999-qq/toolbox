@@ -6,9 +6,9 @@
 
 ```json
 [
-  { "id": "gold",  "weight": 70, "min": 10, "max": 20 },
+  { "id": "gold", "weight": 70, "min": 10, "max": 20 },
   { "id": "sword", "weight": 20 },
-  { "id": "gem",   "weight": 10 }
+  { "id": "gem", "weight": 10 }
 ]
 ```
 

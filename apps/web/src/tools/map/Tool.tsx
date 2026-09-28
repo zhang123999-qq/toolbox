@@ -81,9 +81,10 @@ export default function Tool() {
         // 动态导入 echarts：独立分包，避免拖慢主 chunk
         const echarts = await import('echarts')
         if (cancelled) return
-        ;(
-          echarts as unknown as { registerMap: (n: string, g: unknown) => void }
-        ).registerMap(MAP_SOURCES[kind].mapName, entry.data)
+        ;(echarts as unknown as { registerMap: (n: string, g: unknown) => void }).registerMap(
+          MAP_SOURCES[kind].mapName,
+          entry.data,
+        )
         const option = pendingOption.current
         if (!option) return
         if (!chartRef.current) {

@@ -26,7 +26,12 @@ describe('RESOLUTION_PRESETS', () => {
 
 describe('presetById', () => {
   it('hd 返回 1280×720', () => {
-    expect(presetById('hd')).toEqual({ id: 'hd', name: 'HD 720p 1280×720', width: 1280, height: 720 })
+    expect(presetById('hd')).toEqual({
+      id: 'hd',
+      name: 'HD 720p 1280×720',
+      width: 1280,
+      height: 720,
+    })
   })
   it('未知 id 抛中文错误', () => {
     expect(() => presetById('nope')).toThrow('未知分辨率预设：nope')

@@ -76,7 +76,10 @@ describe('link-check / extractLinks', () => {
     expect(links[3].skipReason).toContain('锚点')
   })
   it('非法 URL 与非 http 协议跳过', () => {
-    const links = extractLinks('<a href="http://exa mple.com/">坏</a><a href="ftp://x.com/f">F</a>', base)
+    const links = extractLinks(
+      '<a href="http://exa mple.com/">坏</a><a href="ftp://x.com/f">F</a>',
+      base,
+    )
     expect(links[0].skipReason).toContain('非法')
     expect(links[1].skipReason).toContain('ftp:')
   })
@@ -142,7 +145,9 @@ describe('link-check / checkLink', () => {
   it('超时 → 超时状态', async () => {
     const f: FetchFn = (_url, init) =>
       new Promise((_res, rej) => {
-        init?.signal?.addEventListener('abort', () => rej(new DOMException('aborted', 'AbortError')))
+        init?.signal?.addEventListener('abort', () =>
+          rej(new DOMException('aborted', 'AbortError')),
+        )
       })
     const r = await checkLink(link('https://example.com/'), f, 20)
     expect(r.status).toBe('超时')
@@ -169,7 +174,11 @@ describe('link-check / checkLinks', () => {
     const results = await checkLinks(links, ok200, {
       onProgress: (done, total) => progress.push([done, total]),
     })
-    expect(results.map((r) => r.url)).toEqual(['https://a.com/', 'https://b.com/', 'https://c.com/'])
+    expect(results.map((r) => r.url)).toEqual([
+      'https://a.com/',
+      'https://b.com/',
+      'https://c.com/',
+    ])
     expect(progress).toEqual([
       [1, 3],
       [2, 3],
@@ -222,7 +231,9 @@ describe('link-check / fetchPageHtml', () => {
   it('超时抛超时错', async () => {
     const f: FetchFn = (_url, init) =>
       new Promise((_res, rej) => {
-        init?.signal?.addEventListener('abort', () => rej(new DOMException('aborted', 'AbortError')))
+        init?.signal?.addEventListener('abort', () =>
+          rej(new DOMException('aborted', 'AbortError')),
+        )
       })
     await expect(fetchPageHtml('https://example.com/', f, 20)).rejects.toThrow(/超时/)
   })
@@ -230,19 +241,75 @@ describe('link-check / fetchPageHtml', () => {
 
 describe('link-check / summarize + renderReport', () => {
   const results = [
-    { url: 'https://a.com/', text: '', category: '站内', status: '正常', httpStatus: 200, note: '', ms: 1 },
-    { url: 'https://b.com/', text: '', category: '站外', status: '死链', httpStatus: 404, note: 'HTTP 404', ms: 1 },
-    { url: 'https://c.com/', text: '', category: '站外', status: '超时', httpStatus: null, note: '超时', ms: 1 },
+    {
+      url: 'https://a.com/',
+      text: '',
+      category: '站内',
+      status: '正常',
+      httpStatus: 200,
+      note: '',
+      ms: 1,
+    },
+    {
+      url: 'https://b.com/',
+      text: '',
+      category: '站外',
+      status: '死链',
+      httpStatus: 404,
+      note: 'HTTP 404',
+      ms: 1,
+    },
+    {
+      url: 'https://c.com/',
+      text: '',
+      category: '站外',
+      status: '超时',
+      httpStatus: null,
+      note: '超时',
+      ms: 1,
+    },
   ] as const
   it('汇总计数正确', () => {
     const s = summarize(results)
-    expect(s).toMatchObject({ total: 3, ok: 1, dead: 1, timeout: 1, redirect: 0, error: 0, skipped: 0 })
+    expect(s).toMatchObject({
+      total: 3,
+      ok: 1,
+      dead: 1,
+      timeout: 1,
+      redirect: 0,
+      error: 0,
+      skipped: 0,
+    })
   })
   it('汇总覆盖全部状态', () => {
     const all = [
-      { url: 'https://r.com/', text: '', category: '站外', status: '重定向', httpStatus: 301, note: '', ms: 1 },
-      { url: 'https://e.com/', text: '', category: '站外', status: '错误', httpStatus: null, note: '', ms: 1 },
-      { url: 'https://s.com/', text: '', category: '跳过', status: '跳过', httpStatus: null, note: '', ms: 0 },
+      {
+        url: 'https://r.com/',
+        text: '',
+        category: '站外',
+        status: '重定向',
+        httpStatus: 301,
+        note: '',
+        ms: 1,
+      },
+      {
+        url: 'https://e.com/',
+        text: '',
+        category: '站外',
+        status: '错误',
+        httpStatus: null,
+        note: '',
+        ms: 1,
+      },
+      {
+        url: 'https://s.com/',
+        text: '',
+        category: '跳过',
+        status: '跳过',
+        httpStatus: null,
+        note: '',
+        ms: 0,
+      },
     ] as const
     const s = summarize(all)
     expect(s).toMatchObject({ total: 3, redirect: 1, error: 1, skipped: 1 })

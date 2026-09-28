@@ -135,7 +135,11 @@ describe('mixed-content / assessMixedContent', () => {
   })
 
   it('按标签统计合并同名', () => {
-    const a = assessMixedContent([img, { ...img, url: 'http://a.com/2.png' }], true, 'https://a.com/')
+    const a = assessMixedContent(
+      [img, { ...img, url: 'http://a.com/2.png' }],
+      true,
+      'https://a.com/',
+    )
     expect(a.byType).toEqual({ img: 2 })
   })
 })
@@ -166,9 +170,9 @@ describe('mixed-content / transform', () => {
     ).toThrow(/上限/)
   })
   it('页面 URL 非法报错', () => {
-    expect(() => transform({ text: '<img src="http://a.com/1.png">', pageUrl: 'nope' }, noOptions)).toThrow(
-      /格式不正确/,
-    )
+    expect(() =>
+      transform({ text: '<img src="http://a.com/1.png">', pageUrl: 'nope' }, noOptions),
+    ).toThrow(/格式不正确/)
   })
   it('https 页面检出混合内容', () => {
     const out = transform(

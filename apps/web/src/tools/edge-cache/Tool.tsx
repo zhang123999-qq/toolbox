@@ -1,12 +1,7 @@
 import { MultiPanel } from '../../components/tool/templates/MultiPanel'
 import { meta } from './meta'
 import type { EdgeCacheInput, EdgeCacheOptions } from './schema'
-import {
-  buildCacheHeaders,
-  describeParsed,
-  EXAMPLE_CACHE_HEADER,
-  parseCacheControl,
-} from './utils'
+import { buildCacheHeaders, describeParsed, EXAMPLE_CACHE_HEADER, parseCacheControl } from './utils'
 
 function parseOptionalInt(raw: string, field: string): number | undefined {
   const trimmed = raw.trim()
@@ -34,13 +29,20 @@ function buildView(input: EdgeCacheInput, options: EdgeCacheOptions): CacheView 
     const header = buildCacheHeaders({
       maxAge: parseOptionalInt(options.maxAge, 'max-age'),
       sMaxAge: parseOptionalInt(options.sMaxAge, 's-maxage'),
-      staleWhileRevalidate: parseOptionalInt(options.staleWhileRevalidate, 'stale-while-revalidate'),
+      staleWhileRevalidate: parseOptionalInt(
+        options.staleWhileRevalidate,
+        'stale-while-revalidate',
+      ),
       immutable: options.immutable,
       noStore: options.noStore,
       noCache: options.noCache,
       mustRevalidate: options.mustRevalidate,
     })
-    return { error: '', header, detail: header === '' ? '未选择任何指令' : describeParsed(parseCacheControl(header)) }
+    return {
+      error: '',
+      header,
+      detail: header === '' ? '未选择任何指令' : describeParsed(parseCacheControl(header)),
+    }
   } catch (err) {
     return { error: err instanceof Error ? err.message : '处理失败', header: '', detail: '' }
   }
@@ -89,7 +91,10 @@ export default function Tool() {
                 >
                   {view.header}
                 </p>
-                <p data-testid="edge-cache-detail" className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                <p
+                  data-testid="edge-cache-detail"
+                  className="mt-1 text-xs text-slate-500 dark:text-slate-400"
+                >
                   {view.detail}
                 </p>
               </div>

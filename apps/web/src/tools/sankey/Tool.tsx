@@ -102,7 +102,12 @@ export default function Tool() {
             data-testid="chart-container"
             style={{ width: `${width}px`, height: `${height}px` }}
           />
-          <button type="button" data-testid="download-png" className={BTN_CLASS} onClick={downloadPng}>
+          <button
+            type="button"
+            data-testid="download-png"
+            className={BTN_CLASS}
+            onClick={downloadPng}
+          >
             下载 PNG
           </button>
           {error ? (

@@ -49,7 +49,8 @@ export default function Tool() {
     <div className="flex flex-col gap-4">
       <h2 className="text-base font-semibold">{meta.title}</h2>
       <p className="text-sm text-slate-500">
-        依次播放 7 个频率的声音，听见就点「听见」，听不见点「没听见」。建议佩戴耳机、在安静环境测试。
+        依次播放 7
+        个频率的声音，听见就点「听见」，听不见点「没听见」。建议佩戴耳机、在安静环境测试。
       </p>
       {error && (
         <p data-testid="ht-error" className="text-sm text-red-600">
@@ -76,7 +77,9 @@ export default function Tool() {
                 data-testid={`ht-heard-${freq}`}
                 onClick={() => answer(freq, true)}
                 className={`rounded px-3 py-1 ${
-                  answered && results[freq] ? 'bg-green-600 text-white' : 'bg-slate-200 dark:bg-slate-700'
+                  answered && results[freq]
+                    ? 'bg-green-600 text-white'
+                    : 'bg-slate-200 dark:bg-slate-700'
                 }`}
               >
                 听见
@@ -86,7 +89,9 @@ export default function Tool() {
                 data-testid={`ht-missed-${freq}`}
                 onClick={() => answer(freq, false)}
                 className={`rounded px-3 py-1 ${
-                  answered && !results[freq] ? 'bg-red-600 text-white' : 'bg-slate-200 dark:bg-slate-700'
+                  answered && !results[freq]
+                    ? 'bg-red-600 text-white'
+                    : 'bg-slate-200 dark:bg-slate-700'
                 }`}
               >
                 没听见

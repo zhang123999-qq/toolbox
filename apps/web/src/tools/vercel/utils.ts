@@ -102,7 +102,8 @@ function parseRedirect(item: unknown, index: number): VercelRedirect {
   const o = item as Record<string, unknown>
   const source = asString(o['source'], `redirects[${index}].source`)
   const destination = asString(o['destination'], `redirects[${index}].destination`)
-  const permanent = o['permanent'] === undefined ? true : asBoolean(o['permanent'], `redirects[${index}].permanent`)
+  const permanent =
+    o['permanent'] === undefined ? true : asBoolean(o['permanent'], `redirects[${index}].permanent`)
   requireLeadingSlash(source, `redirects[${index}].source`)
   requireValidDestination(destination, `redirects[${index}].destination`)
   return { source, destination, permanent }
@@ -152,9 +153,7 @@ export const EXAMPLE_VERCEL_JSON = JSON.stringify(
   {
     rewrites: [{ source: '/api/:path*', destination: 'https://api.example.com/:path*' }],
     redirects: [{ source: '/old', destination: '/new', permanent: true }],
-    headers: [
-      { source: '/(.*)', headers: [{ key: 'X-Frame-Options', value: 'DENY' }] },
-    ],
+    headers: [{ source: '/(.*)', headers: [{ key: 'X-Frame-Options', value: 'DENY' }] }],
   },
   null,
   2,

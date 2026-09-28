@@ -72,7 +72,8 @@ export default function Tool() {
         base = validateUrl(input.text)
         html = await fetchPageHtml(base)
       } else {
-        if (input.baseUrl.trim() === '') throw new LinkCheckError('粘贴HTML 模式需要填写基准 URL（用于解析相对链接）')
+        if (input.baseUrl.trim() === '')
+          throw new LinkCheckError('粘贴HTML 模式需要填写基准 URL（用于解析相对链接）')
         base = validateUrl(input.baseUrl)
         html = input.text
       }
@@ -111,7 +112,9 @@ export default function Tool() {
       initialInput={{ text: '', baseUrl: '' }}
       initialOptions={{ mode: '粘贴HTML' }}
       optionDefs={optionDefs}
-      extraInputs={[{ key: 'baseUrl', label: '基准 URL（粘贴HTML 模式必填，用于解析相对链接）', rows: 1 }]}
+      extraInputs={[
+        { key: 'baseUrl', label: '基准 URL（粘贴HTML 模式必填，用于解析相对链接）', rows: 1 },
+      ]}
       example={EXAMPLE}
       renderOutput={(input, options) => (
         <div className="flex flex-col gap-3">
@@ -160,9 +163,12 @@ export default function Tool() {
             </p>
           ) : null}
           {summary ? (
-            <p data-testid="summary" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+            <p
+              data-testid="summary"
+              className="text-sm font-medium text-slate-700 dark:text-slate-300"
+            >
               共 {summary.total} 个：正常 {summary.ok} 重定向 {summary.redirect} 死链 {summary.dead}
-               超时 {summary.timeout} 错误 {summary.error} 跳过 {summary.skipped}
+              超时 {summary.timeout} 错误 {summary.error} 跳过 {summary.skipped}
             </p>
           ) : null}
           {results ? (
@@ -178,7 +184,9 @@ export default function Tool() {
                   <span className="rounded bg-slate-100 px-1.5 py-0.5 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
                     {r.category}
                   </span>
-                  <span className="break-all font-mono text-slate-700 dark:text-slate-300">{r.url}</span>
+                  <span className="break-all font-mono text-slate-700 dark:text-slate-300">
+                    {r.url}
+                  </span>
                   {r.httpStatus !== null ? (
                     <span className="text-slate-500">HTTP {r.httpStatus}</span>
                   ) : (

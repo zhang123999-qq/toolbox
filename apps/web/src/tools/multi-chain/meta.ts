@@ -10,7 +10,8 @@ export const meta: ToolMeta = {
   title: '多链地址',
   description: '以太坊 hex 地址与 TRON base58 地址互转：base58check 编解码，批量转换',
   titleEn: 'Multi-chain Address',
-  descriptionEn: 'Convert between Ethereum hex addresses and TRON base58 addresses with base58check codec',
+  descriptionEn:
+    'Convert between Ethereum hex addresses and TRON base58 addresses with base58check codec',
 
   category: 'encoding',
   group: 'dev',

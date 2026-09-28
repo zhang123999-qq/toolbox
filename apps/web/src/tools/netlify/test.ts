@@ -28,16 +28,26 @@ describe('buildNetlifyToml', () => {
     expect(toml).toContain('[headers.values]')
   })
   it('可选字段缺省时省略', () => {
-    const toml = buildNetlifyToml({ redirects: [{ from: '/a', to: '/b', status: 302 }], headers: [] })
+    const toml = buildNetlifyToml({
+      redirects: [{ from: '/a', to: '/b', status: 302 }],
+      headers: [],
+    })
     expect(toml).not.toContain('force')
     expect(toml).not.toContain('[build]')
   })
   it('force=false 输出', () => {
-    const toml = buildNetlifyToml({ redirects: [{ from: '/a', to: '/b', status: 302, force: false }], headers: [] })
+    const toml = buildNetlifyToml({
+      redirects: [{ from: '/a', to: '/b', status: 302, force: false }],
+      headers: [],
+    })
     expect(toml).toContain('force = false')
   })
   it('build functions 输出', () => {
-    const toml = buildNetlifyToml({ build: { functions: 'netlify/functions' }, redirects: [], headers: [] })
+    const toml = buildNetlifyToml({
+      build: { functions: 'netlify/functions' },
+      redirects: [],
+      headers: [],
+    })
     expect(toml).toContain('functions = "netlify/functions"')
   })
   it('from 不以 / 开头抛错', () => {
@@ -56,9 +66,9 @@ describe('buildNetlifyToml', () => {
     ).toThrow('redirects[0].status 非法：999')
   })
   it('headers for 非法抛错', () => {
-    expect(() =>
-      buildNetlifyToml({ redirects: [], headers: [{ for: '*', values: {} }] }),
-    ).toThrow('headers[0].for 必须以 / 开头')
+    expect(() => buildNetlifyToml({ redirects: [], headers: [{ for: '*', values: {} }] })).toThrow(
+      'headers[0].for 必须以 / 开头',
+    )
   })
   it('字符串转义 round-trip', () => {
     const config: NetlifyConfig = {
@@ -101,7 +111,9 @@ describe('parseNetlifyToml', () => {
     expect(() => parseNetlifyToml('[[redirects]]\n  status = "x"')).toThrow('status 须为数字')
   })
   it('redirect force=false 解析', () => {
-    const config = parseNetlifyToml('[[redirects]]\n  from = "/a"\n  to = "/b"\n  status = 302\n  force = false')
+    const config = parseNetlifyToml(
+      '[[redirects]]\n  from = "/a"\n  to = "/b"\n  status = 302\n  force = false',
+    )
     expect(config.redirects[0].force).toBe(false)
   })
   it('redirect force 非布尔抛错', () => {
@@ -113,15 +125,17 @@ describe('parseNetlifyToml', () => {
     )
   })
   it('headers 未知键抛错', () => {
-    expect(() => parseNetlifyToml('[[headers]]\n  foo = "x"')).toThrow('[[headers]] 不支持的键：foo')
+    expect(() => parseNetlifyToml('[[headers]]\n  foo = "x"')).toThrow(
+      '[[headers]] 不支持的键：foo',
+    )
   })
   it('headers for 非字符串抛错', () => {
     expect(() => parseNetlifyToml('[[headers]]\n  for = 1')).toThrow('for 须为字符串')
   })
   it('响应头值非字符串抛错', () => {
-    expect(() => parseNetlifyToml('[[headers]]\n  for = "/"\n  [headers.values]\n    K = 1')).toThrow(
-      '响应头值须为字符串',
-    )
+    expect(() =>
+      parseNetlifyToml('[[headers]]\n  for = "/"\n  [headers.values]\n    K = 1'),
+    ).toThrow('响应头值须为字符串')
   })
   it('节外键值对抛错', () => {
     expect(() => parseNetlifyToml('foo = "x"')).toThrow('键值对出现在节之外')

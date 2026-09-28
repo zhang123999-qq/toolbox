@@ -10,7 +10,8 @@ export const meta: ToolMeta = {
   title: '关键词提取',
   description: '纯 JS 的 TF 关键词提取：分词、去停用词、按词频排序取 TopN',
   titleEn: 'Keyword Extraction',
-  descriptionEn: 'TF-based keyword extraction in pure JS: tokenize, remove stopwords, rank by frequency',
+  descriptionEn:
+    'TF-based keyword extraction in pure JS: tokenize, remove stopwords, rank by frequency',
 
   category: 'ai',
   group: 'life',

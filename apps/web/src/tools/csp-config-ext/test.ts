@@ -33,23 +33,45 @@ describe('buildCspPolicy', () => {
     expect(p).toBe("script-src 'self' 'wasm-unsafe-eval'; object-src 'self'")
   })
   it('支持自定义 objectSrc 与 styleSrc', () => {
-    const p = buildCspPolicy({ scriptSrc: [], objectSrc: "'none'", styleSrc: ["'self'", 'https://fonts.example.com'] })
-    expect(p).toBe("script-src 'self'; object-src 'none'; style-src 'self' https://fonts.example.com")
+    const p = buildCspPolicy({
+      scriptSrc: [],
+      objectSrc: "'none'",
+      styleSrc: ["'self'", 'https://fonts.example.com'],
+    })
+    expect(p).toBe(
+      "script-src 'self'; object-src 'none'; style-src 'self' https://fonts.example.com",
+    )
   })
   it('非法来源报错', () => {
-    expect(() => buildCspPolicy({ scriptSrc: ["'unsafe-eval'"] })).toThrow('MV3 不允许的 script-src 来源')
-    expect(() => buildCspPolicy({ scriptSrc: ['https://cdn.example.com/lib.js'] })).toThrow('MV3 不允许的 script-src 来源')
-    expect(() => buildCspPolicy({ scriptSrc: ["'unsafe-inline'"] })).toThrow('MV3 不允许的 script-src 来源')
+    expect(() => buildCspPolicy({ scriptSrc: ["'unsafe-eval'"] })).toThrow(
+      'MV3 不允许的 script-src 来源',
+    )
+    expect(() => buildCspPolicy({ scriptSrc: ['https://cdn.example.com/lib.js'] })).toThrow(
+      'MV3 不允许的 script-src 来源',
+    )
+    expect(() => buildCspPolicy({ scriptSrc: ["'unsafe-inline'"] })).toThrow(
+      'MV3 不允许的 script-src 来源',
+    )
   })
   it('参数形状错误报错', () => {
     expect(() => buildCspPolicy(null as never)).toThrow('scriptSrc 必须是数组')
     expect(() => buildCspPolicy({} as never)).toThrow('scriptSrc 必须是数组')
     expect(() => buildCspPolicy({ scriptSrc: [''] })).toThrow('scriptSrc 来源必须是非空字符串')
-    expect(() => buildCspPolicy({ scriptSrc: [123 as never] })).toThrow('scriptSrc 来源必须是非空字符串')
-    expect(() => buildCspPolicy({ scriptSrc: [], objectSrc: '   ' })).toThrow('objectSrc必须是非空字符串')
-    expect(() => buildCspPolicy({ scriptSrc: [], styleSrc: [] })).toThrow('styleSrc 提供时必须是非空数组')
-    expect(() => buildCspPolicy({ scriptSrc: [], styleSrc: 'x' as never })).toThrow('styleSrc 提供时必须是非空数组')
-    expect(() => buildCspPolicy({ scriptSrc: [], styleSrc: [''] })).toThrow('styleSrc 来源必须是非空字符串')
+    expect(() => buildCspPolicy({ scriptSrc: [123 as never] })).toThrow(
+      'scriptSrc 来源必须是非空字符串',
+    )
+    expect(() => buildCspPolicy({ scriptSrc: [], objectSrc: '   ' })).toThrow(
+      'objectSrc必须是非空字符串',
+    )
+    expect(() => buildCspPolicy({ scriptSrc: [], styleSrc: [] })).toThrow(
+      'styleSrc 提供时必须是非空数组',
+    )
+    expect(() => buildCspPolicy({ scriptSrc: [], styleSrc: 'x' as never })).toThrow(
+      'styleSrc 提供时必须是非空数组',
+    )
+    expect(() => buildCspPolicy({ scriptSrc: [], styleSrc: [''] })).toThrow(
+      'styleSrc 来源必须是非空字符串',
+    )
   })
 })
 
@@ -60,7 +82,7 @@ describe('parseCspPolicy', () => {
     expect(d['style-src']).toEqual(["'self'", 'https://a.com'])
   })
   it('指令名大小写不敏感', () => {
-    expect(parseCspPolicy('Script-Src \'self\'')['script-src']).toEqual(["'self'"])
+    expect(parseCspPolicy("Script-Src 'self'")['script-src']).toEqual(["'self'"])
   })
   it('非法输入报错', () => {
     expect(() => parseCspPolicy('')).toThrow('CSP 策略必须是非空字符串')
@@ -75,15 +97,21 @@ describe('validateCsp', () => {
   })
   it('远程代码报 error', () => {
     const issues = validateCsp("script-src 'self' https://cdn.example.com/x.js; object-src 'self'")
-    expect(issues.some((i) => i.severity === 'error' && i.message.includes('禁止远程代码'))).toBe(true)
+    expect(issues.some((i) => i.severity === 'error' && i.message.includes('禁止远程代码'))).toBe(
+      true,
+    )
   })
   it('unsafe-eval 报 error 并提示 wasm-unsafe-eval', () => {
     const issues = validateCsp("script-src 'self' 'unsafe-eval'; object-src 'self'")
-    expect(issues.some((i) => i.severity === 'error' && i.message.includes('wasm-unsafe-eval'))).toBe(true)
+    expect(
+      issues.some((i) => i.severity === 'error' && i.message.includes('wasm-unsafe-eval')),
+    ).toBe(true)
   })
   it('unsafe-inline 报 warning', () => {
     const issues = validateCsp("script-src 'self' 'unsafe-inline'; object-src 'self'")
-    expect(issues.some((i) => i.severity === 'warning' && i.source === "'unsafe-inline'")).toBe(true)
+    expect(issues.some((i) => i.severity === 'warning' && i.source === "'unsafe-inline'")).toBe(
+      true,
+    )
   })
   it('缺少 script-src 报 error', () => {
     const issues = validateCsp("object-src 'self'")
@@ -105,7 +133,9 @@ describe('parseCspConfigInput / renderCspConfig', () => {
     expect(renderCspConfig(input)).toContain("'wasm-unsafe-eval'")
   })
   it('自定义输入走构建路径', () => {
-    const input = parseCspConfigInput('{"scriptSrc":["\'wasm-unsafe-eval\'"],"objectSrc":"\'none\'"}')
+    const input = parseCspConfigInput(
+      '{"scriptSrc":["\'wasm-unsafe-eval\'"],"objectSrc":"\'none\'"}',
+    )
     expect(renderCspConfig(input)).toBe("script-src 'self' 'wasm-unsafe-eval'; object-src 'none'")
   })
   it('缺省 scriptSrc 时用空数组', () => {

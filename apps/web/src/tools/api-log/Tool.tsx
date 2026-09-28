@@ -57,7 +57,9 @@ export default function Tool() {
               <p data-testid="apilog-summary">
                 共 {stats.total} 条{skipped > 0 ? '（跳过 ' + skipped + ' 行非法）' : ''}｜错误率{' '}
                 {(stats.errorRate * 100).toFixed(1)}%
-                {stats.peakHour ? '｜峰值小时 ' + stats.peakHour.hour + '（' + stats.peakHour.count + ' 条）' : ''}
+                {stats.peakHour
+                  ? '｜峰值小时 ' + stats.peakHour.hour + '（' + stats.peakHour.count + ' 条）'
+                  : ''}
               </p>
               <p data-testid="apilog-status">
                 状态码分布：
@@ -76,10 +78,7 @@ export default function Tool() {
                 </thead>
                 <tbody>
                   {stats.topPaths.map((p) => (
-                    <tr
-                      key={p.path}
-                      className="border-t border-slate-200 dark:border-slate-700"
-                    >
+                    <tr key={p.path} className="border-t border-slate-200 dark:border-slate-700">
                       <td className="py-1 pr-4 font-mono break-all">{p.path}</td>
                       <td className="py-1 pr-4 font-mono">{p.count}</td>
                       <td className="py-1 pr-4 font-mono">

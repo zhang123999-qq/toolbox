@@ -8,9 +8,11 @@ export const meta: ToolMeta = {
   id: 'number-locale',
   slug: 'number-locale',
   title: '数字本地化',
-  description: '同一数字的多语言区域并排本地化对比：Intl.NumberFormat 展示各 locale 十进制/百分比/紧凑表示与数字系统差异',
+  description:
+    '同一数字的多语言区域并排本地化对比：Intl.NumberFormat 展示各 locale 十进制/百分比/紧凑表示与数字系统差异',
   titleEn: 'Number Localization',
-  descriptionEn: 'Side-by-side number localization across locales: Intl.NumberFormat per-locale decimal/percent/compact and digit systems',
+  descriptionEn:
+    'Side-by-side number localization across locales: Intl.NumberFormat per-locale decimal/percent/compact and digit systems',
 
   category: 'a11y',
   group: 'life',

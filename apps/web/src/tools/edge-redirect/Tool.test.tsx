@@ -33,7 +33,9 @@ describe('edge-redirect · Tool', () => {
 
   it('默认生成示例规则 JSON', () => {
     render(<Tool />)
-    expect(byTestId('edge-redirect-json').textContent).toContain('"source_url": "https://old.example.com/*"')
+    expect(byTestId('edge-redirect-json').textContent).toContain(
+      '"source_url": "https://old.example.com/*"',
+    )
     expect(byTestId('edge-redirect-summary').textContent).toContain('（301）')
   })
 

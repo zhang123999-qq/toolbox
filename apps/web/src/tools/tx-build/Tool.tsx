@@ -39,7 +39,9 @@ const ERROR_CLASS = 'text-sm text-red-700 dark:text-red-300'
 function compute(input: TxBuildInput, options: TxBuildOptions): BuiltTx {
   const filled: TxBuildInput = { ...EXAMPLE, ...input }
   // 空输入整体回退到示例
-  const allEmpty = [input.nonce, input.to, input.value, input.gasLimit].every((v) => v.trim() === '')
+  const allEmpty = [input.nonce, input.to, input.value, input.gasLimit].every(
+    (v) => v.trim() === '',
+  )
   return buildUnsignedTx(allEmpty ? EXAMPLE : filled, options)
 }
 
@@ -64,7 +66,9 @@ export default function Tool() {
             </div>
           ))}
           <div className="rounded border p-2">
-            <p className="text-xs text-gray-500 dark:text-gray-400">待签名交易 hex（签名后才有交易哈希）</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              待签名交易 hex（签名后才有交易哈希）
+            </p>
             <p className="font-mono text-xs break-all" data-testid="value-rlp">
               {built.rlpHex}
             </p>

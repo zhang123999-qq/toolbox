@@ -47,7 +47,13 @@ export default function Tool() {
       switch (mode) {
         case 'projectile': {
           const r = projectile({ v0: o.v0, angleDeg: o.angleDeg, g: o.g })
-          setOutput(formatPhysicsResult('斜抛运动', { 射程: r.range, 最大高度: r.maxHeight, 飞行时间: r.flightTime }, 'm/s'))
+          setOutput(
+            formatPhysicsResult(
+              '斜抛运动',
+              { 射程: r.range, 最大高度: r.maxHeight, 飞行时间: r.flightTime },
+              'm/s',
+            ),
+          )
           break
         }
         case 'fall': {
@@ -60,7 +66,9 @@ export default function Tool() {
         }
         case 'friction': {
           const r = frictionStop({ v0: o.v0, mu: o.mu, g: o.g })
-          setOutput(formatPhysicsResult('摩擦滑行', { 滑行距离: r.distance, 停止时间: r.time }, 'm/s'))
+          setOutput(
+            formatPhysicsResult('摩擦滑行', { 滑行距离: r.distance, 停止时间: r.time }, 'm/s'),
+          )
           break
         }
         case 'collision': {
@@ -70,7 +78,13 @@ export default function Tool() {
         }
         case 'circular': {
           const r = circularMotion(o.v, o.r)
-          setOutput(formatPhysicsResult('圆周运动', { 向心加速度: r.centripetal, 周期: r.period }, 'm/s²/s'))
+          setOutput(
+            formatPhysicsResult(
+              '圆周运动',
+              { 向心加速度: r.centripetal, 周期: r.period },
+              'm/s²/s',
+            ),
+          )
           break
         }
       }
@@ -96,15 +110,17 @@ export default function Tool() {
                 type="button"
                 data-testid={`physics-mode-${m.key}`}
                 onClick={() => setMode(m.key)}
-                className={m.key === mode ? BTN_CLS : 'rounded border border-slate-300 px-4 py-1.5 text-sm dark:border-slate-600'}
+                className={
+                  m.key === mode
+                    ? BTN_CLS
+                    : 'rounded border border-slate-300 px-4 py-1.5 text-sm dark:border-slate-600'
+                }
               >
                 {m.label}
               </button>
             ))}
           </div>
-          <p className="font-mono text-xs text-slate-500 dark:text-slate-400">
-            参数示例：{hint}
-          </p>
+          <p className="font-mono text-xs text-slate-500 dark:text-slate-400">参数示例：{hint}</p>
           <div>
             <button
               type="button"

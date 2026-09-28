@@ -20,7 +20,8 @@ export interface JsonLdBlock {
 /** 提取 HTML 中所有 <script type="application/ld+json"> 的内容（去空） */
 export function extractJsonLd(html: string): string[] {
   const out: string[] = []
-  const re = /<script\b[^>]*\btype\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script\s*>/gi
+  const re =
+    /<script\b[^>]*\btype\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script\s*>/gi
   for (const m of html.matchAll(re)) {
     const content = m[1].trim()
     if (content !== '') out.push(content)

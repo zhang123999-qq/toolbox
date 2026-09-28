@@ -23,11 +23,21 @@ describe('escapeHtml', () => {
 describe('validateOptionField', () => {
   it('四种类型合法字段通过', () => {
     expect(() => validateOptionField(TEXT_FIELD)).not.toThrow()
-    expect(() => validateOptionField({ key: 'a', label: 'l', type: 'checkbox', defaultValue: true })).not.toThrow()
     expect(() =>
-      validateOptionField({ key: 'a', label: 'l', type: 'select', options: ['x'], defaultValue: 'x' }),
+      validateOptionField({ key: 'a', label: 'l', type: 'checkbox', defaultValue: true }),
     ).not.toThrow()
-    expect(() => validateOptionField({ key: 'a', label: 'l', type: 'number', defaultValue: 3 })).not.toThrow()
+    expect(() =>
+      validateOptionField({
+        key: 'a',
+        label: 'l',
+        type: 'select',
+        options: ['x'],
+        defaultValue: 'x',
+      }),
+    ).not.toThrow()
+    expect(() =>
+      validateOptionField({ key: 'a', label: 'l', type: 'number', defaultValue: 3 }),
+    ).not.toThrow()
     expect(FIELD_TYPE_VALUES).toEqual(['text', 'checkbox', 'select', 'number'])
   })
   it('非对象报错', () => {
@@ -48,30 +58,44 @@ describe('validateOptionField', () => {
     expect(() => validateOptionField({ ...TEXT_FIELD, type: 'date' })).toThrow('type 非法')
   })
   it('select 缺少合法 options 报错', () => {
-    expect(() => validateOptionField({ key: 'a', label: 'l', type: 'select' })).toThrow('需要非空 options 数组')
-    expect(() => validateOptionField({ key: 'a', label: 'l', type: 'select', options: [] })).toThrow(
+    expect(() => validateOptionField({ key: 'a', label: 'l', type: 'select' })).toThrow(
       '需要非空 options 数组',
     )
-    expect(() => validateOptionField({ key: 'a', label: 'l', type: 'select', options: [''] })).toThrow(
-      '必须是非空字符串数组',
-    )
-    expect(() => validateOptionField({ key: 'a', label: 'l', type: 'select', options: [1] })).toThrow(
-      '必须是非空字符串数组',
-    )
+    expect(() =>
+      validateOptionField({ key: 'a', label: 'l', type: 'select', options: [] }),
+    ).toThrow('需要非空 options 数组')
+    expect(() =>
+      validateOptionField({ key: 'a', label: 'l', type: 'select', options: [''] }),
+    ).toThrow('必须是非空字符串数组')
+    expect(() =>
+      validateOptionField({ key: 'a', label: 'l', type: 'select', options: [1] }),
+    ).toThrow('必须是非空字符串数组')
   })
   it('defaultValue 类型不符报错', () => {
     expect(() => validateOptionField({ ...TEXT_FIELD, defaultValue: 1 })).toThrow('text 需要字符串')
     expect(() =>
       validateOptionField({ key: 'a', label: 'l', type: 'checkbox', defaultValue: 'yes' }),
     ).toThrow('checkbox 需要布尔值')
-    expect(() => validateOptionField({ key: 'a', label: 'l', type: 'number', defaultValue: '1' })).toThrow(
-      'number 需要数字',
-    )
     expect(() =>
-      validateOptionField({ key: 'a', label: 'l', type: 'select', options: ['x'], defaultValue: 'y' }),
+      validateOptionField({ key: 'a', label: 'l', type: 'number', defaultValue: '1' }),
+    ).toThrow('number 需要数字')
+    expect(() =>
+      validateOptionField({
+        key: 'a',
+        label: 'l',
+        type: 'select',
+        options: ['x'],
+        defaultValue: 'y',
+      }),
     ).toThrow('必须是 options 中的一项')
     expect(() =>
-      validateOptionField({ key: 'a', label: 'l', type: 'select', options: ['x'], defaultValue: 1 }),
+      validateOptionField({
+        key: 'a',
+        label: 'l',
+        type: 'select',
+        options: ['x'],
+        defaultValue: 1,
+      }),
     ).toThrow('必须是 options 中的一项')
   })
 })
@@ -81,7 +105,13 @@ describe('generateOptionsPage', () => {
     const files = generateOptionsPage([
       { key: 'host', label: '地址', type: 'text', defaultValue: 'https://a.com' },
       { key: 'notify', label: '通知', type: 'checkbox', defaultValue: true },
-      { key: 'theme', label: '主题', type: 'select', options: ['light', 'dark'], defaultValue: 'dark' },
+      {
+        key: 'theme',
+        label: '主题',
+        type: 'select',
+        options: ['light', 'dark'],
+        defaultValue: 'dark',
+      },
       { key: 'interval', label: '间隔', type: 'number', defaultValue: 30 },
     ])
     expect(files.html).toContain('id="field-host"')
@@ -104,9 +134,9 @@ describe('generateOptionsPage', () => {
     expect(files.html).toContain('&lt;script&gt;')
   })
   it('重复 key 报错', () => {
-    expect(() =>
-      generateOptionsPage([TEXT_FIELD, { ...TEXT_FIELD, label: '另一个' }]),
-    ).toThrow('重复字段 key：apiHost')
+    expect(() => generateOptionsPage([TEXT_FIELD, { ...TEXT_FIELD, label: '另一个' }])).toThrow(
+      '重复字段 key：apiHost',
+    )
   })
   it('非法字段与空数组报错', () => {
     expect(() => generateOptionsPage([])).toThrow('至少需要一个选项字段')
@@ -129,7 +159,9 @@ describe('parseOptionsInput', () => {
   })
   it('重复 key 在解析阶段即报错', () => {
     expect(() =>
-      parseOptionsInput('{"fields":[{"key":"a","label":"l","type":"text"},{"key":"a","label":"m","type":"text"}]}'),
+      parseOptionsInput(
+        '{"fields":[{"key":"a","label":"l","type":"text"},{"key":"a","label":"m","type":"text"}]}',
+      ),
     ).toThrow('重复字段 key')
   })
   it('非法输入报错', () => {

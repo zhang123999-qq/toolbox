@@ -28,12 +28,30 @@ export function bytesToHex(bytes: Uint8Array): string {
 /* ---------------- Keccak-256 ---------------- */
 
 const KECCAK_ROUND_CONSTANTS = [
-  0x0000000000000001n, 0x0000000000008082n, 0x800000000000808an, 0x8000000080008000n,
-  0x000000000000808bn, 0x0000000080000001n, 0x8000000080008081n, 0x8000000000008009n,
-  0x000000000000008an, 0x0000000000000088n, 0x0000000080008009n, 0x000000008000000an,
-  0x000000008000808bn, 0x800000000000008bn, 0x8000000000008089n, 0x8000000000008003n,
-  0x8000000000008002n, 0x8000000000000080n, 0x000000000000800an, 0x800000008000000an,
-  0x8000000080008081n, 0x8000000000008080n, 0x0000000080000001n, 0x8000000080008008n,
+  0x0000000000000001n,
+  0x0000000000008082n,
+  0x800000000000808an,
+  0x8000000080008000n,
+  0x000000000000808bn,
+  0x0000000080000001n,
+  0x8000000080008081n,
+  0x8000000000008009n,
+  0x000000000000008an,
+  0x0000000000000088n,
+  0x0000000080008009n,
+  0x000000008000000an,
+  0x000000008000808bn,
+  0x800000000000008bn,
+  0x8000000000008089n,
+  0x8000000000008003n,
+  0x8000000000008002n,
+  0x8000000000000080n,
+  0x000000000000800an,
+  0x800000008000000an,
+  0x8000000080008081n,
+  0x8000000000008080n,
+  0x0000000080000001n,
+  0x8000000080008008n,
 ]
 const KECCAK_ROTATION_OFFSETS = [
   0, 1, 62, 28, 27, 36, 44, 6, 55, 20, 3, 10, 43, 25, 39, 41, 45, 15, 21, 8, 18, 2, 61, 56, 14,
@@ -69,7 +87,7 @@ function keccakF1600(state: bigint[]): void {
     }
     for (let x = 0; x < 5; x += 1) {
       for (let y = 0; y < 5; y += 1) {
-        state[x + 5 * y] = b[x + 5 * y] ^ (~b[(x + 1) % 5 + 5 * y] & b[(x + 2) % 5 + 5 * y])
+        state[x + 5 * y] = b[x + 5 * y] ^ (~b[((x + 1) % 5) + 5 * y] & b[((x + 2) % 5) + 5 * y])
       }
     }
     state[0] ^= KECCAK_ROUND_CONSTANTS[round]
@@ -314,7 +332,11 @@ export function decodeAccessList(v: RlpValue): string {
 }
 
 /** legacy v → {chainId, 显示文本} */
-export function parseLegacyV(v: bigint, rEmpty: boolean, sEmpty: boolean): { chainId: string | null; text: string } {
+export function parseLegacyV(
+  v: bigint,
+  rEmpty: boolean,
+  sEmpty: boolean,
+): { chainId: string | null; text: string } {
   if (rEmpty && sEmpty) {
     // 待签名交易：v 即 chainId
     return { chainId: v.toString(10), text: `${v}（待签名，v 即 chainId）` }
@@ -358,7 +380,13 @@ function decodeLegacy(txBytes: Uint8Array, payload: RlpValue): DecodedTx {
     { key: 'v', label: 'v', value: vText },
     ...sigFields(rB, sB),
   )
-  return { txType: 0, typeLabel: 'Legacy', hash: `0x${bytesToHex(keccak256(txBytes))}`, chainId, fields }
+  return {
+    txType: 0,
+    typeLabel: 'Legacy',
+    hash: `0x${bytesToHex(keccak256(txBytes))}`,
+    chainId,
+    fields,
+  }
 }
 
 /**
@@ -389,7 +417,12 @@ function decodeTyped(
   const feeFields: TxField[] = []
   if (txType === 2) {
     feeFields.push(
-      numField('maxPriorityFeePerGas', 'maxPriorityFeePerGas (wei)', takeBytes('maxPriorityFeePerGas'), 'maxPriorityFeePerGas'),
+      numField(
+        'maxPriorityFeePerGas',
+        'maxPriorityFeePerGas (wei)',
+        takeBytes('maxPriorityFeePerGas'),
+        'maxPriorityFeePerGas',
+      ),
       numField('maxFeePerGas', 'maxFeePerGas (wei)', takeBytes('maxFeePerGas'), 'maxFeePerGas'),
     )
   } else {
@@ -443,5 +476,7 @@ export function decodeTransaction(rawHex: string): DecodedTx {
   if (first >= 0xc0) {
     return decodeLegacy(bytes, rlpDecode(bytes))
   }
-  throw new Error(`不支持的交易类型：0x${first.toString(16).padStart(2, '0')}（仅支持 Legacy / Type 1 / Type 2）`)
+  throw new Error(
+    `不支持的交易类型：0x${first.toString(16).padStart(2, '0')}（仅支持 Legacy / Type 1 / Type 2）`,
+  )
 }

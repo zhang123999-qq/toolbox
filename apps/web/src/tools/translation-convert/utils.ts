@@ -175,8 +175,7 @@ function parsePo(input: string): I18nEntry[] {
       else if (target === 'msgstr') draft.msgstrs[draft.msgstrs.length - 1] += piece
       else if (target === 'plural') {
         // msgid_plural 续行：复数形式不参与键名，仅校验语法后忽略
-      }
-      else throw new Error(`PO 第 ${lineNo} 行：孤立的字符串续行`)
+      } else throw new Error(`PO 第 ${lineNo} 行：孤立的字符串续行`)
       continue
     }
     throw new Error(`PO 第 ${lineNo} 行无法识别：${trimmed.slice(0, 24)}`)
@@ -186,9 +185,14 @@ function parsePo(input: string): I18nEntry[] {
 }
 
 function stripYamlQuotes(s: string): string {
-  if (s.length >= 2 && ((s[0] === '"' && s[s.length - 1] === '"') || (s[0] === "'" && s[s.length - 1] === "'"))) {
+  if (
+    s.length >= 2 &&
+    ((s[0] === '"' && s[s.length - 1] === '"') || (s[0] === "'" && s[s.length - 1] === "'"))
+  ) {
     const inner = s.slice(1, -1)
-    return s[0] === '"' ? inner.replace(/\\"/g, '"').replace(/\\\\/g, '\\') : inner.replace(/''/g, "'")
+    return s[0] === '"'
+      ? inner.replace(/\\"/g, '"').replace(/\\\\/g, '\\')
+      : inner.replace(/''/g, "'")
   }
   return s
 }
@@ -207,7 +211,8 @@ function parseYaml(input: string): I18nEntry[] {
     const trimmed = raw.trim()
     if (trimmed === '' || trimmed.startsWith('#')) continue
     if (raw.includes('\t')) throw new Error(`YAML 第 ${lineNo} 行含制表符：请改用空格缩进`)
-    if (/^-\s/.test(trimmed) || trimmed === '-') throw new Error(`YAML 第 ${lineNo} 行是列表项：暂不支持列表`)
+    if (/^-\s/.test(trimmed) || trimmed === '-')
+      throw new Error(`YAML 第 ${lineNo} 行是列表项：暂不支持列表`)
     const indent = raw.length - raw.trimStart().length
     const m = /^([^:]*):(.*)$/.exec(trimmed)
     if (!m) throw new Error(`YAML 第 ${lineNo} 行格式错误：应为「key: value」`)
@@ -337,7 +342,10 @@ export function serializeI18n(entries: readonly I18nEntry[], to: I18nFormat): st
     case 'json':
       return JSON.stringify(unflattenJson(entries), null, 2)
     case 'po':
-      return entries.map((e) => `msgid ${poQuote(e.key)}\nmsgstr ${poQuote(e.value)}`).join('\n\n') + (entries.length > 0 ? '\n' : '')
+      return (
+        entries.map((e) => `msgid ${poQuote(e.key)}\nmsgstr ${poQuote(e.value)}`).join('\n\n') +
+        (entries.length > 0 ? '\n' : '')
+      )
     case 'yaml': {
       const body = yamlLines(unflattenJson(entries), 0).join('\n')
       return body === '' ? '' : body + '\n'

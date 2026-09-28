@@ -111,7 +111,8 @@ export function parseSpriteParams(text: string): SpriteParams {
   } catch {
     throw new Error('输入不是合法 JSON')
   }
-  if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) throw new Error('输入必须是 JSON 对象')
+  if (typeof raw !== 'object' || raw === null || Array.isArray(raw))
+    throw new Error('输入必须是 JSON 对象')
   const o = raw as Record<string, unknown>
   const params: SpriteParams = {
     imgW: o.imgW as number,

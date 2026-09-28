@@ -83,7 +83,10 @@ export function parseCacheControl(header: string): ParsedCacheControl {
       continue
     }
     const key = token.slice(0, eq).trim()
-    const raw = token.slice(eq + 1).trim().replace(/^"|"$/g, '')
+    const raw = token
+      .slice(eq + 1)
+      .trim()
+      .replace(/^"|"$/g, '')
     if (!/^\d+$/.test(raw)) throw new Error(`指令值非法：${part.trim()}`)
     const value = Number(raw)
     switch (key) {
@@ -117,4 +120,5 @@ export function describeParsed(parsed: ParsedCacheControl): string {
   return bits.length > 0 ? bits.join('；') : '无有效缓存指令'
 }
 
-export const EXAMPLE_CACHE_HEADER = 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=60'
+export const EXAMPLE_CACHE_HEADER =
+  'public, max-age=3600, s-maxage=86400, stale-while-revalidate=60'

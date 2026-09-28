@@ -21,7 +21,9 @@ describe('validateSpriteParams', () => {
     expect(() => validateSpriteParams({ imgW: 0, imgH: 128, cols: 4, rows: 2 })).toThrow('imgW')
     expect(() => validateSpriteParams({ imgW: 256, imgH: -1, cols: 4, rows: 2 })).toThrow('imgH')
     expect(() => validateSpriteParams({ imgW: 256, imgH: 128, cols: 1.5, rows: 2 })).toThrow('cols')
-    expect(() => validateSpriteParams({ imgW: 256, imgH: 128, cols: 4, rows: '2' as never })).toThrow('rows')
+    expect(() =>
+      validateSpriteParams({ imgW: 256, imgH: 128, cols: 4, rows: '2' as never }),
+    ).toThrow('rows')
   })
   it('边距与间距必须为非负整数', () => {
     expect(() =>
@@ -45,7 +47,9 @@ describe('validateSpriteParams', () => {
     ).toThrow('为 0 或负数')
   })
   it('无法整除报错', () => {
-    expect(() => validateSpriteParams({ imgW: 100, imgH: 100, cols: 3, rows: 2 })).toThrow('无法被行列整除')
+    expect(() => validateSpriteParams({ imgW: 100, imgH: 100, cols: 3, rows: 2 })).toThrow(
+      '无法被行列整除',
+    )
   })
 })
 
@@ -65,7 +69,9 @@ describe('computeFrames', () => {
     expect(frames[4]).toEqual({ index: 4, x: 10, y: 76, w: 61, h: 62 })
   })
   it('非法参数直接抛出', () => {
-    expect(() => computeFrames({ imgW: 100, imgH: 100, cols: 3, rows: 2 })).toThrow('无法被行列整除')
+    expect(() => computeFrames({ imgW: 100, imgH: 100, cols: 3, rows: 2 })).toThrow(
+      '无法被行列整除',
+    )
   })
 })
 
@@ -82,9 +88,9 @@ describe('drawFrame', () => {
   })
   it('非正缩放报错', () => {
     const ctx = { drawImage: vi.fn() }
-    expect(() =>
-      drawFrame(ctx, null, { index: 0, x: 0, y: 0, w: 32, h: 32 }, 0, 0, 0),
-    ).toThrow('scale')
+    expect(() => drawFrame(ctx, null, { index: 0, x: 0, y: 0, w: 32, h: 32 }, 0, 0, 0)).toThrow(
+      'scale',
+    )
   })
 })
 

@@ -17,7 +17,9 @@ function computeFields(input: TxDecodeInput): TxField[] {
 
 function fieldsToText(fields: TxField[]): string {
   return fields
-    .map((f) => (f.sub !== undefined ? `${f.label}：${f.value} (${f.sub})` : `${f.label}：${f.value}`))
+    .map((f) =>
+      f.sub !== undefined ? `${f.label}：${f.value} (${f.sub})` : `${f.label}：${f.value}`,
+    )
     .join('\n')
 }
 

@@ -53,7 +53,9 @@ export function validatePopupSize(width: unknown, height: unknown): void {
       throw new Error(`${name} 必须是整数`)
     }
     if (value < 1 || value > max) {
-      throw new Error(`${name} 超出范围（1–${max}，Chrome popup 上限 ${POPUP_MAX_WIDTH}×${POPUP_MAX_HEIGHT}）`)
+      throw new Error(
+        `${name} 超出范围（1–${max}，Chrome popup 上限 ${POPUP_MAX_WIDTH}×${POPUP_MAX_HEIGHT}）`,
+      )
     }
   }
 }

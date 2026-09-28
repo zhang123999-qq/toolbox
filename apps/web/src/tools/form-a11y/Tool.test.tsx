@@ -36,7 +36,10 @@ describe('form-a11y · Tool', () => {
   it('完美表单输出无问题', () => {
     render(<Tool />)
     fireEvent.change(byTestId('input'), {
-      target: { value: '<form><label for="n">姓名</label><input id="n"><button type="submit">Go</button></form>' },
+      target: {
+        value:
+          '<form><label for="n">姓名</label><input id="n"><button type="submit">Go</button></form>',
+      },
     })
     expect(byTestId('output').textContent).toContain('未发现无障碍问题')
   })

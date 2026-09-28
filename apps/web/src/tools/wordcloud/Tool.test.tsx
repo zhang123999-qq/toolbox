@@ -21,7 +21,18 @@ function byTestId(id: string): HTMLElement {
 describe('wordcloud · Tool', () => {
   it('渲染后必需 data-testid 全部存在', () => {
     render(<Tool />)
-    for (const id of ['input', 'run', 'example', 'clear', 'output', 'copy', 'download', 'wordcloud-canvas', 'download-png', 'word-count']) {
+    for (const id of [
+      'input',
+      'run',
+      'example',
+      'clear',
+      'output',
+      'copy',
+      'download',
+      'wordcloud-canvas',
+      'download-png',
+      'word-count',
+    ]) {
       expect(byTestId(id)).toBeTruthy()
     }
   })
@@ -54,7 +65,9 @@ describe('wordcloud · Tool', () => {
   it('点下载 PNG 时 canvas 不存在守卫（jsdom 无 canvas 上下文）', () => {
     render(<Tool />)
     fireEvent.click(byTestId('example'))
-    const spy = vi.spyOn(HTMLCanvasElement.prototype, 'toDataURL').mockReturnValue('data:image/png;base64,AAA')
+    const spy = vi
+      .spyOn(HTMLCanvasElement.prototype, 'toDataURL')
+      .mockReturnValue('data:image/png;base64,AAA')
     const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {})
     fireEvent.click(byTestId('download-png'))
     // jsdom 下 canvas 存在但 pendingWords 非空 → 走正常导出分支

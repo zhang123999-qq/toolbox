@@ -87,10 +87,7 @@ function hasExplicitName(el: Element): boolean {
  * 分析 HTML 的地标角色。
  * 先收显式 role，再收隐式语义元素；已收录元素不再重复计算。
  */
-export function analyzeLandmarks(
-  html: string,
-  createDoc?: DocFactory,
-): LandmarkAnalysis {
+export function analyzeLandmarks(html: string, createDoc?: DocFactory): LandmarkAnalysis {
   const doc = parseHtml(html, createDoc)
   const body = doc.body
   const claimed = new Set<Element>()

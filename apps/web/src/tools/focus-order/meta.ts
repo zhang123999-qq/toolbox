@@ -8,9 +8,11 @@ export const meta: ToolMeta = {
   id: 'focus-order',
   slug: 'focus-order',
   title: '焦点顺序可视化',
-  description: '可视化 HTML 的实际 Tab 键顺序：正 tabindex 优先、其余按 DOM 先后、tabindex=-1 跳过单独列出',
+  description:
+    '可视化 HTML 的实际 Tab 键顺序：正 tabindex 优先、其余按 DOM 先后、tabindex=-1 跳过单独列出',
   titleEn: 'Focus Order Visualizer',
-  descriptionEn: 'Visualize the actual Tab key order of HTML: positive tabindex first, DOM order otherwise, tabindex=-1 listed separately',
+  descriptionEn:
+    'Visualize the actual Tab key order of HTML: positive tabindex first, DOM order otherwise, tabindex=-1 listed separately',
 
   category: 'a11y',
   group: 'life',

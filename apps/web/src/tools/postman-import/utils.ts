@@ -35,17 +35,9 @@ export function resolveCollectionUrl(u: unknown): string {
   if (!isRecord(u)) throw new Error('请求缺少 URL')
   if (typeof u.raw === 'string' && u.raw.trim() !== '') return u.raw
   const protocol = typeof u.protocol === 'string' ? u.protocol : 'https'
-  const host = Array.isArray(u.host)
-    ? u.host.join('.')
-    : typeof u.host === 'string'
-      ? u.host
-      : ''
+  const host = Array.isArray(u.host) ? u.host.join('.') : typeof u.host === 'string' ? u.host : ''
   if (host === '') throw new Error('URL 对象缺少 host')
-  const path = Array.isArray(u.path)
-    ? u.path.join('/')
-    : typeof u.path === 'string'
-      ? u.path
-      : ''
+  const path = Array.isArray(u.path) ? u.path.join('/') : typeof u.path === 'string' ? u.path : ''
   return `${protocol}://${host}${path !== '' ? '/' + path : ''}`
 }
 

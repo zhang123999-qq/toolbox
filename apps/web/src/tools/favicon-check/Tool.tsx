@@ -2,13 +2,7 @@ import { useState } from 'react'
 import { MultiPanel } from '../../components/tool/templates/MultiPanel'
 import type { OptionDef } from '../../components/tool/templates/TwoColumn'
 import { meta } from './meta'
-import {
-  buildSuggestions,
-  checkFavicon,
-  parseIconLinks,
-  renderReport,
-  sourceLabel,
-} from './utils'
+import { buildSuggestions, checkFavicon, parseIconLinks, renderReport, sourceLabel } from './utils'
 import type { CheckResult, IconLink } from './utils'
 import type { FaviconCheckInput, FaviconCheckOptions } from './schema'
 
@@ -65,8 +59,8 @@ function Checker({
         </button>
       </div>
       <p className="text-xs text-slate-500 dark:text-slate-400">
-        先对每个候选地址发 HEAD 请求（15 秒超时），405 / 501 时回退 GET。
-        跨域站点的 HEAD 可能被 CORS 拦截导致误报失败，请结合声明清单判断。
+        先对每个候选地址发 HEAD 请求（15 秒超时），405 / 501 时回退 GET。 跨域站点的 HEAD 可能被
+        CORS 拦截导致误报失败，请结合声明清单判断。
       </p>
       {error ? (
         <div
@@ -138,7 +132,8 @@ export default function Tool() {
       key: 'html',
       label: '页面 HTML（可选）',
       kind: 'textarea',
-      placeholder: '粘贴该页面的 HTML 源码，用于解析 <link rel="icon"> 等声明；留空则只检查默认地址',
+      placeholder:
+        '粘贴该页面的 HTML 源码，用于解析 <link rel="icon"> 等声明；留空则只检查默认地址',
     },
   ]
 

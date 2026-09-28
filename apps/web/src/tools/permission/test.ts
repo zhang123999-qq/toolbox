@@ -78,9 +78,9 @@ describe('buildPermissionsManifest', () => {
     expect(out.permissions).toEqual(['storage'])
   })
   it('未知权限报错', () => {
-    expect(() =>
-      buildPermissionsManifest({ permissions: ['nope'], hostPermissions: [] }),
-    ).toThrow('未知权限：nope')
+    expect(() => buildPermissionsManifest({ permissions: ['nope'], hostPermissions: [] })).toThrow(
+      '未知权限：nope',
+    )
   })
   it('空权限生成空数组', () => {
     const out = JSON.parse(buildPermissionsManifest({ permissions: [], hostPermissions: [] }))

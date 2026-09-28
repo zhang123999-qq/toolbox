@@ -75,7 +75,10 @@ describe('desc-check / analyzeDescription', () => {
     expect(a.score).toBe(100)
   })
   it('关键词缺失扣 15 分并给建议', () => {
-    const a = analyzeDescription('这是一段合适长度的中文描述文字内容填充到足够长。'.repeat(4), '关键词')
+    const a = analyzeDescription(
+      '这是一段合适长度的中文描述文字内容填充到足够长。'.repeat(4),
+      '关键词',
+    )
     expect(a.keywordFound).toBe(false)
     expect(a.suggestions.some((s) => s.includes('关键词') && s.includes('未找到'))).toBe(true)
   })
@@ -89,7 +92,9 @@ describe('desc-check / analyzeDescription', () => {
     expect(back.score).toBe(front.score - 5)
   })
   it('重复词扣分（每个 10 分，最多 20 分）', () => {
-    const a = analyzeDescription('免费免费免费免费，还有 free free free 的英文重复词测试填充。'.repeat(6))
+    const a = analyzeDescription(
+      '免费免费免费免费，还有 free free free 的英文重复词测试填充。'.repeat(6),
+    )
     expect(a.repeatedWords.length).toBeGreaterThan(0)
     expect(a.score).toBeLessThan(100)
     expect(a.suggestions.some((s) => s.includes('重复出现'))).toBe(true)
@@ -119,7 +124,10 @@ describe('desc-check / renderReport', () => {
     expect(report).toContain('关键词')
   })
   it('关键词缺失 / 重复词 / 无 CTA 的分支', () => {
-    const a = analyzeDescription('免费免费免费免费普通描述文字内容填充足够长。'.repeat(6), '不存在的词')
+    const a = analyzeDescription(
+      '免费免费免费免费普通描述文字内容填充足够长。'.repeat(6),
+      '不存在的词',
+    )
     const report = renderReport(a)
     expect(report).toContain('未找到')
     expect(a.repeatedWords).toContain('免费')

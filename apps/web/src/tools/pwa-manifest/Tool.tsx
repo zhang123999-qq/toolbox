@@ -34,10 +34,20 @@ export default function Tool() {
       optionDefs={[
         { key: 'shortName', label: 'short_name（短名称）*', kind: 'text', placeholder: '应用' },
         { key: 'startUrl', label: 'start_url（启动地址）', kind: 'text', placeholder: '/' },
-        { key: 'display', label: 'display（显示模式）', kind: 'select', values: ['standalone', 'fullscreen', 'minimal-ui', 'browser'] },
+        {
+          key: 'display',
+          label: 'display（显示模式）',
+          kind: 'select',
+          values: ['standalone', 'fullscreen', 'minimal-ui', 'browser'],
+        },
         { key: 'themeColor', label: 'theme_color', kind: 'text', placeholder: '#2563eb' },
         { key: 'backgroundColor', label: 'background_color', kind: 'text', placeholder: '#ffffff' },
-        { key: 'icons', label: 'icons（每行「图标路径 尺寸」）', kind: 'textarea', placeholder: 'icon-192.png 192x192' },
+        {
+          key: 'icons',
+          label: 'icons（每行「图标路径 尺寸」）',
+          kind: 'textarea',
+          placeholder: 'icon-192.png 192x192',
+        },
       ]}
       run={run}
       example={EXAMPLE}

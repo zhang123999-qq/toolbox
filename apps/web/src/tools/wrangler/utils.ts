@@ -97,13 +97,7 @@ function requireArg(args: Record<string, string>, key: string): string {
 }
 
 export type WranglerAction =
-  | 'deploy'
-  | 'dev'
-  | 'tail'
-  | 'kv-put'
-  | 'kv-get'
-  | 'd1-execute'
-  | 'r2-upload'
+  'deploy' | 'dev' | 'tail' | 'kv-put' | 'kv-get' | 'd1-execute' | 'r2-upload'
 
 /** 拼装完整命令；未知 action 或缺必填参数时中文抛错 */
 export function buildCommand(action: string, args: Record<string, string>): string {

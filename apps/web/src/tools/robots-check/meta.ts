@@ -10,7 +10,8 @@ export const meta: ToolMeta = {
   title: 'robots 检查',
   description: '解析并验证 robots.txt：分组规则、全站屏蔽风险、Sitemap 声明与规则冲突',
   titleEn: 'Robots Check',
-  descriptionEn: 'Parse and validate robots.txt: groups, site-wide blocks, sitemap and rule conflicts',
+  descriptionEn:
+    'Parse and validate robots.txt: groups, site-wide blocks, sitemap and rule conflicts',
 
   category: 'seo',
   group: 'dev',

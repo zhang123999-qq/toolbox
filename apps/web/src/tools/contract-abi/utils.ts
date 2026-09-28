@@ -6,12 +6,30 @@
 /* ---------------- Keccak-256（与 tx-decode 同源实现） ---------------- */
 
 const KECCAK_ROUND_CONSTANTS = [
-  0x0000000000000001n, 0x0000000000008082n, 0x800000000000808an, 0x8000000080008000n,
-  0x000000000000808bn, 0x0000000080000001n, 0x8000000080008081n, 0x8000000000008009n,
-  0x000000000000008an, 0x0000000000000088n, 0x0000000080008009n, 0x000000008000000an,
-  0x000000008000808bn, 0x800000000000008bn, 0x8000000000008089n, 0x8000000000008003n,
-  0x8000000000008002n, 0x8000000000000080n, 0x000000000000800an, 0x800000008000000an,
-  0x8000000080008081n, 0x8000000000008080n, 0x0000000080000001n, 0x8000000080008008n,
+  0x0000000000000001n,
+  0x0000000000008082n,
+  0x800000000000808an,
+  0x8000000080008000n,
+  0x000000000000808bn,
+  0x0000000080000001n,
+  0x8000000080008081n,
+  0x8000000000008009n,
+  0x000000000000008an,
+  0x0000000000000088n,
+  0x0000000080008009n,
+  0x000000008000000an,
+  0x000000008000808bn,
+  0x800000000000008bn,
+  0x8000000000008089n,
+  0x8000000000008003n,
+  0x8000000000008002n,
+  0x8000000000000080n,
+  0x000000000000800an,
+  0x800000008000000an,
+  0x8000000080008081n,
+  0x8000000000008080n,
+  0x0000000080000001n,
+  0x8000000080008008n,
 ]
 const KECCAK_ROTATION_OFFSETS = [
   0, 1, 62, 28, 27, 36, 44, 6, 55, 20, 3, 10, 43, 25, 39, 41, 45, 15, 21, 8, 18, 2, 61, 56, 14,
@@ -47,7 +65,7 @@ function keccakF1600(state: bigint[]): void {
     }
     for (let x = 0; x < 5; x += 1) {
       for (let y = 0; y < 5; y += 1) {
-        state[x + 5 * y] = b[x + 5 * y] ^ (~b[(x + 1) % 5 + 5 * y] & b[(x + 2) % 5 + 5 * y])
+        state[x + 5 * y] = b[x + 5 * y] ^ (~b[((x + 1) % 5) + 5 * y] & b[((x + 2) % 5) + 5 * y])
       }
     }
     state[0] ^= KECCAK_ROUND_CONSTANTS[round]
@@ -179,7 +197,9 @@ export function abiToItems(abi: AbiEntry[]): AbiItem[] {
       signature,
       hash: entry.type === 'function' ? functionSelector(signature) : eventTopic(signature),
       mutability: entry.stateMutability ?? '-',
-      inputs: (entry.inputs ?? []).map((p) => `${canonicalType(p)} ${p.name}`.trim()).join(', ') || '无参数',
+      inputs:
+        (entry.inputs ?? []).map((p) => `${canonicalType(p)} ${p.name}`.trim()).join(', ') ||
+        '无参数',
     })
   }
   return items
@@ -189,5 +209,7 @@ export function abiToItems(abi: AbiEntry[]): AbiItem[] {
 export function filterItems(items: AbiItem[], keyword: string): AbiItem[] {
   const kw = keyword.trim().toLowerCase()
   if (kw === '') return items
-  return items.filter((it) => it.name.toLowerCase().includes(kw) || it.signature.toLowerCase().includes(kw))
+  return items.filter(
+    (it) => it.name.toLowerCase().includes(kw) || it.signature.toLowerCase().includes(kw),
+  )
 }

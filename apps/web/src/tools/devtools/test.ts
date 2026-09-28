@@ -12,7 +12,10 @@ import {
 
 describe('parseDevtoolsInput', () => {
   it('解析合法输入与默认值', () => {
-    expect(parseDevtoolsInput('{"panelTitle":"测试"}')).toEqual({ panelTitle: '测试', sidebar: false })
+    expect(parseDevtoolsInput('{"panelTitle":"测试"}')).toEqual({
+      panelTitle: '测试',
+      sidebar: false,
+    })
     expect(parseDevtoolsInput('{"panelTitle":"  两边空格  ","sidebar":true}')).toEqual({
       panelTitle: '两边空格',
       sidebar: true,

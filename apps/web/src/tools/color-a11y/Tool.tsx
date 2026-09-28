@@ -45,7 +45,9 @@ export default function Tool() {
               style={{ backgroundColor: r.bg }}
             />
             <p data-testid="result-verdict" className="text-sm font-bold">
-              {r.colorBlindSafe ? '色盲安全：四种色觉下均通过 AA' : '不安全：存在色盲用户难以辨识的风险'}
+              {r.colorBlindSafe
+                ? '色盲安全：四种色觉下均通过 AA'
+                : '不安全：存在色盲用户难以辨识的风险'}
             </p>
           </div>
           <table className="w-full text-xs">

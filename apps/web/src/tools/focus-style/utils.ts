@@ -33,7 +33,13 @@ export function validateHexColor(input: string, name: string): string {
   const m = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.exec(text)
   if (!m) throw new Error(`${name}不合法：请输入 #rgb 或 #rrggbb 格式的颜色`)
   const hex = m[1] as string
-  const full = hex.length === 3 ? hex.split('').map((c) => c + c).join('') : hex
+  const full =
+    hex.length === 3
+      ? hex
+          .split('')
+          .map((c) => c + c)
+          .join('')
+      : hex
   return `#${full.toLowerCase()}`
 }
 
@@ -54,7 +60,11 @@ export function validateOutlineStyle(style: string): OutlineStyle {
 /** hex → [r,g,b]（0–255） */
 function hexToRgb(hex: string): [number, number, number] {
   const h = hex.slice(1)
-  return [Number.parseInt(h.slice(0, 2), 16), Number.parseInt(h.slice(2, 4), 16), Number.parseInt(h.slice(4, 6), 16)]
+  return [
+    Number.parseInt(h.slice(0, 2), 16),
+    Number.parseInt(h.slice(2, 4), 16),
+    Number.parseInt(h.slice(4, 6), 16),
+  ]
 }
 
 /** WCAG 相对亮度 */
@@ -89,10 +99,7 @@ export function checkFocusContrast(color: string, bg: string): FocusContrast {
  * 生成 :focus-visible CSS。
  * selector 可注入作用域（预览用带作用域的选择器，复制用 :focus-visible）。
  */
-export function generateFocusStyle(
-  params: FocusStyleParams,
-  selector = ':focus-visible',
-): string {
+export function generateFocusStyle(params: FocusStyleParams, selector = ':focus-visible'): string {
   const color = validateHexColor(params.color, '焦点颜色')
   const width = validatePx(params.width, '描边宽度', 1, 8)
   const offset = validatePx(params.offset, '描边偏移', 0, 16)

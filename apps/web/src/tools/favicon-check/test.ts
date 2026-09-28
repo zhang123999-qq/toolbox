@@ -170,7 +170,10 @@ describe('favicon-check / checkUrl', () => {
   })
 
   it('省略 fetchFn 时走全局 fetch', async () => {
-    vi.stubGlobal('fetch', mockFetch(() => mockResponse(200, 'image/x-icon')))
+    vi.stubGlobal(
+      'fetch',
+      mockFetch(() => mockResponse(200, 'image/x-icon')),
+    )
     const r = await checkUrl('https://example.com/favicon.ico')
     expect(r.ok).toBe(true)
   })
@@ -192,9 +195,7 @@ describe('favicon-check / checkUrl', () => {
   it('HEAD 501 回退 GET', async () => {
     const r = await checkUrl(
       'https://example.com/favicon.ico',
-      mockFetch((_url, init) =>
-        mockResponse(init?.method === 'HEAD' ? 501 : 200, 'image/x-icon'),
-      ),
+      mockFetch((_url, init) => mockResponse(init?.method === 'HEAD' ? 501 : 200, 'image/x-icon')),
     )
     expect(r.ok).toBe(true)
   })
@@ -321,12 +322,8 @@ describe('favicon-check / sourceLabel', () => {
     )
   })
   it('无 sizes/type 时省略', () => {
-    const icons: IconLink[] = [
-      { href: 'https://example.com/c.png', rel: 'apple-touch-icon' },
-    ]
-    expect(sourceLabel('https://example.com/c.png', icons)).toBe(
-      '声明：rel="apple-touch-icon"',
-    )
+    const icons: IconLink[] = [{ href: 'https://example.com/c.png', rel: 'apple-touch-icon' }]
+    expect(sourceLabel('https://example.com/c.png', icons)).toBe('声明：rel="apple-touch-icon"')
   })
 })
 
@@ -412,9 +409,7 @@ describe('favicon-check / transform', () => {
     )
   })
   it('非法 URL 抛错', async () => {
-    await expect(transform({ text: 'notaurl' }, { html: '' }, okFetch)).rejects.toThrow(
-      /完整地址/,
-    )
+    await expect(transform({ text: 'notaurl' }, { html: '' }, okFetch)).rejects.toThrow(/完整地址/)
   })
   it('正常返回报告', async () => {
     const out = await transform({ text: 'https://example.com' }, { html: '' }, okFetch)
@@ -422,11 +417,7 @@ describe('favicon-check / transform', () => {
     expect(out).toContain('未提供页面 HTML')
   })
   it('options.html 缺省时视为未提供 HTML', async () => {
-    const out = await transform(
-      { text: 'https://example.com' },
-      {} as FaviconCheckOptions,
-      okFetch,
-    )
+    const out = await transform({ text: 'https://example.com' }, {} as FaviconCheckOptions, okFetch)
     expect(out).toContain('未提供页面 HTML')
   })
   it('省略 fetchFn 时走全局 fetch', async () => {

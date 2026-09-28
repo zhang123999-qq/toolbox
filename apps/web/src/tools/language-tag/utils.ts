@@ -103,7 +103,15 @@ export function parseLanguageTag(input: string): LanguageTagParts {
   out.push(...variants)
   for (const e of extensions) out.push(e.singleton, ...e.subtags)
   if (privateUse.length > 0) out.push('x', ...privateUse)
-  return { language: language.toLowerCase(), script, region, variants, extensions, privateUse, tag: out.join('-') }
+  return {
+    language: language.toLowerCase(),
+    script,
+    region,
+    variants,
+    extensions,
+    privateUse,
+    tag: out.join('-'),
+  }
 }
 
 export interface BuildParts {
@@ -117,10 +125,12 @@ export interface BuildParts {
 /** 由部件构建 BCP 47 标签（扩展暂不支持构建，仅解析） */
 export function buildLanguageTag(parts: BuildParts): string {
   const language = parts.language.trim()
-  if (!/^[A-Za-z]{2,8}$/.test(language)) throw new Error(`语言子标签「${parts.language}」非法：应为 2–8 个字母`)
+  if (!/^[A-Za-z]{2,8}$/.test(language))
+    throw new Error(`语言子标签「${parts.language}」非法：应为 2–8 个字母`)
   const out = [language.toLowerCase()]
   if (parts.script !== undefined) {
-    if (!ALPHA_4.test(parts.script.trim())) throw new Error(`文字子标签「${parts.script}」非法：应为 4 个字母`)
+    if (!ALPHA_4.test(parts.script.trim()))
+      throw new Error(`文字子标签「${parts.script}」非法：应为 4 个字母`)
     out.push(titlecase(parts.script.trim()))
   }
   if (parts.region !== undefined) {
@@ -155,30 +165,101 @@ export function isValidLanguageTag(input: string): boolean {
 }
 
 const LANGUAGES: Record<string, string> = {
-  zh: '中文', en: '英语', es: '西班牙语', hi: '印地语', ar: '阿拉伯语',
-  pt: '葡萄牙语', bn: '孟加拉语', ru: '俄语', ja: '日语', pa: '旁遮普语',
-  de: '德语', jv: '爪哇语', ko: '韩语', fr: '法语', te: '泰卢固语',
-  mr: '马拉地语', tr: '土耳其语', ta: '泰米尔语', vi: '越南语', ur: '乌尔都语',
-  it: '意大利语', th: '泰语', gu: '古吉拉特语', pl: '波兰语', uk: '乌克兰语',
-  fa: '波斯语', ml: '马拉雅拉姆语', kn: '卡纳达语', or: '奥里亚语', my: '缅甸语',
-  ha: '豪萨语', sw: '斯瓦希里语', nl: '荷兰语', id: '印尼语', ms: '马来语',
-  fil: '菲律宾语', ro: '罗马尼亚语', hu: '匈牙利语', cs: '捷克语', el: '希腊语',
-  sv: '瑞典语', da: '丹麦语', fi: '芬兰语', no: '挪威语', he: '希伯来语',
-  yue: '粤语', bo: '藏语', ug: '维吾尔语', kk: '哈萨克语', mn: '蒙古语',
+  zh: '中文',
+  en: '英语',
+  es: '西班牙语',
+  hi: '印地语',
+  ar: '阿拉伯语',
+  pt: '葡萄牙语',
+  bn: '孟加拉语',
+  ru: '俄语',
+  ja: '日语',
+  pa: '旁遮普语',
+  de: '德语',
+  jv: '爪哇语',
+  ko: '韩语',
+  fr: '法语',
+  te: '泰卢固语',
+  mr: '马拉地语',
+  tr: '土耳其语',
+  ta: '泰米尔语',
+  vi: '越南语',
+  ur: '乌尔都语',
+  it: '意大利语',
+  th: '泰语',
+  gu: '古吉拉特语',
+  pl: '波兰语',
+  uk: '乌克兰语',
+  fa: '波斯语',
+  ml: '马拉雅拉姆语',
+  kn: '卡纳达语',
+  or: '奥里亚语',
+  my: '缅甸语',
+  ha: '豪萨语',
+  sw: '斯瓦希里语',
+  nl: '荷兰语',
+  id: '印尼语',
+  ms: '马来语',
+  fil: '菲律宾语',
+  ro: '罗马尼亚语',
+  hu: '匈牙利语',
+  cs: '捷克语',
+  el: '希腊语',
+  sv: '瑞典语',
+  da: '丹麦语',
+  fi: '芬兰语',
+  no: '挪威语',
+  he: '希伯来语',
+  yue: '粤语',
+  bo: '藏语',
+  ug: '维吾尔语',
+  kk: '哈萨克语',
+  mn: '蒙古语',
 }
 
 const SCRIPTS: Record<string, string> = {
-  Hans: '简体', Hant: '繁体', Latn: '拉丁', Cyrl: '西里尔', Arab: '阿拉伯',
-  Deva: '天城文', Jpan: '日文', Kore: '韩文', Thai: '泰文', Hebr: '希伯来',
-  Grek: '希腊', Beng: '孟加拉', Taml: '泰米尔', Mymr: '缅甸', Khmr: '高棉',
+  Hans: '简体',
+  Hant: '繁体',
+  Latn: '拉丁',
+  Cyrl: '西里尔',
+  Arab: '阿拉伯',
+  Deva: '天城文',
+  Jpan: '日文',
+  Kore: '韩文',
+  Thai: '泰文',
+  Hebr: '希伯来',
+  Grek: '希腊',
+  Beng: '孟加拉',
+  Taml: '泰米尔',
+  Mymr: '缅甸',
+  Khmr: '高棉',
 }
 
 const REGIONS: Record<string, string> = {
-  CN: '中国', TW: '台湾', HK: '香港', MO: '澳门', US: '美国', GB: '英国',
-  JP: '日本', KR: '韩国', DE: '德国', FR: '法国', RU: '俄罗斯', IN: '印度',
-  BR: '巴西', ES: '西班牙', IT: '意大利', SG: '新加坡', MY: '马来西亚',
-  TH: '泰国', VN: '越南', ID: '印尼', AU: '澳大利亚', CA: '加拿大',
-  '419': '拉丁美洲', '001': '世界',
+  CN: '中国',
+  TW: '台湾',
+  HK: '香港',
+  MO: '澳门',
+  US: '美国',
+  GB: '英国',
+  JP: '日本',
+  KR: '韩国',
+  DE: '德国',
+  FR: '法国',
+  RU: '俄罗斯',
+  IN: '印度',
+  BR: '巴西',
+  ES: '西班牙',
+  IT: '意大利',
+  SG: '新加坡',
+  MY: '马来西亚',
+  TH: '泰国',
+  VN: '越南',
+  ID: '印尼',
+  AU: '澳大利亚',
+  CA: '加拿大',
+  '419': '拉丁美洲',
+  '001': '世界',
 }
 
 /** 查语言/文字/地区代码的中文名，未知返回 undefined。

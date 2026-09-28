@@ -3,11 +3,7 @@
  * keyboard-nav（#719）utils 单测：jsdom 真实 DOMParser + 可注入工厂。
  */
 import { describe, expect, it, vi } from 'vitest'
-import {
-  analyzeKeyboardNav,
-  formatAnalysis,
-  type DocFactory,
-} from './utils'
+import { analyzeKeyboardNav, formatAnalysis, type DocFactory } from './utils'
 
 const factory: DocFactory = (html) => new DOMParser().parseFromString(html, 'text/html')
 
@@ -76,7 +72,10 @@ describe('可聚焦元素收集', () => {
 
 describe('tabindex 检查', () => {
   it('tabindex=0 与 -1 无警告', () => {
-    const a = analyzeKeyboardNav('<button tabindex="0">a</button><button tabindex="-1">b</button>', factory)
+    const a = analyzeKeyboardNav(
+      '<button tabindex="0">a</button><button tabindex="-1">b</button>',
+      factory,
+    )
     expect(a.issues.filter((i) => i.severity !== 'info')).toHaveLength(0)
   })
   it('正 tabindex 警告', () => {
@@ -93,7 +92,9 @@ describe('tabindex 检查', () => {
   })
   it('tabindex=-2 报错', () => {
     const issues = issuesOf('<button tabindex="-2">a</button>')
-    expect(issues.some((i) => i.severity === 'error' && i.message.includes('tabindex="-2"'))).toBe(true)
+    expect(issues.some((i) => i.severity === 'error' && i.message.includes('tabindex="-2"'))).toBe(
+      true,
+    )
   })
   it('非整数 tabindex 报错并跳过该元素', () => {
     const a = analyzeKeyboardNav('<button tabindex="foo">a</button><button>b</button>', factory)
@@ -135,7 +136,9 @@ describe('跳过链接', () => {
     expect(issues.some((i) => i.severity === 'info' && i.message.includes('跳过链接'))).toBe(true)
   })
   it('存在时不给建议', () => {
-    const issues = issuesOf('<a href="#main">跳到主要内容</a><main id="main"><button>a</button></main>')
+    const issues = issuesOf(
+      '<a href="#main">跳到主要内容</a><main id="main"><button>a</button></main>',
+    )
     expect(issues.some((i) => i.message.includes('跳过链接'))).toBe(false)
   })
   it('无可聚焦元素时不给建议', () => {

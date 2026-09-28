@@ -92,9 +92,9 @@ export default function Tool() {
             </pre>
           )}
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            说明：PBKDF2（SHA-256，10 万次迭代，随机 16 字节 salt）派生 AES-GCM 256
-            密钥；载荷为 JSON（含 salt / iv / 密文，均为 Base64）。
-            密码只保存在页面内存中，不写入 localStorage、不上报网络。
+            说明：PBKDF2（SHA-256，10 万次迭代，随机 16 字节 salt）派生 AES-GCM 256 密钥；载荷为
+            JSON（含 salt / iv / 密文，均为 Base64）。 密码只保存在页面内存中，不写入
+            localStorage、不上报网络。
           </p>
         </div>
       )}

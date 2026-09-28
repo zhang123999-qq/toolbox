@@ -83,7 +83,11 @@ export function auditHtml(html: string, pageUrl?: string): AuditResult {
   } else {
     const descLen = description.replace(/\s+/g, '').length
     if (descLen > 160) {
-      push('meta description', '警告', `meta description 过长（${descLen} 个字符，去空白后计），建议不超过 160 个字符`)
+      push(
+        'meta description',
+        '警告',
+        `meta description 过长（${descLen} 个字符，去空白后计），建议不超过 160 个字符`,
+      )
     } else {
       push('meta description', '通过', 'meta description 存在且长度合适')
     }
@@ -156,7 +160,11 @@ export function auditHtml(html: string, pageUrl?: string): AuditResult {
   } else if (imgMissingAlt === 0) {
     push('图片 alt', '通过', `${imgTags.length} 张图片均设置了 alt`)
   } else {
-    push('图片 alt', '警告', `${imgTags.length} 张图片中有 ${imgMissingAlt} 张缺少 alt（无 alt 或 alt 为空）`)
+    push(
+      '图片 alt',
+      '警告',
+      `${imgTags.length} 张图片中有 ${imgMissingAlt} 张缺少 alt（无 alt 或 alt 为空）`,
+    )
   }
 
   // 9. viewport meta（移动端必需）

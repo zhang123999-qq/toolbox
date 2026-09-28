@@ -45,7 +45,9 @@ function okHtml(html: string, contentType: string | null = 'text/html; charset=u
   return {
     ok: true,
     status: 200,
-    headers: { get: (name: string) => (name.toLowerCase() === 'content-type' ? contentType : null) },
+    headers: {
+      get: (name: string) => (name.toLowerCase() === 'content-type' ? contentType : null),
+    },
     text: async () => html,
   }
 }
@@ -176,7 +178,9 @@ describe('og-preview / getMissingSuggestions', () => {
 
 describe('og-preview / resolveUrl', () => {
   it('相对路径转绝对', () => {
-    expect(resolveUrl('https://example.com/post', '/cover.png')).toBe('https://example.com/cover.png')
+    expect(resolveUrl('https://example.com/post', '/cover.png')).toBe(
+      'https://example.com/cover.png',
+    )
   })
 
   it('绝对 URL 保持不变', () => {

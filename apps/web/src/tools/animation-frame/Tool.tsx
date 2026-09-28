@@ -16,8 +16,7 @@ import type { AnimationClip } from './utils'
 
 const BTN_CLS =
   'rounded bg-blue-600 px-4 py-1.5 text-sm text-white disabled:opacity-50 dark:bg-blue-500'
-const SMALL_CLS =
-  'rounded border border-slate-300 px-2 py-1 text-xs dark:border-slate-600'
+const SMALL_CLS = 'rounded border border-slate-300 px-2 py-1 text-xs dark:border-slate-600'
 const PRE_CLS =
   'max-h-80 overflow-auto rounded bg-slate-50 p-3 font-mono text-xs break-all whitespace-pre-wrap dark:bg-slate-900'
 const INPUT_CLS =
@@ -96,12 +95,29 @@ export default function Tool() {
               循环
             </label>
             <label className="text-xs text-slate-500">
-              精灵 <input data-testid="animframe-sprite" value={spriteId} onChange={(e) => setSpriteId(e.target.value)} className={`${INPUT_CLS} w-28`} />
+              精灵{' '}
+              <input
+                data-testid="animframe-sprite"
+                value={spriteId}
+                onChange={(e) => setSpriteId(e.target.value)}
+                className={`${INPUT_CLS} w-28`}
+              />
             </label>
             <label className="text-xs text-slate-500">
-              时长(ms) <input data-testid="animframe-duration" value={duration} onChange={(e) => setDuration(e.target.value)} className={`${INPUT_CLS} w-20`} />
+              时长(ms){' '}
+              <input
+                data-testid="animframe-duration"
+                value={duration}
+                onChange={(e) => setDuration(e.target.value)}
+                className={`${INPUT_CLS} w-20`}
+              />
             </label>
-            <button type="button" data-testid="animframe-add" onClick={handleAdd} className={BTN_CLS}>
+            <button
+              type="button"
+              data-testid="animframe-add"
+              onClick={handleAdd}
+              className={BTN_CLS}
+            >
               添加帧
             </button>
             <button
@@ -128,13 +144,30 @@ export default function Tool() {
                 >
                   #{i} {f.spriteId} · {f.durationMs}ms
                 </span>
-                <button type="button" data-testid={`animframe-up-${i}`} disabled={i === 0} onClick={() => setClip((c) => reorderFrames(c, i, i - 1))} className={SMALL_CLS}>
+                <button
+                  type="button"
+                  data-testid={`animframe-up-${i}`}
+                  disabled={i === 0}
+                  onClick={() => setClip((c) => reorderFrames(c, i, i - 1))}
+                  className={SMALL_CLS}
+                >
                   上移
                 </button>
-                <button type="button" data-testid={`animframe-down-${i}`} disabled={i === clip.frames.length - 1} onClick={() => setClip((c) => reorderFrames(c, i, i + 1))} className={SMALL_CLS}>
+                <button
+                  type="button"
+                  data-testid={`animframe-down-${i}`}
+                  disabled={i === clip.frames.length - 1}
+                  onClick={() => setClip((c) => reorderFrames(c, i, i + 1))}
+                  className={SMALL_CLS}
+                >
                   下移
                 </button>
-                <button type="button" data-testid={`animframe-del-${i}`} onClick={() => setClip((c) => removeFrame(c, i))} className={SMALL_CLS}>
+                <button
+                  type="button"
+                  data-testid={`animframe-del-${i}`}
+                  onClick={() => setClip((c) => removeFrame(c, i))}
+                  className={SMALL_CLS}
+                >
                   删除
                 </button>
               </div>

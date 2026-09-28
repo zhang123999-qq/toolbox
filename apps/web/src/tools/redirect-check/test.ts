@@ -128,8 +128,7 @@ describe('redirect-check / traceRedirects', () => {
   })
 
   it('检测到循环', async () => {
-    const mock: FetchFn = async (url) =>
-      url.endsWith('/a') ? res(302, '/b') : res(302, '/a')
+    const mock: FetchFn = async (url) => (url.endsWith('/a') ? res(302, '/b') : res(302, '/a'))
     const r = await traceRedirects('http://x.test/a', mock)
     expect(r.terminated).toBe('loop')
     expect(r.message).toContain('循环')
@@ -198,8 +197,7 @@ describe('redirect-check / traceRedirects', () => {
   })
 
   it('GET 回退后仍 opaque', async () => {
-    const mock: FetchFn = async (_url, init) =>
-      init?.method === 'HEAD' ? res(405) : opaque()
+    const mock: FetchFn = async (_url, init) => (init?.method === 'HEAD' ? res(405) : opaque())
     const r = await traceRedirects('https://x.test/', mock)
     expect(r.terminated).toBe('opaque')
   })
@@ -277,7 +275,12 @@ describe('redirect-check / analyzePastedResponse', () => {
   })
   it('200 无 Location', () => {
     const a = analyzePastedResponse('HTTP/1.1 200 OK\nContent-Type: text/html\n')
-    expect(a).toMatchObject({ status: 200, isRedirect: false, location: null, resolvedTarget: null })
+    expect(a).toMatchObject({
+      status: 200,
+      isRedirect: false,
+      location: null,
+      resolvedTarget: null,
+    })
   })
   it('空 Location 头视为无', () => {
     const a = analyzePastedResponse('HTTP/1.1 302 Found\nLocation: \n')
@@ -310,7 +313,9 @@ describe('redirect-check / renderPasted', () => {
     expect(() => renderPasted(analyzePastedResponse('  '))).toThrow(/请粘贴/)
   })
   it('正常渲染', () => {
-    const out = renderPasted(analyzePastedResponse('HTTP/1.1 301 Moved\nLocation: https://b.com/\n'))
+    const out = renderPasted(
+      analyzePastedResponse('HTTP/1.1 301 Moved\nLocation: https://b.com/\n'),
+    )
     expect(out).toContain('状态码：301')
     expect(out).toContain('是否重定向：是')
     expect(out).toContain('https://b.com/')

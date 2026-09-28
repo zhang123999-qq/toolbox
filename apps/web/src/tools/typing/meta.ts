@@ -10,8 +10,7 @@ export const meta: ToolMeta = {
   title: '打字练习',
   description: '打字速度（WPM）与准确率统计：逐字对比目标文本与输入文本',
   titleEn: 'Typing Practice',
-  descriptionEn:
-    'Typing speed (WPM) and accuracy stats: char-by-char diff of target vs typed text',
+  descriptionEn: 'Typing speed (WPM) and accuracy stats: char-by-char diff of target vs typed text',
 
   category: 'education',
   group: 'life',

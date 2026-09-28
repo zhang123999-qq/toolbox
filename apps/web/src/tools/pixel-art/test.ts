@@ -18,7 +18,9 @@ import {
 } from './utils'
 import type { CanvasFactory } from './utils'
 
-function mockFactory(): CanvasFactory & { calls: Array<{ x: number; y: number; w: number; h: number; color: string }> } {
+function mockFactory(): CanvasFactory & {
+  calls: Array<{ x: number; y: number; w: number; h: number; color: string }>
+} {
   const calls: Array<{ x: number; y: number; w: number; h: number; color: string }> = []
   let color = ''
   return {

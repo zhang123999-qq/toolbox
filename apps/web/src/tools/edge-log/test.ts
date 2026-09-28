@@ -45,12 +45,20 @@ describe('buildLogQuery', () => {
   })
   it('状态码非法抛错', () => {
     expect(() =>
-      buildLogQuery({ startTime: '2026-09-28T00:00:00Z', endTime: '2026-09-28T01:00:00Z', status: '50' }),
+      buildLogQuery({
+        startTime: '2026-09-28T00:00:00Z',
+        endTime: '2026-09-28T01:00:00Z',
+        status: '50',
+      }),
     ).toThrow('状态码须为 3 位数字')
   })
   it('节点代码非法抛错', () => {
     expect(() =>
-      buildLogQuery({ startTime: '2026-09-28T00:00:00Z', endTime: '2026-09-28T01:00:00Z', colo: 'hk' }),
+      buildLogQuery({
+        startTime: '2026-09-28T00:00:00Z',
+        endTime: '2026-09-28T01:00:00Z',
+        colo: 'hk',
+      }),
     ).toThrow('节点代码须为 3 位大写字母（如 HKG）')
   })
 })
@@ -91,7 +99,9 @@ describe('parseLogLine', () => {
     })
   })
   it('无 referer 的 combined 行', () => {
-    const parsed = parseLogLine('203.0.113.10 - - [28/Sep/2026:10:00:01 +0800] "POST /api HTTP/1.1" 500 -')
+    const parsed = parseLogLine(
+      '203.0.113.10 - - [28/Sep/2026:10:00:01 +0800] "POST /api HTTP/1.1" 500 -',
+    )
     expect(parsed.user).toBe('')
     expect(parsed.referer).toBe('')
     expect(parsed.status).toBe(500)
@@ -158,6 +168,8 @@ describe('parseLogLines', () => {
     expect(() => parseLogLines('  \n  ')).toThrow('没有可解析的日志行')
   })
   it('错误行带序号', () => {
-    expect(() => parseLogLines(EXAMPLE_LOG_LINE + '\nbad line')).toThrow('第 2 行：无法识别的日志格式')
+    expect(() => parseLogLines(EXAMPLE_LOG_LINE + '\nbad line')).toThrow(
+      '第 2 行：无法识别的日志格式',
+    )
   })
 })

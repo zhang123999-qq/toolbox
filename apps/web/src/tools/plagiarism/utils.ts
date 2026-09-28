@@ -48,9 +48,7 @@ export interface PairDetail extends PairScore {
 
 /** 规范化：去空白与标点，拉丁部分转小写（中英文通用） */
 export function normalize(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[\s\p{P}]/gu, '')
+  return text.toLowerCase().replace(/[\s\p{P}]/gu, '')
 }
 
 /** 字符级 n-gram shingle 集合 */
@@ -94,7 +92,8 @@ export function parseThreshold(raw: string): number {
 export function validateDoc(name: string, text: string): string {
   const t = text.trim()
   if (t === '') throw new Error(`${name}不能为空`)
-  if (t.length < MIN_DOC_CHARS) throw new Error(`${name}太短（少于 ${MIN_DOC_CHARS} 字符），无法比对`)
+  if (t.length < MIN_DOC_CHARS)
+    throw new Error(`${name}太短（少于 ${MIN_DOC_CHARS} 字符），无法比对`)
   if (t.length > MAX_DOC_CHARS) {
     throw new Error(`${name}过长：${t.length} 字符，超过 ${MAX_DOC_CHARS} 上限`)
   }

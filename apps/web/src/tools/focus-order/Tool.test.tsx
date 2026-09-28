@@ -24,7 +24,9 @@ describe('focus-order · Tool', () => {
 
   it('输入 HTML 实时输出编号顺序', () => {
     render(<Tool />)
-    fireEvent.change(byTestId('input'), { target: { value: '<button>一</button><button>二</button>' } })
+    fireEvent.change(byTestId('input'), {
+      target: { value: '<button>一</button><button>二</button>' },
+    })
     const out = byTestId('output').textContent ?? ''
     expect(out).toContain('Tab 顺序共 2 个可聚焦元素')
     expect(out).toContain(' 1. [tabindex=0] <button> "一"')

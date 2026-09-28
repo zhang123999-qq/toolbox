@@ -76,15 +76,17 @@ export default function Tool() {
                   ))}
                 </tbody>
               </table>
-              <p data-testid="apiretry-total" className="text-sm text-slate-600 dark:text-slate-400">
+              <p
+                data-testid="apiretry-total"
+                className="text-sm text-slate-600 dark:text-slate-400"
+              >
                 最坏总等待：{formatDelay(totalWaitTime(steps))}
               </p>
             </div>
           )}
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            说明：支持{Object.values(STRATEGY_TEXT).join(' / ')}三种策略；
-            抖动为 ±50% 随机区间，实际等待为标称值；等待时间按 maxDelayMs 截断。
-            纯本地计算，不涉及网络请求。
+            说明：支持{Object.values(STRATEGY_TEXT).join(' / ')}三种策略； 抖动为 ±50%
+            随机区间，实际等待为标称值；等待时间按 maxDelayMs 截断。 纯本地计算，不涉及网络请求。
           </p>
         </div>
       )}

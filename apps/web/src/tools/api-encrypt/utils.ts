@@ -20,8 +20,16 @@ export interface AesSubtleLike {
     extractable: boolean,
     keyUsages: string[],
   ): Promise<unknown>
-  encrypt(algorithm: { name: string; iv: Uint8Array }, key: unknown, data: Uint8Array): Promise<ArrayBuffer>
-  decrypt(algorithm: { name: string; iv: Uint8Array }, key: unknown, data: Uint8Array): Promise<ArrayBuffer>
+  encrypt(
+    algorithm: { name: string; iv: Uint8Array },
+    key: unknown,
+    data: Uint8Array,
+  ): Promise<ArrayBuffer>
+  decrypt(
+    algorithm: { name: string; iv: Uint8Array },
+    key: unknown,
+    data: Uint8Array,
+  ): Promise<ArrayBuffer>
 }
 
 /** 默认 subtle：浏览器 / Node 内置 WebCrypto（仅在运行时调用） */
@@ -120,10 +128,7 @@ export interface CryptoDeps {
 }
 
 /** 加密：PBKDF2 派生 AES-GCM 256 密钥，输出 JSON 载荷 */
-export async function encryptText(
-  opts: EncryptOptions,
-  deps: CryptoDeps = {},
-): Promise<string> {
+export async function encryptText(opts: EncryptOptions, deps: CryptoDeps = {}): Promise<string> {
   if (opts.plaintext === '') throw new Error('请输入要加密的内容')
   if (opts.password === '') throw new Error('请输入密码')
   const subtle = deps.subtle ?? defaultAesSubtle()

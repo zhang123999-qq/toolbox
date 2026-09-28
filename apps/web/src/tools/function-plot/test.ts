@@ -2,13 +2,7 @@
  * function-plot（#826）utils 单测：表达式解析、采样、画布映射。
  */
 import { describe, expect, it } from 'vitest'
-import {
-  ALLOWED_FUNCS,
-  mapToCanvas,
-  parseFunctionExpr,
-  sampleFunction,
-  tokenize,
-} from './utils'
+import { ALLOWED_FUNCS, mapToCanvas, parseFunctionExpr, sampleFunction, tokenize } from './utils'
 
 describe('tokenize', () => {
   it('分词 x^2+2*x', () => {
@@ -166,9 +160,7 @@ describe('mapToCanvas', () => {
     expect(() => mapToCanvas(pts, 100, -1)).toThrow('画布尺寸必须为正数')
   })
   it('全为非有限点抛中文错误', () => {
-    expect(() => mapToCanvas([{ x: 0, y: NaN }], 100, 100)).toThrow(
-      '没有可绘制的有限点',
-    )
+    expect(() => mapToCanvas([{ x: 0, y: NaN }], 100, 100)).toThrow('没有可绘制的有限点')
   })
   it('x 范围退化时自动扩展', () => {
     const m = mapToCanvas(

@@ -43,28 +43,28 @@ describe('validateContentScriptOptions', () => {
   })
   it('matches 为空或非法报错', () => {
     expect(() => validateContentScriptOptions({ ...BASE, matches: [] })).toThrow('至少需要一个')
-    expect(() =>
-      validateContentScriptOptions({ ...BASE, matches: 'x' as never }),
-    ).toThrow('至少需要一个')
+    expect(() => validateContentScriptOptions({ ...BASE, matches: 'x' as never })).toThrow(
+      '至少需要一个',
+    )
     expect(() => validateContentScriptOptions(undefined as never)).toThrow('至少需要一个')
     expect(() => validateContentScriptOptions({ ...BASE, matches: ['bad'] })).toThrow(
       '非法匹配模式',
     )
   })
   it('runAt 非法报错', () => {
-    expect(() =>
-      validateContentScriptOptions({ ...BASE, runAt: 'now' as never }),
-    ).toThrow('runAt 非法')
+    expect(() => validateContentScriptOptions({ ...BASE, runAt: 'now' as never })).toThrow(
+      'runAt 非法',
+    )
   })
   it('features 非数组报错', () => {
-    expect(() =>
-      validateContentScriptOptions({ ...BASE, features: 'x' as never }),
-    ).toThrow('features 必须是数组')
+    expect(() => validateContentScriptOptions({ ...BASE, features: 'x' as never })).toThrow(
+      'features 必须是数组',
+    )
   })
   it('未知特性报错', () => {
-    expect(() =>
-      validateContentScriptOptions({ ...BASE, features: ['nope' as never] }),
-    ).toThrow('未知特性')
+    expect(() => validateContentScriptOptions({ ...BASE, features: ['nope' as never] })).toThrow(
+      '未知特性',
+    )
   })
 })
 

@@ -52,7 +52,12 @@ export default function Tool() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2">
-        <button type="button" className={BTN_CLASS} data-testid="bluetooth-connect" onClick={connect}>
+        <button
+          type="button"
+          className={BTN_CLASS}
+          data-testid="bluetooth-connect"
+          onClick={connect}
+        >
           连接蓝牙设备
         </button>
         <button type="button" className={BTN_CLASS} data-testid="bluetooth-list" onClick={list}>
@@ -82,7 +87,8 @@ export default function Tool() {
         </p>
       )}
       <p className="text-xs text-slate-400">
-        需要 HTTPS 环境并在用户手势中调用；仅列出已授权的设备，未授权时如实提示。工具信息：{meta.title}（#868）
+        需要 HTTPS 环境并在用户手势中调用；仅列出已授权的设备，未授权时如实提示。工具信息：
+        {meta.title}（#868）
       </p>
     </div>
   )

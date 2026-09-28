@@ -29,12 +29,23 @@ describe('diagnoseExtension', () => {
     expect(issues[0].message).toContain('根节点必须是对象')
   })
   it('manifest_version 非 3 报 error', () => {
-    const issues = diagnoseExtension(JSON.stringify({ manifest_version: 2, name: 'a', version: '1' }), [])
-    expect(issues.some((i) => i.level === 'error' && i.message.includes('manifest_version'))).toBe(true)
+    const issues = diagnoseExtension(
+      JSON.stringify({ manifest_version: 2, name: 'a', version: '1' }),
+      [],
+    )
+    expect(issues.some((i) => i.level === 'error' && i.message.includes('manifest_version'))).toBe(
+      true,
+    )
   })
   it('残留 MV2 顶层字段报 error', () => {
     const issues = diagnoseExtension(
-      JSON.stringify({ manifest_version: 3, name: 'a', version: '1', browser_action: {}, page_action: {} }),
+      JSON.stringify({
+        manifest_version: 3,
+        name: 'a',
+        version: '1',
+        browser_action: {},
+        page_action: {},
+      }),
       [],
     )
     expect(issues.filter((i) => i.message.includes('browser_action'))).toHaveLength(1)
@@ -42,7 +53,12 @@ describe('diagnoseExtension', () => {
   })
   it('字符串形式 CSP 报 error', () => {
     const issues = diagnoseExtension(
-      JSON.stringify({ manifest_version: 3, name: 'a', version: '1', content_security_policy: "script-src 'self'" }),
+      JSON.stringify({
+        manifest_version: 3,
+        name: 'a',
+        version: '1',
+        content_security_policy: "script-src 'self'",
+      }),
       [],
     )
     expect(issues.some((i) => i.message.includes('content_security_policy'))).toBe(true)
@@ -62,20 +78,33 @@ describe('diagnoseExtension', () => {
   })
   it('service_worker 文件缺失报 warning', () => {
     const issues = diagnoseExtension(
-      JSON.stringify({ manifest_version: 3, name: 'a', version: '1', background: { service_worker: 'bg.js' } }),
+      JSON.stringify({
+        manifest_version: 3,
+        name: 'a',
+        version: '1',
+        background: { service_worker: 'bg.js' },
+      }),
       [],
     )
     expect(issues.some((i) => i.level === 'warning' && i.message.includes('bg.js'))).toBe(true)
   })
   it('background 无 service_worker 报 warning', () => {
     const issues = diagnoseExtension(
-      JSON.stringify({ manifest_version: 3, name: 'a', version: '1', background: { type: 'module' } }),
+      JSON.stringify({
+        manifest_version: 3,
+        name: 'a',
+        version: '1',
+        background: { type: 'module' },
+      }),
       [],
     )
     expect(issues.some((i) => i.message.includes('未声明 service_worker'))).toBe(true)
   })
   it('未声明 background 报 info', () => {
-    const issues = diagnoseExtension(JSON.stringify({ manifest_version: 3, name: 'a', version: '1' }), [])
+    const issues = diagnoseExtension(
+      JSON.stringify({ manifest_version: 3, name: 'a', version: '1' }),
+      [],
+    )
     expect(issues.some((i) => i.level === 'info' && i.message.includes('background'))).toBe(true)
   })
   it('图标文件缺失报 warning，未声明 icons 报 info', () => {
@@ -84,12 +113,20 @@ describe('diagnoseExtension', () => {
       [],
     )
     expect(missing.some((i) => i.message.includes('图标 128px'))).toBe(true)
-    const none = diagnoseExtension(JSON.stringify({ manifest_version: 3, name: 'a', version: '1' }), [])
+    const none = diagnoseExtension(
+      JSON.stringify({ manifest_version: 3, name: 'a', version: '1' }),
+      [],
+    )
     expect(none.some((i) => i.message.includes('icons'))).toBe(true)
   })
   it('宽泛 host_permissions 报 warning', () => {
     const issues = diagnoseExtension(
-      JSON.stringify({ manifest_version: 3, name: 'a', version: '1', host_permissions: ['<all_urls>'] }),
+      JSON.stringify({
+        manifest_version: 3,
+        name: 'a',
+        version: '1',
+        host_permissions: ['<all_urls>'],
+      }),
       [],
     )
     expect(issues.some((i) => i.message.includes('过于宽泛'))).toBe(true)

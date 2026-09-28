@@ -17,7 +17,12 @@ export default function Tool() {
       initialInput={{ text: '' }}
       initialOptions={{ canonicalUrl: '' }}
       optionDefs={[
-        { key: 'canonicalUrl', label: '规范 URL', kind: 'text', placeholder: 'https://example.com/blog/post' },
+        {
+          key: 'canonicalUrl',
+          label: '规范 URL',
+          kind: 'text',
+          placeholder: 'https://example.com/blog/post',
+        },
       ]}
       run={run}
       example={EXAMPLE}

@@ -22,7 +22,14 @@ describe('pixel-art · Tool', () => {
     for (const id of ['input', 'run', 'example', 'clear', 'output', 'copy', 'download']) {
       expect(byTestId(id)).toBeTruthy()
     }
-    for (const id of ['pixelart-canvas', 'pixelart-new', 'pixelart-export', 'pixelart-undo', 'pixelart-mirrorh', 'pixelart-mirrorv']) {
+    for (const id of [
+      'pixelart-canvas',
+      'pixelart-new',
+      'pixelart-export',
+      'pixelart-undo',
+      'pixelart-mirrorh',
+      'pixelart-mirrorv',
+    ]) {
       expect(byTestId(id)).toBeTruthy()
     }
   })

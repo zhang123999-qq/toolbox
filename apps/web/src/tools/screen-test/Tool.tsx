@@ -66,7 +66,12 @@ export default function Tool() {
         <button type="button" data-testid="screen-next" className={BTN_CLASS} onClick={next}>
           下一张
         </button>
-        <button type="button" data-testid="screen-full" className={BTN_CLASS} onClick={toggleFullscreen}>
+        <button
+          type="button"
+          data-testid="screen-full"
+          className={BTN_CLASS}
+          onClick={toggleFullscreen}
+        >
           {isFull ? '退出全屏' : '全屏测试'}
         </button>
       </div>

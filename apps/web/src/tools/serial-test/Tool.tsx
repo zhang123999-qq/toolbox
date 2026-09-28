@@ -118,7 +118,12 @@ export default function Tool() {
                 打开串口
               </button>
             ) : (
-              <button type="button" className={BTN_CLASS} data-testid="serial-close" onClick={close}>
+              <button
+                type="button"
+                className={BTN_CLASS}
+                data-testid="serial-close"
+                onClick={close}
+              >
                 关闭串口
               </button>
             )}
@@ -134,7 +139,8 @@ export default function Tool() {
         </p>
       )}
       <p className="text-xs text-slate-400">
-        需要 HTTPS 环境并在用户手势中调用；仅列出已授权的端口，未授权时如实提示。工具信息：{meta.title}（#870）
+        需要 HTTPS 环境并在用户手势中调用；仅列出已授权的端口，未授权时如实提示。工具信息：
+        {meta.title}（#870）
       </p>
     </div>
   )

@@ -11,7 +11,8 @@ export const meta: ToolMeta = {
   title: '数据过滤',
   description: '按多条件过滤 CSV 数据：等于、大于、包含、为空等 12 种运算符，支持 AND/OR',
   titleEn: 'Data Filter',
-  descriptionEn: 'Filter CSV rows by multiple conditions: 12 operators (=, >, contains, empty…), AND/OR logic',
+  descriptionEn:
+    'Filter CSV rows by multiple conditions: 12 operators (=, >, contains, empty…), AND/OR logic',
 
   category: 'random',
   group: 'design',

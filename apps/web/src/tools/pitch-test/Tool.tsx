@@ -113,7 +113,10 @@ export default function Tool() {
             ))}
           </div>
           {lastOk !== null && (
-            <p data-testid="pt-feedback" className={`text-sm ${lastOk ? 'text-green-600' : 'text-red-600'}`}>
+            <p
+              data-testid="pt-feedback"
+              className={`text-sm ${lastOk ? 'text-green-600' : 'text-red-600'}`}
+            >
               {lastOk ? '答对了！' : '答错了，再听下一题'}
             </p>
           )}

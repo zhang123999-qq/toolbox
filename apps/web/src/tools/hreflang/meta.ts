@@ -10,7 +10,8 @@ export const meta: ToolMeta = {
   id: 'hreflang',
   slug: 'hreflang',
   title: 'hreflang',
-  description: '生成多语言标注标签：添加语言-地区对（语言代码 + 对应 URL），输出 hreflang link 标签组',
+  description:
+    '生成多语言标注标签：添加语言-地区对（语言代码 + 对应 URL），输出 hreflang link 标签组',
   titleEn: 'hreflang Generator',
   descriptionEn:
     'Generate hreflang tags: add language-region pairs (BCP47 code + URL) and output the link tag group',

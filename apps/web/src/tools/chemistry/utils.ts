@@ -212,9 +212,7 @@ export function balanceEquation(equation: string): BalancedEquation {
 
   // 矩阵：行=元素，列=化合物；反应物为正、生成物为负
   const rows: Frac[][] = elements.map((el) =>
-    compounds.map((_, j) =>
-      Frac.of((counts[j].get(el) ?? 0) * (j < reactants.length ? 1 : -1)),
-    ),
+    compounds.map((_, j) => Frac.of((counts[j].get(el) ?? 0) * (j < reactants.length ? 1 : -1))),
   )
 
   // 化为行最简形（RREF）

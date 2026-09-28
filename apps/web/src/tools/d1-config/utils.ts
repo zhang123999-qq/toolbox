@@ -57,14 +57,16 @@ export function generateD1SchemaExample(tableName: string): string {
   if (!TABLE_NAME_RE.test(table)) {
     throw new Error('表名须为合法标识符（字母 / 下划线开头，后接字母、数字、下划线）')
   }
-  return [
-    `-- 示例建表 SQL：保存为 migrations/0001_init.sql`,
-    `CREATE TABLE ${table} (`,
-    '  id INTEGER PRIMARY KEY AUTOINCREMENT,',
-    '  created_at TEXT NOT NULL DEFAULT (datetime(\'now\')),',
-    "  name TEXT NOT NULL",
-    ');',
-  ].join('\n') + '\n'
+  return (
+    [
+      `-- 示例建表 SQL：保存为 migrations/0001_init.sql`,
+      `CREATE TABLE ${table} (`,
+      '  id INTEGER PRIMARY KEY AUTOINCREMENT,',
+      "  created_at TEXT NOT NULL DEFAULT (datetime('now')),",
+      '  name TEXT NOT NULL',
+      ');',
+    ].join('\n') + '\n'
+  )
 }
 
 export const EXAMPLE_D1_ID = '00000000-0000-4000-8000-000000000000'

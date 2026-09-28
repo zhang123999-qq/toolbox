@@ -13,7 +13,8 @@ export const meta: ToolMeta = {
   title: '标题标签检查',
   description: '检查页面 h1–h6 层级结构：h1 唯一性、层级跳跃、空标题与重复标题，给出大纲与评分',
   titleEn: 'Heading Structure Checker',
-  descriptionEn: 'Audit h1–h6 hierarchy: single h1, skipped levels, empty or duplicate headings, with outline and score',
+  descriptionEn:
+    'Audit h1–h6 hierarchy: single h1, skipped levels, empty or duplicate headings, with outline and score',
 
   category: 'seo',
   group: 'dev',

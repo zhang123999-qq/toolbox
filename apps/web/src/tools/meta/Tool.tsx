@@ -32,10 +32,25 @@ export default function Tool() {
         themeColor: '',
       }}
       optionDefs={[
-        { key: 'description', label: 'description（页面描述）', kind: 'text', placeholder: '一句话介绍页面内容' },
-        { key: 'keywords', label: 'keywords（关键词，逗号分隔）', kind: 'text', placeholder: '博客,技术,SEO' },
+        {
+          key: 'description',
+          label: 'description（页面描述）',
+          kind: 'text',
+          placeholder: '一句话介绍页面内容',
+        },
+        {
+          key: 'keywords',
+          label: 'keywords（关键词，逗号分隔）',
+          kind: 'text',
+          placeholder: '博客,技术,SEO',
+        },
         { key: 'author', label: 'author（作者）', kind: 'text', placeholder: '张三' },
-        { key: 'viewport', label: 'viewport（视口）', kind: 'text', placeholder: 'width=device-width, initial-scale=1' },
+        {
+          key: 'viewport',
+          label: 'viewport（视口）',
+          kind: 'text',
+          placeholder: 'width=device-width, initial-scale=1',
+        },
         { key: 'charset', label: 'charset（字符集）', kind: 'text', placeholder: 'UTF-8' },
         { key: 'themeColor', label: 'theme-color（主题色）', kind: 'text', placeholder: '#ffffff' },
       ]}

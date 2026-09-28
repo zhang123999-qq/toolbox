@@ -98,7 +98,11 @@ export default function Tool() {
       renderOutput={(input) => (
         <div className="flex flex-col gap-3">
           {!supported && (
-            <div role="alert" data-testid="unsupported" className="rounded border border-amber-300 bg-amber-50 p-2 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200">
+            <div
+              role="alert"
+              data-testid="unsupported"
+              className="rounded border border-amber-300 bg-amber-50 p-2 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200"
+            >
               当前浏览器不支持语音朗读（缺少 speechSynthesis）。请使用 Chrome / Edge / Safari。
             </div>
           )}
@@ -115,7 +119,9 @@ export default function Tool() {
                 value={rate}
                 onChange={(e) => setRate(e.target.value)}
               />
-              <span data-testid="rate-value" className="w-8 font-mono text-xs">{rate}</span>
+              <span data-testid="rate-value" className="w-8 font-mono text-xs">
+                {rate}
+              </span>
             </label>
             <label className="flex items-center gap-1 text-sm">
               <span className="w-12 shrink-0 text-slate-600 dark:text-slate-400">音调</span>
@@ -129,7 +135,9 @@ export default function Tool() {
                 value={pitch}
                 onChange={(e) => setPitch(e.target.value)}
               />
-              <span data-testid="pitch-value" className="w-8 font-mono text-xs">{pitch}</span>
+              <span data-testid="pitch-value" className="w-8 font-mono text-xs">
+                {pitch}
+              </span>
             </label>
             <label className="flex items-center gap-1 text-sm">
               <span className="w-12 shrink-0 text-slate-600 dark:text-slate-400">音量</span>
@@ -143,7 +151,9 @@ export default function Tool() {
                 value={volume}
                 onChange={(e) => setVolume(e.target.value)}
               />
-              <span data-testid="volume-value" className="w-8 font-mono text-xs">{volume}</span>
+              <span data-testid="volume-value" className="w-8 font-mono text-xs">
+                {volume}
+              </span>
             </label>
             <label className="flex items-center gap-1 text-sm">
               <span className="w-12 shrink-0 text-slate-600 dark:text-slate-400">语音</span>
@@ -163,12 +173,19 @@ export default function Tool() {
             </label>
           </div>
           {chineseVoices.length > 0 && (
-            <div data-testid="chinese-voices" className="text-xs text-slate-500 dark:text-slate-400">
+            <div
+              data-testid="chinese-voices"
+              className="text-xs text-slate-500 dark:text-slate-400"
+            >
               检测到中文语音：{chineseVoices.map((v) => v.name).join('、')}
             </div>
           )}
           {pErr && (
-            <div role="alert" data-testid="param-error" className="rounded border border-red-300 bg-red-50 p-2 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300">
+            <div
+              role="alert"
+              data-testid="param-error"
+              className="rounded border border-red-300 bg-red-50 p-2 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300"
+            >
               {pErr}
             </div>
           )}
@@ -191,7 +208,10 @@ export default function Tool() {
               停止
             </button>
             {status && (
-              <span data-testid="speak-status" className="text-sm text-slate-600 dark:text-slate-400">
+              <span
+                data-testid="speak-status"
+                className="text-sm text-slate-600 dark:text-slate-400"
+              >
                 {status}
               </span>
             )}

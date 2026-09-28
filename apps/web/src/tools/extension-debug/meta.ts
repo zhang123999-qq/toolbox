@@ -8,7 +8,8 @@ export const meta: ToolMeta = {
   id: 'extension-debug',
   slug: 'extension-debug',
   title: '扩展调试',
-  description: '诊断浏览器扩展 manifest.json 的常见问题：MV2 残留、background 声明、图标缺失与权限宽泛度',
+  description:
+    '诊断浏览器扩展 manifest.json 的常见问题：MV2 残留、background 声明、图标缺失与权限宽泛度',
   titleEn: 'Extension Debugger',
   descriptionEn:
     'Diagnose common browser extension issues: MV2 leftovers, background declarations, missing icons, broad permissions',

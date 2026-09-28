@@ -65,7 +65,10 @@ export function formatWeiToEther(weiHex: string): string {
 }
 
 /** 读取链 ID 与余额 */
-export async function getWalletInfo(provider: Eip1193Provider, address: string): Promise<WalletInfo> {
+export async function getWalletInfo(
+  provider: Eip1193Provider,
+  address: string,
+): Promise<WalletInfo> {
   let chainIdRaw: unknown
   let balanceRaw: unknown
   try {

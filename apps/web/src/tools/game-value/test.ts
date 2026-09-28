@@ -55,16 +55,28 @@ describe('growthValue · piecewise', () => {
   })
   it('缺少拐点数组报错', () => {
     expect(() => growthValue(2, { base: 0, perLevel: 0, mode: 'piecewise' })).toThrow('拐点数组')
-    expect(() => growthValue(2, { base: 0, perLevel: 0, mode: 'piecewise', breakpoints: [] })).toThrow('拐点数组')
+    expect(() =>
+      growthValue(2, { base: 0, perLevel: 0, mode: 'piecewise', breakpoints: [] }),
+    ).toThrow('拐点数组')
   })
   it('拐点 level 非法报错', () => {
     expect(() =>
-      growthValue(2, { base: 0, perLevel: 0, mode: 'piecewise', breakpoints: [{ level: 0, value: 1 }] }),
+      growthValue(2, {
+        base: 0,
+        perLevel: 0,
+        mode: 'piecewise',
+        breakpoints: [{ level: 0, value: 1 }],
+      }),
     ).toThrow('正整数')
   })
   it('拐点 value 非法报错', () => {
     expect(() =>
-      growthValue(2, { base: 0, perLevel: 0, mode: 'piecewise', breakpoints: [{ level: 1, value: Number.NaN }] }),
+      growthValue(2, {
+        base: 0,
+        perLevel: 0,
+        mode: 'piecewise',
+        breakpoints: [{ level: 1, value: Number.NaN }],
+      }),
     ).toThrow('有限数字')
   })
   it('拐点 level 重复报错', () => {

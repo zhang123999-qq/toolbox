@@ -10,7 +10,8 @@ export const meta: ToolMeta = {
   title: 'WCAG 对比度',
   description: '检测前景色与背景色的 WCAG 对比度，给出 AA / AAA 级别判定与配色修复建议',
   titleEn: 'WCAG Contrast Checker',
-  descriptionEn: 'Check WCAG contrast ratio between foreground and background colors with AA / AAA ratings and fix suggestions',
+  descriptionEn:
+    'Check WCAG contrast ratio between foreground and background colors with AA / AAA ratings and fix suggestions',
 
   category: 'a11y',
   group: 'life',

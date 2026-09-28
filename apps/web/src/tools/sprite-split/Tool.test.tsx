@@ -37,7 +37,9 @@ describe('sprite-split · Tool', () => {
 
   it('非法参数显示错误', () => {
     render(<Tool />)
-    fireEvent.change(byTestId('input'), { target: { value: '{"imgW":100,"imgH":100,"cols":3,"rows":2}' } })
+    fireEvent.change(byTestId('input'), {
+      target: { value: '{"imgW":100,"imgH":100,"cols":3,"rows":2}' },
+    })
     fireEvent.click(byTestId('spritesplit-calc'))
     expect(byTestId('spritesplit-error').textContent).toContain('无法被行列整除')
   })

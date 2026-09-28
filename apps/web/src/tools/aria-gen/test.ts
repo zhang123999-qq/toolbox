@@ -2,13 +2,7 @@
  * aria-gen（#717）utils 单测：8 种组件片段、校验分支、HTML 转义。
  */
 import { describe, expect, it } from 'vitest'
-import {
-  ARIA_TYPES,
-  buildAriaSnippet,
-  escapeHtml,
-  parseAriaOptions,
-  parseAriaType,
-} from './utils'
+import { ARIA_TYPES, buildAriaSnippet, escapeHtml, parseAriaOptions, parseAriaType } from './utils'
 
 describe('parseAriaType', () => {
   it('8 种类型全部合法', () => {
@@ -32,8 +26,22 @@ describe('escapeHtml', () => {
 
 describe('parseAriaOptions', () => {
   it('完整解析', () => {
-    const o = parseAriaOptions({ label: ' 音量 ', id: ' vol ', describedBy: ' help ', min: '0', max: '100', value: '50' })
-    expect(o).toEqual({ label: '音量', id: 'vol', describedBy: 'help', min: 0, max: 100, value: 50 })
+    const o = parseAriaOptions({
+      label: ' 音量 ',
+      id: ' vol ',
+      describedBy: ' help ',
+      min: '0',
+      max: '100',
+      value: '50',
+    })
+    expect(o).toEqual({
+      label: '音量',
+      id: 'vol',
+      describedBy: 'help',
+      min: 0,
+      max: 100,
+      value: 50,
+    })
   })
   it('空串视为未提供', () => {
     const o = parseAriaOptions({ label: 'x', id: '', describedBy: '', min: '', max: '', value: '' })
@@ -100,22 +108,38 @@ describe('buildAriaSnippet 各组件', () => {
     expect(s.html).toContain('aria-checked="false"')
   })
   it('slider 生成数值属性', () => {
-    const s = buildAriaSnippet('slider', { label: '音量', min: 0, max: 100, value: 30, describedBy: 'h' })
+    const s = buildAriaSnippet('slider', {
+      label: '音量',
+      min: 0,
+      max: 100,
+      value: 30,
+      describedBy: 'h',
+    })
     expect(s.html).toContain('aria-valuemin="0"')
     expect(s.html).toContain('aria-valuenow="30"')
     expect(s.html).toContain('aria-describedby="h"')
   })
   it('slider 缺数值抛错', () => {
     expect(() => buildAriaSnippet('slider', base)).toThrow('需要提供最小值')
-    expect(() => buildAriaSnippet('slider', { ...base, min: 0, max: 100 })).toThrow('需要提供最小值')
+    expect(() => buildAriaSnippet('slider', { ...base, min: 0, max: 100 })).toThrow(
+      '需要提供最小值',
+    )
   })
   it('slider min>=max 抛错', () => {
-    expect(() => buildAriaSnippet('slider', { ...base, min: 10, max: 10, value: 10 })).toThrow('最小值必须小于最大值')
-    expect(() => buildAriaSnippet('slider', { ...base, min: 20, max: 10, value: 15 })).toThrow('最小值必须小于最大值')
+    expect(() => buildAriaSnippet('slider', { ...base, min: 10, max: 10, value: 10 })).toThrow(
+      '最小值必须小于最大值',
+    )
+    expect(() => buildAriaSnippet('slider', { ...base, min: 20, max: 10, value: 15 })).toThrow(
+      '最小值必须小于最大值',
+    )
   })
   it('slider value 越界抛错', () => {
-    expect(() => buildAriaSnippet('slider', { ...base, min: 0, max: 100, value: 101 })).toThrow('之间')
-    expect(() => buildAriaSnippet('slider', { ...base, min: 0, max: 100, value: -1 })).toThrow('之间')
+    expect(() => buildAriaSnippet('slider', { ...base, min: 0, max: 100, value: 101 })).toThrow(
+      '之间',
+    )
+    expect(() => buildAriaSnippet('slider', { ...base, min: 0, max: 100, value: -1 })).toThrow(
+      '之间',
+    )
   })
   it('alert 片段', () => {
     const s = buildAriaSnippet('alert', { label: '保存成功' })

@@ -10,7 +10,8 @@ export const meta: ToolMeta = {
   title: '跳转链接',
   description: '生成"跳转到主要内容"的跳过链接 HTML 与 CSS，并检测已有页面是否包含跳过链接',
   titleEn: 'Skip Link Generator',
-  descriptionEn: 'Generate "skip to main content" link HTML/CSS and detect existing skip links in a page',
+  descriptionEn:
+    'Generate "skip to main content" link HTML/CSS and detect existing skip links in a page',
 
   category: 'a11y',
   group: 'life',

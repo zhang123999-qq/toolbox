@@ -12,7 +12,8 @@ export const meta: ToolMeta = {
   title: '音准测试',
   description: '音高辨别小测试：听两个音，判断第二个音更高、更低还是相同',
   titleEn: 'Pitch Test',
-  descriptionEn: 'Pitch discrimination: hear two tones, tell if the second is higher, lower or the same',
+  descriptionEn:
+    'Pitch discrimination: hear two tones, tell if the second is higher, lower or the same',
 
   category: 'education',
   group: 'life',

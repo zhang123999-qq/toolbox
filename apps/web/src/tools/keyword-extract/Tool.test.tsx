@@ -40,7 +40,9 @@ describe('keyword-extract · Tool', () => {
 
   it('输入英文文本输出小写关键词', () => {
     render(<Tool />)
-    fireEvent.change(byTestId('input'), { target: { value: 'Machine learning is great, machine learning rocks' } })
+    fireEvent.change(byTestId('input'), {
+      target: { value: 'Machine learning is great, machine learning rocks' },
+    })
     expect(byTestId('output').textContent).toContain('machine')
   })
 

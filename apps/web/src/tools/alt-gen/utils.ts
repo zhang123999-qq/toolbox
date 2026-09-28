@@ -197,9 +197,12 @@ export async function requestAltText(
       throw new Error(`请求超时（超过 ${REQUEST_TIMEOUT_MS / 1000} 秒）`, { cause: err })
     }
     if (err instanceof TypeError) {
-      throw new Error('网络请求失败：请检查网络连接、baseURL，以及目标接口是否允许浏览器跨域（CORS）调用', {
-        cause: err,
-      })
+      throw new Error(
+        '网络请求失败：请检查网络连接、baseURL，以及目标接口是否允许浏览器跨域（CORS）调用',
+        {
+          cause: err,
+        },
+      )
     }
     throw err
   } finally {

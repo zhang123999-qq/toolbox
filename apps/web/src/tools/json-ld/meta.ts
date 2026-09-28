@@ -10,7 +10,8 @@ export const meta: ToolMeta = {
   id: 'json-ld',
   slug: 'json-ld',
   title: 'JSON-LD',
-  description: '生成结构化数据代码：Article / Product / FAQPage / 面包屑 / Organization 五种类型，输出 JSON-LD script 标签',
+  description:
+    '生成结构化数据代码：Article / Product / FAQPage / 面包屑 / Organization 五种类型，输出 JSON-LD script 标签',
   titleEn: 'JSON-LD Generator',
   descriptionEn:
     'Generate structured data: Article, Product, FAQPage, BreadcrumbList and Organization types, output as a JSON-LD script tag',
@@ -25,7 +26,23 @@ export const meta: ToolMeta = {
 
   inputs: ['text'],
   outputs: ['text'],
-  options: ['type', 'headline', 'name', 'description', 'author', 'datePublished', 'image', 'url', 'brand', 'price', 'priceCurrency', 'questions', 'breadcrumbs', 'logo', 'sameAs'],
+  options: [
+    'type',
+    'headline',
+    'name',
+    'description',
+    'author',
+    'datePublished',
+    'image',
+    'url',
+    'brand',
+    'price',
+    'priceCurrency',
+    'questions',
+    'breadcrumbs',
+    'logo',
+    'sameAs',
+  ],
 
   deps: [],
   worker: false,

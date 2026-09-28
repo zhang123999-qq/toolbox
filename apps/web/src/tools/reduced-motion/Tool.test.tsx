@@ -20,7 +20,14 @@ describe('reduced-motion · Tool', () => {
     for (const id of ['input', 'run', 'example', 'clear', 'output', 'copy', 'download']) {
       expect(byTestId(id)).toBeTruthy()
     }
-    for (const id of ['opt-animations', 'opt-transitions', 'opt-scroll', 'extra-selectors', 'css-output', 'scan-empty']) {
+    for (const id of [
+      'opt-animations',
+      'opt-transitions',
+      'opt-scroll',
+      'extra-selectors',
+      'css-output',
+      'scan-empty',
+    ]) {
       expect(byTestId(id)).toBeTruthy()
     }
   })
@@ -66,7 +73,9 @@ describe('reduced-motion · Tool', () => {
   it('输入 CSS 后检测出动画声明', () => {
     render(<Tool />)
     fireEvent.change(byTestId('input'), {
-      target: { value: '.a {\n  animation: fade 2s;\n  transition: color .3s;\n}\n@keyframes fade {}' },
+      target: {
+        value: '.a {\n  animation: fade 2s;\n  transition: color .3s;\n}\n@keyframes fade {}',
+      },
     })
     expect(byTestId('scan-summary').textContent).toContain('共发现 3 处')
     const list = byTestId('scan-list').textContent ?? ''

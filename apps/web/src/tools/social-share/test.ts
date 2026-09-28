@@ -18,9 +18,7 @@ describe('social-share / assertShareUrl', () => {
   })
 
   it('前后空白会被去除', () => {
-    expect(assertShareUrl('  https://example.com/article  ')).toBe(
-      'https://example.com/article',
-    )
+    expect(assertShareUrl('  https://example.com/article  ')).toBe('https://example.com/article')
   })
 
   it('空输入报错', () => {
@@ -49,9 +47,7 @@ describe('social-share / buildShareLinks', () => {
     expect(links.telegram).toBe(`https://t.me/share/url?url=${U}&text=${D}`)
     expect(links.whatsapp).toBe(`https://wa.me/?text=${encodeURIComponent(`${TITLE} ${URL}`)}`)
     expect(links.reddit).toBe(`https://www.reddit.com/submit?url=${U}&title=${T}`)
-    expect(links.email).toBe(
-      `mailto:?subject=${T}&body=${encodeURIComponent(`${TEXT}\n${URL}`)}`,
-    )
+    expect(links.email).toBe(`mailto:?subject=${T}&body=${encodeURIComponent(`${TEXT}\n${URL}`)}`)
   })
 
   it('无 title/text 时省略可选参数', () => {

@@ -2,12 +2,7 @@ import { useEffect, useRef } from 'react'
 import { MultiPanel } from '../../components/tool/templates/MultiPanel'
 import { meta } from './meta'
 import type { FunctionPlotInput, FunctionPlotOptions } from './schema'
-import {
-  mapToCanvas,
-  parseFunctionExpr,
-  sampleFunction,
-  type PlotMapping,
-} from './utils'
+import { mapToCanvas, parseFunctionExpr, sampleFunction, type PlotMapping } from './utils'
 
 const CANVAS_W = 560
 const CANVAS_H = 360
@@ -116,12 +111,18 @@ export default function Tool() {
         return (
           <div className="flex flex-col gap-3">
             {view.error !== '' && (
-              <p data-testid="function-plot-error" className="text-sm text-red-600 dark:text-red-400">
+              <p
+                data-testid="function-plot-error"
+                className="text-sm text-red-600 dark:text-red-400"
+              >
                 {view.error}
               </p>
             )}
             {view.detail !== '' && (
-              <p data-testid="function-plot-detail" className="text-sm text-slate-700 dark:text-slate-300">
+              <p
+                data-testid="function-plot-detail"
+                className="text-sm text-slate-700 dark:text-slate-300"
+              >
                 {view.detail}
               </p>
             )}

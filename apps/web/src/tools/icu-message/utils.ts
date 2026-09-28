@@ -253,11 +253,14 @@ function renderComplex(
   if (v === undefined) return `{${node.name}}`
   if (node.kind === 'select') {
     const key = String(v)
-    const c = node.cases.find((x) => x.selector === key) ?? node.cases.find((x) => x.selector === 'other')
+    const c =
+      node.cases.find((x) => x.selector === key) ?? node.cases.find((x) => x.selector === 'other')
     return c ? renderNodes(c.nodes, values, pctx) : ''
   }
   const num = Number(v)
-  const explicit = node.cases.find((x) => x.selector.startsWith('=') && x.selector.slice(1) === String(num))
+  const explicit = node.cases.find(
+    (x) => x.selector.startsWith('=') && x.selector.slice(1) === String(num),
+  )
   const c = explicit ?? node.cases.find((x) => x.selector === 'other')
   if (!c) return ''
   const next: PluralCtx = { value: num, offset: node.offset }
@@ -268,7 +271,10 @@ function renderComplex(
  * 渲染预览：按给定变量取值展开消息。
  * 缺失变量保留 {name} 占位；plural 按中文规则（=N 精确优先，否则 other）。
  */
-export function previewIcu(message: string, values: Readonly<Record<string, string | number>>): string {
+export function previewIcu(
+  message: string,
+  values: Readonly<Record<string, string | number>>,
+): string {
   return renderNodes(parseIcu(message), values, null)
 }
 

@@ -16,7 +16,12 @@ const DIRECTION_LABELS: Record<MultiChainOptions['direction'], string> = {
 }
 
 const OPTION_DEFS: readonly OptionDef<MultiChainOptions>[] = [
-  { key: 'direction', label: '转换方向', kind: 'select', values: ['auto', 'eth-to-tron', 'tron-to-eth'] },
+  {
+    key: 'direction',
+    label: '转换方向',
+    kind: 'select',
+    values: ['auto', 'eth-to-tron', 'tron-to-eth'],
+  },
 ]
 
 const ERROR_CLASS = 'text-sm text-red-700 dark:text-red-300'
@@ -28,7 +33,9 @@ function compute(input: MultiChainInput, options: MultiChainOptions): ConvertRes
 
 function resultsToText(results: ConvertResult[]): string {
   return results
-    .map((r) => (r.error !== undefined ? `${r.input} → 错误：${r.error}` : `${r.input} → ${r.output}`))
+    .map((r) =>
+      r.error !== undefined ? `${r.input} → 错误：${r.error}` : `${r.input} → ${r.output}`,
+    )
     .join('\n')
 }
 
@@ -39,11 +46,14 @@ export default function Tool() {
       return (
         <div data-testid="results" className="space-y-2">
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            方向：{DIRECTION_LABELS[options.direction]}（TRON 地址为 base58check，0x41 前缀 + 双 SHA-256 校验）
+            方向：{DIRECTION_LABELS[options.direction]}（TRON 地址为 base58check，0x41 前缀 + 双
+            SHA-256 校验）
           </p>
           {results.map((r) => (
             <div key={r.input} className="rounded border p-2">
-              <p className="font-mono text-xs break-all text-gray-500 dark:text-gray-400">{r.input}</p>
+              <p className="font-mono text-xs break-all text-gray-500 dark:text-gray-400">
+                {r.input}
+              </p>
               {r.error !== undefined ? (
                 <p role="alert" className={ERROR_CLASS}>
                   {r.error}

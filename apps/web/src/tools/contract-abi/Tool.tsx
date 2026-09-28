@@ -55,7 +55,10 @@ export default function Tool() {
               <p className="font-mono text-xs break-all" data-testid="value-signature">
                 {it.signature}
               </p>
-              <p className="font-mono text-xs break-all text-gray-600 dark:text-gray-300" data-testid="value-hash">
+              <p
+                className="font-mono text-xs break-all text-gray-600 dark:text-gray-300"
+                data-testid="value-hash"
+              >
                 {it.hash}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">参数：{it.inputs}</p>

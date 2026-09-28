@@ -91,8 +91,8 @@ export default function Tool() {
             </div>
           )}
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            说明：输入 JSON 参数（size 为基准尺寸，实际导出 16/48/128 三档；
-            bg/fg 为 #rrggbb；letter 1～2 字符；shape 为 rounded-square / circle）。
+            说明：输入 JSON 参数（size 为基准尺寸，实际导出 16/48/128 三档； bg/fg 为
+            #rrggbb；letter 1～2 字符；shape 为 rounded-square / circle）。
             绘制在浏览器本地完成，可直接下载 PNG 放入扩展目录。
           </p>
         </div>

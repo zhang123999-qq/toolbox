@@ -21,8 +21,16 @@ const INPUT_CLS =
   'w-20 rounded border border-slate-300 px-2 py-1 text-sm dark:border-slate-600 dark:bg-slate-800'
 
 const TILE_COLORS = [
-  '#e2e8f0', '#f59e0b', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6',
-  '#ec4899', '#14b8a6', '#f97316', '#64748b',
+  '#e2e8f0',
+  '#f59e0b',
+  '#3b82f6',
+  '#10b981',
+  '#ef4444',
+  '#8b5cf6',
+  '#ec4899',
+  '#14b8a6',
+  '#f97316',
+  '#64748b',
 ]
 
 export default function Tool() {
@@ -46,7 +54,12 @@ export default function Tool() {
         ctx.fillStyle = TILE_COLORS[t % TILE_COLORS.length]
         ctx.fillRect(x * map.tileSize, y * map.tileSize, map.tileSize, map.tileSize)
         ctx.strokeStyle = '#cbd5e1'
-        ctx.strokeRect(x * map.tileSize + 0.5, y * map.tileSize + 0.5, map.tileSize - 1, map.tileSize - 1)
+        ctx.strokeRect(
+          x * map.tileSize + 0.5,
+          y * map.tileSize + 0.5,
+          map.tileSize - 1,
+          map.tileSize - 1,
+        )
       }
     }
   }, [map])
@@ -120,10 +133,22 @@ export default function Tool() {
         <div className="flex flex-col gap-3">
           <div className="flex flex-wrap items-center gap-2">
             <label className="text-xs text-slate-500">
-              列 <input data-testid="tilemap-cols" value={cols} onChange={(e) => setCols(e.target.value)} className={INPUT_CLS} />
+              列{' '}
+              <input
+                data-testid="tilemap-cols"
+                value={cols}
+                onChange={(e) => setCols(e.target.value)}
+                className={INPUT_CLS}
+              />
             </label>
             <label className="text-xs text-slate-500">
-              行 <input data-testid="tilemap-rows" value={rows} onChange={(e) => setRows(e.target.value)} className={INPUT_CLS} />
+              行{' '}
+              <input
+                data-testid="tilemap-rows"
+                value={rows}
+                onChange={(e) => setRows(e.target.value)}
+                className={INPUT_CLS}
+              />
             </label>
             <button type="button" data-testid="tilemap-new" onClick={handleNew} className={BTN_CLS}>
               新建
@@ -140,13 +165,28 @@ export default function Tool() {
                 className={INPUT_CLS}
               />
             </label>
-            <button type="button" data-testid="tilemap-fill" onClick={handleFill} className={BTN_CLS}>
+            <button
+              type="button"
+              data-testid="tilemap-fill"
+              onClick={handleFill}
+              className={BTN_CLS}
+            >
               全图填充
             </button>
-            <button type="button" data-testid="tilemap-import" onClick={() => handleImport(input)} className={BTN_CLS}>
+            <button
+              type="button"
+              data-testid="tilemap-import"
+              onClick={() => handleImport(input)}
+              className={BTN_CLS}
+            >
               导入 JSON
             </button>
-            <button type="button" data-testid="tilemap-export" onClick={handleExport} className={BTN_CLS}>
+            <button
+              type="button"
+              data-testid="tilemap-export"
+              onClick={handleExport}
+              className={BTN_CLS}
+            >
               导出 JSON
             </button>
           </div>

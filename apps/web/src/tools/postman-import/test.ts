@@ -31,9 +31,9 @@ describe('resolveCollectionUrl', () => {
     )
   })
   it('host/path 数组拼接', () => {
-    expect(
-      resolveCollectionUrl({ protocol: 'http', host: ['a', 'b.com'], path: ['x', 'y'] }),
-    ).toBe('http://a.b.com/x/y')
+    expect(resolveCollectionUrl({ protocol: 'http', host: ['a', 'b.com'], path: ['x', 'y'] })).toBe(
+      'http://a.b.com/x/y',
+    )
   })
   it('host 字符串与默认协议', () => {
     expect(resolveCollectionUrl({ host: 'x.com', path: 'a' })).toBe('https://x.com/a')
@@ -55,7 +55,12 @@ describe('extractQuery', () => {
   })
   it('URL 对象 query 数组', () => {
     expect(
-      extractQuery({ query: [{ key: 'a', value: '1' }, { key: 'b', disabled: true }] }),
+      extractQuery({
+        query: [
+          { key: 'a', value: '1' },
+          { key: 'b', disabled: true },
+        ],
+      }),
     ).toEqual({ a: '1' })
   })
   it('非法 query 项跳过', () => {
@@ -218,7 +223,14 @@ describe('toAssertTask', () => {
   })
   it('无请求头时 headers 为空串', () => {
     const task = JSON.parse(
-      toAssertTask({ name: 'r', method: 'GET', url: 'https://x.com', headers: {}, query: {}, body: '' }),
+      toAssertTask({
+        name: 'r',
+        method: 'GET',
+        url: 'https://x.com',
+        headers: {},
+        query: {},
+        body: '',
+      }),
     )
     expect(task.headers).toBe('')
   })
@@ -244,8 +256,6 @@ describe('errorMessage', () => {
 
 describe('extractBody 补充', () => {
   it('urlencoded 非字符串值转空串', () => {
-    expect(
-      extractBody({ mode: 'urlencoded', urlencoded: [{ key: 'a', value: 1 }] }),
-    ).toBe('a=')
+    expect(extractBody({ mode: 'urlencoded', urlencoded: [{ key: 'a', value: 1 }] })).toBe('a=')
   })
 })

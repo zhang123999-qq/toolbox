@@ -42,10 +42,7 @@ export default function Tool() {
     return docs
   }
 
-  async function handleCheck(
-    input: PlagiarismInput,
-    options: PlagiarismOptions,
-  ): Promise<void> {
+  async function handleCheck(input: PlagiarismInput, options: PlagiarismOptions): Promise<void> {
     setError('')
     setPairs(null)
     let docs: DocInput[]
@@ -112,10 +109,7 @@ export default function Tool() {
           {pairs ? (
             <div data-testid="result" className="flex flex-col gap-3">
               {pairs.map((p, i) => (
-                <div
-                  key={i}
-                  className="rounded border border-slate-200 p-2 dark:border-slate-700"
-                >
+                <div key={i} className="rounded border border-slate-200 p-2 dark:border-slate-700">
                   <p className="mb-1 text-sm font-medium text-slate-700 dark:text-slate-300">
                     {p.a} × {p.b}：{formatPercent(p.score)}
                     <span className="ml-2 text-xs text-slate-500">

@@ -114,7 +114,9 @@ describe('wordcloud / layoutCloud', () => {
   it('字号非法抛错', () => {
     expect(() => layoutCloud(words, { ...baseOpts, minSize: 0 })).toThrow(/字号非法/)
     expect(() => layoutCloud(words, { ...baseOpts, maxSize: -1 })).toThrow(/字号非法/)
-    expect(() => layoutCloud(words, { ...baseOpts, minSize: 30, maxSize: 20 })).toThrow(/字号区间非法/)
+    expect(() => layoutCloud(words, { ...baseOpts, minSize: 30, maxSize: 20 })).toThrow(
+      /字号区间非法/,
+    )
   })
   it('词频相同时全部取最大字号', () => {
     const r = layoutCloud(
@@ -164,7 +166,10 @@ describe('wordcloud / layoutCloud', () => {
     r.forEach((w, i) => expect(w.color).toBe(PALETTE[i % PALETTE.length]))
   })
   it('画布过小放不下时跳过部分词', () => {
-    const many: WordFreq[] = Array.from({ length: 30 }, (_, i) => ({ text: `词${i}`, count: 30 - i }))
+    const many: WordFreq[] = Array.from({ length: 30 }, (_, i) => ({
+      text: `词${i}`,
+      count: 30 - i,
+    }))
     const r = layoutCloud(many, { width: 60, height: 40, seed: 7, minSize: 14, maxSize: 64 })
     expect(r.length).toBeLessThan(many.length)
   })

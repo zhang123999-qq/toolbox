@@ -25,8 +25,18 @@ export default function Tool() {
       initialOptions={{ description: '', image: '', url: '', type: 'website', siteName: '' }}
       optionDefs={[
         { key: 'description', label: 'og:description', kind: 'text', placeholder: '一句话摘要' },
-        { key: 'image', label: 'og:image（封面图 URL）', kind: 'text', placeholder: 'https://example.com/cover.png' },
-        { key: 'url', label: 'og:url（ canonical URL）', kind: 'text', placeholder: 'https://example.com/post' },
+        {
+          key: 'image',
+          label: 'og:image（封面图 URL）',
+          kind: 'text',
+          placeholder: 'https://example.com/cover.png',
+        },
+        {
+          key: 'url',
+          label: 'og:url（ canonical URL）',
+          kind: 'text',
+          placeholder: 'https://example.com/post',
+        },
         { key: 'type', label: 'og:type', kind: 'select', values: ['website', 'article'] },
         { key: 'siteName', label: 'og:site_name', kind: 'text', placeholder: '我的博客' },
       ]}

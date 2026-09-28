@@ -12,7 +12,8 @@ export const meta: ToolMeta = {
   title: '色盲测试',
   description: '色觉筛查小测试：辨认伪等色图中的数字，仅供娱乐参考不能替代医学诊断',
   titleEn: 'Color Blindness Test',
-  descriptionEn: 'Ishihara-style plate digit recognition; screening reference only, not a diagnosis',
+  descriptionEn:
+    'Ishihara-style plate digit recognition; screening reference only, not a diagnosis',
 
   category: 'education',
   group: 'life',

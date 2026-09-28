@@ -62,7 +62,9 @@ describe('hreflang · buildHreflangTags', () => {
   })
 
   it('缺失字段视为空并抛中文错', () => {
-    expect(() => buildHreflangTags([{} as unknown as HreflangEntry])).toThrow('第 1 条：语言代码不能为空')
+    expect(() => buildHreflangTags([{} as unknown as HreflangEntry])).toThrow(
+      '第 1 条：语言代码不能为空',
+    )
     expect(() => buildHreflangTags([{ lang: 'en' } as unknown as HreflangEntry])).toThrow(
       '第 1 条：URL 不能为空',
     )
@@ -79,7 +81,9 @@ describe('hreflang · buildHreflangTags', () => {
   })
 
   it('URL 不合法抛错', () => {
-    expect(() => buildHreflangTags([{ lang: 'en', url: 'not-a-url' }])).toThrow('第 1 条：URL 不合法')
+    expect(() => buildHreflangTags([{ lang: 'en', url: 'not-a-url' }])).toThrow(
+      '第 1 条：URL 不合法',
+    )
   })
 
   it('错误序号指向第二条', () => {

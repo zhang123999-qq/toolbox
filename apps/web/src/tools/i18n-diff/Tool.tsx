@@ -1,7 +1,13 @@
 import { MultiPanel } from '../../components/tool/templates/MultiPanel'
 import type { ExtraInputDef } from '../../components/tool/templates/TwoColumn'
 import { meta } from './meta'
-import { DIFF_KIND_LABELS, diffI18n, formatDiffResult, type DiffKind, type I18nDiffResult } from './utils'
+import {
+  DIFF_KIND_LABELS,
+  diffI18n,
+  formatDiffResult,
+  type DiffKind,
+  type I18nDiffResult,
+} from './utils'
 import type { I18nDiffInput, I18nDiffOptions } from './schema'
 
 /** 示例：英文基准 vs 中文目标（含缺失/空值/未翻译） */
@@ -59,7 +65,11 @@ export default function Tool() {
                 ) : (
                   <ul className="mt-1 space-y-0.5">
                     {list.map((k) => (
-                      <li key={k} data-testid={`result-${kind}`} className="font-mono text-xs break-all">
+                      <li
+                        key={k}
+                        data-testid={`result-${kind}`}
+                        className="font-mono text-xs break-all"
+                      >
                         {k}
                       </li>
                     ))}

@@ -5,7 +5,8 @@ import type { BatteryRaw } from './utils'
 
 const BTN_CLASS =
   'rounded border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800'
-const ROW_CLASS = 'flex justify-between border-b border-slate-100 py-1.5 text-sm dark:border-slate-800'
+const ROW_CLASS =
+  'flex justify-between border-b border-slate-100 py-1.5 text-sm dark:border-slate-800'
 
 const LEVEL_TEXT: Record<string, string> = {
   full: '满电',
@@ -55,7 +56,10 @@ export default function Tool() {
       )}
       {info && (
         <div data-testid="battery-info">
-          <p className="mb-2 text-sm text-slate-600 dark:text-slate-300" data-testid="battery-status">
+          <p
+            className="mb-2 text-sm text-slate-600 dark:text-slate-300"
+            data-testid="battery-status"
+          >
             {batteryStatus(info)}
           </p>
           <dl>

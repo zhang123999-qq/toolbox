@@ -11,12 +11,30 @@
 const MASK64 = (1n << 64n) - 1n
 
 const RC: readonly bigint[] = [
-  0x0000000000000001n, 0x0000000000008082n, 0x800000000000808an, 0x8000000080008000n,
-  0x000000000000808bn, 0x0000000080000001n, 0x8000000080008081n, 0x8000000000008009n,
-  0x000000000000008an, 0x0000000000000088n, 0x0000000080008009n, 0x000000008000000an,
-  0x000000008000808bn, 0x800000000000008bn, 0x8000000000008089n, 0x8000000000008003n,
-  0x8000000000008002n, 0x8000000000000080n, 0x000000000000800an, 0x800000008000000an,
-  0x8000000080008081n, 0x8000000000008080n, 0x0000000080000001n, 0x8000000080008008n,
+  0x0000000000000001n,
+  0x0000000000008082n,
+  0x800000000000808an,
+  0x8000000080008000n,
+  0x000000000000808bn,
+  0x0000000080000001n,
+  0x8000000080008081n,
+  0x8000000000008009n,
+  0x000000000000008an,
+  0x0000000000000088n,
+  0x0000000080008009n,
+  0x000000008000000an,
+  0x000000008000808bn,
+  0x800000000000008bn,
+  0x8000000000008089n,
+  0x8000000000008003n,
+  0x8000000000008002n,
+  0x8000000000000080n,
+  0x000000000000800an,
+  0x800000008000000an,
+  0x8000000080008081n,
+  0x8000000000008080n,
+  0x0000000080000001n,
+  0x8000000080008008n,
 ]
 
 const ROT: readonly number[] = [
@@ -134,13 +152,7 @@ export type EIP712Types = Record<string, EIP712Field[]>
 
 /** JSON 值：string / number / bigint / boolean / Uint8Array / 数组 / 对象 */
 export type EIP712Value =
-  | string
-  | number
-  | bigint
-  | boolean
-  | Uint8Array
-  | EIP712Value[]
-  | { [key: string]: EIP712Value }
+  string | number | bigint | boolean | Uint8Array | EIP712Value[] | { [key: string]: EIP712Value }
 
 const UINT_RE = /^uint(\d*)$/
 const INT_RE = /^int(\d*)$/
@@ -297,15 +309,16 @@ function encodeAtomic(type: string, value: EIP712Value, fieldName: string): Uint
 }
 
 function isRecord(value: EIP712Value): value is { [key: string]: EIP712Value } {
-  return typeof value === 'object' && value !== null && !(value instanceof Uint8Array) && !Array.isArray(value)
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    !(value instanceof Uint8Array) &&
+    !Array.isArray(value)
+  )
 }
 
 /** encodeData：typeHash ‖ enc(v₁) ‖ …（数组元素先编码再整体 keccak） */
-export function encodeData(
-  primaryType: string,
-  data: EIP712Value,
-  types: EIP712Types,
-): Uint8Array {
+export function encodeData(primaryType: string, data: EIP712Value, types: EIP712Types): Uint8Array {
   if (!isRecord(data)) throw new Error(`类型 ${primaryType} 的值须为对象`)
   // typeHash 已校验 primaryType 在 types 中声明，此处直接取用
   const fields = types[primaryType]
@@ -342,11 +355,7 @@ function encodeValue(
 }
 
 /** structHash = keccak256(encodeData) */
-export function structHash(
-  primaryType: string,
-  data: EIP712Value,
-  types: EIP712Types,
-): Uint8Array {
+export function structHash(primaryType: string, data: EIP712Value, types: EIP712Types): Uint8Array {
   return keccak256(encodeData(primaryType, data, types))
 }
 

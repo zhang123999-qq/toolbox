@@ -23,7 +23,14 @@ describe('bitmap-font · Tool', () => {
     for (const id of ['input', 'run', 'example', 'clear', 'output', 'copy', 'download']) {
       expect(byTestId(id)).toBeTruthy()
     }
-    for (const id of ['bitmapfont-text', 'bitmapfont-font', 'bitmapfont-size', 'bitmapfont-run', 'bitmapfont-format', 'bitmapfont-download']) {
+    for (const id of [
+      'bitmapfont-text',
+      'bitmapfont-font',
+      'bitmapfont-size',
+      'bitmapfont-run',
+      'bitmapfont-format',
+      'bitmapfont-download',
+    ]) {
       expect(byTestId(id)).toBeTruthy()
     }
   })

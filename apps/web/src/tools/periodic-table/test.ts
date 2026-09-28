@@ -2,13 +2,7 @@
  * periodic-table（#821）utils 单测：118 元素查询。
  */
 import { describe, expect, it } from 'vitest'
-import {
-  CATEGORIES,
-  describeElement,
-  ELEMENTS,
-  elementsByCategory,
-  getElement,
-} from './utils'
+import { CATEGORIES, describeElement, ELEMENTS, elementsByCategory, getElement } from './utils'
 
 describe('ELEMENTS', () => {
   it('共 118 个元素且序号连续', () => {

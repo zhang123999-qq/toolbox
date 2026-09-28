@@ -2,13 +2,7 @@ import { useState } from 'react'
 import { MultiPanel } from '../../components/tool/templates/MultiPanel'
 import { meta } from './meta'
 import type { FlashcardInput, FlashcardOptions } from './schema'
-import {
-  deckStats,
-  dueCards,
-  gradeCard,
-  importDeckCsv,
-  type Flashcard,
-} from './utils'
+import { deckStats, dueCards, gradeCard, importDeckCsv, type Flashcard } from './utils'
 
 const DEFAULT_CSV = 'apple,苹果\nbook,书\ncat,猫'
 
@@ -29,9 +23,7 @@ function buildView(input: FlashcardInput, options: FlashcardOptions): DeckView {
     return {
       error: '',
       detail:
-        due.length === 0
-          ? '暂无到期卡片'
-          : due.map((c) => `• ${c.front} → ${c.back}`).join('\n'),
+        due.length === 0 ? '暂无到期卡片' : due.map((c) => `• ${c.front} → ${c.back}`).join('\n'),
     }
   } catch (err) {
     return { error: err instanceof Error ? err.message : '处理失败', detail: '' }
@@ -133,7 +125,10 @@ export default function Tool() {
               </p>
             )}
             {view.detail !== '' && (
-              <p data-testid="flashcard-detail" className="whitespace-pre-wrap text-sm text-slate-700 dark:text-slate-300">
+              <p
+                data-testid="flashcard-detail"
+                className="whitespace-pre-wrap text-sm text-slate-700 dark:text-slate-300"
+              >
                 {view.detail}
               </p>
             )}

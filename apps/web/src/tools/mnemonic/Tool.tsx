@@ -2,12 +2,7 @@ import { useState } from 'react'
 import { MultiPanel } from '../../components/tool/templates/MultiPanel'
 import type { OptionDef } from '../../components/tool/templates/TwoColumn'
 import { meta } from './meta'
-import {
-  bytesToHex,
-  generateMnemonic,
-  mnemonicToEntropy,
-  mnemonicToSeed,
-} from './utils'
+import { bytesToHex, generateMnemonic, mnemonicToEntropy, mnemonicToSeed } from './utils'
 import type { MnemonicInput, MnemonicOptions } from './schema'
 
 const EXAMPLE: MnemonicInput = {
@@ -50,7 +45,11 @@ function renderOutput(input: MnemonicInput, options: MnemonicOptions) {
   }
   try {
     if (input.text.trim() === '') {
-      return <p className="text-sm text-gray-500">输入助记词后实时{mode === '校验' ? '校验' : '派生种子'}</p>
+      return (
+        <p className="text-sm text-gray-500">
+          输入助记词后实时{mode === '校验' ? '校验' : '派生种子'}
+        </p>
+      )
     }
     if (mode === '校验') {
       const entropy = mnemonicToEntropy(input.text)

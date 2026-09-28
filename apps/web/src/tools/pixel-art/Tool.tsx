@@ -170,9 +170,20 @@ export default function Tool() {
         <div className="flex flex-col gap-3">
           <div className="flex flex-wrap items-center gap-2">
             <label className="text-xs text-slate-500">
-              尺寸 <input data-testid="pixelart-size" value={size} onChange={(e) => setSize(e.target.value)} className={INPUT_CLS} />
+              尺寸{' '}
+              <input
+                data-testid="pixelart-size"
+                value={size}
+                onChange={(e) => setSize(e.target.value)}
+                className={INPUT_CLS}
+              />
             </label>
-            <button type="button" data-testid="pixelart-new" onClick={handleNew} className={BTN_CLS}>
+            <button
+              type="button"
+              data-testid="pixelart-new"
+              onClick={handleNew}
+              className={BTN_CLS}
+            >
               新建
             </button>
             {(['brush', 'line', 'fill'] as ToolMode[]).map((m) => (
@@ -181,7 +192,11 @@ export default function Tool() {
                 type="button"
                 data-testid={`pixelart-mode-${m}`}
                 onClick={() => setMode(m)}
-                className={m === mode ? BTN_CLS : 'rounded border border-slate-300 px-4 py-1.5 text-sm dark:border-slate-600'}
+                className={
+                  m === mode
+                    ? BTN_CLS
+                    : 'rounded border border-slate-300 px-4 py-1.5 text-sm dark:border-slate-600'
+                }
               >
                 {m === 'brush' ? '画笔' : m === 'line' ? '直线' : '填充'}
               </button>
@@ -206,16 +221,43 @@ export default function Tool() {
                 />
               ))}
             </div>
-            <button type="button" data-testid="pixelart-mirrorh" onClick={() => { pushHistory(canvas); setCanvas((c) => mirrorH(c)) }} className={BTN_CLS}>
+            <button
+              type="button"
+              data-testid="pixelart-mirrorh"
+              onClick={() => {
+                pushHistory(canvas)
+                setCanvas((c) => mirrorH(c))
+              }}
+              className={BTN_CLS}
+            >
               水平镜像
             </button>
-            <button type="button" data-testid="pixelart-mirrorv" onClick={() => { pushHistory(canvas); setCanvas((c) => mirrorV(c)) }} className={BTN_CLS}>
+            <button
+              type="button"
+              data-testid="pixelart-mirrorv"
+              onClick={() => {
+                pushHistory(canvas)
+                setCanvas((c) => mirrorV(c))
+              }}
+              className={BTN_CLS}
+            >
               垂直镜像
             </button>
-            <button type="button" data-testid="pixelart-undo" onClick={handleUndo} disabled={history.length === 0} className={BTN_CLS}>
+            <button
+              type="button"
+              data-testid="pixelart-undo"
+              onClick={handleUndo}
+              disabled={history.length === 0}
+              className={BTN_CLS}
+            >
               撤销
             </button>
-            <button type="button" data-testid="pixelart-export" onClick={handleExport} className={BTN_CLS}>
+            <button
+              type="button"
+              data-testid="pixelart-export"
+              onClick={handleExport}
+              className={BTN_CLS}
+            >
               导出 PNG
             </button>
           </div>

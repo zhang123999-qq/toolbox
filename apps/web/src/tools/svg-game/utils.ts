@@ -130,14 +130,78 @@ function renderPotion(p: string, s: string): string {
 }
 
 export const SPRITE_TEMPLATES: SpriteTemplate[] = [
-  { id: 'slime', name: '史莱姆', nameEn: 'Slime', category: '角色', defaultPrimary: '#4ade80', defaultSecondary: '#166534', render: renderSlime },
-  { id: 'ghost', name: '幽灵', nameEn: 'Ghost', category: '角色', defaultPrimary: '#e2e8f0', defaultSecondary: '#0f172a', render: renderGhost },
-  { id: 'coin', name: '金币', nameEn: 'Coin', category: '道具', defaultPrimary: '#fbbf24', defaultSecondary: '#b45309', render: renderCoin },
-  { id: 'sword', name: '剑', nameEn: 'Sword', category: '道具', defaultPrimary: '#78350f', defaultSecondary: '#cbd5e1', render: renderSword },
-  { id: 'chest', name: '宝箱', nameEn: 'Chest', category: '道具', defaultPrimary: '#b45309', defaultSecondary: '#fbbf24', render: renderChest },
-  { id: 'potion', name: '药水', nameEn: 'Potion', category: '道具', defaultPrimary: '#a78bfa', defaultSecondary: '#4c1d95', render: renderPotion },
-  { id: 'heart', name: '红心', nameEn: 'Heart', category: '特效', defaultPrimary: '#ef4444', defaultSecondary: '#fecaca', render: renderHeart },
-  { id: 'tree', name: '树', nameEn: 'Tree', category: '地形', defaultPrimary: '#22c55e', defaultSecondary: '#78350f', render: renderTree },
+  {
+    id: 'slime',
+    name: '史莱姆',
+    nameEn: 'Slime',
+    category: '角色',
+    defaultPrimary: '#4ade80',
+    defaultSecondary: '#166534',
+    render: renderSlime,
+  },
+  {
+    id: 'ghost',
+    name: '幽灵',
+    nameEn: 'Ghost',
+    category: '角色',
+    defaultPrimary: '#e2e8f0',
+    defaultSecondary: '#0f172a',
+    render: renderGhost,
+  },
+  {
+    id: 'coin',
+    name: '金币',
+    nameEn: 'Coin',
+    category: '道具',
+    defaultPrimary: '#fbbf24',
+    defaultSecondary: '#b45309',
+    render: renderCoin,
+  },
+  {
+    id: 'sword',
+    name: '剑',
+    nameEn: 'Sword',
+    category: '道具',
+    defaultPrimary: '#78350f',
+    defaultSecondary: '#cbd5e1',
+    render: renderSword,
+  },
+  {
+    id: 'chest',
+    name: '宝箱',
+    nameEn: 'Chest',
+    category: '道具',
+    defaultPrimary: '#b45309',
+    defaultSecondary: '#fbbf24',
+    render: renderChest,
+  },
+  {
+    id: 'potion',
+    name: '药水',
+    nameEn: 'Potion',
+    category: '道具',
+    defaultPrimary: '#a78bfa',
+    defaultSecondary: '#4c1d95',
+    render: renderPotion,
+  },
+  {
+    id: 'heart',
+    name: '红心',
+    nameEn: 'Heart',
+    category: '特效',
+    defaultPrimary: '#ef4444',
+    defaultSecondary: '#fecaca',
+    render: renderHeart,
+  },
+  {
+    id: 'tree',
+    name: '树',
+    nameEn: 'Tree',
+    category: '地形',
+    defaultPrimary: '#22c55e',
+    defaultSecondary: '#78350f',
+    render: renderTree,
+  },
 ]
 
 /** 列出全部模板元信息（不含渲染函数） */
@@ -178,6 +242,8 @@ export function renderSpriteTemplate(id: string, colors?: Partial<SpriteColors>)
 }
 
 /** 批量渲染全部模板（用于导出预览） */
-export function renderAllSprites(colors?: Partial<SpriteColors>): Array<{ id: string; svg: string }> {
+export function renderAllSprites(
+  colors?: Partial<SpriteColors>,
+): Array<{ id: string; svg: string }> {
   return SPRITE_TEMPLATES.map((t) => ({ id: t.id, svg: renderSpriteTemplate(t.id, colors) }))
 }

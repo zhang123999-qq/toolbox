@@ -8,9 +8,11 @@ export const meta: ToolMeta = {
   id: 'rtl',
   slug: 'rtl',
   title: 'RTL 预览',
-  description: '双向文本方向分析：统计 LTR/RTL 字符、判定主导方向、标出混合位置，并按 RTL/LTR/自动三栏渲染对照',
+  description:
+    '双向文本方向分析：统计 LTR/RTL 字符、判定主导方向、标出混合位置，并按 RTL/LTR/自动三栏渲染对照',
   titleEn: 'RTL Preview',
-  descriptionEn: 'Bidirectional text analysis: LTR/RTL character stats, dominant direction, mixed-direction spots, with RTL/LTR/auto render comparison',
+  descriptionEn:
+    'Bidirectional text analysis: LTR/RTL character stats, dominant direction, mixed-direction spots, with RTL/LTR/auto render comparison',
 
   category: 'a11y',
   group: 'life',

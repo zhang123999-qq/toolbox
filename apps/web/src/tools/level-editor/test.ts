@@ -45,8 +45,12 @@ describe('makeLevelObject', () => {
     expect(() => makeLevelObject('a', 'item', 1, Number.NaN)).toThrow('有限数字')
   })
   it('props 非对象报错', () => {
-    expect(() => makeLevelObject('a', 'item', 1, 2, ['x'] as unknown as Record<string, unknown>)).toThrow('props')
-    expect(() => makeLevelObject('a', 'item', 1, 2, null as unknown as Record<string, unknown>)).toThrow('props')
+    expect(() =>
+      makeLevelObject('a', 'item', 1, 2, ['x'] as unknown as Record<string, unknown>),
+    ).toThrow('props')
+    expect(() =>
+      makeLevelObject('a', 'item', 1, 2, null as unknown as Record<string, unknown>),
+    ).toThrow('props')
   })
 })
 

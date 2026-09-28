@@ -10,7 +10,8 @@ export const meta: ToolMeta = {
   title: '图片 Alt 生成',
   description: '上传图片，填自己的 Key 调用多模态模型，生成简洁客观的无障碍 alt 替代文本',
   titleEn: 'Alt Text Generator',
-  descriptionEn: 'Generate concise, objective alt text for images with a multimodal model using your own key',
+  descriptionEn:
+    'Generate concise, objective alt text for images with a multimodal model using your own key',
 
   category: 'a11y',
   group: 'life',

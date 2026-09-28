@@ -64,7 +64,12 @@ describe('ethCall', () => {
   })
   it('JSON-RPC 错误（带 message / 仅 code）', async () => {
     await expect(
-      ethCall('https://rpc.test', '0xabc', '0x', okFetch({ error: { message: 'boom', code: -32000 } })),
+      ethCall(
+        'https://rpc.test',
+        '0xabc',
+        '0x',
+        okFetch({ error: { message: 'boom', code: -32000 } }),
+      ),
     ).rejects.toThrow('RPC 错误：boom')
     await expect(
       ethCall('https://rpc.test', '0xabc', '0x', okFetch({ error: { code: -32000 } })),
@@ -93,7 +98,9 @@ describe('ethCall', () => {
           reject(new DOMException('aborted', 'AbortError'))
         })
       })
-    await expect(ethCall('https://rpc.test', '0xabc', '0x', hanging, 30)).rejects.toThrow('请求超时')
+    await expect(ethCall('https://rpc.test', '0xabc', '0x', hanging, 30)).rejects.toThrow(
+      '请求超时',
+    )
   })
 })
 
@@ -122,7 +129,9 @@ describe('resolveEnsName', () => {
       const result = body.includes('0178b8bf') ? `0x${'00'.repeat(32)}` : addrWord
       return { ok: true, status: 200, json: async () => ({ result }) }
     }
-    await expect(resolveEnsName('vitalik.eth', DEFAULT_RPC_URL, f)).rejects.toThrow('未设置 resolver')
+    await expect(resolveEnsName('vitalik.eth', DEFAULT_RPC_URL, f)).rejects.toThrow(
+      '未设置 resolver',
+    )
   })
   it('未设置地址记录抛错', async () => {
     const f: FetchFn = async (_url, init) => {
@@ -130,7 +139,9 @@ describe('resolveEnsName', () => {
       const result = body.includes('0178b8bf') ? resolverWord : `0x${'00'.repeat(32)}`
       return { ok: true, status: 200, json: async () => ({ result }) }
     }
-    await expect(resolveEnsName('vitalik.eth', DEFAULT_RPC_URL, f)).rejects.toThrow('未设置地址记录')
+    await expect(resolveEnsName('vitalik.eth', DEFAULT_RPC_URL, f)).rejects.toThrow(
+      '未设置地址记录',
+    )
   })
   it('默认参数可用（不真实调用，仅校验签名）', () => {
     expect(typeof resolveEnsName).toBe('function')

@@ -50,8 +50,7 @@ export function packExtension(files: PackFile[]): Uint8Array {
   validatePackFiles(files)
   const data: Record<string, Uint8Array> = {}
   for (const f of files) {
-    data[f.name.trim()] =
-      typeof f.content === 'string' ? encoder.encode(f.content) : f.content
+    data[f.name.trim()] = typeof f.content === 'string' ? encoder.encode(f.content) : f.content
   }
   return zipSync(data, { level: 6 })
 }
@@ -86,11 +85,7 @@ export const EXAMPLE_PACK: ParsedPackInput = {
   files: [
     {
       name: 'manifest.json',
-      content: JSON.stringify(
-        { manifest_version: 3, name: '我的扩展', version: '1.0.0' },
-        null,
-        2,
-      ),
+      content: JSON.stringify({ manifest_version: 3, name: '我的扩展', version: '1.0.0' }, null, 2),
     },
     { name: 'content.js', content: '// content script\n' },
   ],

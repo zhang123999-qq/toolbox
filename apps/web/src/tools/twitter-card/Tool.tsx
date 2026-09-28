@@ -24,8 +24,18 @@ export default function Tool() {
       initialOptions={{ card: 'summary_large_image', description: '', image: '', site: '' }}
       optionDefs={[
         { key: 'card', label: 'twitter:card（卡片类型）', kind: 'select', values: [...CARD_TYPES] },
-        { key: 'description', label: 'twitter:description', kind: 'text', placeholder: '一句话摘要' },
-        { key: 'image', label: 'twitter:image（封面图 URL）', kind: 'text', placeholder: 'https://example.com/cover.png' },
+        {
+          key: 'description',
+          label: 'twitter:description',
+          kind: 'text',
+          placeholder: '一句话摘要',
+        },
+        {
+          key: 'image',
+          label: 'twitter:image（封面图 URL）',
+          kind: 'text',
+          placeholder: 'https://example.com/cover.png',
+        },
         { key: 'site', label: 'twitter:site（账号）', kind: 'text', placeholder: '@example' },
       ]}
       run={run}

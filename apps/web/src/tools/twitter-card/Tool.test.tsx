@@ -42,7 +42,9 @@ describe('twitter-card · Tool', () => {
     render(<Tool />)
     fireEvent.click(byTestId('example'))
     fireEvent.change(screen.getByPlaceholderText('@example'), { target: { value: '@example' } })
-    expect(byTestId('output').textContent).toContain('<meta name="twitter:site" content="@example">')
+    expect(byTestId('output').textContent).toContain(
+      '<meta name="twitter:site" content="@example">',
+    )
   })
 
   it('点击「清空」回到空输入', () => {

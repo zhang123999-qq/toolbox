@@ -11,7 +11,8 @@ export const meta: ToolMeta = {
   title: '地图可视化',
   description: '输入地区数值，用 ECharts 渲染中国 / 世界分级设色地图，地图数据运行时从 CDN 加载',
   titleEn: 'Map Visualization',
-  descriptionEn: 'Render ECharts choropleth maps of China / world from region values, GeoJSON loaded at runtime',
+  descriptionEn:
+    'Render ECharts choropleth maps of China / world from region values, GeoJSON loaded at runtime',
   category: 'random',
   group: 'design',
   tags: ['map', 'echarts', 'geojson', 'choropleth'],

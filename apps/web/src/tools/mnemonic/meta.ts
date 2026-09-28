@@ -10,7 +10,8 @@ export const meta: ToolMeta = {
   title: '助记词',
   description: 'BIP39 助记词：生成 12/15/18/21/24 词、校验 checksum、转 64 字节种子',
   titleEn: 'Mnemonic',
-  descriptionEn: 'BIP39 mnemonic: generate 12/15/18/21/24 words, verify checksum, derive 64-byte seed',
+  descriptionEn:
+    'BIP39 mnemonic: generate 12/15/18/21/24 words, verify checksum, derive 64-byte seed',
 
   category: 'encoding',
   group: 'dev',

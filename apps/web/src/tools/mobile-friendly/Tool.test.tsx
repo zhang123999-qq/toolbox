@@ -22,7 +22,9 @@ describe('mobile-friendly · Tool', () => {
   it('粘贴模式点运行输出得分', async () => {
     render(<Tool />)
     fireEvent.change(byTestId('input'), {
-      target: { value: '<html><head><meta name="viewport" content="width=device-width"></head></html>' },
+      target: {
+        value: '<html><head><meta name="viewport" content="width=device-width"></head></html>',
+      },
     })
     fireEvent.click(byTestId('run'))
     await new Promise((r) => setTimeout(r, 50))

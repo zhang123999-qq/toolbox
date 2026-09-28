@@ -32,17 +32,29 @@ describe('trackClicks', () => {
   })
   it('阈值内同键点击判定为双击', () => {
     const first = trackClicks([], { button: 0, clientX: 1, clientY: 1 }, 1000)
-    const second = trackClicks(first.clicks, { button: 0, clientX: 2, clientY: 2 }, 1000 + DEFAULT_DOUBLE_CLICK_MS - 1)
+    const second = trackClicks(
+      first.clicks,
+      { button: 0, clientX: 2, clientY: 2 },
+      1000 + DEFAULT_DOUBLE_CLICK_MS - 1,
+    )
     expect(second.isDouble).toBe(true)
   })
   it('边界值等于阈值仍算双击', () => {
     const first = trackClicks([], { button: 0, clientX: 1, clientY: 1 }, 1000)
-    const second = trackClicks(first.clicks, { button: 0, clientX: 2, clientY: 2 }, 1000 + DEFAULT_DOUBLE_CLICK_MS)
+    const second = trackClicks(
+      first.clicks,
+      { button: 0, clientX: 2, clientY: 2 },
+      1000 + DEFAULT_DOUBLE_CLICK_MS,
+    )
     expect(second.isDouble).toBe(true)
   })
   it('超过阈值不算双击', () => {
     const first = trackClicks([], { button: 0, clientX: 1, clientY: 1 }, 1000)
-    const second = trackClicks(first.clicks, { button: 0, clientX: 2, clientY: 2 }, 1000 + DEFAULT_DOUBLE_CLICK_MS + 1)
+    const second = trackClicks(
+      first.clicks,
+      { button: 0, clientX: 2, clientY: 2 },
+      1000 + DEFAULT_DOUBLE_CLICK_MS + 1,
+    )
     expect(second.isDouble).toBe(false)
   })
   it('不同按键不算双击', () => {

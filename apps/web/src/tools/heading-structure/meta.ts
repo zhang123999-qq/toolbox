@@ -8,9 +8,11 @@ export const meta: ToolMeta = {
   id: 'heading-structure',
   slug: 'heading-structure',
   title: '标题结构检查',
-  description: '检查 HTML 标题层级：生成 h1–h6 大纲，输出结构评分，发现多 h1、层级跳跃、空标题等问题',
+  description:
+    '检查 HTML 标题层级：生成 h1–h6 大纲，输出结构评分，发现多 h1、层级跳跃、空标题等问题',
   titleEn: 'Heading Structure Checker',
-  descriptionEn: 'Check HTML heading hierarchy: outline, structure score, multiple h1, skipped levels, empty headings',
+  descriptionEn:
+    'Check HTML heading hierarchy: outline, structure score, multiple h1, skipped levels, empty headings',
 
   category: 'a11y',
   group: 'life',

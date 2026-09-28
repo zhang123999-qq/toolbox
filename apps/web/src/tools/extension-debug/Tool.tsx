@@ -77,9 +77,9 @@ export default function Tool() {
             </pre>
           )}
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            说明：在上方输入框粘贴 manifest.json，点击「开始诊断」检查 MV2 残留字段、
-            background 声明、图标文件存在性与权限宽泛度。文件列表用于核对引用的
-            service_worker 与图标是否存在。纯本地诊断，不发送网络请求。
+            说明：在上方输入框粘贴 manifest.json，点击「开始诊断」检查 MV2 残留字段、 background
+            声明、图标文件存在性与权限宽泛度。文件列表用于核对引用的 service_worker
+            与图标是否存在。纯本地诊断，不发送网络请求。
           </p>
         </div>
       )}

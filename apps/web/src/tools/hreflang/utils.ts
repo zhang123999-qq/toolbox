@@ -42,7 +42,11 @@ export interface HreflangEntry {
 
 /** HTML 属性转义：& < > " */
 export function escapeHtmlAttr(raw: string): string {
-  return raw.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+  return raw
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
 }
 
 /** 语言代码格式：两位小写语言 + 可选的 -两位大写地区 */
@@ -71,7 +75,8 @@ export function buildHreflangTags(entries: readonly HreflangEntry[]): string {
     const lang = (e.lang ?? '').trim()
     const url = (e.url ?? '').trim()
     if (lang === '') throw new Error(`第 ${n} 条：语言代码不能为空`)
-    if (!isLangCode(lang)) throw new Error(`第 ${n} 条：语言代码「${lang}」格式错误，应为如 en、zh-CN 的 BCP47 格式`)
+    if (!isLangCode(lang))
+      throw new Error(`第 ${n} 条：语言代码「${lang}」格式错误，应为如 en、zh-CN 的 BCP47 格式`)
     if (url === '') throw new Error(`第 ${n} 条：URL 不能为空`)
     if (!isHttpUrl(url)) throw new Error(`第 ${n} 条：URL 不合法，应为 http(s) 绝对地址`)
     return `<link rel="alternate" hreflang="${escapeHtmlAttr(lang)}" href="${escapeHtmlAttr(url)}">`

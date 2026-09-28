@@ -17,8 +17,10 @@ function byTestId(id: string): HTMLElement {
   return el
 }
 
-const DOC_A = '人工智能是计算机科学的一个分支，它研究如何让机器模拟人类智能。机器学习是实现人工智能的重要方法。'
-const DOC_B = '人工智能是计算机科学的一个分支，它研究如何让机器模拟人类智能。深度学习近年来取得了突破性进展。'
+const DOC_A =
+  '人工智能是计算机科学的一个分支，它研究如何让机器模拟人类智能。机器学习是实现人工智能的重要方法。'
+const DOC_B =
+  '人工智能是计算机科学的一个分支，它研究如何让机器模拟人类智能。深度学习近年来取得了突破性进展。'
 const DOC_C = '今天天气很好，适合出去散步。公园里的花开得很漂亮，蝴蝶在花丛中飞舞。'
 
 function fillDocs(a: string, b: string, c = ''): void {

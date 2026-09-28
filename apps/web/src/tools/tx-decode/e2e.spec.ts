@@ -22,7 +22,9 @@ test.describe('tx-decode 交易解码 (#696)', () => {
     await page.getByTestId('example').click()
     await expect(page.getByTestId('value-type')).toContainText('Legacy')
     await expect(page.getByTestId('value-nonce')).toContainText('7')
-    await expect(page.getByTestId('value-hash')).toContainText('0x393204fda69e377f7d7c60468a2475068d940146115e77ff445230da311435cf')
+    await expect(page.getByTestId('value-hash')).toContainText(
+      '0x393204fda69e377f7d7c60468a2475068d940146115e77ff445230da311435cf',
+    )
   })
 
   test('从首页搜索可达', async ({ page }) => {

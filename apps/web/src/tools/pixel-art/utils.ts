@@ -33,8 +33,18 @@ const HEX_RE = /^#[0-9a-fA-F]{6}$/
 
 /** 内置调色板预设 */
 export const PALETTE: string[] = [
-  '#000000', '#ffffff', '#ff0000', '#00ff00', '#0000ff', '#ffff00',
-  '#ff00ff', '#00ffff', '#ffa500', '#a52a2a', '#808080', '#ffc0cb',
+  '#000000',
+  '#ffffff',
+  '#ff0000',
+  '#00ff00',
+  '#0000ff',
+  '#ffff00',
+  '#ff00ff',
+  '#00ffff',
+  '#ffa500',
+  '#a52a2a',
+  '#808080',
+  '#ffc0cb',
 ]
 
 function isPositiveInt(n: unknown): n is number {
@@ -64,7 +74,14 @@ export function createCanvas(size: number, bg = '#ffffff'): PixelCanvas {
 }
 
 function checkXY(c: PixelCanvas, x: number, y: number): void {
-  if (!Number.isInteger(x) || !Number.isInteger(y) || x < 0 || y < 0 || x >= c.size || y >= c.size) {
+  if (
+    !Number.isInteger(x) ||
+    !Number.isInteger(y) ||
+    x < 0 ||
+    y < 0 ||
+    x >= c.size ||
+    y >= c.size
+  ) {
     throw new Error(`坐标 (${x},${y}) 越界（0-${c.size - 1}）`)
   }
 }
@@ -189,8 +206,8 @@ export function exportPngData(c: PixelCanvas, factory: CanvasFactory, scale = 1)
 export function canvasToAscii(c: PixelCanvas): string {
   validateCanvas(c)
   return Array.from({ length: c.size }, (_, y) =>
-    Array.from({ length: c.size }, (_, x) => (c.pixels[y * c.size + x] === '#ffffff' ? '·' : '█')).join(
-      '',
-    ),
+    Array.from({ length: c.size }, (_, x) =>
+      c.pixels[y * c.size + x] === '#ffffff' ? '·' : '█',
+    ).join(''),
   ).join('\n')
 }

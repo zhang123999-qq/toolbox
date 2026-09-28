@@ -91,7 +91,10 @@ export default function Tool() {
             />
           </label>
           {imgInfo !== '' && (
-            <p data-testid="spritesplit-imginfo" className="text-xs text-green-700 dark:text-green-400">
+            <p
+              data-testid="spritesplit-imginfo"
+              className="text-xs text-green-700 dark:text-green-400"
+            >
               {imgInfo}
             </p>
           )}
@@ -124,10 +127,9 @@ export default function Tool() {
             </pre>
           )}
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            说明：输入切割参数 JSON（imgW/imgH 为原图宽高，cols/rows 为行列，
-            margin/spacing 可选），点击「计算帧列表」查看每帧坐标；
-            上传图片后点击「切割并下载」逐帧导出 PNG。原图必须能被行列整除。
-            纯本地处理，不发送网络请求。
+            说明：输入切割参数 JSON（imgW/imgH 为原图宽高，cols/rows 为行列， margin/spacing
+            可选），点击「计算帧列表」查看每帧坐标； 上传图片后点击「切割并下载」逐帧导出
+            PNG。原图必须能被行列整除。 纯本地处理，不发送网络请求。
           </p>
         </div>
       )}

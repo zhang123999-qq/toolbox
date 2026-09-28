@@ -39,11 +39,7 @@ export interface TypingAnalysis {
  * 逐字对比目标文本与输入文本。
  * 缺字、多字、错字均记为错误项；准确率按目标文本计。
  */
-export function analyzeTyping(
-  target: string,
-  typed: string,
-  seconds: number,
-): TypingAnalysis {
+export function analyzeTyping(target: string, typed: string, seconds: number): TypingAnalysis {
   if (target === '') throw new Error('目标文本不能为空')
   const errors: TypingError[] = []
   const len = Math.max(target.length, typed.length)

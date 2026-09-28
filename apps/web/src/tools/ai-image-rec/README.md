@@ -16,7 +16,7 @@ BYOK 模式：上传一张图片，调用兼容 OpenAI `chat/completions`
 - Key 只出现在请求头中，本站不经手、不记录；
 - 图片在浏览器内转 dataURL 后直接发往用户自己的接口，本站不存储；
 - 接口需兼容 OpenAI 的 `POST {baseURL}/chat/completions` 多模态格式
- （messages.content 为 text + image_url 数组）。
+  （messages.content 为 text + image_url 数组）。
 
 ## 错误处理
 

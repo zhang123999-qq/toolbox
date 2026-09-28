@@ -52,7 +52,12 @@ function PreviewImage({ src, label }: { readonly src?: string; readonly label: s
     )
   }
   return (
-    <img src={src} alt={label} className="h-full w-full object-cover" onError={() => setBroken(true)} />
+    <img
+      src={src}
+      alt={label}
+      className="h-full w-full object-cover"
+      onError={() => setBroken(true)}
+    />
   )
 }
 
@@ -69,7 +74,9 @@ function displayDomain(tags: OgTags, base: string): string {
 
 function CardTitle({ value }: { readonly value?: string }) {
   return (
-    <p className="text-sm font-bold text-slate-900 dark:text-slate-100">{value ?? '（未设置标题）'}</p>
+    <p className="text-sm font-bold text-slate-900 dark:text-slate-100">
+      {value ?? '（未设置标题）'}
+    </p>
   )
 }
 
@@ -117,9 +124,14 @@ function Cards({ tags, base }: { readonly tags: OgTags; readonly base: string })
           <PreviewImage src={image} label="Facebook 卡片配图" />
         </div>
         <div className="bg-slate-100 p-3 dark:bg-slate-800">
-          <p className="text-[11px] uppercase tracking-wide text-slate-500 dark:text-slate-400">{domain}</p>
+          <p className="text-[11px] uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            {domain}
+          </p>
           <CardTitle value={tags.title} />
-          <CardDesc value={tags.description} className="mt-0.5 text-sm text-slate-600 dark:text-slate-400" />
+          <CardDesc
+            value={tags.description}
+            className="mt-0.5 text-sm text-slate-600 dark:text-slate-400"
+          />
         </div>
       </article>
 
@@ -137,7 +149,10 @@ function Cards({ tags, base }: { readonly tags: OgTags; readonly base: string })
         <div className="border-t-2 border-sky-600 p-3">
           <CardTitle value={tags.title} />
           <p className="mt-0.5 text-sm text-sky-700 dark:text-sky-400">{domain}</p>
-          <CardDesc value={tags.description} className="mt-0.5 text-sm text-slate-600 dark:text-slate-400" />
+          <CardDesc
+            value={tags.description}
+            className="mt-0.5 text-sm text-slate-600 dark:text-slate-400"
+          />
         </div>
       </article>
     </div>
@@ -309,7 +324,9 @@ export default function Tool() {
               <Cards tags={tags} base={baseUrl} />
               {suggestions.length > 0 && (
                 <div>
-                  <p className="mb-1 text-sm font-medium text-slate-700 dark:text-slate-300">补充建议</p>
+                  <p className="mb-1 text-sm font-medium text-slate-700 dark:text-slate-300">
+                    补充建议
+                  </p>
                   <ul
                     data-testid="suggestions"
                     className="list-disc space-y-1 pl-5 text-sm text-amber-700 dark:text-amber-400"

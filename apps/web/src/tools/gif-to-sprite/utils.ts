@@ -69,7 +69,8 @@ export interface SheetCanvasFactory {
 function defaultDecoderFactory(): ImageDecoderFactory | null {
   const Ctor = (globalThis as Record<string, unknown>).ImageDecoder
   if (typeof Ctor !== 'function') return null
-  return (init) => new (Ctor as new (i: { data: ArrayBuffer; type: string }) => ImageDecoderLike)(init)
+  return (init) =>
+    new (Ctor as new (i: { data: ArrayBuffer; type: string }) => ImageDecoderLike)(init)
 }
 
 function defaultBitmapConverter(): BitmapConverter | null {
@@ -91,7 +92,9 @@ export async function decodeGifFrames(
   }
   const factory = opts?.decoderFactory ?? defaultDecoderFactory()
   if (!factory) {
-    throw new Error('当前浏览器不支持 WebCodecs ImageDecoder（需要 Chrome/Edge 94+、Safari 18.4+ 或 Firefox 130+）')
+    throw new Error(
+      '当前浏览器不支持 WebCodecs ImageDecoder（需要 Chrome/Edge 94+、Safari 18.4+ 或 Firefox 130+）',
+    )
   }
   const toBitmap = opts?.toBitmap ?? defaultBitmapConverter()
   if (!toBitmap) throw new Error('当前浏览器不支持 createImageBitmap')

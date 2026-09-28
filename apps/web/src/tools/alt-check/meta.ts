@@ -13,7 +13,8 @@ export const meta: ToolMeta = {
   title: '图片 Alt 检查',
   description: '检查页面图片的 alt 缺失、为空、过长、疑似文件名与关键词堆砌，统计通过率',
   titleEn: 'Image Alt Checker',
-  descriptionEn: 'Audit img alt attributes: missing, empty, too long, filename-like or keyword-stuffed, with pass rate',
+  descriptionEn:
+    'Audit img alt attributes: missing, empty, too long, filename-like or keyword-stuffed, with pass rate',
 
   category: 'seo',
   group: 'dev',

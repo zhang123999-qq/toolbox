@@ -50,7 +50,8 @@ export function validateMapOptions(o: MapOptions): void {
   if (!isPositiveInt(o.w)) throw new Error('宽度 w 必须为正整数')
   if (!isPositiveInt(o.h)) throw new Error('高度 h 必须为正整数')
   if (o.w > 256 || o.h > 256) throw new Error('地图尺寸过大（上限 256×256）')
-  if (typeof o.seed !== 'number' || !Number.isInteger(o.seed)) throw new Error('种子 seed 必须为整数')
+  if (typeof o.seed !== 'number' || !Number.isInteger(o.seed))
+    throw new Error('种子 seed 必须为整数')
   const waterLevel = o.waterLevel ?? 0.45
   if (typeof waterLevel !== 'number' || waterLevel < 0 || waterLevel > 1) {
     throw new Error('水域比例 waterLevel 必须在 [0, 1] 之间')
@@ -119,7 +120,8 @@ export function mapToAscii(grid: number[][]): string {
       if (!Array.isArray(row)) throw new Error(`第 ${y} 行不是数组`)
       return row
         .map((t) => {
-          if (t !== WATER && t !== LAND && t !== MOUNTAIN) throw new Error(`非法地形值：${String(t)}`)
+          if (t !== WATER && t !== LAND && t !== MOUNTAIN)
+            throw new Error(`非法地形值：${String(t)}`)
           return TERRAIN_CHARS[t]
         })
         .join('')
@@ -147,7 +149,8 @@ export function parseMapOptions(text: string): MapOptions {
   } catch {
     throw new Error('输入不是合法 JSON')
   }
-  if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) throw new Error('输入必须是 JSON 对象')
+  if (typeof raw !== 'object' || raw === null || Array.isArray(raw))
+    throw new Error('输入必须是 JSON 对象')
   const o = raw as Record<string, unknown>
   const opts: MapOptions = {
     w: o.w as number,

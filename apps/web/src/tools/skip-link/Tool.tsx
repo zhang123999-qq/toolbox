@@ -46,7 +46,9 @@ export default function Tool() {
       meta={meta}
       initialInput={{ text: '' }}
       initialOptions={{}}
-      example={{ text: '<body><a class="skip-link" href="#main-content">跳转到主要内容</a><main id="main-content">正文</main></body>' }}
+      example={{
+        text: '<body><a class="skip-link" href="#main-content">跳转到主要内容</a><main id="main-content">正文</main></body>',
+      }}
       renderOutput={(input) => {
         const snippet = snippetOf()
         const detection = detectionOf(input)
@@ -54,7 +56,9 @@ export default function Tool() {
           <div className="flex flex-col gap-3">
             <div className="flex flex-col gap-2 rounded border border-slate-200 p-2 dark:border-slate-700">
               <label className="flex items-center gap-1 text-sm">
-                <span className="w-20 shrink-0 text-slate-600 dark:text-slate-400">跳转目标 id</span>
+                <span className="w-20 shrink-0 text-slate-600 dark:text-slate-400">
+                  跳转目标 id
+                </span>
                 <input
                   type="text"
                   data-testid="target-id"

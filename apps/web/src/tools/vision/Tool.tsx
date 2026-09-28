@@ -43,8 +43,16 @@ export default function Tool() {
           重新开始
         </button>
       </div>
-      {flash === 'ok' && <p data-testid="vision-ok" className="text-sm text-green-600">找对了！</p>}
-      {flash === 'bad' && <p data-testid="vision-bad" className="text-sm text-red-600">不是这一块，再看看</p>}
+      {flash === 'ok' && (
+        <p data-testid="vision-ok" className="text-sm text-green-600">
+          找对了！
+        </p>
+      )}
+      {flash === 'bad' && (
+        <p data-testid="vision-bad" className="text-sm text-red-600">
+          不是这一块，再看看
+        </p>
+      )}
       <div
         data-testid="vision-grid"
         className="grid w-full max-w-md gap-1"
@@ -62,7 +70,9 @@ export default function Tool() {
           />
         ))}
       </div>
-      <p className="text-xs text-slate-500">规则：点击颜色不同的那一块，答对升级（色差越来越小），答错计一次失误。</p>
+      <p className="text-xs text-slate-500">
+        规则：点击颜色不同的那一块，答对升级（色差越来越小），答错计一次失误。
+      </p>
     </div>
   )
 }

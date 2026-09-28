@@ -166,9 +166,13 @@ export function sourceLabel(url: string, icons: IconLink[]): string {
 export function buildSuggestions(results: CheckResult[], icons: IconLink[]): string[] {
   const tips: string[] = []
   if (icons.length === 0) {
-    tips.push('未发现任何图标声明：建议在页面 <head> 中添加 <link rel="icon" href="/favicon.ico">。')
+    tips.push(
+      '未发现任何图标声明：建议在页面 <head> 中添加 <link rel="icon" href="/favicon.ico">。',
+    )
   } else if (!icons.some((icon) => icon.rel.toLowerCase().includes('apple-touch-icon'))) {
-    tips.push('缺少 apple-touch-icon：建议补充 180×180 的苹果触控图标，提升「添加到主屏幕」的体验。')
+    tips.push(
+      '缺少 apple-touch-icon：建议补充 180×180 的苹果触控图标，提升「添加到主屏幕」的体验。',
+    )
   }
   const failed = results.filter((r) => !r.ok).length
   if (failed > 0) {

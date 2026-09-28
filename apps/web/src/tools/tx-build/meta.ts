@@ -10,7 +10,8 @@ export const meta: ToolMeta = {
   title: '交易构建',
   description: '构建未签名以太坊交易：Legacy / EIP-1559 参数组装与 RLP 编码，输出待签名 hex',
   titleEn: 'Transaction Builder',
-  descriptionEn: 'Build unsigned Ethereum transactions: Legacy / EIP-1559 assembly with RLP encoding',
+  descriptionEn:
+    'Build unsigned Ethereum transactions: Legacy / EIP-1559 assembly with RLP encoding',
 
   category: 'encoding',
   group: 'dev',

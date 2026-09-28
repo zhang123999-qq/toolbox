@@ -23,7 +23,12 @@ export interface RasterContext {
   fillStyle: string
   fillRect(x: number, y: number, w: number, h: number): void
   fillText(text: string, x: number, y: number): void
-  getImageData(x: number, y: number, w: number, h: number): { data: ArrayLike<number>; width: number; height: number }
+  getImageData(
+    x: number,
+    y: number,
+    w: number,
+    h: number,
+  ): { data: ArrayLike<number>; width: number; height: number }
   font: string
   textBaseline: string
 }

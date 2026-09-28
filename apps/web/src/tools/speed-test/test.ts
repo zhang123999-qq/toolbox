@@ -73,7 +73,15 @@ describe('speed-test / measureOnce', () => {
 
   it('正常响应：ok，含 ttfb 与体积', async () => {
     const r = await measureOnce('https://x.test/', okFetch('hello'), clock())
-    expect(r).toMatchObject({ ok: true, status: 200, ttfbMs: 25, totalMs: 50, sizeBytes: 5, approximate: false, error: '' })
+    expect(r).toMatchObject({
+      ok: true,
+      status: 200,
+      ttfbMs: 25,
+      totalMs: 50,
+      sizeBytes: 5,
+      approximate: false,
+      error: '',
+    })
   })
 
   it('多 chunk 累加体积', async () => {
@@ -164,7 +172,9 @@ describe('speed-test / measureOnce', () => {
 
 describe('speed-test / measure', () => {
   it('次数非法抛错', async () => {
-    await expect(measure('https://x.test/', okFetch(), clock(), { times: 0 })).rejects.toThrow(/至少为 1/)
+    await expect(measure('https://x.test/', okFetch(), clock(), { times: 0 })).rejects.toThrow(
+      /至少为 1/,
+    )
   })
 
   it('3 次平均聚合', async () => {
@@ -201,7 +211,10 @@ describe('speed-test / measure', () => {
 
   it('opaque 聚合：ttfb/体积为 null 且标记近似', async () => {
     const mock: FetchFn = async () => opaque()
-    const agg = await measure('https://x.test/', mock, clock(), { times: 2, requestMode: 'no-cors' })
+    const agg = await measure('https://x.test/', mock, clock(), {
+      times: 2,
+      requestMode: 'no-cors',
+    })
     expect(agg.avgTtfbMs).toBeNull()
     expect(agg.sizeBytes).toBeNull()
     expect(agg.approximate).toBe(true)
@@ -253,7 +266,10 @@ describe('speed-test / renderReport', () => {
 
   it('近似测量报告标注跨域限制', async () => {
     const mock: FetchFn = async () => opaque()
-    const agg = await measure('https://x.test/', mock, clock(), { times: 1, requestMode: 'no-cors' })
+    const agg = await measure('https://x.test/', mock, clock(), {
+      times: 1,
+      requestMode: 'no-cors',
+    })
     const out = renderReport(agg)
     expect(out).toContain('平均 TTFB：不可测（跨域近似）')
     expect(out).toContain('传输体积：不可读（跨域近似）')

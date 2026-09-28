@@ -106,7 +106,9 @@ export default function Tool() {
             </button>
           </div>
           {placed.length === 0 ? (
-            <p className="mt-1 text-sm text-slate-500">未提取到有效词汇：请输入包含中文或英文单词的文本</p>
+            <p className="mt-1 text-sm text-slate-500">
+              未提取到有效词汇：请输入包含中文或英文单词的文本
+            </p>
           ) : null}
           {error ? (
             <p role="alert" className={ERROR_CLASS}>

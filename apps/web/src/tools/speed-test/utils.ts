@@ -217,11 +217,19 @@ export function renderReport(agg: AggregateResult): string {
   const lines: string[] = []
   lines.push(`目标：${agg.url}`)
   lines.push(`评级：${agg.grade}（${agg.score} 分）`)
-  lines.push(`平均耗时：${agg.avgMs.toFixed(0)} ms（${agg.okRuns} 次成功，最快 ${agg.minMs.toFixed(0)} ms / 最慢 ${agg.maxMs.toFixed(0)} ms）`)
-  lines.push(`平均 TTFB：${agg.avgTtfbMs === null ? '不可测（跨域近似）' : `${agg.avgTtfbMs.toFixed(0)} ms`}`)
-  lines.push(`传输体积：${agg.sizeBytes === null ? '不可读（跨域近似）' : formatSize(agg.sizeBytes)}`)
+  lines.push(
+    `平均耗时：${agg.avgMs.toFixed(0)} ms（${agg.okRuns} 次成功，最快 ${agg.minMs.toFixed(0)} ms / 最慢 ${agg.maxMs.toFixed(0)} ms）`,
+  )
+  lines.push(
+    `平均 TTFB：${agg.avgTtfbMs === null ? '不可测（跨域近似）' : `${agg.avgTtfbMs.toFixed(0)} ms`}`,
+  )
+  lines.push(
+    `传输体积：${agg.sizeBytes === null ? '不可读（跨域近似）' : formatSize(agg.sizeBytes)}`,
+  )
   if (agg.approximate) {
-    lines.push('说明：跨域测量为近似值（浏览器 no-cors 限制，读不到状态码与响应体）；同源测量为精确值')
+    lines.push(
+      '说明：跨域测量为近似值（浏览器 no-cors 限制，读不到状态码与响应体）；同源测量为精确值',
+    )
   }
   lines.push('')
   lines.push('各次测量：')
@@ -231,7 +239,9 @@ export function renderReport(agg: AggregateResult): string {
     } else {
       const ttfb = r.ttfbMs === null ? 'TTFB不可测' : `TTFB ${r.ttfbMs.toFixed(0)}ms`
       const size = r.sizeBytes === null ? '' : ` / ${formatSize(r.sizeBytes)}`
-      lines.push(`  #${i + 1} ${r.totalMs.toFixed(0)} ms（${ttfb}${size}）${r.approximate ? ' [近似]' : ''}`)
+      lines.push(
+        `  #${i + 1} ${r.totalMs.toFixed(0)} ms（${ttfb}${size}）${r.approximate ? ' [近似]' : ''}`,
+      )
     }
   })
   return lines.join('\n')

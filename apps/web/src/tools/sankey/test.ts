@@ -58,7 +58,9 @@ describe('sankey / parseSankeyData', () => {
   })
 
   it('列数不是 3 抛错（2 列 / 4 列）', () => {
-    expect(() => parseSankeyData('只有两列')).toThrow(/数据格式非法：只有两列（每行须为 源, 目标, 数值）/)
+    expect(() => parseSankeyData('只有两列')).toThrow(
+      /数据格式非法：只有两列（每行须为 源, 目标, 数值）/,
+    )
     expect(() => parseSankeyData('a,b,c,d')).toThrow(/每行须为 源, 目标, 数值/)
   })
 

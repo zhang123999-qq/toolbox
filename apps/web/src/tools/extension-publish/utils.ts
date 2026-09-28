@@ -44,14 +44,54 @@ export const STORE_NAMES: Record<StoreId, string> = {
 }
 
 export const PUBLISH_CHECKLIST: readonly PublishCheckItem[] = [
-  { id: 'manifest-exists', stores: ['chrome', 'edge', 'firefox'], label: 'manifest.json 存在', hint: '打包 zip 根目录必须包含 manifest.json' },
-  { id: 'manifest-valid', stores: ['chrome', 'edge', 'firefox'], label: 'manifest 合法（MV3）', hint: 'manifest_version 为 3 且为合法 JSON' },
-  { id: 'meta-complete', stores: ['chrome', 'edge', 'firefox'], label: '名称/版本/描述完整', hint: 'name、version、description 均已填写' },
-  { id: 'icons', stores: ['chrome', 'edge', 'firefox'], label: '图标齐全', hint: '至少提供 128px 图标且文件存在' },
-  { id: 'zip-size', stores: ['chrome', 'edge', 'firefox'], label: '安装包大小合规', hint: 'Chrome/Edge 上限 128MB，Firefox 上限 200MB' },
-  { id: 'screenshots', stores: ['chrome', 'edge', 'firefox'], label: '商店截图已准备', hint: '建议 1280×800 截图至少 1 张' },
-  { id: 'privacy-policy', stores: ['chrome', 'edge', 'firefox'], label: '隐私政策（如需）', hint: '声明敏感权限或处理用户数据时必须提供' },
-  { id: 'firefox-source', stores: ['firefox'], label: '源码提交（如含混淆代码）', hint: 'Firefox 要求混淆/压缩代码提交可读源码' },
+  {
+    id: 'manifest-exists',
+    stores: ['chrome', 'edge', 'firefox'],
+    label: 'manifest.json 存在',
+    hint: '打包 zip 根目录必须包含 manifest.json',
+  },
+  {
+    id: 'manifest-valid',
+    stores: ['chrome', 'edge', 'firefox'],
+    label: 'manifest 合法（MV3）',
+    hint: 'manifest_version 为 3 且为合法 JSON',
+  },
+  {
+    id: 'meta-complete',
+    stores: ['chrome', 'edge', 'firefox'],
+    label: '名称/版本/描述完整',
+    hint: 'name、version、description 均已填写',
+  },
+  {
+    id: 'icons',
+    stores: ['chrome', 'edge', 'firefox'],
+    label: '图标齐全',
+    hint: '至少提供 128px 图标且文件存在',
+  },
+  {
+    id: 'zip-size',
+    stores: ['chrome', 'edge', 'firefox'],
+    label: '安装包大小合规',
+    hint: 'Chrome/Edge 上限 128MB，Firefox 上限 200MB',
+  },
+  {
+    id: 'screenshots',
+    stores: ['chrome', 'edge', 'firefox'],
+    label: '商店截图已准备',
+    hint: '建议 1280×800 截图至少 1 张',
+  },
+  {
+    id: 'privacy-policy',
+    stores: ['chrome', 'edge', 'firefox'],
+    label: '隐私政策（如需）',
+    hint: '声明敏感权限或处理用户数据时必须提供',
+  },
+  {
+    id: 'firefox-source',
+    stores: ['firefox'],
+    label: '源码提交（如含混淆代码）',
+    hint: 'Firefox 要求混淆/压缩代码提交可读源码',
+  },
 ]
 
 const SENSITIVE_PERMISSIONS: readonly string[] = [
@@ -100,8 +140,18 @@ function evaluateCheck(
   input: PublishInput,
   ctx: ManifestCtx,
 ): PublishCheckResult {
-  const fail = (message: string): PublishCheckResult => ({ id: item.id, label: item.label, ok: false, message })
-  const pass = (message: string): PublishCheckResult => ({ id: item.id, label: item.label, ok: true, message })
+  const fail = (message: string): PublishCheckResult => ({
+    id: item.id,
+    label: item.label,
+    ok: false,
+    message,
+  })
+  const pass = (message: string): PublishCheckResult => ({
+    id: item.id,
+    label: item.label,
+    ok: true,
+    message,
+  })
   if (item.id === 'manifest-exists') {
     return ctx.files.includes('manifest.json')
       ? pass('manifest.json 在文件列表中')
@@ -146,7 +196,10 @@ function evaluateCheck(
   }
   if (item.id === 'privacy-policy') {
     if (!ctx.parsed) return fail('manifest 解析失败，无法检查')
-    const perms = [...stringArray(ctx.manifest.permissions), ...stringArray(ctx.manifest.host_permissions)]
+    const perms = [
+      ...stringArray(ctx.manifest.permissions),
+      ...stringArray(ctx.manifest.host_permissions),
+    ]
     const sensitive = perms.filter((p) => SENSITIVE_PERMISSIONS.includes(p))
     if (sensitive.length === 0) return pass('未声明敏感权限，可不提供隐私政策')
     return input.hasPrivacyPolicy === true
@@ -169,24 +222,28 @@ export function renderPublishResults(store: StoreId, results: PublishCheckResult
   const head = `${STORE_NAMES[store]} 发布检查：${results.length - failed.length}/${results.length} 通过`
   if (failed.length === 0) return head + '\n全部通过，可以提交审核。'
   return (
-    head +
-    '\n' +
-    failed.map((r, idx) => `${idx + 1}. [未通过] ${r.label}：${r.message}`).join('\n')
+    head + '\n' + failed.map((r, idx) => `${idx + 1}. [未通过] ${r.label}：${r.message}`).join('\n')
   )
 }
 
-export function parsePublishInput(text: string): { zipSizeKb?: number; hasScreenshots?: boolean; hasPrivacyPolicy?: boolean } {
+export function parsePublishInput(text: string): {
+  zipSizeKb?: number
+  hasScreenshots?: boolean
+  hasPrivacyPolicy?: boolean
+} {
   let raw: unknown
   try {
     raw = JSON.parse(text)
   } catch {
     throw new Error('输入不是合法 JSON')
   }
-  if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) throw new Error('输入必须是 JSON 对象')
+  if (typeof raw !== 'object' || raw === null || Array.isArray(raw))
+    throw new Error('输入必须是 JSON 对象')
   const o = raw as Record<string, unknown>
   const out: { zipSizeKb?: number; hasScreenshots?: boolean; hasPrivacyPolicy?: boolean } = {}
   if (o.zipSizeKb !== undefined) {
-    if (typeof o.zipSizeKb !== 'number' || o.zipSizeKb < 0) throw new Error('zipSizeKb 必须为非负数字')
+    if (typeof o.zipSizeKb !== 'number' || o.zipSizeKb < 0)
+      throw new Error('zipSizeKb 必须为非负数字')
     out.zipSizeKb = o.zipSizeKb
   }
   if (o.hasScreenshots !== undefined) {

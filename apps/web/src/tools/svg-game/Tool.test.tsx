@@ -23,7 +23,14 @@ describe('svg-game · Tool', () => {
     for (const id of ['input', 'run', 'example', 'clear', 'output', 'copy', 'download']) {
       expect(byTestId(id)).toBeTruthy()
     }
-    for (const id of ['svggame-template', 'svggame-primary', 'svggame-secondary', 'svggame-preview', 'svggame-copy', 'svggame-download']) {
+    for (const id of [
+      'svggame-template',
+      'svggame-primary',
+      'svggame-secondary',
+      'svggame-preview',
+      'svggame-copy',
+      'svggame-download',
+    ]) {
       expect(byTestId(id)).toBeTruthy()
     }
   })
@@ -60,7 +67,12 @@ describe('svg-game · Tool', () => {
     const click = vi.fn()
     const originalCreate = document.createElement.bind(document)
     const create = vi.spyOn(document, 'createElement').mockImplementation(((tag: string) => {
-      if (tag === 'a') return { click, set href(_v: string) {}, set download(_v: string) {} } as unknown as HTMLElement
+      if (tag === 'a')
+        return {
+          click,
+          set href(_v: string) {},
+          set download(_v: string) {},
+        } as unknown as HTMLElement
       return originalCreate(tag)
     }) as typeof document.createElement)
     const objUrl = vi.fn(() => 'blob:mock')

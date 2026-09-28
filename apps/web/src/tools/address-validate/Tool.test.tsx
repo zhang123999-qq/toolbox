@@ -24,7 +24,16 @@ const BAD_CHECKSUM = '0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAec'
 describe('address-validate · Tool', () => {
   it('渲染后必需 data-testid 存在', () => {
     render(<Tool />)
-    for (const id of ['input', 'run', 'example', 'clear', 'output', 'copy', 'download', 'results']) {
+    for (const id of [
+      'input',
+      'run',
+      'example',
+      'clear',
+      'output',
+      'copy',
+      'download',
+      'results',
+    ]) {
       expect(byTestId(id)).toBeTruthy()
     }
   })

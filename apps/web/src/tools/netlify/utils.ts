@@ -30,11 +30,7 @@ export interface NetlifyConfig {
 const VALID_REDIRECT_STATUS = [200, 301, 302, 303, 304, 307, 308, 404, 410] as const
 
 function tomlString(value: string): string {
-  return (
-    '"' +
-    value.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n') +
-    '"'
-  )
+  return '"' + value.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n') + '"'
 }
 
 function requireLeadingSlash(value: string, field: string): void {
@@ -55,8 +51,10 @@ export function buildNetlifyToml(config: NetlifyConfig): string {
   const lines: string[] = []
   if (config.build !== undefined) {
     lines.push('[build]')
-    if (config.build.command !== undefined) lines.push(`  command = ${tomlString(config.build.command)}`)
-    if (config.build.publish !== undefined) lines.push(`  publish = ${tomlString(config.build.publish)}`)
+    if (config.build.command !== undefined)
+      lines.push(`  command = ${tomlString(config.build.command)}`)
+    if (config.build.publish !== undefined)
+      lines.push(`  publish = ${tomlString(config.build.publish)}`)
     if (config.build.functions !== undefined)
       lines.push(`  functions = ${tomlString(config.build.functions)}`)
     lines.push('')

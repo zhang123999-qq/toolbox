@@ -79,7 +79,5 @@ export function transform(input: SocialShareInput, options: SocialShareOptions):
   if (input.text.trim() === '') return ''
   if (input.text.length > 200000) throw new Error('输入超过 200,000 字符上限')
   const url = assertShareUrl(input.text)
-  return renderLinks(
-    buildShareLinks({ url, title: options.shareTitle, text: options.shareText }),
-  )
+  return renderLinks(buildShareLinks({ url, title: options.shareTitle, text: options.shareText }))
 }

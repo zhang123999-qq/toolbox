@@ -10,8 +10,7 @@ export const meta: ToolMeta = {
   title: 'Wrangler 命令',
   description: 'Wrangler 常用命令速查：发布、本地开发、日志、KV / D1 / R2 操作命令拼装',
   titleEn: 'Wrangler Commands',
-  descriptionEn:
-    'Wrangler command cheat sheet: deploy, dev, tail and KV / D1 / R2 command builder',
+  descriptionEn: 'Wrangler command cheat sheet: deploy, dev, tail and KV / D1 / R2 command builder',
 
   category: 'edge',
   group: 'life',

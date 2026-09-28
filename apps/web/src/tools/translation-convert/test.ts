@@ -102,7 +102,8 @@ describe('parseI18n · PO', () => {
     expect(parseI18n(po, 'po')).toEqual([{ key: 'a', value: '甲' }])
   })
   it('头信息与注释被跳过', () => {
-    const po = '# translator comment\nmsgid ""\nmsgstr "Project-Id-Version: x"\n\n#: ref\nmsgid "k"\nmsgstr "v"\n'
+    const po =
+      '# translator comment\nmsgid ""\nmsgstr "Project-Id-Version: x"\n\n#: ref\nmsgid "k"\nmsgstr "v"\n'
     expect(parseI18n(po, 'po')).toEqual([{ key: 'k', value: 'v' }])
   })
   it('转义还原', () => {
@@ -201,10 +202,14 @@ describe('serializeI18n', () => {
     { key: 'c', value: 'x"y' },
   ]
   it('转 JSON', () => {
-    expect(serializeI18n(entries, 'json')).toBe('{\n  "a": {\n    "b": "你好"\n  },\n  "c": "x\\"y"\n}')
+    expect(serializeI18n(entries, 'json')).toBe(
+      '{\n  "a": {\n    "b": "你好"\n  },\n  "c": "x\\"y"\n}',
+    )
   })
   it('转 PO', () => {
-    expect(serializeI18n(entries, 'po')).toBe('msgid "a.b"\nmsgstr "你好"\n\nmsgid "c"\nmsgstr "x\\"y"\n')
+    expect(serializeI18n(entries, 'po')).toBe(
+      'msgid "a.b"\nmsgstr "你好"\n\nmsgid "c"\nmsgstr "x\\"y"\n',
+    )
   })
   it('空条目转 PO 得空串', () => {
     expect(serializeI18n([], 'po')).toBe('')

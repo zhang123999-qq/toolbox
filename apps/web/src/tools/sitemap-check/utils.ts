@@ -125,27 +125,40 @@ export function checkSitemap(xml: string): SitemapCheckResult {
     if (entry.loc === '') {
       issues.push({ level: 'error', message: `第 ${n} 条：缺少 <loc>` })
     } else if (!isHttpUrl(entry.loc)) {
-      issues.push({ level: 'error', message: `第 ${n} 条：<loc> 不是合法的 http(s) 绝对 URL：${entry.loc}` })
+      issues.push({
+        level: 'error',
+        message: `第 ${n} 条：<loc> 不是合法的 http(s) 绝对 URL：${entry.loc}`,
+      })
     } else if (seen.has(entry.loc)) {
       issues.push({ level: 'error', message: `第 ${n} 条：<loc> 重复：${entry.loc}` })
     } else {
       seen.add(entry.loc)
     }
     if (entry.lastmod !== undefined && !isValidSitemapDate(entry.lastmod)) {
-      issues.push({ level: 'warning', message: `第 ${n} 条：<lastmod> 日期格式不合法：${entry.lastmod}` })
+      issues.push({
+        level: 'warning',
+        message: `第 ${n} 条：<lastmod> 日期格式不合法：${entry.lastmod}`,
+      })
     }
     if (entry.changefreq !== undefined && !VALID_CHANGEFREQ.has(entry.changefreq.toLowerCase())) {
-      issues.push({ level: 'warning', message: `第 ${n} 条：<changefreq> 取值不合法：${entry.changefreq}` })
+      issues.push({
+        level: 'warning',
+        message: `第 ${n} 条：<changefreq> 取值不合法：${entry.changefreq}`,
+      })
     }
     if (entry.priority !== undefined) {
       const p = Number(entry.priority)
       if (!Number.isFinite(p) || p < 0 || p > 1) {
-        issues.push({ level: 'warning', message: `第 ${n} 条：<priority> 应为 0.0–1.0 的数字：${entry.priority}` })
+        issues.push({
+          level: 'warning',
+          message: `第 ${n} 条：<priority> 应为 0.0–1.0 的数字：${entry.priority}`,
+        })
       }
     }
   })
   const errors = issues.filter((i) => i.level === 'error').length
-  const passRate = entries.length === 0 ? 0 : Math.max(0, (entries.length - errors) / entries.length)
+  const passRate =
+    entries.length === 0 ? 0 : Math.max(0, (entries.length - errors) / entries.length)
   return { isIndex, entries, issues, passRate }
 }
 

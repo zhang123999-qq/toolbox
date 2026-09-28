@@ -121,7 +121,9 @@ export default function Tool() {
         entries[zipEntryName(ic.size)] = new Uint8Array(await ic.blob.arrayBuffer())
       }
       const zip = zipSync(entries)
-      const url = URL.createObjectURL(new Blob([zip.buffer as ArrayBuffer], { type: 'application/zip' }))
+      const url = URL.createObjectURL(
+        new Blob([zip.buffer as ArrayBuffer], { type: 'application/zip' }),
+      )
       triggerDownload(url, 'favicons.zip')
       setTimeout(() => URL.revokeObjectURL(url), 5000)
     } catch (e) {
@@ -150,7 +152,9 @@ export default function Tool() {
           className="text-sm text-slate-700 dark:text-slate-300"
           onChange={onFileChange}
         />
-        {fileName !== '' && <p className="mt-1 font-mono text-xs text-slate-500">已选择：{fileName}</p>}
+        {fileName !== '' && (
+          <p className="mt-1 font-mono text-xs text-slate-500">已选择：{fileName}</p>
+        )}
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -206,8 +210,16 @@ export default function Tool() {
                     className="flex items-center justify-between gap-2 rounded border border-slate-200 p-2 dark:border-slate-700"
                   >
                     <div className="flex items-center gap-2">
-                      <img src={ic.url} alt={`${ic.size}x${ic.size} 预览`} width={32} height={32} className="rounded border border-slate-200 dark:border-slate-700" />
-                      <span className="font-mono text-sm">{ic.size}×{ic.size}</span>
+                      <img
+                        src={ic.url}
+                        alt={`${ic.size}x${ic.size} 预览`}
+                        width={32}
+                        height={32}
+                        className="rounded border border-slate-200 dark:border-slate-700"
+                      />
+                      <span className="font-mono text-sm">
+                        {ic.size}×{ic.size}
+                      </span>
                     </div>
                     <button
                       type="button"
@@ -221,7 +233,12 @@ export default function Tool() {
                 ))}
               </div>
               <div>
-                <button type="button" data-testid="download" className={BTN_CLASS} onClick={() => void downloadZip()}>
+                <button
+                  type="button"
+                  data-testid="download"
+                  className={BTN_CLASS}
+                  onClick={() => void downloadZip()}
+                >
                   打包下载 ZIP
                 </button>
               </div>

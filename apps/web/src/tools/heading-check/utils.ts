@@ -76,10 +76,18 @@ export function checkHeadings(headings: readonly Heading[]): HeadingCheckResult 
     return { total: 0, h1Count: 0, issues, score: 0 }
   }
   if (h1Count === 0) {
-    issues.push({ level: 'error', message: '缺少 h1 标题：每个页面应有且仅有 1 个 h1', order: null })
+    issues.push({
+      level: 'error',
+      message: '缺少 h1 标题：每个页面应有且仅有 1 个 h1',
+      order: null,
+    })
     score -= 30
   } else if (h1Count > 1) {
-    issues.push({ level: 'error', message: `存在 ${h1Count} 个 h1 标题，建议只保留 1 个`, order: null })
+    issues.push({
+      level: 'error',
+      message: `存在 ${h1Count} 个 h1 标题，建议只保留 1 个`,
+      order: null,
+    })
     score -= 15
   }
 
@@ -100,7 +108,11 @@ export function checkHeadings(headings: readonly Heading[]): HeadingCheckResult 
   }
   for (const h of headings) {
     if (h.text === '') {
-      issues.push({ level: 'warning', message: `第 ${h.order} 个标题（h${h.level}）内容为空`, order: h.order })
+      issues.push({
+        level: 'warning',
+        message: `第 ${h.order} 个标题（h${h.level}）内容为空`,
+        order: h.order,
+      })
       emptyPenalty += 10
     } else if ([...h.text].length > 70) {
       issues.push({
@@ -124,7 +136,11 @@ export function checkHeadings(headings: readonly Heading[]): HeadingCheckResult 
     }
   }
 
-  score -= Math.min(30, jumpPenalty) + Math.min(20, emptyPenalty) + Math.min(15, longPenalty) + Math.min(20, dupPenalty)
+  score -=
+    Math.min(30, jumpPenalty) +
+    Math.min(20, emptyPenalty) +
+    Math.min(15, longPenalty) +
+    Math.min(20, dupPenalty)
   return { total: headings.length, h1Count, issues, score: clampScore(score) }
 }
 
@@ -138,7 +154,9 @@ export function renderOutline(headings: readonly Heading[]): string {
 /** 渲染检查报告文本（复制 / 下载用） */
 export function renderReport(headings: readonly Heading[], result: HeadingCheckResult): string {
   const lines: string[] = []
-  lines.push(`标题总数：${result.total}\u3000h1 数量：${result.h1Count}\u3000综合评分：${result.score} / 100`)
+  lines.push(
+    `标题总数：${result.total}\u3000h1 数量：${result.h1Count}\u3000综合评分：${result.score} / 100`,
+  )
   lines.push('')
   lines.push('大纲：')
   lines.push(renderOutline(headings))

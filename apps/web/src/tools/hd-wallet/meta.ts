@@ -10,7 +10,8 @@ export const meta: ToolMeta = {
   title: 'HD 钱包',
   description: 'BIP32/BIP44 分层确定性钱包：种子按路径批量推导私钥与以太坊地址',
   titleEn: 'HD Wallet',
-  descriptionEn: 'BIP32/BIP44 hierarchical deterministic wallet: derive private keys and Ethereum addresses from a seed',
+  descriptionEn:
+    'BIP32/BIP44 hierarchical deterministic wallet: derive private keys and Ethereum addresses from a seed',
 
   category: 'encoding',
   group: 'dev',

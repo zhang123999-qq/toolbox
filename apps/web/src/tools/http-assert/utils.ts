@@ -171,7 +171,11 @@ export function parseAssertions(raw: string): Assertion[] {
         if (typeof item.path !== 'string' || item.path.trim() === '') {
           throw new Error(`${label}的 path 必须是非空字符串`)
         }
-        return { type: 'bodyJsonPath', path: item.path.trim(), expected: item.expected } as Assertion
+        return {
+          type: 'bodyJsonPath',
+          path: item.path.trim(),
+          expected: item.expected,
+        } as Assertion
       }
       case 'timeLt': {
         const ms = item.ms
@@ -221,9 +225,7 @@ export function checkAssertion(a: Assertion, ctx: AssertContext): AssertionResul
       const pass = ctx.bodyText.includes(a.text)
       return {
         pass,
-        message: pass
-          ? `响应体包含 "${a.text}"，通过`
-          : `响应体断言失败：不包含 "${a.text}"`,
+        message: pass ? `响应体包含 "${a.text}"，通过` : `响应体断言失败：不包含 "${a.text}"`,
       }
     }
     case 'bodyJsonPath': {
@@ -298,10 +300,7 @@ export async function runHttpAssertions(
       status: 0,
       durationMs: Date.now() - started,
       results: [],
-      error:
-        '请求失败：' +
-        errorMessage(error) +
-        '（常见原因：目标未允许 CORS、地址不通）',
+      error: '请求失败：' + errorMessage(error) + '（常见原因：目标未允许 CORS、地址不通）',
     }
   }
   const bodyText = await res.text()

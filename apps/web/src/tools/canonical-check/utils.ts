@@ -56,7 +56,10 @@ export function checkCanonical(html: string, pageUrl: string): CanonicalCheckRes
   const issues: CanonicalIssue[] = []
   const links = extractCanonical(html)
   if (links.length === 0) {
-    issues.push({ level: 'warning', message: '未找到 <link rel="canonical">，建议为页面指定规范链接' })
+    issues.push({
+      level: 'warning',
+      message: '未找到 <link rel="canonical">，建议为页面指定规范链接',
+    })
   }
   if (links.length > 1) {
     issues.push({ level: 'error', message: `发现 ${links.length} 个 canonical，页面只应保留 1 个` })

@@ -16,7 +16,12 @@ export interface SnakeState {
 
 export type SnakeRng = () => number
 
-const OPPOSITE: Record<Direction, Direction> = { up: 'down', down: 'up', left: 'right', right: 'left' }
+const OPPOSITE: Record<Direction, Direction> = {
+  up: 'down',
+  down: 'up',
+  left: 'right',
+  right: 'left',
+}
 const DELTA: Record<Direction, Point> = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] }
 
 function pickFood(state: SnakeState, rng: SnakeRng): Point {
@@ -36,7 +41,15 @@ export function createSnake(w = 20, h = 20, rng: SnakeRng = Math.random): SnakeS
     throw new Error('棋盘尺寸至少为 4x4')
   }
   const mid: Point = [Math.floor(w / 2), Math.floor(h / 2)]
-  const base: SnakeState = { snake: [mid], dir: 'right', food: [-1, -1], w, h, alive: true, score: 0 }
+  const base: SnakeState = {
+    snake: [mid],
+    dir: 'right',
+    food: [-1, -1],
+    w,
+    h,
+    alive: true,
+    score: 0,
+  }
   return { ...base, food: pickFood(base, rng) }
 }
 
@@ -70,6 +83,10 @@ export function moveSnake(state: SnakeState, rng: SnakeRng = Math.random): Snake
   if (isCollision({ ...state, snake: [head, ...body] })) {
     return { ...state, alive: false }
   }
-  const next: SnakeState = { ...state, snake: [head, ...body], score: eats ? state.score + 1 : state.score }
+  const next: SnakeState = {
+    ...state,
+    snake: [head, ...body],
+    score: eats ? state.score + 1 : state.score,
+  }
   return eats ? { ...next, food: pickFood(next, rng) } : next
 }

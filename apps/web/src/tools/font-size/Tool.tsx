@@ -50,7 +50,12 @@ export default function Tool() {
   function fluid(): { css: string; error: string } {
     try {
       return {
-        css: generateFluidType({ minPx: toNum(minPx), maxPx: toNum(maxPx), minVw: toNum(minVw), maxVw: toNum(maxVw) }),
+        css: generateFluidType({
+          minPx: toNum(minPx),
+          maxPx: toNum(maxPx),
+          minVw: toNum(minVw),
+          maxVw: toNum(maxVw),
+        }),
         error: '',
       }
     } catch (err) {
@@ -58,7 +63,12 @@ export default function Tool() {
     }
   }
 
-  function readability(): { score: number; issues: readonly string[]; suggestions: readonly string[]; error: string } {
+  function readability(): {
+    score: number
+    issues: readonly string[]
+    suggestions: readonly string[]
+    error: string
+  } {
     try {
       const r = assessReadability({
         fontSizePx: toNum(fsPx),
@@ -67,7 +77,12 @@ export default function Tool() {
       })
       return { ...r, error: '' }
     } catch (err) {
-      return { score: 0, issues: [], suggestions: [], error: err instanceof Error ? err.message : '参数错误' }
+      return {
+        score: 0,
+        issues: [],
+        suggestions: [],
+        error: err instanceof Error ? err.message : '参数错误',
+      }
     }
   }
 
@@ -94,7 +109,9 @@ export default function Tool() {
       renderOutput={() => (
         <div className="flex flex-col gap-4">
           <section>
-            <div className="mb-1 text-sm font-medium text-slate-700 dark:text-slate-300">流式字号生成</div>
+            <div className="mb-1 text-sm font-medium text-slate-700 dark:text-slate-300">
+              流式字号生成
+            </div>
             <div className="grid grid-cols-2 gap-2 rounded border border-slate-200 p-2 dark:border-slate-700">
               <NumField label="最小字号 px" testId="min-px" value={minPx} onChange={setMinPx} />
               <NumField label="最大字号 px" testId="max-px" value={maxPx} onChange={setMaxPx} />
@@ -102,41 +119,75 @@ export default function Tool() {
               <NumField label="最大视口 px" testId="max-vw" value={maxVw} onChange={setMaxVw} />
             </div>
             {f.error ? (
-              <div role="alert" data-testid="fluid-error" className="mt-1 rounded border border-red-300 bg-red-50 p-2 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300">
+              <div
+                role="alert"
+                data-testid="fluid-error"
+                className="mt-1 rounded border border-red-300 bg-red-50 p-2 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300"
+              >
                 {f.error}
               </div>
             ) : (
-              <pre data-testid="fluid-output" className="mt-1 whitespace-pre-wrap rounded bg-slate-100 p-2 font-mono text-xs text-slate-800 dark:bg-slate-800 dark:text-slate-100">
+              <pre
+                data-testid="fluid-output"
+                className="mt-1 whitespace-pre-wrap rounded bg-slate-100 p-2 font-mono text-xs text-slate-800 dark:bg-slate-800 dark:text-slate-100"
+              >
                 {f.css}
               </pre>
             )}
           </section>
           <section>
-            <div className="mb-1 text-sm font-medium text-slate-700 dark:text-slate-300">可读性评估</div>
+            <div className="mb-1 text-sm font-medium text-slate-700 dark:text-slate-300">
+              可读性评估
+            </div>
             <div className="grid grid-cols-3 gap-2 rounded border border-slate-200 p-2 dark:border-slate-700">
               <NumField label="字号 px" testId="fs-px" value={fsPx} onChange={setFsPx} />
-              <NumField label="行宽 字符" testId="line-chars" value={lineChars} onChange={setLineChars} />
-              <NumField label="行高" testId="line-height" value={lineHeight} onChange={setLineHeight} />
+              <NumField
+                label="行宽 字符"
+                testId="line-chars"
+                value={lineChars}
+                onChange={setLineChars}
+              />
+              <NumField
+                label="行高"
+                testId="line-height"
+                value={lineHeight}
+                onChange={setLineHeight}
+              />
             </div>
             {r.error ? (
-              <div role="alert" data-testid="readability-error" className="mt-1 rounded border border-red-300 bg-red-50 p-2 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300">
+              <div
+                role="alert"
+                data-testid="readability-error"
+                className="mt-1 rounded border border-red-300 bg-red-50 p-2 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300"
+              >
                 {r.error}
               </div>
             ) : (
-              <div data-testid="readability-result" className="mt-1 rounded border border-slate-200 p-2 text-sm text-slate-700 dark:border-slate-700 dark:text-slate-300">
+              <div
+                data-testid="readability-result"
+                className="mt-1 rounded border border-slate-200 p-2 text-sm text-slate-700 dark:border-slate-700 dark:text-slate-300"
+              >
                 <div className="font-medium">可读性评分：{r.score} / 100</div>
                 {r.issues.map((issue, i) => (
-                  <div key={i} className="text-amber-700 dark:text-amber-300">问题：{issue}</div>
+                  <div key={i} className="text-amber-700 dark:text-amber-300">
+                    问题：{issue}
+                  </div>
                 ))}
                 {r.suggestions.map((s, i) => (
-                  <div key={i} className="text-slate-500 dark:text-slate-400">建议：{s}</div>
+                  <div key={i} className="text-slate-500 dark:text-slate-400">
+                    建议：{s}
+                  </div>
                 ))}
-                {r.issues.length === 0 && <div className="text-green-700 dark:text-green-300">各项指标均在舒适区间</div>}
+                {r.issues.length === 0 && (
+                  <div className="text-green-700 dark:text-green-300">各项指标均在舒适区间</div>
+                )}
               </div>
             )}
           </section>
           <section>
-            <div className="mb-1 text-sm font-medium text-slate-700 dark:text-slate-300">px / rem 换算（根字号 16px）</div>
+            <div className="mb-1 text-sm font-medium text-slate-700 dark:text-slate-300">
+              px / rem 换算（根字号 16px）
+            </div>
             <div className="flex items-center gap-2">
               <input
                 type="number"
@@ -155,9 +206,16 @@ export default function Tool() {
                 <option value="rem2px">rem → px</option>
               </select>
               {cv.error ? (
-                <span data-testid="conv-error" className="text-sm text-red-700 dark:text-red-300">{cv.error}</span>
+                <span data-testid="conv-error" className="text-sm text-red-700 dark:text-red-300">
+                  {cv.error}
+                </span>
               ) : (
-                <span data-testid="conv-result" className="font-mono text-sm text-slate-700 dark:text-slate-300">{cv.text}</span>
+                <span
+                  data-testid="conv-result"
+                  className="font-mono text-sm text-slate-700 dark:text-slate-300"
+                >
+                  {cv.text}
+                </span>
               )}
             </div>
           </section>

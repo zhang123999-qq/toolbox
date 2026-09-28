@@ -55,7 +55,10 @@ function getAttr(tag: string, name: string): string | null {
 
 /** 去掉标签、压缩空白 */
 function cleanText(innerHtml: string): string {
-  return innerHtml.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim()
+  return innerHtml
+    .replace(/<[^>]*>/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
 }
 
 /** 按文档顺序提取 a[href]：去重、转绝对地址、分类（纯函数，可单测） */
@@ -178,7 +181,13 @@ export async function checkLink(
     }
   } catch (error) {
     if (error instanceof LinkCheckError && error.kind === 'timeout') {
-      return { ...base, status: '超时', httpStatus: null, note: error.message, ms: Date.now() - started }
+      return {
+        ...base,
+        status: '超时',
+        httpStatus: null,
+        note: error.message,
+        ms: Date.now() - started,
+      }
     }
     return {
       ...base,
@@ -280,7 +289,9 @@ export function renderReport(results: readonly LinkCheckResult[]): string {
   lines.push(
     `共 ${s.total} 个链接：正常 ${s.ok}\u3000重定向 ${s.redirect}\u3000死链 ${s.dead}\u3000超时 ${s.timeout}\u3000错误 ${s.error}\u3000跳过 ${s.skipped}`,
   )
-  const bad = results.filter((r) => r.status === '死链' || r.status === '超时' || r.status === '错误')
+  const bad = results.filter(
+    (r) => r.status === '死链' || r.status === '超时' || r.status === '错误',
+  )
   if (bad.length > 0) {
     lines.push('')
     lines.push('需处理：')
@@ -289,7 +300,9 @@ export function renderReport(results: readonly LinkCheckResult[]): string {
   lines.push('')
   lines.push('明细：')
   for (const r of results) {
-    lines.push(`  [${r.status}] [${r.category}] ${r.url}${r.httpStatus === null ? '' : ` HTTP ${r.httpStatus}`}`)
+    lines.push(
+      `  [${r.status}] [${r.category}] ${r.url}${r.httpStatus === null ? '' : ` HTTP ${r.httpStatus}`}`,
+    )
   }
   return lines.join('\n')
 }

@@ -83,15 +83,39 @@ export default function Tool() {
               </select>
             </label>
             <label className="text-xs text-slate-500">
-              主色 <input type="color" data-testid="svggame-primary" value={primary} onChange={(e) => setPrimary(e.target.value)} className="h-8 w-12" />
+              主色{' '}
+              <input
+                type="color"
+                data-testid="svggame-primary"
+                value={primary}
+                onChange={(e) => setPrimary(e.target.value)}
+                className="h-8 w-12"
+              />
             </label>
             <label className="text-xs text-slate-500">
-              副色 <input type="color" data-testid="svggame-secondary" value={secondary} onChange={(e) => setSecondary(e.target.value)} className="h-8 w-12" />
+              副色{' '}
+              <input
+                type="color"
+                data-testid="svggame-secondary"
+                value={secondary}
+                onChange={(e) => setSecondary(e.target.value)}
+                className="h-8 w-12"
+              />
             </label>
-            <button type="button" data-testid="svggame-copy" onClick={handleCopy} className={BTN_CLS}>
+            <button
+              type="button"
+              data-testid="svggame-copy"
+              onClick={handleCopy}
+              className={BTN_CLS}
+            >
               复制 SVG
             </button>
-            <button type="button" data-testid="svggame-download" onClick={handleDownload} className={BTN_CLS}>
+            <button
+              type="button"
+              data-testid="svggame-download"
+              onClick={handleDownload}
+              className={BTN_CLS}
+            >
               下载 SVG
             </button>
           </div>
@@ -99,7 +123,9 @@ export default function Tool() {
             <div
               data-testid="svggame-preview"
               className="rounded border border-slate-300 p-4 dark:border-slate-600"
-              dangerouslySetInnerHTML={{ __html: svg.replace('width="64" height="64"', 'width="128" height="128"') }}
+              dangerouslySetInnerHTML={{
+                __html: svg.replace('width="64" height="64"', 'width="128" height="128"'),
+              }}
             />
             <pre data-testid="svggame-output" className={`${PRE_CLS} flex-1`}>
               {svg}

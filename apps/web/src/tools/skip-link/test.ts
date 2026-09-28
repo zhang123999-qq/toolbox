@@ -87,10 +87,7 @@ describe('detectSkipLink', () => {
     expect(d.found).toBe(true)
   })
   it('文本含"跳过"被识别', () => {
-    const d = detectSkipLink(
-      '<a href="#c">跳转到主要内容</a><main id="c">x</main>',
-      factory,
-    )
+    const d = detectSkipLink('<a href="#c">跳转到主要内容</a><main id="c">x</main>', factory)
     expect(d.found).toBe(true)
     expect(d.matches[0]?.targetExists).toBe(true)
   })
@@ -126,27 +123,21 @@ describe('formatSkipLinkReport', () => {
   })
   it('检测到链接时列出目标状态', () => {
     const d = detectSkipLink('<a href="#c" class="skip-link">跳过</a>', factory)
-    const r = formatSkipLinkReport(
-      generateSkipLink({ targetId: 'm', label: '跳过' }),
-      d,
-    )
+    const r = formatSkipLinkReport(generateSkipLink({ targetId: 'm', label: '跳过' }), d)
     expect(r).toContain('检测到 1 个跳过链接')
     expect(r).toContain('目标不存在')
   })
   it('目标存在时报告写目标存在', () => {
-    const d = detectSkipLink('<a href="#c" class="skip-link">跳过</a><main id="c">x</main>', factory)
-    const r = formatSkipLinkReport(
-      generateSkipLink({ targetId: 'm', label: '跳过' }),
-      d,
+    const d = detectSkipLink(
+      '<a href="#c" class="skip-link">跳过</a><main id="c">x</main>',
+      factory,
     )
+    const r = formatSkipLinkReport(generateSkipLink({ targetId: 'm', label: '跳过' }), d)
     expect(r).toContain('目标存在')
   })
   it('未检测到时给建议', () => {
     const d = detectSkipLink('<p>x</p>', factory)
-    const r = formatSkipLinkReport(
-      generateSkipLink({ targetId: 'm', label: '跳过' }),
-      d,
-    )
+    const r = formatSkipLinkReport(generateSkipLink({ targetId: 'm', label: '跳过' }), d)
     expect(r).toContain('未检测到跳过链接')
   })
 })

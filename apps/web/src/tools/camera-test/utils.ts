@@ -69,9 +69,7 @@ interface EnumerateCapable {
 /**
  * 枚举摄像头设备。mediaDevices 可注入 mock；不支持时抛中文错。
  */
-export async function listCameras(
-  mediaDevices?: EnumerateCapable | null,
-): Promise<CameraDevice[]> {
+export async function listCameras(mediaDevices?: EnumerateCapable | null): Promise<CameraDevice[]> {
   if (!mediaDevices || typeof mediaDevices.enumerateDevices !== 'function') {
     throw new Error(CAMERA_STATUS_TEXT.unsupported)
   }

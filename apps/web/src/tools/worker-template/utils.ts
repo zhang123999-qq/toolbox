@@ -114,4 +114,6 @@ export function generateWorker(opts: WorkerOptions): string {
   return out.join('\n') + '\n'
 }
 
-export const EXAMPLE_ROUTES = ['# 每行「METHOD /path」', 'GET /api/users', 'POST /api/users'].join('\n')
+export const EXAMPLE_ROUTES = ['# 每行「METHOD /path」', 'GET /api/users', 'POST /api/users'].join(
+  '\n',
+)

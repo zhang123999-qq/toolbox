@@ -51,7 +51,9 @@ describe('validateMapOptions', () => {
   })
   it('比例越界报错', () => {
     expect(() => validateMapOptions({ w: 8, h: 8, seed: 1, waterLevel: 1.5 })).toThrow('waterLevel')
-    expect(() => validateMapOptions({ w: 8, h: 8, seed: 1, mountainRate: -0.1 })).toThrow('mountainRate')
+    expect(() => validateMapOptions({ w: 8, h: 8, seed: 1, mountainRate: -0.1 })).toThrow(
+      'mountainRate',
+    )
   })
   it('非对象报错', () => {
     expect(() => validateMapOptions('x' as never)).toThrow('必须是对象')

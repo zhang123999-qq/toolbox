@@ -70,7 +70,12 @@ describe('checkContrastPair', () => {
 })
 
 describe('generateHighContrastCss', () => {
-  const base = { background: '#000000', foreground: '#ffffff', linkColor: '#ffff00', mode: 'dark' as const }
+  const base = {
+    background: '#000000',
+    foreground: '#ffffff',
+    linkColor: '#ffff00',
+    mode: 'dark' as const,
+  }
 
   it('dark 模式生成变量与规则', () => {
     const css = generateHighContrastCss(base)

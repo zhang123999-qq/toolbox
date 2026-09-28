@@ -168,14 +168,19 @@ export async function fetchHtml(
   if (!res.ok) throw new Error(`目标服务器返回 HTTP ${res.status}`)
   const contentType = res.headers.get('content-type') ?? ''
   if (!contentType.toLowerCase().includes('html')) {
-    throw new Error(`目标返回的不是 HTML（Content-Type: ${contentType === '' ? '未知' : contentType}）`)
+    throw new Error(
+      `目标返回的不是 HTML（Content-Type: ${contentType === '' ? '未知' : contentType}）`,
+    )
   }
   try {
     return await res.text()
   } catch (error) {
-    throw new Error('读取响应正文失败：' + (error instanceof Error ? error.message : String(error)), {
-      cause: error,
-    })
+    throw new Error(
+      '读取响应正文失败：' + (error instanceof Error ? error.message : String(error)),
+      {
+        cause: error,
+      },
+    )
   }
 }
 

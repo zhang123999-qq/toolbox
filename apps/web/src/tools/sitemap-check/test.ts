@@ -111,7 +111,9 @@ describe('checkSitemap', () => {
 
   it('零条目时报错且通过率为 0', () => {
     const r = checkSitemap('<?xml version="1.0"?><urlset></urlset>')
-    expect(r.issues.some((i) => i.level === 'error' && i.message.includes('未解析到任何 <url>'))).toBe(true)
+    expect(
+      r.issues.some((i) => i.level === 'error' && i.message.includes('未解析到任何 <url>')),
+    ).toBe(true)
     expect(r.passRate).toBe(0)
   })
 
@@ -121,7 +123,9 @@ describe('checkSitemap', () => {
   })
 
   it('缺失 loc 报错', () => {
-    const r = checkSitemap('<?xml version="1.0"?><urlset><url><lastmod>2026-01-01</lastmod></url></urlset>')
+    const r = checkSitemap(
+      '<?xml version="1.0"?><urlset><url><lastmod>2026-01-01</lastmod></url></urlset>',
+    )
     expect(r.issues.some((i) => i.level === 'error' && i.message.includes('缺少 <loc>'))).toBe(true)
   })
 

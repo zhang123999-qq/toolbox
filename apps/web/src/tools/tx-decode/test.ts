@@ -254,9 +254,7 @@ describe('decodeAccessList', () => {
 
   it('单条目', () => {
     const got = JSON.parse(decodeAccessList([[addr20, [key32]]]))
-    expect(got).toEqual([
-      { address: ADDR_CHECKSUM, storageKeys: [`0x${'00'.repeat(31)}01`] },
-    ])
+    expect(got).toEqual([{ address: ADDR_CHECKSUM, storageKeys: [`0x${'00'.repeat(31)}01`] }])
   })
 
   it('非列表抛错', () => {
@@ -383,9 +381,7 @@ describe('decodeTransaction 构造用例', () => {
     expect(fieldOf(tx, 'gasPrice').value).toBe('1000000000')
     expect(fieldOf(tx, 'yParity').value).toBe('0')
     const al = JSON.parse(fieldOf(tx, 'accessList').value)
-    expect(al).toEqual([
-      { address: ADDR_CHECKSUM, storageKeys: [`0x${'00'.repeat(31)}01`] },
-    ])
+    expect(al).toEqual([{ address: ADDR_CHECKSUM, storageKeys: [`0x${'00'.repeat(31)}01`] }])
     expect(fieldOf(tx, 'data').value).toBe(`0x${'ab'.repeat(65)}`)
     expect(tx.hash).toMatch(/^0x[0-9a-f]{64}$/)
   })

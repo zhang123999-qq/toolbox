@@ -35,15 +35,10 @@ describe('calcFormula', () => {
     expect(calcFormula('geometric-sum', { a1: 1, q: 2, n: 10 })).toBe(1023)
   })
   it('等比 q=1 抛中文错误', () => {
-    expect(() => calcFormula('geometric-sum', { a1: 1, q: 1, n: 3 })).toThrow(
-      '公比 q 不能为 1',
-    )
+    expect(() => calcFormula('geometric-sum', { a1: 1, q: 1, n: 3 })).toThrow('公比 q 不能为 1')
   })
   it('复利：P=1000,r=0.05,n=10 → 约 1628.89', () => {
-    expect(calcFormula('compound-interest', { P: 1000, r: 0.05, n: 10 })).toBeCloseTo(
-      1628.89,
-      2,
-    )
+    expect(calcFormula('compound-interest', { P: 1000, r: 0.05, n: 10 })).toBeCloseTo(1628.89, 2)
   })
   it('勾股：3,4 → 5', () => {
     expect(calcFormula('pythagorean', { a: 3, b: 4 })).toBe(5)
@@ -76,9 +71,7 @@ describe('calcFormula', () => {
     expect(() => calcFormula('heron', { a: 0, b: 4, c: 5 })).toThrow('边长必须为正数')
   })
   it('海伦：不满足三角形不等式抛中文错误', () => {
-    expect(() => calcFormula('heron', { a: 1, b: 2, c: 10 })).toThrow(
-      '不满足三角形不等式',
-    )
+    expect(() => calcFormula('heron', { a: 1, b: 2, c: 10 })).toThrow('不满足三角形不等式')
   })
   it('两点距离：(0,0)-(3,4) → 5', () => {
     expect(calcFormula('distance-2d', { x1: 0, y1: 0, x2: 3, y2: 4 })).toBe(5)
@@ -87,9 +80,7 @@ describe('calcFormula', () => {
     expect(calcFormula('slope', { x1: 0, y1: 0, x2: 2, y2: 4 })).toBe(2)
   })
   it('垂直直线斜率不存在抛中文错误', () => {
-    expect(() => calcFormula('slope', { x1: 1, y1: 0, x2: 1, y2: 5 })).toThrow(
-      '斜率不存在',
-    )
+    expect(() => calcFormula('slope', { x1: 1, y1: 0, x2: 1, y2: 5 })).toThrow('斜率不存在')
   })
   it('缺变量抛中文错误', () => {
     expect(() => calcFormula('pythagorean', { a: 3 })).toThrow('缺少变量')

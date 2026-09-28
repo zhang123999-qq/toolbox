@@ -44,11 +44,7 @@ export function newCard(
  * SM-2 简化版评分：quality 为 0–5 整数。
  * ≥3 视为答对（拉长间隔），<3 重置为 1 天；ease 下限 1.3。
  */
-export function gradeCard(
-  card: Flashcard,
-  quality: number,
-  now: number = Date.now(),
-): Flashcard {
+export function gradeCard(card: Flashcard, quality: number, now: number = Date.now()): Flashcard {
   if (!Number.isInteger(quality) || quality < 0 || quality > 5) {
     throw new Error('评分必须为 0–5 的整数')
   }
@@ -72,7 +68,10 @@ export function dueCards(deck: Flashcard[], now: number = Date.now()): Flashcard
 }
 
 /** 牌组统计：总数 / 到期数 / 新卡数（从未答对） */
-export function deckStats(deck: Flashcard[], now: number = Date.now()): {
+export function deckStats(
+  deck: Flashcard[],
+  now: number = Date.now(),
+): {
   total: number
   due: number
   fresh: number

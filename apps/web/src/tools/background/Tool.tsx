@@ -28,7 +28,9 @@ export default function Tool() {
       meta={meta}
       initialInput={{ text: JSON.stringify(EXAMPLE_INPUT, null, 2) }}
       initialOptions={{}}
-      example={{ text: JSON.stringify({ events: ['alarms', 'contextMenus'], keepAlive: true }, null, 2) }}
+      example={{
+        text: JSON.stringify({ events: ['alarms', 'contextMenus'], keepAlive: true }, null, 2),
+      }}
       renderOutput={(input) => (
         <div className="flex flex-col gap-3">
           <div>
@@ -52,11 +54,10 @@ export default function Tool() {
             </pre>
           )}
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            说明：输入 JSON 配置（events 可选 alarms / runtime.onInstalled /
-            contextMenus / runtime.onMessage / tabs.onUpdated，keepAlive
-            为是否追加保活说明），生成 Manifest V3 Service Worker
-            模板。注意 MV3 不支持 persistent 后台页，Service
-            Worker 会被浏览器休眠，周期任务请用 chrome.alarms。纯本地生成。
+            说明：输入 JSON 配置（events 可选 alarms / runtime.onInstalled / contextMenus /
+            runtime.onMessage / tabs.onUpdated，keepAlive 为是否追加保活说明），生成 Manifest V3
+            Service Worker 模板。注意 MV3 不支持 persistent 后台页，Service Worker
+            会被浏览器休眠，周期任务请用 chrome.alarms。纯本地生成。
           </p>
         </div>
       )}

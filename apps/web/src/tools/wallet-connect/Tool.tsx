@@ -2,7 +2,13 @@ import { useState } from 'react'
 import { MultiPanel } from '../../components/tool/templates/MultiPanel'
 import { SECONDARY_BUTTON } from '../../components/tool/templates/TwoColumn'
 import { meta } from './meta'
-import { connectWallet, detectProviders, getWalletInfo, type Eip1193Provider, type WalletInfo } from './utils'
+import {
+  connectWallet,
+  detectProviders,
+  getWalletInfo,
+  type Eip1193Provider,
+  type WalletInfo,
+} from './utils'
 import type { WalletConnectInput, WalletConnectOptions } from './schema'
 
 const EXAMPLE: WalletConnectInput = { text: '' }
@@ -26,7 +32,9 @@ export default function Tool() {
     try {
       const providers = detectProviders(() => ({ ethereum: getWindowEthereum() }))
       if (providers.length === 0) {
-        throw new Error('未检测到浏览器钱包：请先安装 MetaMask（或兼容 EIP-1193 的钱包扩展）后刷新重试')
+        throw new Error(
+          '未检测到浏览器钱包：请先安装 MetaMask（或兼容 EIP-1193 的钱包扩展）后刷新重试',
+        )
       }
       const provider: Eip1193Provider = providers[0]
       const accounts = await connectWallet(provider)
@@ -42,16 +50,27 @@ export default function Tool() {
 
   function infoToText(): string {
     if (info === null) return '未连接钱包'
-    return [`地址：${info.address}`, `链 ID：${info.chainId}`, `余额：${info.balanceEther} ETH (${info.balanceWei} wei)`].join('\n')
+    return [
+      `地址：${info.address}`,
+      `链 ID：${info.chainId}`,
+      `余额：${info.balanceEther} ETH (${info.balanceWei} wei)`,
+    ].join('\n')
   }
 
   function renderOutput(_input: WalletConnectInput, _options: WalletConnectOptions) {
     return (
       <div data-testid="results" className="space-y-3">
         <p className="text-xs text-gray-500 dark:text-gray-400">
-          通过 EIP-1193 连接浏览器注入钱包（MetaMask 等）。只读取地址 / 链 ID / 余额，不发起任何交易；断开连接请在钱包扩展内操作。
+          通过 EIP-1193 连接浏览器注入钱包（MetaMask 等）。只读取地址 / 链 ID /
+          余额，不发起任何交易；断开连接请在钱包扩展内操作。
         </p>
-        <button type="button" data-testid="connect" onClick={connect} disabled={connecting} className={SECONDARY_BUTTON}>
+        <button
+          type="button"
+          data-testid="connect"
+          onClick={connect}
+          disabled={connecting}
+          className={SECONDARY_BUTTON}
+        >
           {connecting ? '连接中…' : account === null ? '连接钱包' : '重新连接'}
         </button>
         {error !== null ? (
@@ -78,7 +97,9 @@ export default function Tool() {
               <p className="font-mono text-xs break-all" data-testid="value-balance">
                 {info.balanceEther} ETH
               </p>
-              <p className="font-mono text-xs break-all text-gray-500 dark:text-gray-400">{info.balanceWei} wei</p>
+              <p className="font-mono text-xs break-all text-gray-500 dark:text-gray-400">
+                {info.balanceWei} wei
+              </p>
             </div>
           </div>
         ) : null}

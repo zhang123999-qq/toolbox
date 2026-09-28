@@ -94,10 +94,12 @@ describe('bluetooth-test · requestDevice', () => {
 
   it('默认 options 为 acceptAllDevices', async () => {
     const seen: Array<Record<string, unknown> | undefined> = []
-    const bt = { requestDevice: vi.fn(async (o?: Record<string, unknown>) => {
-      seen.push(o)
-      return { id: 'x', name: null }
-    }) }
+    const bt = {
+      requestDevice: vi.fn(async (o?: Record<string, unknown>) => {
+        seen.push(o)
+        return { id: 'x', name: null }
+      }),
+    }
     const info = await requestDevice(bt)
     expect(seen[0]).toEqual({ acceptAllDevices: true })
     expect(info.name).toBe('未知设备')

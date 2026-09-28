@@ -1,10 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import {
-  buildJsonLd,
-  parseBreadcrumbLines,
-  parseFaqLines,
-  parseUrlLines,
-} from './utils'
+import { buildJsonLd, parseBreadcrumbLines, parseFaqLines, parseUrlLines } from './utils'
 
 describe('json-ld · parseFaqLines', () => {
   it('解析「问题 || 答案」多行', () => {
@@ -20,7 +15,9 @@ describe('json-ld · parseFaqLines', () => {
   })
 
   it('缺分隔符抛中文错并带行号', () => {
-    expect(() => parseFaqLines('只有问题没有分隔符')).toThrow('第 1 行格式错误，应为「问题 || 答案」')
+    expect(() => parseFaqLines('只有问题没有分隔符')).toThrow(
+      '第 1 行格式错误，应为「问题 || 答案」',
+    )
   })
 
   it('分隔符两侧为空抛错', () => {
@@ -38,7 +35,9 @@ describe('json-ld · parseFaqLines', () => {
 
 describe('json-ld · parseBreadcrumbLines', () => {
   it('解析「名称 || URL」多行', () => {
-    expect(parseBreadcrumbLines('首页 || https://example.com/\n分类 || https://example.com/c')).toEqual([
+    expect(
+      parseBreadcrumbLines('首页 || https://example.com/\n分类 || https://example.com/c'),
+    ).toEqual([
       { name: '首页', url: 'https://example.com/' },
       { name: '分类', url: 'https://example.com/c' },
     ])
@@ -63,7 +62,10 @@ describe('json-ld · parseBreadcrumbLines', () => {
 
 describe('json-ld · parseUrlLines', () => {
   it('解析多行 URL 并跳过空行', () => {
-    expect(parseUrlLines('https://a.com\n\nhttps://b.com\n')).toEqual(['https://a.com', 'https://b.com'])
+    expect(parseUrlLines('https://a.com\n\nhttps://b.com\n')).toEqual([
+      'https://a.com',
+      'https://b.com',
+    ])
   })
 
   it('空文本返回空数组', () => {
@@ -80,7 +82,11 @@ describe('json-ld · buildJsonLd / Article', () => {
     const out = buildJsonLd('Article', { headline: '标题' })
     expect(out).toContain('<script type="application/ld+json">')
     const obj = JSON.parse(out.replace(/<script[^>]*>\n?/, '').replace(/\n<\/script>\n?$/, ''))
-    expect(obj).toMatchObject({ '@context': 'https://schema.org', '@type': 'Article', headline: '标题' })
+    expect(obj).toMatchObject({
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: '标题',
+    })
   })
 
   it('全部字段按结构输出', () => {
@@ -99,7 +105,9 @@ describe('json-ld · buildJsonLd / Article', () => {
   })
 
   it('标题为空抛中文错', () => {
-    expect(() => buildJsonLd('Article', { headline: '  ' })).toThrow('Article 的 headline（标题）不能为空')
+    expect(() => buildJsonLd('Article', { headline: '  ' })).toThrow(
+      'Article 的 headline（标题）不能为空',
+    )
   })
 
   it('空的可选字段不出现在输出里', () => {
@@ -114,7 +122,12 @@ describe('json-ld · buildJsonLd / Product', () => {
   })
 
   it('价格与货币组装为 Offer', () => {
-    const out = buildJsonLd('Product', { name: '手机', brand: '某牌', price: '1999', priceCurrency: 'CNY' })
+    const out = buildJsonLd('Product', {
+      name: '手机',
+      brand: '某牌',
+      price: '1999',
+      priceCurrency: 'CNY',
+    })
     const obj = JSON.parse(out.replace(/<script[^>]*>\n?/, '').replace(/\n<\/script>\n?$/, ''))
     expect(obj.brand).toEqual({ '@type': 'Brand', name: '某牌' })
     expect(obj.offers).toEqual({ '@type': 'Offer', price: '1999', priceCurrency: 'CNY' })
@@ -203,7 +216,9 @@ describe('json-ld · buildJsonLd / Organization', () => {
 describe('json-ld · 安全与格式', () => {
   it('输出整体是合法 JSON', () => {
     const out = buildJsonLd('Article', { headline: '含"引号"与\n换行' })
-    expect(() => JSON.parse(out.replace(/<script[^>]*>\n?/, '').replace(/\n<\/script>\n?$/, ''))).not.toThrow()
+    expect(() =>
+      JSON.parse(out.replace(/<script[^>]*>\n?/, '').replace(/\n<\/script>\n?$/, '')),
+    ).not.toThrow()
   })
 
   it('内容中的 </script 被转义防止提前闭合', () => {

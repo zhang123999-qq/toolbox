@@ -31,7 +31,9 @@ describe('normalizeApiDef', () => {
     expect(() => normalizeApiDef('x')).toThrow('必须是对象')
   })
   it('名称为空抛错', () => {
-    expect(() => normalizeApiDef({ name: ' ', method: 'GET', path: '/' })).toThrow('接口名称不能为空')
+    expect(() => normalizeApiDef({ name: ' ', method: 'GET', path: '/' })).toThrow(
+      '接口名称不能为空',
+    )
   })
   it('method 非法抛错', () => {
     expect(() => normalizeApiDef({ name: 'a', method: 'FETCH', path: '/' })).toThrow('method 非法')
@@ -141,7 +143,9 @@ describe('parseApiDefs', () => {
   })
   it('错误带序号前缀', () => {
     expect(() =>
-      parseApiDefs('[{"name":"a","method":"GET","path":"/"},{"name":"","method":"GET","path":"/"}]'),
+      parseApiDefs(
+        '[{"name":"a","method":"GET","path":"/"},{"name":"","method":"GET","path":"/"}]',
+      ),
     ).toThrow('第 2 个接口：接口名称不能为空')
   })
 })
@@ -203,7 +207,15 @@ describe('generateApiDoc', () => {
   })
   it('无可选内容时不输出对应章节', () => {
     const md = generateApiDoc(
-      [def({ description: '', headers: [], queryParams: [], bodyExample: '', responseExample: '' })],
+      [
+        def({
+          description: '',
+          headers: [],
+          queryParams: [],
+          bodyExample: '',
+          responseExample: '',
+        }),
+      ],
       { title: 't', version: '' },
     )
     expect(md).not.toContain('### 请求头')
@@ -219,10 +231,13 @@ describe('generateApiDoc', () => {
     expect(md).toContain('| id | number | 是 |  |')
   })
   it('多接口序号递增', () => {
-    const md = generateApiDoc([def(), def({ name: '创建用户', method: 'POST', path: '/api/users' })], {
-      title: 't',
-      version: '',
-    })
+    const md = generateApiDoc(
+      [def(), def({ name: '创建用户', method: 'POST', path: '/api/users' })],
+      {
+        title: 't',
+        version: '',
+      },
+    )
     expect(md).toContain('## 1. 获取用户')
     expect(md).toContain('## 2. 创建用户')
   })

@@ -8,9 +8,11 @@ export const meta: ToolMeta = {
   id: 'aria-gen',
   slug: 'aria-gen',
   title: 'ARIA 生成',
-  description: '按组件类型生成 ARIA 无障碍 HTML 代码片段：按钮、输入框、对话框、导航、选项卡、开关、滑块、提示',
+  description:
+    '按组件类型生成 ARIA 无障碍 HTML 代码片段：按钮、输入框、对话框、导航、选项卡、开关、滑块、提示',
   titleEn: 'ARIA Snippet Generator',
-  descriptionEn: 'Generate accessible ARIA HTML snippets by component type: button, input, dialog, nav, tabs, switch, slider, alert',
+  descriptionEn:
+    'Generate accessible ARIA HTML snippets by component type: button, input, dialog, nav, tabs, switch, slider, alert',
 
   category: 'a11y',
   group: 'life',

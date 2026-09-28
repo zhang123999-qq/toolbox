@@ -88,7 +88,9 @@ describe('validateImage', () => {
     expect(() => validateImage({ size: NaN, type: 'image/png' })).toThrow('图片文件大小异常')
   })
   it('超大图片抛错并带 MB 数', () => {
-    expect(() => validateImage({ size: MAX_IMAGE_BYTES + 1, type: 'image/jpeg' })).toThrow('超过 10MB 上限')
+    expect(() => validateImage({ size: MAX_IMAGE_BYTES + 1, type: 'image/jpeg' })).toThrow(
+      '超过 10MB 上限',
+    )
   })
   it('合法图片通过', () => {
     expect(() => validateImage({ size: 1024, type: 'image/webp' })).not.toThrow()
@@ -131,7 +133,9 @@ describe('extractAssistantText', () => {
     )
   })
   it('正常提取并 trim', () => {
-    expect(extractAssistantText({ choices: [{ message: { content: '  一只猫  ' } }] })).toBe('一只猫')
+    expect(extractAssistantText({ choices: [{ message: { content: '  一只猫  ' } }] })).toBe(
+      '一只猫',
+    )
   })
 })
 
@@ -159,7 +163,9 @@ describe('requestAltText', () => {
     await expect(requestAltText('', cfg())).rejects.toThrow('图片数据异常')
   })
   it('未填 Key 抛中文提示', async () => {
-    await expect(requestAltText(DATA_URL, cfg({ apiKey: '  ' }))).rejects.toThrow('请先填写 API Key')
+    await expect(requestAltText(DATA_URL, cfg({ apiKey: '  ' }))).rejects.toThrow(
+      '请先填写 API Key',
+    )
   })
   it('成功时 Authorization 只进请求头', async () => {
     let captured: { url: string; init: RequestInit } | null = null

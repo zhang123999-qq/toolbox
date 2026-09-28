@@ -8,9 +8,11 @@ export const meta: ToolMeta = {
   id: 'high-contrast',
   slug: 'high-contrast',
   title: '高对比度',
-  description: '生成高对比度主题 CSS（含 forced-colors 系统色适配），并用 WCAG 公式校验正文与链接的对比度',
+  description:
+    '生成高对比度主题 CSS（含 forced-colors 系统色适配），并用 WCAG 公式校验正文与链接的对比度',
   titleEn: 'High Contrast CSS',
-  descriptionEn: 'Generate high-contrast theme CSS with forced-colors support and WCAG contrast check',
+  descriptionEn:
+    'Generate high-contrast theme CSS with forced-colors support and WCAG contrast check',
 
   category: 'a11y',
   group: 'life',

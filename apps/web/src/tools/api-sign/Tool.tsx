@@ -1,7 +1,13 @@
 import { useState } from 'react'
 import { MultiPanel } from '../../components/tool/templates/MultiPanel'
 import { meta } from './meta'
-import { SIGN_ENCODINGS, SIGN_METHODS, type ApiSignInput, type SignEncodingOpt, type SignMethod } from './schema'
+import {
+  SIGN_ENCODINGS,
+  SIGN_METHODS,
+  type ApiSignInput,
+  type SignEncodingOpt,
+  type SignMethod,
+} from './schema'
 import { parseSignParams, signRequest, verifySignature, type SignResult } from './utils'
 
 const INPUT_CLS =
@@ -222,8 +228,8 @@ export default function Tool() {
             </div>
           )}
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            说明：使用 WebCrypto 在本地计算 HMAC-SHA256；密钥只保存在页面内存中，
-            不写入 localStorage、不上报网络。
+            说明：使用 WebCrypto 在本地计算 HMAC-SHA256；密钥只保存在页面内存中， 不写入
+            localStorage、不上报网络。
           </p>
         </div>
       )}

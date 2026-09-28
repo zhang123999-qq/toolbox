@@ -155,7 +155,10 @@ describe('title-check / analyzeTitle', () => {
 
 describe('title-check / renderAnalysis', () => {
   it('渲染过长标题报告', () => {
-    const a = analyzeTitle('2026年最好的10款无线耳机推荐：实测对比与选购指南大全集锦终极版', '选购指南')
+    const a = analyzeTitle(
+      '2026年最好的10款无线耳机推荐：实测对比与选购指南大全集锦终极版',
+      '选购指南',
+    )
     const out = renderAnalysis(a)
     expect(out).toContain('评级：过长')
     expect(out).toContain('截断预览：')

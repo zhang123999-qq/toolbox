@@ -31,14 +31,16 @@ function input(over: Partial<PublishInput> = {}): PublishInput {
 
 describe('checkPublishReady', () => {
   it('chrome 全部通过', () => {
-    const results = checkPublishReady(
-      input({ zipSizeKb: 100, hasScreenshots: true }),
-    )
+    const results = checkPublishReady(input({ zipSizeKb: 100, hasScreenshots: true }))
     expect(results.every((r) => r.ok)).toBe(true)
-    expect(results).toHaveLength(PUBLISH_CHECKLIST.filter((c) => c.stores.includes('chrome')).length)
+    expect(results).toHaveLength(
+      PUBLISH_CHECKLIST.filter((c) => c.stores.includes('chrome')).length,
+    )
   })
   it('firefox 包含源码检查项', () => {
-    const results = checkPublishReady(input({ store: 'firefox', zipSizeKb: 100, hasScreenshots: true }))
+    const results = checkPublishReady(
+      input({ store: 'firefox', zipSizeKb: 100, hasScreenshots: true }),
+    )
     expect(results.some((r) => r.id === 'firefox-source' && r.ok)).toBe(true)
   })
   it('缺少 manifest.json 文件', () => {
@@ -84,12 +86,16 @@ describe('checkPublishReady', () => {
   })
   it('zip 大小：未提供 / 通过 / 超限', () => {
     expect(checkPublishReady(input()).find((r) => r.id === 'zip-size')?.ok).toBe(false)
-    expect(checkPublishReady(input({ zipSizeKb: 100 })).find((r) => r.id === 'zip-size')?.ok).toBe(true)
+    expect(checkPublishReady(input({ zipSizeKb: 100 })).find((r) => r.id === 'zip-size')?.ok).toBe(
+      true,
+    )
     const over = checkPublishReady(input({ zipSizeKb: 200 * 1024 }))
     expect(over.find((r) => r.id === 'zip-size')?.ok).toBe(false)
   })
   it('截图未准备', () => {
-    expect(checkPublishReady(input({ zipSizeKb: 1 })).find((r) => r.id === 'screenshots')?.ok).toBe(false)
+    expect(checkPublishReady(input({ zipSizeKb: 1 })).find((r) => r.id === 'screenshots')?.ok).toBe(
+      false,
+    )
   })
   it('隐私政策：无敏感权限通过 / 有敏感权限未提供不通过 / 已提供通过', () => {
     const none = checkPublishReady(input({ zipSizeKb: 1, hasScreenshots: true }))
@@ -101,14 +107,19 @@ describe('checkPublishReady', () => {
     })
     const missing = checkPublishReady(input({ manifestText: sensitiveManifest }))
     expect(missing.find((r) => r.id === 'privacy-policy')?.ok).toBe(false)
-    const provided = checkPublishReady(input({ manifestText: sensitiveManifest, hasPrivacyPolicy: true }))
+    const provided = checkPublishReady(
+      input({ manifestText: sensitiveManifest, hasPrivacyPolicy: true }),
+    )
     expect(provided.find((r) => r.id === 'privacy-policy')?.ok).toBe(true)
   })
 })
 
 describe('renderPublishResults', () => {
   it('全部通过输出结论', () => {
-    const out = renderPublishResults('chrome', checkPublishReady(input({ zipSizeKb: 1, hasScreenshots: true })))
+    const out = renderPublishResults(
+      'chrome',
+      checkPublishReady(input({ zipSizeKb: 1, hasScreenshots: true })),
+    )
     expect(out).toContain(STORE_NAMES.chrome)
     expect(out).toContain('全部通过')
   })

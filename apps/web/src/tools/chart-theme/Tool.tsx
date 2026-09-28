@@ -2,12 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { MultiPanel } from '../../components/tool/templates/MultiPanel'
 import type { OptionDef } from '../../components/tool/templates/TwoColumn'
 import { meta } from './meta'
-import {
-  EXAMPLE_PALETTE,
-  EXAMPLE_TITLE,
-  buildPreviewOption,
-  resolveTheme,
-} from './utils'
+import { EXAMPLE_PALETTE, EXAMPLE_TITLE, buildPreviewOption, resolveTheme } from './utils'
 import type { ChartThemeInput, ChartThemeOptions } from './schema'
 
 /** 示例：默认主题四要素 + 预览标题 */
@@ -35,7 +30,10 @@ export default function Tool() {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const chartRef = useRef<ChartInstance | null>(null)
   // render 阶段计算主题 + 预览 option，effect 阶段喂给 echarts
-  const pendingRender = useRef<{ theme: Record<string, unknown>; option: Record<string, unknown> } | null>(null)
+  const pendingRender = useRef<{
+    theme: Record<string, unknown>
+    option: Record<string, unknown>
+  } | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -88,8 +86,15 @@ export default function Tool() {
       pendingRender.current = { theme, option }
       return (
         <div>
-          <div ref={containerRef} data-testid="chart-container" style={{ width: '600px', height: '360px' }} />
-          <pre data-testid="theme-json" className="mt-2 overflow-auto rounded bg-gray-100 p-2 text-xs dark:bg-gray-800">
+          <div
+            ref={containerRef}
+            data-testid="chart-container"
+            style={{ width: '600px', height: '360px' }}
+          />
+          <pre
+            data-testid="theme-json"
+            className="mt-2 overflow-auto rounded bg-gray-100 p-2 text-xs dark:bg-gray-800"
+          >
             {JSON.stringify(theme, null, 2)}
           </pre>
           {error ? (

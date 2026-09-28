@@ -16,7 +16,9 @@ import {
   type VoiceInfo,
 } from './utils'
 
-function mockSpeech(voices: VoiceInfo[] = []): SpeechLike & { spoken: UtteranceLike[]; cancelled: number } {
+function mockSpeech(
+  voices: VoiceInfo[] = [],
+): SpeechLike & { spoken: UtteranceLike[]; cancelled: number } {
   const spoken: UtteranceLike[] = []
   return {
     spoken,
@@ -33,7 +35,13 @@ function mockSpeech(voices: VoiceInfo[] = []): SpeechLike & { spoken: UtteranceL
 }
 
 const VOICES: VoiceInfo[] = [
-  { name: 'Google US English', lang: 'en-US', voiceURI: 'en', localService: false, isDefault: false },
+  {
+    name: 'Google US English',
+    lang: 'en-US',
+    voiceURI: 'en',
+    localService: false,
+    isDefault: false,
+  },
   { name: '中文（普通话）', lang: 'zh-CN', voiceURI: 'zh', localService: true, isDefault: true },
 ]
 
@@ -49,14 +57,22 @@ describe('validateSpeechOptions', () => {
     expect(v.voiceURI).toBeUndefined()
   })
   it('自定义值保留', () => {
-    const v = validateSpeechOptions({ rate: 1.5, pitch: 0.8, volume: 0.5, lang: 'en-US', voiceURI: 'x' })
+    const v = validateSpeechOptions({
+      rate: 1.5,
+      pitch: 0.8,
+      volume: 0.5,
+      lang: 'en-US',
+      voiceURI: 'x',
+    })
     expect(v).toMatchObject({ rate: 1.5, pitch: 0.8, volume: 0.5, lang: 'en-US', voiceURI: 'x' })
   })
   it('越界抛中文错', () => {
     expect(() => validateSpeechOptions({ rate: 0, pitch: 1, volume: 1 })).toThrow('语速超出范围')
     expect(() => validateSpeechOptions({ rate: 1, pitch: 3, volume: 1 })).toThrow('音调超出范围')
     expect(() => validateSpeechOptions({ rate: 1, pitch: 1, volume: 2 })).toThrow('音量超出范围')
-    expect(() => validateSpeechOptions({ rate: NaN, pitch: 1, volume: 1 })).toThrow('语速必须是数字')
+    expect(() => validateSpeechOptions({ rate: NaN, pitch: 1, volume: 1 })).toThrow(
+      '语速必须是数字',
+    )
   })
   it('边界值通过', () => {
     expect(() => validateSpeechOptions({ rate: 0.1, pitch: 0, volume: 0 })).not.toThrow()
@@ -86,7 +102,13 @@ describe('buildQueue', () => {
   it('每句生成一个 utterance 并携带参数', () => {
     const q = buildQueue('你好。世界。', { rate: 1.2, pitch: 0.9, volume: 0.8, lang: 'zh-TW' })
     expect(q).toHaveLength(2)
-    expect(q[0]).toMatchObject({ text: '你好。', lang: 'zh-TW', rate: 1.2, pitch: 0.9, volume: 0.8 })
+    expect(q[0]).toMatchObject({
+      text: '你好。',
+      lang: 'zh-TW',
+      rate: 1.2,
+      pitch: 0.9,
+      volume: 0.8,
+    })
   })
   it('空文本抛错', () => {
     expect(() => buildQueue('  ', { rate: 1, pitch: 1, volume: 1 })).toThrow('请输入要朗读的文本')
@@ -140,7 +162,9 @@ describe('filterChineseVoices', () => {
   })
   it('大小写不敏感', () => {
     expect(
-      filterChineseVoices([{ name: 'x', lang: 'ZH-HK', voiceURI: 'v', localService: true, isDefault: false }]),
+      filterChineseVoices([
+        { name: 'x', lang: 'ZH-HK', voiceURI: 'v', localService: true, isDefault: false },
+      ]),
     ).toHaveLength(1)
   })
   it('空列表返回空', () => {
@@ -194,7 +218,13 @@ describe('defaultSpeechImpl', () => {
   })
   it('有 speechSynthesis 时封装为 SpeechLike（用全局桩，不碰真实实现）', () => {
     const spoken: string[] = []
-    const voiceStub = { name: '中文', lang: 'zh-CN', voiceURI: 'v1', localService: true, default: true }
+    const voiceStub = {
+      name: '中文',
+      lang: 'zh-CN',
+      voiceURI: 'v1',
+      localService: true,
+      default: true,
+    }
     const synthStub = {
       speak: (u: { text: string }) => {
         spoken.push(u.text)
@@ -232,7 +262,13 @@ describe('defaultSpeechImpl', () => {
       expect(spoken[3]).toBe('[cancel]')
       const voices = impl.getVoices()
       expect(voices).toHaveLength(1)
-      expect(voices[0]).toMatchObject({ name: '中文', lang: 'zh-CN', voiceURI: 'v1', localService: true, isDefault: true })
+      expect(voices[0]).toMatchObject({
+        name: '中文',
+        lang: 'zh-CN',
+        voiceURI: 'v1',
+        localService: true,
+        isDefault: true,
+      })
       expect(impl.speaking).toBe(true)
     } finally {
       delete g.window

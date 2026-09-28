@@ -91,7 +91,10 @@ export function buildThemeJson(opts: ThemeOpts): Record<string, unknown> {
 }
 
 /** 主题预览用的示例 option（柱状 + 折线双系列），颜色取自主题色板 */
-export function buildPreviewOption(theme: Record<string, unknown>, title: string): Record<string, unknown> {
+export function buildPreviewOption(
+  theme: Record<string, unknown>,
+  title: string,
+): Record<string, unknown> {
   const palette = theme.color as string[]
   return {
     title: { text: title, ...(theme.title as Record<string, unknown>) },

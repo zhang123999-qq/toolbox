@@ -1,12 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { meta } from './meta'
-import {
-  MIC_STATUS_TEXT,
-  computeLevel,
-  describeLevel,
-  formatLevel,
-  getMicStream,
-} from './utils'
+import { MIC_STATUS_TEXT, computeLevel, describeLevel, formatLevel, getMicStream } from './utils'
 import type { MicStatus } from './utils'
 
 const BTN_CLASS =
@@ -67,7 +61,10 @@ export default function Tool() {
   return (
     <div className="flex flex-col gap-4">
       <p className="text-sm text-slate-600 dark:text-slate-400">{meta.description}</p>
-      <p data-testid="mic-status" className="text-sm font-medium text-slate-800 dark:text-slate-200">
+      <p
+        data-testid="mic-status"
+        className="text-sm font-medium text-slate-800 dark:text-slate-200"
+      >
         状态：{MIC_STATUS_TEXT[status]}
       </p>
       <div className="h-6 w-full overflow-hidden rounded bg-slate-200 dark:bg-slate-700">

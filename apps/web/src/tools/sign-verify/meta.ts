@@ -10,7 +10,8 @@ export const meta: ToolMeta = {
   title: '签名验签',
   description: '以太坊 personal_sign 签名与验签：RFC6979 确定性 k，ecrecover 恢复地址',
   titleEn: 'Sign & Verify',
-  descriptionEn: 'Ethereum personal_sign signing and verification: RFC6979 deterministic k, ecrecover address recovery',
+  descriptionEn:
+    'Ethereum personal_sign signing and verification: RFC6979 deterministic k, ecrecover address recovery',
 
   category: 'encoding',
   group: 'dev',

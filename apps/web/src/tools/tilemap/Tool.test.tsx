@@ -22,7 +22,13 @@ describe('tilemap · Tool', () => {
     for (const id of ['input', 'run', 'example', 'clear', 'output', 'copy', 'download']) {
       expect(byTestId(id)).toBeTruthy()
     }
-    for (const id of ['tilemap-canvas', 'tilemap-new', 'tilemap-fill', 'tilemap-import', 'tilemap-export']) {
+    for (const id of [
+      'tilemap-canvas',
+      'tilemap-new',
+      'tilemap-fill',
+      'tilemap-import',
+      'tilemap-export',
+    ]) {
       expect(byTestId(id)).toBeTruthy()
     }
   })
@@ -56,7 +62,17 @@ describe('tilemap · Tool', () => {
 
   it('导入合法 JSON 更新地图', () => {
     render(<Tool />)
-    const json = JSON.stringify({ cols: 2, rows: 2, tileSize: 32, layers: [[[1, 2], [3, 0]]] })
+    const json = JSON.stringify({
+      cols: 2,
+      rows: 2,
+      tileSize: 32,
+      layers: [
+        [
+          [1, 2],
+          [3, 0],
+        ],
+      ],
+    })
     fireEvent.change(byTestId('input'), { target: { value: json } })
     fireEvent.click(byTestId('tilemap-import'))
     expect(byTestId('tilemap-output').textContent).toContain('地图 2×2')

@@ -54,10 +54,7 @@ const FOCUSABLE_SELECTOR =
  * - 检查 tabindex 非法值 / 正 tabindex / 重复正 tabindex
  * - 检查 div/span 用 on* 属性模拟交互、a 无 href、跳过链接缺失
  */
-export function analyzeKeyboardNav(
-  html: string,
-  createDoc?: DocFactory,
-): KeyboardNavAnalysis {
+export function analyzeKeyboardNav(html: string, createDoc?: DocFactory): KeyboardNavAnalysis {
   const doc = parseHtml(html, createDoc)
   const body = doc.body
   const focusable: FocusableElement[] = []
@@ -134,7 +131,8 @@ export function analyzeKeyboardNav(
     issues.push({
       severity: 'warning',
       element: describe(el),
-      message: '用 div/span 模拟可交互元素：请改用原生 button/a，或补 role、tabindex="0" 与键盘事件',
+      message:
+        '用 div/span 模拟可交互元素：请改用原生 button/a，或补 role、tabindex="0" 与键盘事件',
     })
   }
 

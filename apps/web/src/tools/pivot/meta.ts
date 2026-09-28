@@ -11,7 +11,8 @@ export const meta: ToolMeta = {
   title: '数据透视',
   description: 'CSV 按行列维度分组聚合（求和/计数/平均/最大/最小），结果表格展示并导出 CSV',
   titleEn: 'Pivot Table',
-  descriptionEn: 'Pivot CSV data by row/column dimensions with sum/count/avg/max/min, export as CSV',
+  descriptionEn:
+    'Pivot CSV data by row/column dimensions with sum/count/avg/max/min, export as CSV',
 
   category: 'random',
   group: 'design',

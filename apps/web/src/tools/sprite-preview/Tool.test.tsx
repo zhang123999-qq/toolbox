@@ -23,7 +23,15 @@ describe('sprite-preview · Tool', () => {
     for (const id of ['input', 'run', 'example', 'clear', 'output', 'copy', 'download']) {
       expect(byTestId(id)).toBeTruthy()
     }
-    for (const id of ['spritepreview-fps', 'spritepreview-loop', 'spritepreview-build', 'spritepreview-toggle', 'spritepreview-step', 'spritepreview-canvas', 'spritepreview-status']) {
+    for (const id of [
+      'spritepreview-fps',
+      'spritepreview-loop',
+      'spritepreview-build',
+      'spritepreview-toggle',
+      'spritepreview-step',
+      'spritepreview-canvas',
+      'spritepreview-status',
+    ]) {
       expect(byTestId(id)).toBeTruthy()
     }
   })

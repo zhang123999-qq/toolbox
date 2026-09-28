@@ -68,8 +68,10 @@ function checkBounds(map: Tilemap, layer: number, x: number, y: number): void {
   if (!Number.isInteger(layer) || layer < 0 || layer >= map.layers.length) {
     throw new Error(`图层索引 ${layer} 越界（0-${map.layers.length - 1}）`)
   }
-  if (!Number.isInteger(x) || x < 0 || x >= map.cols) throw new Error(`x 坐标 ${x} 越界（0-${map.cols - 1}）`)
-  if (!Number.isInteger(y) || y < 0 || y >= map.rows) throw new Error(`y 坐标 ${y} 越界（0-${map.rows - 1}）`)
+  if (!Number.isInteger(x) || x < 0 || x >= map.cols)
+    throw new Error(`x 坐标 ${x} 越界（0-${map.cols - 1}）`)
+  if (!Number.isInteger(y) || y < 0 || y >= map.rows)
+    throw new Error(`y 坐标 ${y} 越界（0-${map.rows - 1}）`)
 }
 
 function cloneLayers(layers: number[][][]): number[][][] {

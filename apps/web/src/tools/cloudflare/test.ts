@@ -55,7 +55,13 @@ describe('buildDnsRecord', () => {
     }
   })
   it('前后空白被裁剪', () => {
-    const r = buildDnsRecord({ type: 'A', name: ' www ', content: ' 1.2.3.4 ', proxied: false, ttl: 30 })
+    const r = buildDnsRecord({
+      type: 'A',
+      name: ' www ',
+      content: ' 1.2.3.4 ',
+      proxied: false,
+      ttl: 30,
+    })
     expect(r.name).toBe('www')
     expect(r.content).toBe('1.2.3.4')
   })
@@ -63,7 +69,11 @@ describe('buildDnsRecord', () => {
 
 describe('buildPageRule', () => {
   it('生成页面规则 JSON', () => {
-    const json = buildPageRule({ pattern: 'example.com/*', cacheLevel: 'aggressive', browserTtl: 3600 })
+    const json = buildPageRule({
+      pattern: 'example.com/*',
+      cacheLevel: 'aggressive',
+      browserTtl: 3600,
+    })
     const obj = JSON.parse(json) as { actions: { id: string; value: unknown }[] }
     expect(obj.actions[0]).toEqual({ id: 'cache_level', value: 'aggressive' })
     expect(obj.actions[1]).toEqual({ id: 'browser_cache_ttl', value: 3600 })

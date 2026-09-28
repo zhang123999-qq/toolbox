@@ -58,8 +58,8 @@ export default function Tool() {
             </pre>
           )}
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            说明：输入脚本元信息 JSON，生成带校验的 Tampermonkey 头注释与脚本骨架。
-            version 须为 x.y.z；grants 限白名单，none 不可混用。纯本地生成。
+            说明：输入脚本元信息 JSON，生成带校验的 Tampermonkey 头注释与脚本骨架。 version 须为
+            x.y.z；grants 限白名单，none 不可混用。纯本地生成。
           </p>
         </div>
       )}

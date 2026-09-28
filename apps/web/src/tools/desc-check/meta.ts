@@ -13,7 +13,8 @@ export const meta: ToolMeta = {
   title: '页面描述检查',
   description: '分析 meta description 的长度、关键词前置与行动号召，给出 SEO 评分与改写建议',
   titleEn: 'Meta Description Checker',
-  descriptionEn: 'Analyze meta description length, keyword placement and CTA with SEO score and suggestions',
+  descriptionEn:
+    'Analyze meta description length, keyword placement and CTA with SEO score and suggestions',
 
   category: 'seo',
   group: 'dev',

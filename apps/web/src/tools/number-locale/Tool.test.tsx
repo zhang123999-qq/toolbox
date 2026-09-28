@@ -17,7 +17,16 @@ function byTestId(id: string): HTMLElement {
 describe('number-locale · Tool', () => {
   it('渲染后必需 data-testid 全部存在', () => {
     render(<Tool />)
-    for (const id of ['input', 'run', 'example', 'clear', 'output', 'copy', 'download', 'option-locales']) {
+    for (const id of [
+      'input',
+      'run',
+      'example',
+      'clear',
+      'output',
+      'copy',
+      'download',
+      'option-locales',
+    ]) {
       expect(byTestId(id)).toBeTruthy()
     }
   })

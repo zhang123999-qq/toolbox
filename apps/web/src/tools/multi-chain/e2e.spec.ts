@@ -20,7 +20,9 @@ test.describe('multi-chain 多链地址 (#707)', () => {
 
   test('点示例转换出 TRON 地址', async ({ page }) => {
     await page.getByTestId('example').click()
-    await expect(page.getByTestId('value-output')).toContainText('TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t')
+    await expect(page.getByTestId('value-output')).toContainText(
+      'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
+    )
   })
 
   test('从首页搜索可达', async ({ page }) => {

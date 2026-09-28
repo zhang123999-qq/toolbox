@@ -106,7 +106,11 @@ describe('graph / buildGraphOption', () => {
     const opt = buildGraphOption(parsed, '关系图') as {
       title?: { text: string }
       legend: { data: string[] }
-      series: Array<{ type: string; data: Array<{ name: string; symbolSize: number }>; links: unknown[] }>
+      series: Array<{
+        type: string
+        data: Array<{ name: string; symbolSize: number }>
+        links: unknown[]
+      }>
     }
     expect(opt.title?.text).toBe('关系图')
     expect(opt.legend.data).toEqual(['朋友', '同事', '未分类'])

@@ -60,22 +60,46 @@ describe('effectiveTypeText', () => {
 describe('describeConnection', () => {
   it('完整信息拼接', () => {
     expect(
-      describeConnection({ online: true, effectiveType: '4g', downlink: 10, rtt: 50, saveData: false }),
+      describeConnection({
+        online: true,
+        effectiveType: '4g',
+        downlink: 10,
+        rtt: 50,
+        saveData: false,
+      }),
     ).toBe('网络在线，网络类型 4G，下行约 10 Mbps，RTT 50 ms')
   })
   it('离线 + 省流模式', () => {
     expect(
-      describeConnection({ online: false, effectiveType: 'unknown', downlink: null, rtt: null, saveData: true }),
+      describeConnection({
+        online: false,
+        effectiveType: 'unknown',
+        downlink: null,
+        rtt: null,
+        saveData: true,
+      }),
     ).toBe('网络离线，已开启省流模式')
   })
   it('仅在线（无 API 数据）', () => {
     expect(
-      describeConnection({ online: true, effectiveType: 'unknown', downlink: null, rtt: null, saveData: false }),
+      describeConnection({
+        online: true,
+        effectiveType: 'unknown',
+        downlink: null,
+        rtt: null,
+        saveData: false,
+      }),
     ).toBe('网络在线')
   })
   it('只有 rtt 时也拼接', () => {
     expect(
-      describeConnection({ online: true, effectiveType: 'unknown', downlink: null, rtt: 120, saveData: false }),
+      describeConnection({
+        online: true,
+        effectiveType: 'unknown',
+        downlink: null,
+        rtt: 120,
+        saveData: false,
+      }),
     ).toBe('网络在线，RTT 120 ms')
   })
 })

@@ -37,7 +37,9 @@ describe('popup · Tool', () => {
 
   it('非法输入显示错误', () => {
     render(<Tool />)
-    fireEvent.change(byTestId('input'), { target: { value: '{"title":"t","width":9999,"height":10,"features":[]}' } })
+    fireEvent.change(byTestId('input'), {
+      target: { value: '{"title":"t","width":9999,"height":10,"features":[]}' },
+    })
     fireEvent.click(byTestId('popup-run'))
     expect(byTestId('popup-error').textContent).toContain('width 超出范围')
   })

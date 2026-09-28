@@ -32,7 +32,13 @@ function randomKind(): TetrominoKind {
 }
 
 function newPlay(): PlayState {
-  return { board: createBoard(W, H), piece: spawnPiece(randomKind(), W), score: 0, lines: 0, over: false }
+  return {
+    board: createBoard(W, H),
+    piece: spawnPiece(randomKind(), W),
+    score: 0,
+    lines: 0,
+    over: false,
+  }
 }
 
 /** 方块落定：锁定→消行→生成新方块 */
@@ -40,7 +46,8 @@ function settle(s: PlayState): PlayState {
   const locked = lockPiece(s.board, s.piece)
   const { board, cleared, score } = clearLines(locked)
   const piece = spawnPiece(randomKind(), W)
-  if (collides(board, piece)) return { ...s, board, over: true, score: s.score + score, lines: s.lines + cleared }
+  if (collides(board, piece))
+    return { ...s, board, over: true, score: s.score + score, lines: s.lines + cleared }
   return { board, piece, score: s.score + score, lines: s.lines + cleared, over: false }
 }
 
@@ -147,13 +154,23 @@ export default function Tool() {
           {playing ? '重新开始' : '开始游戏'}
         </button>
       </div>
-      <div className="border border-slate-300 dark:border-slate-600" data-testid="tetris-board" style={{ width: W * CELL }}>
+      <div
+        className="border border-slate-300 dark:border-slate-600"
+        data-testid="tetris-board"
+        style={{ width: W * CELL }}
+      >
         {view.map((row, y) => (
           <div key={y} className="flex">
             {row.map((v, x) => (
               <div
                 key={x}
-                className={v === 2 ? 'bg-cyan-400' : v === 1 ? 'bg-slate-500' : 'bg-stone-100 dark:bg-stone-900'}
+                className={
+                  v === 2
+                    ? 'bg-cyan-400'
+                    : v === 1
+                      ? 'bg-slate-500'
+                      : 'bg-stone-100 dark:bg-stone-900'
+                }
                 style={{ width: CELL, height: CELL, border: '1px solid rgba(0,0,0,0.06)' }}
               />
             ))}

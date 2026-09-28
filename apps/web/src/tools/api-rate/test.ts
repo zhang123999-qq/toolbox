@@ -95,9 +95,9 @@ describe('parseRateSimInput', () => {
     expect(o.requests).toEqual([0, 1])
   })
   it('mode 非法抛错', () => {
-    expect(() =>
-      parseRateSimInput('{"mode":"x","requests":[0]}'),
-    ).toThrow('mode 必须是 token-bucket 或 sliding-window')
+    expect(() => parseRateSimInput('{"mode":"x","requests":[0]}')).toThrow(
+      'mode 必须是 token-bucket 或 sliding-window',
+    )
   })
   it('requests 非数组抛错', () => {
     expect(() => parseRateSimInput('{"mode":"token-bucket","requests":0}')).toThrow(

@@ -20,8 +20,12 @@ test.describe('public-key 公钥生成 (#693)', () => {
 
   test('点示例推导出公钥与地址', async ({ page }) => {
     await page.getByTestId('example').click()
-    await expect(page.getByTestId('result-0')).toContainText('0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798')
-    await expect(page.getByTestId('result-2')).toContainText('0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf')
+    await expect(page.getByTestId('result-0')).toContainText(
+      '0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798',
+    )
+    await expect(page.getByTestId('result-2')).toContainText(
+      '0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf',
+    )
   })
 
   test('从首页搜索可达', async ({ page }) => {

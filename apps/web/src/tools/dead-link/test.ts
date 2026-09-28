@@ -97,7 +97,9 @@ describe('dead-link / checkUrl', () => {
   it('超时 → 超时状态', async () => {
     const f: FetchFn = (_url, init) =>
       new Promise((_res, rej) => {
-        init?.signal?.addEventListener('abort', () => rej(new DOMException('aborted', 'AbortError')))
+        init?.signal?.addEventListener('abort', () =>
+          rej(new DOMException('aborted', 'AbortError')),
+        )
       })
     const r = await checkUrl('https://example.com/', f, 20)
     expect(r.status).toBe('超时')
@@ -154,14 +156,36 @@ describe('dead-link / summarize + renderReport', () => {
   const results: DeadLinkResult[] = [
     { url: 'https://a.com/', status: '存活', httpStatus: 200, alive: true, note: '', ms: 1 },
     { url: 'https://b.com/', status: '重定向', httpStatus: 301, alive: true, note: '', ms: 1 },
-    { url: 'https://c.com/', status: '死链', httpStatus: 404, alive: false, note: 'HTTP 404', ms: 1 },
+    {
+      url: 'https://c.com/',
+      status: '死链',
+      httpStatus: 404,
+      alive: false,
+      note: 'HTTP 404',
+      ms: 1,
+    },
     { url: 'https://d.com/', status: '超时', httpStatus: null, alive: false, note: '超时', ms: 1 },
     { url: 'https://e.com/', status: '错误', httpStatus: null, alive: false, note: '错', ms: 1 },
-    { url: 'nope', status: '无效', httpStatus: null, alive: false, note: '第 6 行：URL 格式不正确', ms: 0 },
+    {
+      url: 'nope',
+      status: '无效',
+      httpStatus: null,
+      alive: false,
+      note: '第 6 行：URL 格式不正确',
+      ms: 0,
+    },
   ]
   it('汇总计数与存活率', () => {
     const s = summarize(results)
-    expect(s).toMatchObject({ total: 6, alive: 1, redirect: 1, dead: 1, timeout: 1, error: 1, invalid: 1 })
+    expect(s).toMatchObject({
+      total: 6,
+      alive: 1,
+      redirect: 1,
+      dead: 1,
+      timeout: 1,
+      error: 1,
+      invalid: 1,
+    })
     expect(s.aliveRate).toBeCloseTo(2 / 6)
   })
   it('空结果存活率为 1', () => {
