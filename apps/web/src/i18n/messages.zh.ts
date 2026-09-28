@@ -491,32 +491,6 @@ export const zh = {
   'pdfMetadata.section.edit': '编辑元数据',
   'pdfMetadata.section.meta': '文档元数据',
 
-  // —— PDF OCR（#500） ——
-  'pdfOcr.cancel': '取消',
-  'pdfOcr.cancelled': '已取消',
-  'pdfOcr.cdnNotice':
-    'tesseract.js 识别引擎与语言包在首次使用时从 CDN 下载（约十几 MB），你的 PDF 文件不会上传，全程在本地处理。',
-  'pdfOcr.copied': '已复制',
-  'pdfOcr.copy': '复制文本',
-  'pdfOcr.download': '下载 .txt',
-  'pdfOcr.dropHint': '点击选择 PDF 文件，或拖拽到此处（.pdf，≤50MB）',
-  'pdfOcr.error.copyFailed': '复制失败，请手动选择文本复制',
-  'pdfOcr.error.encrypted': '该 PDF 已加密，请先解密后再识别',
-  'pdfOcr.error.unsupported': '不是有效的 PDF 文件（缺少 %PDF 文件头）',
-  'pdfOcr.failedPages': '以下页面识别失败，已跳过',
-  'pdfOcr.lang.chiSim': '简体中文',
-  'pdfOcr.lang.eng': '英文',
-  'pdfOcr.languages': '识别语言',
-  'pdfOcr.loadingEngine': '正在加载识别引擎与语言包（首次使用需从 CDN 下载，请稍候）…',
-  'pdfOcr.note':
-    '上传 PDF，逐页渲染为图片后在本地识别其中的中英文文字，合并为按页标注的可复制文本。',
-  'pdfOcr.pageUnit': '页',
-  'pdfOcr.preparing': '准备中…',
-  'pdfOcr.recognizing': '正在识别第',
-  'pdfOcr.reset': '重新选择',
-  'pdfOcr.result': '识别结果',
-  'pdfOcr.statsChars': '字符数',
-  'pdfOcr.statsPages': '页数',
   // —— 通用 ——
   'common.loading': '加载中…',
 

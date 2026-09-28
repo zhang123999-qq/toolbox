@@ -2578,33 +2578,6 @@ export const en: Record<MessageKey, string> = {
   'pdfMetadata.section.edit': 'Edit metadata',
   'pdfMetadata.section.meta': 'Document metadata',
 
-  // —— PDF OCR（#500） ——
-  'pdfOcr.cancel': 'Cancel',
-  'pdfOcr.cancelled': 'Cancelled',
-  'pdfOcr.cdnNotice':
-    'The tesseract.js recognition engine and language packs are downloaded from a CDN on first use (about a dozen MB). Your PDF is never uploaded; everything runs locally.',
-  'pdfOcr.copied': 'Copied',
-  'pdfOcr.copy': 'Copy text',
-  'pdfOcr.download': 'Download .txt',
-  'pdfOcr.dropHint': 'Click to choose a PDF file, or drag it here (.pdf, ≤50MB)',
-  'pdfOcr.error.copyFailed': 'Copy failed; please select the text manually',
-  'pdfOcr.error.encrypted': 'This PDF is encrypted; decrypt it before recognition',
-  'pdfOcr.error.unsupported': 'Not a valid PDF file (missing %PDF header)',
-  'pdfOcr.failedPages': 'These pages failed recognition and were skipped',
-  'pdfOcr.lang.chiSim': 'Chinese (Simplified)',
-  'pdfOcr.lang.eng': 'English',
-  'pdfOcr.languages': 'Languages',
-  'pdfOcr.loadingEngine':
-    'Loading the recognition engine and language packs (downloaded from a CDN on first use)…',
-  'pdfOcr.note':
-    'Upload a PDF to render each page as an image and recognize Chinese/English text locally, merged into copyable text with page markers.',
-  'pdfOcr.pageUnit': '',
-  'pdfOcr.preparing': 'Preparing…',
-  'pdfOcr.recognizing': 'Recognizing page',
-  'pdfOcr.reset': 'Choose again',
-  'pdfOcr.result': 'Result',
-  'pdfOcr.statsChars': 'Characters',
-  'pdfOcr.statsPages': 'Pages',
   // —— Shared ——
   'error.cryptoUnavailable':
     'This environment does not support crypto.getRandomValues, so secure random generation is unavailable (please use a modern browser in a secure context)',
