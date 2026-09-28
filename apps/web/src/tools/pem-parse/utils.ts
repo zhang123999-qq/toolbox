@@ -1,5 +1,8 @@
 import { DEMO_CERTIFICATE, daysBetween, formatAttrs } from '../../lib/x509'
-import type { default as Forge } from 'node-forge'
+import type forgeDefault from 'node-forge'
+
+/** node-forge default 导出的类型（动态 import 按需加载，不占首屏） */
+type Forge = typeof forgeDefault
 import type { PemParseInput, PemParseOptions } from './schema'
 
 /** 演示证书 / 属性格式化 / 天数差已上提到 lib/x509，这里再导出以兼容本工具既有引用 */

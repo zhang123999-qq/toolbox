@@ -1,5 +1,8 @@
 import type { CsrGenerateInput, CsrGenerateOptions } from './schema'
-import type { default as Forge } from 'node-forge'
+import type forgeDefault from 'node-forge'
+
+/** node-forge default 导出的类型（动态 import 按需加载，不占首屏） */
+type Forge = typeof forgeDefault
 
 /** 生成失败时抛出，由 UI 捕获展示 */
 export class CsrGenerateError extends Error {
