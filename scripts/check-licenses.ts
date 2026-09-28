@@ -91,6 +91,35 @@ function isApproved(name: string): boolean {
   return APPROVED_EXCEPTIONS.some((e) => name === e.name || name.startsWith(`${e.name}-`))
 }
 
+/**
+ * 「已人工核实为宽松许可、但包的 package.json 漏写 SPDX 字段」的清单。
+ * 仅在某包被判为 UNKNOWN（未声明 / SEE LICENSE IN）时，按**精确 name@version** 补登我们
+ * 从随包 LICENSE 文件 / 源码核实到的 SPDX；补登值必须本身在 ALLOW 内。
+ * 它**不能**覆盖任何已明确声明的拒绝许可（GPL/AGPL 等走到这里的前提是漏写而非声明），
+ * 登记需写清证据来源，改动走 PR 审查。
+ */
+const VERIFIED_PERMISSIVE: Array<{
+  name: string
+  version: string
+  spdx: string
+  reason: string
+}> = [
+  {
+    name: 'khroma',
+    version: '2.1.0',
+    spdx: 'MIT',
+    reason:
+      'mermaid@12 的传递依赖；package.json 漏写 license 字段，但随包 license 文件与 readme 均标明 ' +
+      'The MIT License（Copyright Fabio Spampinato, Andrew Maney），仓库 github:fabiospampinato/khroma',
+  },
+]
+
+function verifiedPermissiveFor(name: string, version: string): boolean {
+  return VERIFIED_PERMISSIVE.some(
+    (e) => e.name === name && e.version === version && ALLOW.has(e.spdx),
+  )
+}
+
 type Verdict = 'allow' | 'warn' | 'deny'
 
 interface Pkg {
@@ -257,6 +286,7 @@ function main(): void {
   // pnpm 会为不同 peer 组合建多份条目，同一个 name@version 只需判一次
   const seen = new Set<string>()
   let approved = 0
+  let verified = 0
 
   for (const file of files) {
     if (!existsSync(file)) continue
@@ -274,15 +304,24 @@ function main(): void {
     seen.add(key)
 
     const raw = readLicenseField(json.license ?? json.licenses)
-    const { verdict, reason } = evaluate(raw)
-    // 例外只降级 warn → allow，deny 不可绕过
-    const final: Verdict = verdict === 'warn' && isApproved(name) ? 'allow' : verdict
-    if (verdict === 'warn' && final === 'allow') approved += 1
+    const evaluated = evaluate(raw)
+    let verdict: Verdict = evaluated.verdict
+    let reason = evaluated.reason
+    // 例外只降级 warn → allow；明确声明的 deny 不可绕过
+    if (verdict === 'warn' && isApproved(name)) {
+      verdict = 'allow'
+      approved += 1
+    } else if (verdict === 'deny' && reason === UNKNOWN && verifiedPermissiveFor(name, version)) {
+      // package.json 漏写 SPDX，但随包 LICENSE 文件/源码已人工核实为 ALLOW 内的宽松许可
+      verdict = 'allow'
+      reason = 'VERIFIED_PERMISSIVE'
+      verified += 1
+    }
     pkgs.push({
       name,
       version,
       raw: raw || '(未声明)',
-      verdict: final,
+      verdict,
       reason,
       direct: directNames.has(name),
     })
@@ -310,6 +349,11 @@ function main(): void {
     if (approved) {
       console.log(
         `  · ${approved} 个包命中已批准例外（脚本内 APPROVED_EXCEPTIONS，仅对 warn 生效）`,
+      )
+    }
+    if (verified) {
+      console.log(
+        `  · ${verified} 个包漏写 SPDX 但已人工核实为宽松许可（VERIFIED_PERMISSIVE，仅对未声明包生效）`,
       )
     }
 
