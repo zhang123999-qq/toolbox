@@ -25,10 +25,21 @@ declare module 'culori' {
     readonly alpha?: number
   }
 
+  /** sRGB 颜色：r/g/b 通道取值 0..1（越界表示超出 sRGB 色域） */
+  export interface Rgb {
+    readonly mode: 'rgb'
+    readonly r: number
+    readonly g: number
+    readonly b: number
+    readonly alpha?: number
+  }
+
   /** 解析 CSS 颜色串（#rgb / #rrggbb / 颜色名 / rgb() …），失败返回 undefined */
   export function parse(color: string): CuloriColor | undefined
   /** 把已解析的颜色转到 Oklch 空间 */
   export function oklch(color: CuloriColor): Oklch
+  /** 把已解析的颜色转到 sRGB 空间（通道 0..1） */
+  export function rgb(color: CuloriColor | Oklch): Rgb
   /** 序列化为 #rrggbb（越界通道按 sRGB 钳制，保证恒为合法 hex） */
   export function formatHex(color: Oklch): string
 }
