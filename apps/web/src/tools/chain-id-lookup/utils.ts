@@ -117,10 +117,7 @@ export function lookupChain(query: string): ChainInfo[] {
 
 /** 单条链信息格式化为多行文本 */
 export function formatChainInfo(c: ChainInfo): string {
-  const lines = [
-    `名称：${c.name}${c.testnet ? '（测试网）' : ''}`,
-    `链 ID：${c.chainId}`,
-  ]
+  const lines = [`名称：${c.name}${c.testnet ? '（测试网）' : ''}`, `链 ID：${c.chainId}`]
   if (typeof c.chainId === 'number') lines.push(`十六进制：${chainIdToHex(c.chainId)}`)
   lines.push(`代币符号：${c.symbol}`, `类型：${c.kind === 'EVM' ? 'EVM 兼容链' : '非 EVM 链'}`)
   return lines.join('\n')
