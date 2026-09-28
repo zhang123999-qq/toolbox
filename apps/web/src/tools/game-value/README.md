@@ -1,0 +1,20 @@
+# 游戏数值（#802）
+
+游戏属性成长公式计算，支持三种成长模式，并可生成 1..N 级成长表。
+
+## 模式与公式
+
+| 模式 | 参数 JSON | 公式 |
+|------|-----------|------|
+| linear | `{"base":100,"perLevel":10}` | `base + perLevel × (level-1)` |
+| exponential | `{"base":100,"perLevel":1.1}` | `base × perLevel^(level-1)` |
+| piecewise | `{"breakpoints":[{"level":1,"value":100},{"level":10,"value":500}]}` | 拐点间线性插值，超出范围取端点值 |
+
+- `base`：1 级基础值
+- `perLevel`：线性为每级增量，指数为每级成长系数（必须 > 0）
+- `breakpoints`：拐点数组（piecewise 必填），level 为正整数且不重复
+- 输入校验失败时中文报错
+
+## 说明
+
+纯前端本地计算，不发送任何网络请求。
