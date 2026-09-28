@@ -88,3 +88,16 @@ describe('gcd-lcm / transform', () => {
     expect(() => transform({ text: '12.5', textB: '' }, empty)).toThrow(/整数/)
   })
 })
+
+describe('gcd-lcm / 边界补齐', () => {
+  it('parseIntStrict 拒绝空字符串', () => {
+    expect(() => parseIntStrict('')).toThrow(/整数不能为空/)
+    expect(() => parseIntStrict('   ')).toThrow(/整数不能为空/)
+  })
+
+  it('超长输入抛错', () => {
+    expect(() => transform({ text: '1'.repeat(200001), textB: '2' }, empty)).toThrow(
+      /超过 200,000 字符上限/,
+    )
+  })
+})
