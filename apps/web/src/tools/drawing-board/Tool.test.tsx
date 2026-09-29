@@ -146,8 +146,7 @@ describe('drawing-board · 历史记录', () => {
     restoredUrls.length = 0
     vi.stubGlobal('Image', MockImage)
     window.HTMLElement.prototype.setPointerCapture = (): void => {}
-    HTMLCanvasElement.prototype.getContext = (() =>
-      fakeCtx()) as unknown as typeof origGetContext
+    HTMLCanvasElement.prototype.getContext = (() => fakeCtx()) as unknown as typeof origGetContext
     HTMLCanvasElement.prototype.toDataURL = (() =>
       `mock-url-${urlCounter++}`) as unknown as typeof origToDataURL
   })
@@ -160,8 +159,7 @@ describe('drawing-board · 历史记录', () => {
   })
 
   function mockRect(canvas: HTMLElement): void {
-    canvas.getBoundingClientRect = () =>
-      ({ left: 0, top: 0, width: 960, height: 600 }) as DOMRect
+    canvas.getBoundingClientRect = () => ({ left: 0, top: 0, width: 960, height: 600 }) as DOMRect
   }
 
   function drawStroke(canvas: HTMLElement): void {
