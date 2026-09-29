@@ -12,7 +12,7 @@ export const en: Record<MessageKey, string> = {
   // —— Site ——
   'site.name': 'Toolbox',
   'site.description':
-    '870 browser-only tools. Nothing is uploaded and everything keeps working offline. Covers development, design & media, office documents, and everyday categories.',
+    '797 browser-only tools. Nothing is uploaded and everything keeps working offline. Covers development, design & media, office documents, and everyday categories.',
   'site.localBadge': 'Runs locally · nothing is uploaded',
 
   // —— Document titles (follow the active language) ——
