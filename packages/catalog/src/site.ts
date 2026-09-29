@@ -6,13 +6,15 @@
  * ⚠ 本文件会被打进**浏览器包**，因此只能放纯常量：
  *   不要在这里读 `process.env`（浏览器里没有 `process`，顶层求值会直接抛错）。
  *   构建期的环境变量覆盖留在 scripts/ 与 Dockerfile 里做。
+ *   TOOL_COUNT 来自工具真源（构建期静态求值），随工具数自动更新。
  */
+import { TOOL_COUNT } from './tools.generated'
+
 export const SITE_NAME = '工具库'
 
-export const SITE_TITLE = `${SITE_NAME} · 870 个纯本地在线工具`
+export const SITE_TITLE = `${SITE_NAME} · ${TOOL_COUNT} 个纯本地在线工具`
 
-export const SITE_DESCRIPTION =
-  '870 个纯前端在线工具，数据不上传、可离线使用。覆盖开发编码、设计媒体、办公文档、生活学习四大类。'
+export const SITE_DESCRIPTION = `${TOOL_COUNT} 个纯前端在线工具，数据不上传、可离线使用。覆盖开发编码、设计媒体、办公文档、生活学习四大类。`
 
 /**
  * 正式域名（唯一真源）。
