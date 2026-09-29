@@ -933,7 +933,7 @@ export const zh = {
   // —— 页脚 ——
   'footer.byGroup': '按分类',
   'footer.popularCategories': '热门域',
-  'footer.copyright': '© {year} {name} · 内容为占位文案，待替换',
+  'footer.copyright': '© {year} {name} · 纯本地运行，数据不出浏览器',
 
   // —— 4 大组 ——
   'group.dev.name': '开发编码',

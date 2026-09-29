@@ -472,7 +472,7 @@ export const en: Record<MessageKey, string> = {
   // —— Footer ——
   'footer.byGroup': 'By group',
   'footer.popularCategories': 'Popular categories',
-  'footer.copyright': '© {year} {name} · placeholder copy, to be replaced',
+  'footer.copyright': '© {year} {name} · Runs 100% locally — your data never leaves the browser',
 
   // —— 4 groups ——
   'group.dev.name': 'Development',
