@@ -1,4 +1,4 @@
-import { PLANNED_TOTAL_TOOLS } from '@toolbox/catalog'
+import { TOOL_COUNT } from '@toolbox/catalog'
 import { useTranslate } from '../i18n'
 import { useDocumentTitle } from '../lib/useDocumentTitle'
 import { Hero } from '../components/home/Hero'
@@ -15,7 +15,7 @@ import { CtaSection } from '../components/home/CtaSection'
  */
 export function HomePage() {
   const t = useTranslate()
-  useDocumentTitle(t('seo.homeTitle', { name: t('site.name'), count: PLANNED_TOTAL_TOOLS }))
+  useDocumentTitle(t('seo.homeTitle', { name: t('site.name'), count: TOOL_COUNT }))
 
   return (
     <div className="space-y-12">

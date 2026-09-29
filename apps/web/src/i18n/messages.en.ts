@@ -62,7 +62,6 @@ export const en: Record<MessageKey, string> = {
   'hero.searchHintMiddle': 'or',
   'hero.searchHintAfter': 'to search from anywhere',
   'hero.imageAlt': 'Product hero placeholder illustration',
-  'hero.stat.planned': 'Planned',
   'hero.stat.live': 'Live',
   'hero.stat.categories': 'Categories',
   'hero.stat.groups': 'Groups',
@@ -93,8 +92,7 @@ export const en: Record<MessageKey, string> = {
 
   // —— Home · featured tools ——
   'featured.title': 'Live tools',
-  'featured.stage': 'Stage 0: {live} / {planned} ({percent}%)',
-  'featured.progressLabel': 'Tool build progress',
+  'featured.total': '{count} tools total',
 
   // —— Home · closing CTA ——
   'cta.title': 'Start using it — no sign-up first',

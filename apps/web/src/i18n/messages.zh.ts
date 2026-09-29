@@ -530,7 +530,6 @@ export const zh = {
   'hero.searchHintMiddle': '或',
   'hero.searchHintAfter': '随时全局搜索',
   'hero.imageAlt': '产品主视觉占位图',
-  'hero.stat.planned': '规划工具',
   'hero.stat.live': '已上线',
   'hero.stat.categories': '分类域',
   'hero.stat.groups': '大组',
@@ -559,8 +558,7 @@ export const zh = {
 
   // —— 首页 · 已上线工具 ——
   'featured.title': '已上线工具',
-  'featured.stage': '阶段 0：{live} / {planned}（{percent}%）',
-  'featured.progressLabel': '工具建设进度',
+  'featured.total': '共 {count} 个工具',
 
   // —— 首页 · 底部转化 ——
   'cta.title': '直接开始用，不用先注册',

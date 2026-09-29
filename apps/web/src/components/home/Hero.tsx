@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { CATEGORIES, GROUPS, PLANNED_TOTAL_TOOLS, TOOL_COUNT } from '@toolbox/catalog'
+import { CATEGORIES, GROUPS, TOOL_COUNT } from '@toolbox/catalog'
 import { useTranslate } from '../../i18n'
 
 /**
@@ -12,7 +12,6 @@ export function Hero() {
 
   // 标签随语言变化，故在组件内构造；key 用稳定 id，不用已翻译的文案
   const stats = [
-    { id: 'planned', label: t('hero.stat.planned'), value: PLANNED_TOTAL_TOOLS },
     { id: 'live', label: t('hero.stat.live'), value: TOOL_COUNT },
     { id: 'categories', label: t('hero.stat.categories'), value: CATEGORIES.length },
     { id: 'groups', label: t('hero.stat.groups'), value: GROUPS.length },
@@ -26,7 +25,7 @@ export function Hero() {
       <div className="text-center md:text-left">
         <p className="text-sm font-medium text-brand">{t('hero.eyebrow')}</p>
         <h1 className="mt-3 text-3xl font-semibold leading-tight md:text-4xl">
-          {t('hero.titleLead', { count: PLANNED_TOTAL_TOOLS })}
+          {t('hero.titleLead', { count: TOOL_COUNT })}
           <br className="hidden sm:block" />
           {t('hero.titleTail')}
         </h1>
@@ -59,7 +58,7 @@ export function Hero() {
           {t('hero.searchHintAfter')}
         </p>
 
-        <dl className="mt-8 grid grid-cols-4 gap-2">
+        <dl className="mt-8 grid grid-cols-3 gap-2">
           {stats.map((stat) => (
             <div
               key={stat.id}

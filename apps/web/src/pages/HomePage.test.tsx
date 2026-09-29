@@ -6,7 +6,7 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { cleanup, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import { CATEGORIES, GROUPS, PLANNED_TOTAL_TOOLS, TOOL_COUNT } from '@toolbox/catalog'
+import { CATEGORIES, GROUPS, TOOL_COUNT } from '@toolbox/catalog'
 import { HomePage } from './HomePage'
 
 afterEach(cleanup)
@@ -24,7 +24,7 @@ describe('HomePage（Landing Page）', () => {
     renderHome()
     const hero = screen.getByTestId('hero')
     expect(hero).toBeTruthy()
-    expect(hero.querySelector('h1')?.textContent).toContain(String(PLANNED_TOTAL_TOOLS))
+    expect(hero.querySelector('h1')?.textContent).toContain(String(TOOL_COUNT))
 
     expect(screen.getByTestId('hero-cta-primary').getAttribute('href')).toBe('/tools')
     expect(screen.getByTestId('hero-cta-secondary').getAttribute('href')).toBe(
@@ -56,12 +56,11 @@ describe('HomePage（Landing Page）', () => {
     expect(section.querySelectorAll('a')).toHaveLength(CATEGORIES.length + 1) // +1 为「查看全部」
   })
 
-  it('已上线工具区显示阶段进度', () => {
+  it('已上线工具区只显示总数、无阶段进度条', () => {
     renderHome()
-    const bar = screen.getByRole('progressbar')
-    expect(bar.getAttribute('aria-valuenow')).toBe(
-      String(Math.round((TOOL_COUNT / PLANNED_TOTAL_TOOLS) * 100)),
-    )
+    const section = screen.getByTestId('featured-tools')
+    expect(section.querySelector('[role="progressbar"]')).toBeNull()
+    expect(section.textContent).toContain(`共 ${TOOL_COUNT} 个工具`)
   })
 
   it('底部转化区存在引导入口', () => {
