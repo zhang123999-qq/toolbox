@@ -46,6 +46,7 @@ describe('drawing-board · Tool', () => {
     byTestId('drawing-canvassize')
     byTestId('drawing-bgcolor')
     byTestId('drawing-upload')
+    byTestId('drawing-fullscreen')
     for (const t of ALL_TOOLS) {
       byTestId('drawing-tool-' + t)
     }

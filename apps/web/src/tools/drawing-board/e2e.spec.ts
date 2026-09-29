@@ -46,9 +46,10 @@ test.describe('在线画图 (#798)', () => {
     }
   })
 
-  test('画布尺寸/背景色/图片上传控件可见', async ({ page }) => {
+  test('画布尺寸/背景色/图片上传/全屏控件可见', async ({ page }) => {
     await expect(page.getByTestId('drawing-canvassize')).toBeVisible()
     await expect(page.getByTestId('drawing-bgcolor')).toBeVisible()
     await expect(page.getByTestId('drawing-upload')).toBeAttached()
+    await expect(page.getByTestId('drawing-fullscreen')).toBeVisible()
   })
 })

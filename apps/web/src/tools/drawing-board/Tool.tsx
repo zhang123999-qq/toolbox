@@ -192,6 +192,8 @@ export default function Tool() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const wrapRef = useRef<HTMLDivElement>(null)
   const textInputRef = useRef<HTMLInputElement>(null)
+  const fsRef = useRef<HTMLDivElement>(null)
+  const [isFullscreen, setIsFullscreen] = useState(false)
   const [tool, setTool] = useState<ToolKind>('brush')
   const [color, setColor] = useState('#000000')
   const [lineWidth, setLineWidth] = useState(6)
@@ -218,6 +220,23 @@ export default function Tool() {
   useEffect(() => {
     if (textDraft) textInputRef.current?.focus()
   }, [textDraft])
+
+  // 全屏切换状态同步（用户按 Esc 退出时也要更新按钮）
+  useEffect(() => {
+    const onFsChange = (): void => setIsFullscreen(document.fullscreenElement != null)
+    document.addEventListener('fullscreenchange', onFsChange)
+    return () => document.removeEventListener('fullscreenchange', onFsChange)
+  }, [])
+
+  function toggleFullscreen(): void {
+    if (document.fullscreenElement) {
+      const p = document.exitFullscreen()
+      if (p) p.catch(() => {})
+    } else {
+      const p = fsRef.current?.requestFullscreen()
+      if (p) p.catch(() => {})
+    }
+  }
 
   const bgColorRef = useRef('#ffffff')
 
@@ -486,7 +505,12 @@ export default function Tool() {
       initialOptions={{}}
       example={{ text: '' }}
       renderOutput={(_input) => (
-        <div className="flex flex-col gap-3">
+        <div
+          ref={fsRef}
+          className={`flex flex-col gap-3 ${
+            isFullscreen ? 'h-screen overflow-hidden bg-white p-4 dark:bg-slate-950' : ''
+          }`}
+        >
           <div className="flex flex-wrap items-center gap-2">
             {TOOLS.map((t) => (
               <button
@@ -622,14 +646,23 @@ export default function Tool() {
             </span>
           </div>
 
-          <div className="relative" ref={wrapRef}>
+          <div
+            ref={wrapRef}
+            className={`relative ${isFullscreen ? 'flex min-h-0 flex-1 items-center justify-center overflow-auto' : ''}`}
+          >
             <canvas
               ref={canvasRef}
               data-testid="drawing-canvas"
               width={canvasSize.w}
               height={canvasSize.h}
-              className="w-full cursor-crosshair touch-none rounded border border-slate-300 bg-white dark:border-slate-600"
-              style={{ aspectRatio: `${canvasSize.w} / ${canvasSize.h}` }}
+              className={`cursor-crosshair touch-none rounded border border-slate-300 bg-white dark:border-slate-600 ${
+                isFullscreen ? '' : 'w-full'
+              }`}
+              style={
+                isFullscreen
+                  ? { maxWidth: '100%', maxHeight: '100%', width: 'auto', height: 'auto' }
+                  : { aspectRatio: `${canvasSize.w} / ${canvasSize.h}` }
+              }
               onPointerDown={onPointerDown}
               onPointerMove={onPointerMove}
               onPointerUp={endStroke}
@@ -688,6 +721,15 @@ export default function Tool() {
               onClick={clearCanvas}
             >
               清空
+            </button>
+            <button
+              type="button"
+              data-testid="drawing-fullscreen"
+              className={BTN(false)}
+              onClick={toggleFullscreen}
+              title="全屏 / 退出全屏（Esc）"
+            >
+              {isFullscreen ? '退出全屏' : '全屏'}
             </button>
             <button
               type="button"
