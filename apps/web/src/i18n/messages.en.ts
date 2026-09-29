@@ -39,6 +39,7 @@ export const en: Record<MessageKey, string> = {
   'controls.themeLabel': 'Theme',
   'controls.themeToLight': 'Switch to light theme',
   'controls.themeToDark': 'Switch to dark theme',
+  'controls.github': 'GitHub repository',
   'controls.langZh': 'Chinese',
   'controls.langEn': 'English',
 

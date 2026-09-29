@@ -507,6 +507,7 @@ export const zh = {
   'controls.themeLabel': '主题切换',
   'controls.themeToLight': '切换到浅色主题',
   'controls.themeToDark': '切换到深色主题',
+  'controls.github': 'GitHub 仓库',
   'controls.langZh': '中文',
   'controls.langEn': 'English',
 

@@ -6,6 +6,7 @@ import { useTranslate } from '../../i18n'
 import { SearchDialog } from '../search/SearchDialog'
 import { LanguageSwitch } from './LanguageSwitch'
 import { ThemeToggle } from './ThemeToggle'
+import { GitHubLink } from './GitHubLink'
 import { CONTROL_BASE } from './controls'
 
 /**
@@ -47,6 +48,7 @@ export function Header() {
           <SearchDialog />
           <ThemeToggle />
           <LanguageSwitch />
+          <GitHubLink />
           <button
             type="button"
             data-testid="menu-toggle"
