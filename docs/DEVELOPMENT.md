@@ -3,21 +3,20 @@
 > **中文** | [English](DEVELOPMENT.en.md)
 
 > 本文是**给开发者看的落地手册**：怎么装环境、怎么建工具、怎么过门禁。
-> 架构设计与工具清单在 `spec/` 与 `catalog/`，本文不重复，只讲「怎么做」。
-> 版本：v1.0 · 2026-09-23
+> 工具清单以 `packages/catalog` 的 21 域真源表为准（§五），本文不重复，只讲「怎么做」。
+> 版本：v2.0 · 2026-09-29（文档清理后深度整理）
 
 ---
 
 ## 〇、本文与其他文档的关系
 
-| 我想…                               | 看这份                                               |
-| ----------------------------------- | ---------------------------------------------------- |
-| 装环境、跑起来、写第一个工具        | **本文**                                             |
-| 了解架构分层、WASM/Worker 方案      | [`spec/02-技术栈与架构.md`](spec/02-技术栈与架构.md) |
-| 查完整目录树                        | [`spec/03-目录结构.md`](spec/03-目录结构.md)         |
-| 查某个工具的 slug / 优先级 / 可行性 | [`tools/`](tools/) 下对应域文件                      |
-| 看 870 条汇总统计                   | [`catalog/README.md`](catalog/README.md)             |
-| 看哪些决策还没拍板                  | [`spec/08-待决事项.md`](spec/08-待决事项.md)         |
+| 我想…                            | 看这份                                  |
+| -------------------------------- | --------------------------------------- |
+| 装环境、跑起来、写第一个工具     | **本文**                                |
+| 给项目做贡献（分支 / PR / 门禁） | [`CONTRIBUTING.md`](../CONTRIBUTING.md) |
+| 打包、打 tag、发 Release         | [`RELEASE.md`](RELEASE.md)              |
+| 查变更历史                       | [`CHANGELOG.md`](../CHANGELOG.md)       |
+| 查某个工具的用法                 | 各工具目录下的 `README.md`              |
 
 ---
 
@@ -132,8 +131,8 @@ UI              Tailwind CSS + shadcn/ui
    packages/catalog
         ├── routes.ts        → 路由表（自动生成）
         ├── search-index.ts  → 搜索索引（自动生成）
-        ├── categories.ts    → 20 域
-        └── groups.ts        → 4 大组
+        ├── categories.ts    → 21 域
+        └── groups.ts        → 5 大组
         │
         ├──→ 首页分组展示
         ├──→ 分类页 / 大组页
@@ -146,7 +145,7 @@ UI              Tailwind CSS + shadcn/ui
 
 ---
 
-## 五、20 域 ↔ 4 大组映射（真源表）
+## 五、21 域 ↔ 5 大组映射（真源表）
 
 写 `meta.ts` 时 `category` 与 `group` 必须严格按此表，`check-tools.ts` 会校验。
 
@@ -172,11 +171,13 @@ UI              Tailwind CSS + shadcn/ui
 |  18 | 游戏开发 / 像素           | `game`          | `design` |     20 | 786–805  |
 |  19 | 边缘计算 / Serverless     | `edge`          | `life`   |     15 | 806–820  |
 |  20 | 教育 / 学习 / 趣味        | `education`     | `life`   |     50 | 821–870  |
+|  21 | 在线工具                  | `online`        | `online` |     30 | 871–900  |
 
-**合计校验**：`dev` 360 + `design` 200 + `office` 60 + `life` 250 = **870** ✅
+**合计校验**：`dev` 360 + `design` 200 + `office` 60 + `life` 250 + `online` 30 = **900** ✅
 
-> ⚠️ 执行编排提示词第六节给出的 4 组文字描述**与此表冲突**（8 个域无归属）。
-> **以本表为准**，本表已经过脚本校验且合计闭合。
+> ⚠️ 第 5 大组 `online` 与第 21 域（规划编号 871–900）是**当前代码状态**，
+> 增设**尚未经项目所有者定案**——目前仅承载 #798 在线画图一个工具。
+> 正式口径以 [`CHANGELOG.md`](../CHANGELOG.md) 的 `[Unreleased]` 段为准。
 
 ---
 
@@ -196,7 +197,7 @@ export const meta: ToolMeta = {
   description: '格式化、压缩、校验 JSON，支持树形查看',
 
   // —— 归类 ——
-  category: 'data-format', // 必须 ∈ 上表 20 个 category
+  category: 'data-format', // 必须 ∈ 上表 21 个 category
   group: 'dev', // 必须与 category 的归属一致
   tags: ['json', 'format', 'validate'], // 2–5 个，全小写
 
@@ -224,7 +225,7 @@ export const meta: ToolMeta = {
 | --: | --------------------------------------------------------- |
 |   1 | `id` 唯一、kebab-case、无空格无大写                       |
 |   2 | `slug` === `id`                                           |
-|   3 | `category` ∈ 20 域                                        |
+|   3 | `category` ∈ 21 域                                        |
 |   4 | `group` 与 `category` 的归属一致（按第五节表）            |
 |   5 | `tags` 2–5 个，全小写                                     |
 |   6 | `priority` ∈ {P0, P1, P2, P3}                             |
@@ -283,10 +284,8 @@ export const meta: ToolMeta = {
 6. 其余                   → T1
 ```
 
-> 870 个工具的 `template` 字段尚未回填。**不要在文档阶段手工逐条填**。
-> 阶段 0 写 `scripts/check-tools.ts` 时同步实现一个规则推导器，
-> 按 `tags` + `description` 关键词自动初判（含 `canvas`/`editor` → T4，含 `diff`/`convert` → T2 …），
-> 再人工校准例外。预计 80% 可自动得出。
+> 各工具的 `template` 字段已在开发中回填完毕。新增工具按上面的判定顺序选填，
+> `check-tools` 校验取值 ∈ T1–T6；拿不准的先按最接近的填，评审时校准。
 
 ---
 
@@ -433,26 +432,26 @@ input / output / run / clear / copy / download / example
 
 ## 九、开发命令速查
 
-| 命令                    | 作用                                                                                                                   |
-| ----------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `pnpm dev`              | 启动 `apps/web` 开发服务                                                                                               |
-| `pnpm build`            | 全仓构建                                                                                                               |
-| `pnpm build:ssg`        | 构建 + SSR 构建 + 预渲染（= CI 的完整产物）                                                                            |
-| `pnpm test`             | Vitest 单测                                                                                                            |
-| `pnpm test:e2e`         | Playwright E2E                                                                                                         |
-| `pnpm lint`             | ESLint（全仓一份 flat config）                                                                                         |
-| `pnpm lint:fix`         | ESLint 自动修可修的                                                                                                    |
-| `pnpm format`           | Prettier 写入                                                                                                          |
-| `pnpm format:check`     | Prettier 只检查（CI 跑这个）                                                                                           |
-| `pnpm typecheck`        | `tsc --noEmit`                                                                                                         |
-| `pnpm check:tools`      | 元数据完整性 + 重复检测 + 模板/大组校验                                                                                |
-| `pnpm check:source-org` | 源码组织规范【强制约束】：一工具一文件夹、跨工具 import、命名（见 [`source-organization.md`](source-organization.md)） |
-| `pnpm check:env`        | 外部 API 配置：`.env.example` 是否登记了每个需 API 的工具（§8.5）                                                      |
-| `pnpm check:docs`       | 文档一致性（双语配对 / 结构 / 链接 / 术语）                                                                            |
-| `pnpm verify`           | 以上 6 项门禁串跑（提交前跑这一个即可）                                                                                |
-| `pnpm generate:catalog` | 扫描 `tools/*/meta.ts` 重建 catalog                                                                                    |
-| `pnpm generate:sitemap` | 生成 `sitemap.xml`                                                                                                     |
-| `pnpm build:wasm`       | 构建 / 拷贝 WASM 模块                                                                                                  |
+| 命令                    | 作用                                                                                                                                              |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm dev`              | 启动 `apps/web` 开发服务                                                                                                                          |
+| `pnpm build`            | 全仓构建                                                                                                                                          |
+| `pnpm build:ssg`        | 构建 + SSR 构建 + 预渲染（= CI 的完整产物）                                                                                                       |
+| `pnpm test`             | Vitest 单测                                                                                                                                       |
+| `pnpm test:e2e`         | Playwright E2E                                                                                                                                    |
+| `pnpm lint`             | ESLint（全仓一份 flat config）                                                                                                                    |
+| `pnpm lint:fix`         | ESLint 自动修可修的                                                                                                                               |
+| `pnpm format`           | Prettier 写入                                                                                                                                     |
+| `pnpm format:check`     | Prettier 只检查（CI 跑这个）                                                                                                                      |
+| `pnpm typecheck`        | `tsc --noEmit`                                                                                                                                    |
+| `pnpm check:tools`      | 元数据完整性 + 重复检测 + 模板/大组校验                                                                                                           |
+| `pnpm check:source-org` | 源码组织规范【强制约束】：一工具一文件夹、跨工具 import、命名（规范见本文 §8.4）                                                                  |
+| `pnpm check:env`        | 外部 API 配置：`.env.example` 是否登记了每个需 API 的工具（§8.5）                                                                                 |
+| `pnpm check:docs`       | 文档一致性（双语配对 / 结构 / 链接；Tier A = README / CONTRIBUTING / CHANGELOG）                                                                  |
+| `pnpm verify`           | 门禁串跑：check:tools → check:source-org → check:env → check:docs → check:licenses → lint → format:check → typecheck → test（提交前跑这一个即可） |
+| `pnpm generate:catalog` | 扫描 `tools/*/meta.ts` 重建 catalog                                                                                                               |
+| `pnpm generate:sitemap` | 生成 `sitemap.xml`                                                                                                                                |
+| `pnpm build:wasm`       | 构建 / 拷贝 WASM 模块                                                                                                                             |
 
 > `typecheck` / `test` 走 pnpm 自带的递归运行器（`pnpm -r`），不经过 turbo —— 两者都是纯扇出，
 > 不需要依赖图，而 turbo 在受限环境的 Windows 上会稳定触发 `os error 231`。
@@ -484,7 +483,7 @@ input / output / run / clear / copy / download / example
 ### 10.2 全站 DoD
 
 ```text
-□ 870 个工具全部通过单工具 DoD
+□ 全部已注册工具（当前 798，规划 900）通过单工具 DoD
 □ pnpm lint / typecheck 0 error
 □ pnpm test 全通过，覆盖率 ≥ 80%
 □ pnpm build 成功
@@ -493,7 +492,7 @@ input / output / run / clear / copy / download / example
 □ LCP < 2.5s / TBT < 200ms / CLS < 0.1
 □ Lighthouse 首页 ≥ 95、工具页 ≥ 90
 □ Docker 镜像可构建、可运行、可访问
-□ sitemap.xml 含全部 870 个工具页；robots.txt 正确
+□ sitemap.xml 含全部已注册工具页；robots.txt 正确
 □ PWA 离线可用
 □ 线上可访问
 ```
@@ -566,7 +565,7 @@ TBT 高 → Worker + 延迟执行；CLS 高 → 预留尺寸；图片大 → Web
 
 ---
 
-## 十二、独立路由与 SEO（870 个独立 URL，方案 A）
+## 十二、独立路由与 SEO（798 个独立 URL，方案 A；规划 900）
 
 > 已拍板（见 §十三决策 #2）：**1 个工具 = 1 条独立路由 `/tools/:slug` = 1 个独立静态页**。
 > 不做「单页 + 查询参数」，也不做 iframe 聚合。工具站靠搜索长尾词获客，独立 URL 是最大 SEO 资产。
@@ -641,45 +640,37 @@ grep -E 'og:title|twitter:card|canonical|BreadcrumbList|SoftwareApplication' \
 
 ## 十三、已拍板决策
 
-|   # | 事项         | 决定                                               | 依据                                           |
-| --: | ------------ | -------------------------------------------------- | ---------------------------------------------- |
-|   1 | 框架         | **Vite**（非 Next.js）                             | 执行提示词 §四技术栈定稿                       |
-|   2 | 工具粒度     | **870 个独立路由**（`/tools/:slug`）               | 执行提示词 §六 URL 规范                        |
-|   3 | 4 组 ↔ 20 域 | **采用第五节真源表**                               | 该表脚本校验闭合（合计 870）                   |
-|   4 | 执行宿主     | **Windows 原生**，不迁移 WSL2                      | 前端构建无需 Linux 环境                        |
-|   5 | 批次规模     | **B2=662 / B3=59 / B4=79 / B5=58 / B6=12**         | 实测可行性分布，非旧估算值                     |
-|   6 | i18n 范围    | **中英双语，客户端实时切换**（不再只「预留 key」） | 产品要求双语入口，见 §19                       |
-|   7 | 主题         | **明 / 暗手动切换**，默认跟随系统                  | 产品要求深色模式，见 §19                       |
-|   8 | 语言偏好落点 | **localStorage**，不引入 `/en` 路由前缀            | 需求是「实时切换 + 刷新保持」，非 SEO 多语言站 |
+|   # | 事项         | 决定                                                      | 依据                                                           |
+| --: | ------------ | --------------------------------------------------------- | -------------------------------------------------------------- |
+|   1 | 框架         | **Vite**（非 Next.js）                                    | 执行提示词 §四技术栈定稿                                       |
+|   2 | 工具粒度     | **独立路由**（`/tools/:slug`），当前 798 个工具、规划 900 | 工具站靠搜索长尾词获客，独立 URL 是最大 SEO 资产               |
+|   3 | 5 组 ↔ 21 域 | **采用第五节真源表**                                      | 该表脚本校验闭合（合计 900）；online 组/域增设待项目所有者定案 |
+|   4 | 执行宿主     | **不绑定特定 OS**（当前实际为 Linux 云主机）              | 前端构建跨平台；§18.3 的 Windows 坑为历史记录                  |
+|   5 | 批次规模     | **已完成**：v0.0.5 共 797 个工具分 9 个 PR 合入           | 铺量结束，后续新增走 §八流程                                   |
+|   6 | i18n 范围    | **中英双语，客户端实时切换**（不再只「预留 key」）        | 产品要求双语入口，见 §19                                       |
+|   7 | 主题         | **明 / 暗手动切换**，默认跟随系统                         | 产品要求深色模式，见 §19                                       |
+|   8 | 语言偏好落点 | **localStorage**，不引入 `/en` 路由前缀                   | 需求是「实时切换 + 刷新保持」，非 SEO 多语言站                 |
 
 > 决策 6 取代了原先「中文单语起步」的口径：`MessageKey` 由中文真源推导，
 > 英文包为 `Record<MessageKey, string>`，漏译即 typecheck 失败。
 
 ---
 
-## 十四、待拍板事项（开工前请确认）
+## 十四、历史待办归档（均已关闭）
 
-|     # | 事项                                | 建议                                                     | 阻塞   |
-| ----: | ----------------------------------- | -------------------------------------------------------- | ------ |
-| ~~A~~ | ~~i18n 范围：中文单语 vs 中英双语~~ | **已拍板（决策 6）：中英双语实时切换**                   | —      |
-|     B | **「21 → 20」合并了哪个域**         | 差异已不可考，注明「以当前 20 域为准」后关闭             | 阶段 0 |
-|     C | **WASM 分发**：自建 CDN vs 公共 CDN | 大模块（ffmpeg/vips/wllama）自建同源，小模块可走公共 CDN | 阶段 2 |
-|     D | **D 类工具提示样式**（58 个）       | 顶部 Banner + 页内卡片（A+C 组合）                       | 阶段 2 |
+|   # | 事项                            | 结论                                                                   |
+| --: | ------------------------------- | ---------------------------------------------------------------------- |
+|   A | i18n 范围：中文单语 vs 中英双语 | **已拍板**（决策 6）：中英双语实时切换                                 |
+|   B | 「21 → 20」合并了哪个域         | 作废：当前为 21 域（§五真源表），以脚本校验为准                        |
+|   C | WASM 分发：自建 CDN vs 公共 CDN | 大模块自建同源、小模块可走公共 CDN（按需实施）                         |
+|   D | D 类工具提示样式                | 顶部 Banner + 页内卡片；28 个需外部 API 的工具已在 `.env.example` 登记 |
 
 ---
 
-## 十五、已知文档冲突（执行时以本文口径为准）
+## 十五、历史文档冲突记录（已作废）
 
-本文编写时核对出以下 spec 内部不一致，处置如下。**spec 原文尚未修订**，执行时按本节口径：
-
-|   # | 位置                           | 冲突                                                                              | 本文采用                                                                                              |
-| --: | ------------------------------ | --------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-|   1 | `docs/审核报告.md` L4          | 引用路径 `.workbuddy/2026-09-23-17-52-10/docs/` 已不存在（目录已迁移至 `F:/max`） | 以当前实际路径为准                                                                                    |
-|   2 | `spec/03` §3 工具目录规范      | 仍列 `worker.ts`/`wasm.ts` 进 8 文件基线                                          | 采用 `spec/09` 审计 #4：基线为 meta/schema/utils/Tool/test/Tool.test/e2e/README，worker/wasm 按需另加 |
-|   3 | `spec/02` §7 待确认项          | 建议「多 Tab 合并」                                                               | 已与决策 #2（870 独立路由）冲突，**作废**                                                             |
-|   4 | `spec/07-路线图.md` 开工前置表 | 列 8 项，未反映已拍板的 #1 / #3                                                   | 以 [`spec/08-待决事项.md`](spec/08-待决事项.md) 的决策记录为准                                        |
-|   5 | `spec/05` 缺口清单             | `Mock API` 在「一、数据/开发」与「四、Web/生态」各计一次                          | 唯一模块应为 **66**，非 67                                                                            |
-|   6 | `spec/09` §七批次规模          | 写 640/90/80/45/15                                                                | 采用实测 **662/59/79/58/12**                                                                          |
+本节原记载 `docs/spec/` 内部的 6 处不一致。`spec/` 目录已于 2026-09-29 文档清理时删除，
+冲突随之作废；**执行口径一律以本文为准**，不再保留逐条对照表。
 
 ---
 
@@ -698,25 +689,22 @@ grep -E 'og:title|twitter:card|canonical|BreadcrumbList|SoftwareApplication' \
 
 ---
 
-## 十七、建议的开工顺序
+## 十七、当前开发阶段（2026-09-29）
 
-不要一上来就铺量 870 个工具。建议：
+铺量已完成：v0.0.5 共交付 **797 个工具**（分 9 个 PR 合入），当前 master **798 个工具**
+（新增 #798 在线画图），规划总量 **900**。骨架、双语、主题、SSG、CI 门禁、二进制部署
+链路均已落地并在线上验证。
 
-```text
-阶段 0  骨架          Turborepo + Vite + packages/catalog + 路由生成 + 搜索索引 + CI
-                     ↓ 验收：注册 1 个示例工具（json-formatter），T2 模板跑通，
-                            4 组导航可用，Cmd+K 能搜到，CI 全绿
-阶段 1  P0 148 个     纯前端高频，验证架构承载力
-阶段 2  P1 322 个     补 WASM / 中等复杂度能力
-阶段 3  P2 332 个     API 类，全部标注数据流向
-阶段 4  P3 68 个 + PWA 收尾
-```
-
-**阶段 0 的验收是关键闸门**。骨架跑不通就铺量，会在 7000 个文件上放大同一个错误。
+新增工具直接走 §八「完整流程」；发版走 [`RELEASE.md`](RELEASE.md)。
+`online` 大组与第 21 域的增设尚未经项目所有者定案，在此之前**不要**新增 online 域工具。
 
 ---
 
-## 十八、阶段 0 实施现状（2026-09-23 建立，2026-09-24 增补部署）
+## 十八、阶段 0 实施现状（历史归档，2026-09-23 建立，2026-09-24 增补部署）
+
+> 📦 本节为**历史归档**：记录项目起步时的实施现状，其中的数字口径
+> （20 域 / 4 大组 / 870 / Vite 6 / Windows 原生）为当时状态，**不代表当前**。
+> 环境坑（§18.3）仍有参考价值；当前状态以本文其他章节为准。
 
 ### 18.1 已实现
 
@@ -856,7 +844,7 @@ messages.en.ts   → export const en: Record<MessageKey, string>
 ```
 
 - **漏译即编译失败**：英文包少一个 key，`tsc --noEmit` 直接报错。
-- **动态 key 仍受检**：`t(`group.${id}.name`)` 由模板字面量类型推导出 4 个具体 key，
+- **动态 key 仍受检**：`t(`group.${id}.name`)` 由模板字面量类型推导出 5 个具体 key，
   写错前缀会在类型层暴露。
 - **插值**：`t('featured.stage', { live, planned, percent })`，占位符为 `{name}`。
 
@@ -874,7 +862,7 @@ messages.en.ts   → export const en: Record<MessageKey, string>
 
 | 类型                                        | 做法                                                              | 原因                                                                     |
 | ------------------------------------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| 组名 / 域名 / 可行性标签（29 条，有限枚举） | 放 i18n 层 `group.*` / `category.*` / `feasibility.*`             | 集中一处，catalog 保持纯数据                                             |
+| 组名 / 域名 / 可行性标签（31 条，有限枚举） | 放 i18n 层 `group.*` / `category.*` / `feasibility.*`             | 集中一处，catalog 保持纯数据                                             |
 | 工具标题 / 描述（逐条内容）                 | `ToolMeta` 新增**可选** `titleEn` / `descriptionEn`，缺省回落中文 | 逐条内容属于各工具自己的 `meta.ts`；可选设计使既有工具无需改动即通过校验 |
 | 搜索索引                                    | 索引仍由中文 meta 构建，**展示时**按当前语言取词                  | 索引是构建期单一产物，不适合按语言复制                                   |
 
@@ -900,7 +888,7 @@ messages.en.ts   → export const en: Record<MessageKey, string>
 
 | 链路           | 位置                  | 目标机需要                       | 适用                                 |
 | -------------- | --------------------- | -------------------------------- | ------------------------------------ |
-| 源码部署       | 仓库根 `package.json` | Node ≥ 22.22 / pnpm / 源码       | 开发、CI                             |
+| 源码部署       | 仓库根 `package.json` | Node ≥ 24.15.0 / pnpm / 源码     | 开发、CI                             |
 | 容器部署       | `deploy/docker/`      | Docker                           | 自托管、横向扩展                     |
 | **二进制部署** | `deploy/binary/`      | `sh` + `tar` + `systemd` + nginx | 单机上线、内网服务器、无 Docker 环境 |
 
@@ -958,7 +946,7 @@ CHANGELOG → 提交推 master（等 CI 门禁绿）→ `git tag -a vX.Y.Z` 并 
 | 我要…                               | 看                                                         |
 | ----------------------------------- | ---------------------------------------------------------- |
 | 一行命令把站点装起来                | 仓库根 [`README.md`](../README.md)「快速开始」· 本文 §20.2 |
-| 四类场景的完整操作手册              | [`../deploy/binary/README.md`](../deploy/binary/README.md) |
+| 二进制部署的操作细节与目标机拓扑    | [`RELEASE.md`](RELEASE.md) §六 · `toolboxctl --help`       |
 | 打包、打 tag、发 Release、changelog | [`RELEASE.md`](RELEASE.md)                                 |
 | 容器部署细节与 nginx 坑             | 本文 §18.3                                                 |
 
@@ -1006,6 +994,11 @@ ROUND=round1 docker compose -f deploy/docker/docker-compose.test.yml run --rm te
    `-e LOG_DIR=/app/...` 会被转成 Windows 路径，日志写不进挂载卷。
 
 ## 二十二、二进制与 Docker 部署验证规范
+
+> ⚠️ 本节验证环境（`root@192.168.100.4`）为 2026-09-24 的**内网旧目标机，已失效**；
+> 当前目标机为 `192.129.237.190`（RackNerd VPS，见 [`RELEASE.md`](RELEASE.md) §六）。
+> `deploy/docker/verify-*.sh` 脚本内仍写死旧 IP，**复用前必须先更新目标地址**。
+> 已知坑（§22.5）仍有效。
 
 单元与 E2E 测试跑的是「代码对不对」；部署验证跑的是「装上去能不能用」。
 后者只能在**真实目标机**上做——权限、属主、systemd、端口、日志落盘这些

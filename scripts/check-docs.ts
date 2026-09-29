@@ -12,16 +12,16 @@
  *   3. 结构对齐        成对的两份，§编号 / H2 / H3 / 代码块数量必须一致
  *   4. 链接可达        相对链接必须存在（目录链接也算）
  *   5. 锚点可达        `path#frag` 的锚点在目标文档里真实存在
- *   6. 术语统一        glossary 里登记的「禁用译法」不得出现在英文文档中
- *   7. 在线体验链接     指定文档必须同时含两个正式域名，并标注「已上线」
- *   8. 索引覆盖        新增文档必须出现在 docs/README.md 的文档地图里
- *   9. 命名规范        文件名 kebab-case（历史中文文件名只记 warning，不阻塞）
+ *   6. 在线体验链接     指定文档必须同时含两个正式域名，并标注「已上线」
+ *   7. 命名规范        文件名 kebab-case（历史中文文件名只记 warning，不阻塞）
+ *
+ * （2026-09-29 修订：docs/ 下的 guide / glossary / spec / tools 等文档已按项目决定删除，
+ *  原规则 6「术语统一」（依赖 docs/glossary.md）与原规则 8「索引覆盖」（依赖 docs/README.md）
+ *  随之退役；Tier A 收缩为根目录三份核心文档。）
  *
  * 用法：
  *   pnpm check:docs            出错则退出码 1
  *   pnpm check:docs --strict   连 warning 也视为失败
- *
- * 注意：术语表（docs/glossary*.md）自身含有全部禁用译法，扫描时排除。
  */
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
@@ -31,32 +31,18 @@ const STRICT = process.argv.includes('--strict')
 
 /**
  * Tier A：对外文档。缺英文版 = error，结构不一致 = error。
- * Tier B：工程内部文档（规范 / 明细 / 部署手册）。缺英文版只记 warning 并计数，
+ * Tier B：工程内部文档。缺英文版只记 warning 并计数，
  *         但**一旦成对**，就同样受「切换入口 + 结构对齐」约束。
+ *
+ * （2026-09-29：docs/ 下的非核心文档已删除，Tier A 收缩为根目录三份核心文档。）
  */
-const TIER_A = [
-  'README.md',
-  'CONTRIBUTING.md',
-  'CHANGELOG.md',
-  'docs/README.md',
-  'docs/glossary.md',
-  'docs/guide/README.md',
-  'docs/guide/getting-started.md',
-  'docs/guide/usage.md',
-  'docs/guide/configuration.md',
-  'docs/guide/troubleshooting.md',
-]
+const TIER_A = ['README.md', 'CONTRIBUTING.md', 'CHANGELOG.md']
 
-/** 不要求英文版、也不参与配对检查（历史生成物 / 单语言记录） */
-const PAIR_EXEMPT = ['CHANGELOG.md', 'docs/audit-report.md']
+/** 不要求英文版、也不参与配对检查（单语言记录） */
+const PAIR_EXEMPT = ['CHANGELOG.md']
 
 /** 必须声明在线体验地址（含 www 别名）并标明上线状态的文档 */
-const MUST_STATE_ONLINE = [
-  'README.md',
-  'README.en.md',
-  'docs/guide/getting-started.md',
-  'docs/guide/getting-started.en.md',
-]
+const MUST_STATE_ONLINE = ['README.md', 'README.en.md']
 
 const ONLINE_PRIMARY = 'https://006336.xyz/'
 const ONLINE_WWW = 'https://www.006336.xyz/'
@@ -73,8 +59,6 @@ const LIVE_EN = [
 ]
 const NOT_LIVE_ZH = ['尚未上线', '未上线', '暂未上线', '不可访问']
 const NOT_LIVE_EN = ['not yet live', 'not live', 'coming soon', 'not launched', 'unreachable']
-
-const GLOSSARY_FILE = 'docs/glossary.md'
 
 type Level = 'error' | 'warn'
 interface Issue {
@@ -104,7 +88,6 @@ const allDocs = [
   ...readdirSync(ROOT)
     .filter((f) => f.endsWith('.md') && !f.startsWith('.'))
     .map((f) => f),
-  'deploy/binary/README.md',
 ].filter((v, i, a) => a.indexOf(v) === i && existsSync(path.join(ROOT, v)))
 
 const read = (rel: string) => readFileSync(path.join(ROOT, rel), 'utf8')
@@ -278,55 +261,7 @@ for (const rel of allDocs) {
 }
 
 // ───────────────────────────────────────────────────────────
-// 6. 术语统一（以 glossary 的「禁用译法」列作为机器可读真源）
-// ───────────────────────────────────────────────────────────
-interface GlossaryRow {
-  zh: string
-  en: string
-  forbidden: string[]
-}
-const glossaryRows: GlossaryRow[] = []
-
-if (existsSync(path.join(ROOT, GLOSSARY_FILE))) {
-  for (const line of read(GLOSSARY_FILE).split('\n')) {
-    const cells = line
-      .split('|')
-      .map((c) => c.trim())
-      .filter((c, i, a) => !(i === 0 && c === '') && !(i === a.length - 1 && c === ''))
-    if (cells.length < 4) continue
-    if (/^-{2,}/.test(cells[1]!) || cells[0] === '中文') continue
-    const forbidden = (cells[3] ?? '')
-      .split(/[，,;；]/)
-      .map((s) => s.trim())
-      .filter((s) => s && s !== '—' && s !== '-')
-    glossaryRows.push({ zh: cells[0]!, en: cells[1]!, forbidden })
-  }
-
-  for (const rel of allDocs) {
-    if (!isEn(rel)) continue
-    if (rel.startsWith('docs/glossary')) continue // 术语表自身必然包含这些词
-    // 只在正文里查术语，剥掉代码块与行内代码：
-    // 否则标识符会被误伤——`ToolPage` 小写化后正是禁用词 `toolpage`。
-    const src = read(rel)
-      .replace(/```[\s\S]*?```/g, '')
-      .replace(/`[^`\n]*`/g, '')
-      .toLowerCase()
-    // 同样分级：Tier A 术语必须干净；Tier B 的历史措辞先登记为待清理项
-    const report = TIER_A.includes(baseOf(rel)) ? err : warn
-    for (const row of glossaryRows) {
-      for (const bad of row.forbidden) {
-        if (src.includes(bad.toLowerCase())) {
-          report(rel, `术语不统一：「${bad}」应统一为「${row.en}」（见 ${GLOSSARY_FILE}）`)
-        }
-      }
-    }
-  }
-} else {
-  err(GLOSSARY_FILE, '术语表不存在，无法校验术语统一性')
-}
-
-// ───────────────────────────────────────────────────────────
-// 7. 在线体验链接 + 上线状态标注
+// 6. 在线体验链接 + 上线状态标注
 // ───────────────────────────────────────────────────────────
 for (const rel of MUST_STATE_ONLINE) {
   if (!existsSync(path.join(ROOT, rel))) continue
@@ -347,30 +282,9 @@ for (const rel of MUST_STATE_ONLINE) {
 }
 
 // ───────────────────────────────────────────────────────────
-// 8. 索引覆盖：新文档必须进 docs/README.md 的文档地图
+// 7. 命名规范（kebab-case；历史中文文件名只记 warning）
 // ───────────────────────────────────────────────────────────
-const indexFile = 'docs/README.md'
-if (existsSync(path.join(ROOT, indexFile))) {
-  const index = read(indexFile)
-  for (const rel of allDocs) {
-    if (!rel.startsWith('docs/') || rel === indexFile || rel === 'docs/README.en.md') continue
-    const fromDocs = rel.slice('docs/'.length)
-    const referenced =
-      index.includes(fromDocs) ||
-      index.includes(fromDocs.replace(/\.en\.md$/, '.md')) ||
-      index.includes(path.dirname(fromDocs) + '/')
-    if (!referenced) {
-      if (TIER_A.includes(rel)) err(rel, `未出现在 ${indexFile} 的文档地图中`)
-      else warn(rel, `未出现在 ${indexFile} 的文档地图中`)
-    }
-  }
-}
-
-// ───────────────────────────────────────────────────────────
-// 9. 命名规范（kebab-case；历史中文文件名只记 warning）
-// ───────────────────────────────────────────────────────────
-// 聚合为一条：规范层（docs/spec/11）已经决定「英文文件名」为推荐方案但尚未迁移，
-// 逐文件刷 39 行警告只会训练人忽略输出。这里报总数 + 样例 + 迁移清单位置。
+// 聚合为一条：逐文件刷警告只会训练人忽略输出，这里报总数 + 样例。
 // 约定俗成的全大写文件名（社区惯例，保留原名，不参与 kebab-case 校验）
 const ALLOW_UPPER =
   /^(README|CONTRIBUTING|CHANGELOG|LICENSE|CODE_OF_CONDUCT|DEVELOPMENT|RELEASE|ARCHITECTURE|SECURITY|SUPPORT)(\.en)?\.md$/
@@ -416,8 +330,7 @@ const printGroup = (level: Level, title: string, list: Issue[]) => {
 
 console.log('文档一致性校验 · check:docs')
 console.log(
-  `  文档 ${allDocs.length} 份（成对 ${pairs.length} 组 / 待补英文 ${missingEn.length} 份）· ` +
-    `术语 ${glossaryRows.length} 条`,
+  `  文档 ${allDocs.length} 份（成对 ${pairs.length} 组 / 待补英文 ${missingEn.length} 份）`,
 )
 
 printGroup('error', `✗ 错误（${errors.length}）`, errors)

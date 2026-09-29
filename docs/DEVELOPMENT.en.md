@@ -3,21 +3,20 @@
 > [中文](DEVELOPMENT.md) | **English**
 
 > This is the **hands-on manual**: how to set up, how to build a tool, how to pass the gates.
-> Architecture and the full tool inventory live in `spec/` and `catalog/` — this guide does not repeat them.
-> Version: v1.0 · 2026-09-23
+> The tool inventory's source of truth is the 21-category table in `packages/catalog` (§5) — this guide does not repeat it.
+> Version: v2.0 · 2026-09-29 (deep cleanup after the docs purge)
 
 ---
 
 ## 0. How This Guide Relates to the Rest
 
-| I want to…                                          | Read this                                            |
-| --------------------------------------------------- | ---------------------------------------------------- |
-| Set up the environment, run it, build my first tool | **This guide**                                       |
-| Understand layering, WASM/Worker strategy           | [`spec/02-技术栈与架构.md`](spec/02-技术栈与架构.md) |
-| See the full directory tree                         | [`spec/03-目录结构.md`](spec/03-目录结构.md)         |
-| Look up a tool's slug / priority / feasibility      | The matching file under [`tools/`](tools/)           |
-| See the 870-tool aggregate stats                    | [`catalog/README.md`](catalog/README.md)             |
-| See which decisions are still open                  | [`spec/08-待决事项.md`](spec/08-待决事项.md)         |
+| I want to…                                          | Read this                                   |
+| --------------------------------------------------- | ------------------------------------------- |
+| Set up the environment, run it, build my first tool | **This guide**                              |
+| Contribute (branches / PRs / gates)                 | [`CONTRIBUTING.md`](../CONTRIBUTING.en.md)  |
+| Build bundles, tag, cut a Release                   | [`RELEASE.md`](RELEASE.md) (Chinese)        |
+| Read the changelog                                  | [`CHANGELOG.md`](../CHANGELOG.md) (Chinese) |
+| Look up a tool's usage                              | The `README.md` inside that tool's folder   |
 
 ---
 
@@ -135,8 +134,8 @@ meta.ts in each tool directory
    packages/catalog
         ├── routes.ts        → route table (generated)
         ├── search-index.ts  → search index (generated)
-        ├── categories.ts    → 20 categories
-        └── groups.ts        → 4 groups
+        ├── categories.ts    → 21 categories
+        └── groups.ts        → 5 groups
         │
         ├──→ home page group display
         ├──→ category / group pages
@@ -149,7 +148,7 @@ You **never** hand-write a route, edit the home page, or touch the sitemap or se
 
 ---
 
-## 5. 20 Categories ↔ 4 Groups (authoritative mapping)
+## 5. 21 Categories ↔ 5 Groups (authoritative mapping)
 
 When writing `meta.ts`, `category` and `group` must match this table exactly.
 `check-tools.ts` enforces it.
@@ -176,11 +175,14 @@ When writing `meta.ts`, `category` and `group` must match this table exactly.
 |  18 | 游戏开发 / 像素           | `game`          | `design` |    20 | 786–805  |
 |  19 | 边缘计算 / Serverless     | `edge`          | `life`   |    15 | 806–820  |
 |  20 | 教育 / 学习 / 趣味        | `education`     | `life`   |    50 | 821–870  |
+|  21 | 在线工具                  | `online`        | `online` |    30 | 871–900  |
 
-**Total check**: `dev` 360 + `design` 200 + `office` 60 + `life` 250 = **870** ✅
+**Total check**: `dev` 360 + `design` 200 + `office` 60 + `life` 250 + `online` 30 = **900** ✅
 
-> ⚠️ The group description in §6 of the orchestration prompt **conflicts with this table**
-> (it leaves 8 categories unassigned). **This table wins** — it is script-verified and sums to 870.
+> ⚠️ The 5th group `online` and the 21st category (planned IDs 871–900) reflect the
+> **current code state**; adding them has **not yet been approved by the project owner** —
+> today it carries only one tool, #798 drawing-board.
+> The authoritative wording is the `[Unreleased]` section of [`CHANGELOG.md`](../CHANGELOG.md).
 
 ---
 
@@ -200,7 +202,7 @@ export const meta: ToolMeta = {
   description: '格式化、压缩、校验 JSON，支持树形查看',
 
   // —— classification ——
-  category: 'data-format', // must be one of the 20 above
+  category: 'data-format', // must be one of the 21 above
   group: 'dev', // must match category's group
   tags: ['json', 'format', 'validate'], // 2–5, lowercase
 
@@ -228,7 +230,7 @@ export const meta: ToolMeta = {
 | --: | --------------------------------------------------------------- |
 |   1 | `id` unique, kebab-case, no spaces, no uppercase                |
 |   2 | `slug` === `id`                                                 |
-|   3 | `category` ∈ the 20 categories                                  |
+|   3 | `category` ∈ the 21 categories                                  |
 |   4 | `group` consistent with `category` (per §5)                     |
 |   5 | `tags` 2–5 items, all lowercase                                 |
 |   6 | `priority` ∈ {P0, P1, P2, P3}                                   |
@@ -288,11 +290,9 @@ When it collides, add a semantic suffix.
 6. Everything else               → T1
 ```
 
-> The `template` field is **not yet filled in** for the 870 tools.
-> **Do not fill it in by hand across all 870 records.** Instead, when you write
-> `scripts/check-tools.ts` in Stage 0, ship a rule-based inferrer alongside it:
-> derive from `tags` + `description` keywords (`canvas`/`editor` → T4,
-> `diff`/`convert` → T2, …), then hand-correct the exceptions. Expect ~80% hit rate.
+> The `template` field is filled in for every tool as it was built. For a new tool,
+> pick using the decision order above; `check-tools` enforces the value ∈ T1–T6.
+> When in doubt, pick the closest and let review calibrate.
 
 ---
 
@@ -442,26 +442,26 @@ tool: <slug> (Chinese name)
 
 ## 9. Command Reference
 
-| Command                 | Purpose                                                                                                                                      |
-| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `pnpm dev`              | start the `apps/web` dev server                                                                                                              |
-| `pnpm build`            | build the whole repo                                                                                                                         |
-| `pnpm build:ssg`        | client build + SSR build + pre-render (= what CI ships)                                                                                      |
-| `pnpm test`             | Vitest unit tests                                                                                                                            |
-| `pnpm test:e2e`         | Playwright E2E                                                                                                                               |
-| `pnpm lint`             | ESLint (one flat config for the whole repo)                                                                                                  |
-| `pnpm lint:fix`         | ESLint, fixing what it can                                                                                                                   |
-| `pnpm format`           | Prettier, writes                                                                                                                             |
-| `pnpm format:check`     | Prettier, check only (what CI runs)                                                                                                          |
-| `pnpm typecheck`        | `tsc --noEmit`                                                                                                                               |
-| `pnpm check:tools`      | metadata integrity + duplicates + template/group validation                                                                                  |
-| `pnpm check:source-org` | source organization (mandatory): one tool per folder, no cross-tool imports, naming — see [`source-organization.md`](source-organization.md) |
-| `pnpm check:env`        | external API config: whether `.env.example` registers every tool that needs an API (§8.5)                                                    |
-| `pnpm check:docs`       | docs consistency (pairing / structure / links / glossary)                                                                                    |
-| `pnpm verify`           | the six gates above, in one command — run this before commit                                                                                 |
-| `pnpm generate:catalog` | rescan `tools/*/meta.ts` and rebuild the catalog                                                                                             |
-| `pnpm generate:sitemap` | generate `sitemap.xml`                                                                                                                       |
-| `pnpm build:wasm`       | build / copy WASM modules                                                                                                                    |
+| Command                 | Purpose                                                                                                                                                              |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm dev`              | start the `apps/web` dev server                                                                                                                                      |
+| `pnpm build`            | build the whole repo                                                                                                                                                 |
+| `pnpm build:ssg`        | client build + SSR build + pre-render (= what CI ships)                                                                                                              |
+| `pnpm test`             | Vitest unit tests                                                                                                                                                    |
+| `pnpm test:e2e`         | Playwright E2E                                                                                                                                                       |
+| `pnpm lint`             | ESLint (one flat config for the whole repo)                                                                                                                          |
+| `pnpm lint:fix`         | ESLint, fixing what it can                                                                                                                                           |
+| `pnpm format`           | Prettier, writes                                                                                                                                                     |
+| `pnpm format:check`     | Prettier, check only (what CI runs)                                                                                                                                  |
+| `pnpm typecheck`        | `tsc --noEmit`                                                                                                                                                       |
+| `pnpm check:tools`      | metadata integrity + duplicates + template/group validation                                                                                                          |
+| `pnpm check:source-org` | source organization (mandatory): one tool per folder, no cross-tool imports, naming — spec lives in §8.4 of this guide                                               |
+| `pnpm check:env`        | external API config: whether `.env.example` registers every tool that needs an API (§8.5)                                                                            |
+| `pnpm check:docs`       | docs consistency (pairing / structure / links; Tier A = README / CONTRIBUTING / CHANGELOG)                                                                           |
+| `pnpm verify`           | all gates in one command: check:tools → check:source-org → check:env → check:docs → check:licenses → lint → format:check → typecheck → test — run this before commit |
+| `pnpm generate:catalog` | rescan `tools/*/meta.ts` and rebuild the catalog                                                                                                                     |
+| `pnpm generate:sitemap` | generate `sitemap.xml`                                                                                                                                               |
+| `pnpm build:wasm`       | build / copy WASM modules                                                                                                                                            |
 
 > `typecheck` / `test` use pnpm's built-in recursive runner (`pnpm -r`) instead of turbo — both are
 > plain fan-outs that need no dependency graph, while turbo reliably trips `os error 231` in
@@ -494,7 +494,7 @@ tool: <slug> (Chinese name)
 ### 10.2 Site-wide DoD
 
 ```text
-□ All 870 tools pass the per-tool DoD
+□ All registered tools (798 today, 900 planned) pass the per-tool DoD
 □ pnpm lint / typecheck: 0 errors
 □ pnpm test: all pass, coverage ≥ 80%
 □ pnpm build succeeds
@@ -503,7 +503,7 @@ tool: <slug> (Chinese name)
 □ LCP < 2.5s / TBT < 200ms / CLS < 0.1
 □ Lighthouse: home ≥ 95, tool pages ≥ 90
 □ Docker image builds, runs, and serves
-□ sitemap.xml contains all 870 tool pages; robots.txt correct
+□ sitemap.xml contains all registered tool pages; robots.txt correct
 □ PWA works offline
 □ Reachable in production
 ```
@@ -582,7 +582,7 @@ images heavy → WebP/AVIF.
 
 ---
 
-## 12. Independent Routes & SEO (870 standalone URLs, Option A)
+## 12. Independent Routes & SEO (798 standalone URLs, Option A; 900 planned)
 
 > Decided (see decision #2 in §13): **1 tool = 1 standalone route `/tools/:slug` = 1 standalone static page**.
 > No "single page + query param", no iframe hub. A tool site wins on long-tail search terms; the
@@ -661,16 +661,16 @@ per-route `index.html`, and a root `404.html` (usable directly by static hosts).
 
 ## 13. Locked Decisions
 
-|   # | Item                              | Decision                                                                                 | Basis                                                                                 |
-| --: | --------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-|   1 | Framework                         | **Vite** (not Next.js)                                                                   | orchestration prompt §4                                                               |
-|   2 | Tool granularity                  | **870 independent routes** (`/tools/:slug`)                                              | orchestration prompt §6 URL spec                                                      |
-|   3 | 4 groups ↔ 20 categories          | **Use the §5 table**                                                                     | script-verified, sums to 870                                                          |
-|   4 | Execution host                    | **Native Windows**, no WSL2 migration                                                    | frontend builds need no Linux                                                         |
-|   5 | Batch sizes                       | **B2=662 / B3=59 / B4=79 / B5=58 / B6=12**                                               | measured feasibility distribution, not the old estimates                              |
-|   6 | i18n scope                        | **Bilingual (zh/en) with instant client-side switching** (no longer "reserve keys only") | product requires a bilingual entry point, see §19                                     |
-|   7 | Theme                             | **Manual light/dark toggle**, defaults to the system preference                          | the product needs a light/dark theme, see §19                                         |
-|   8 | Where the locale preference lives | **localStorage**, no `/en` route prefix                                                  | the requirement is "switch instantly + survive refresh", not an SEO multi-locale site |
+|   # | Item                              | Decision                                                                                 | Basis                                                                                  |
+| --: | --------------------------------- | ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+|   1 | Framework                         | **Vite** (not Next.js)                                                                   | orchestration prompt §4                                                                |
+|   2 | Tool granularity                  | **Independent routes** (`/tools/:slug`) — 798 tools today, 900 planned                   | tool sites live on search long-tail; standalone URLs are the top SEO asset             |
+|   3 | 5 groups ↔ 21 categories          | **Use the §5 table**                                                                     | script-verified, sums to 900; the online group/category addition awaits owner sign-off |
+|   4 | Execution host                    | **No OS lock-in** (currently a Linux cloud VM)                                           | frontend builds are cross-platform; the §18.3 Windows pitfalls are historical records  |
+|   5 | Batch sizes                       | **Done**: v0.0.5 shipped 797 tools across 9 PRs                                          | mass rollout is over; new tools follow the §8 flow                                     |
+|   6 | i18n scope                        | **Bilingual (zh/en) with instant client-side switching** (no longer "reserve keys only") | product requires a bilingual entry point, see §19                                      |
+|   7 | Theme                             | **Manual light/dark toggle**, defaults to the system preference                          | the product needs a light/dark theme, see §19                                          |
+|   8 | Where the locale preference lives | **localStorage**, no `/en` route prefix                                                  | the requirement is "switch instantly + survive refresh", not an SEO multi-locale site  |
 
 > Decision 6 supersedes the earlier "Chinese-only" stance: `MessageKey` is derived from the
 > Chinese source, and the English bundle is declared as `Record<MessageKey, string>` —
@@ -678,30 +678,22 @@ per-route `index.html`, and a root `404.html` (usable directly by static hosts).
 
 ---
 
-## 14. Open Decisions (confirm before starting)
+## 14. Historical Open Items (all closed)
 
-|     # | Item                                                  | Recommendation                                                                     | Blocks  |
-| ----: | ----------------------------------------------------- | ---------------------------------------------------------------------------------- | ------- |
-| ~~A~~ | ~~i18n scope: Chinese-only vs bilingual~~             | **Decided (decision 6): bilingual with instant switching**                         | —       |
-|     B | **Which category was merged in "21 → 20"**            | Unrecoverable; note "the current 20 stand" and close it                            | Stage 0 |
-|     C | **WASM delivery**: self-hosted vs public CDN          | Self-host large modules (ffmpeg/vips/wllama); public CDN acceptable for small ones | Stage 2 |
-|     D | **Data-flow notice styling for D tools** (58 of them) | Top banner + in-page card                                                          | Stage 2 |
+|   # | Item                                     | Resolution                                                                         |
+| --: | ---------------------------------------- | ---------------------------------------------------------------------------------- |
+|   A | i18n scope: Chinese-only vs bilingual    | **Decided** (decision 6): bilingual with instant switching                         |
+|   B | Which category was merged in "21 → 20"   | Void: the table now stands at 21 categories (§5), script-verified                  |
+|   C | WASM delivery: self-hosted vs public CDN | Self-host large modules (ffmpeg/vips/wllama); public CDN acceptable for small ones |
+|   D | Data-flow notice styling for D tools     | Top banner + in-page card; 28 API-backed tools are registered in `.env.example`    |
 
 ---
 
-## 15. Known Documentation Conflicts (this guide is authoritative)
+## 15. Historical Documentation Conflicts (void)
 
-Cross-checking the specs surfaced the inconsistencies below. **The spec sources have not
-been revised yet** — follow this section when executing.
-
-|   # | Location                                | Conflict                                                                                      | This guide uses                                                                                               |
-| --: | --------------------------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-|   1 | `docs/审核报告.md` line 4               | References `.workbuddy/2026-09-23-17-52-10/docs/`, which no longer exists (moved to `F:/max`) | current actual path                                                                                           |
-|   2 | `spec/03` §3 tool directory spec        | Still lists `worker.ts`/`wasm.ts` in the 8-file baseline                                      | `spec/09` audit #4: baseline is meta/schema/utils/Tool/test/Tool.test/e2e/README; worker/wasm added as needed |
-|   3 | `spec/02` §7 open item                  | Recommends "multi-tab merging"                                                                | Superseded by decision #2 (870 independent routes) — **void**                                                 |
-|   4 | `spec/07-路线图.md` prerequisites table | Lists 8 items, doesn't reflect locked #1 / #3                                                 | Follow the decision log in [`spec/08-待决事项.md`](spec/08-待决事项.md)                                       |
-|   5 | `spec/05` gap list                      | `Mock API` counted twice (§1 and §4)                                                          | Unique modules are **66**, not 67                                                                             |
-|   6 | `spec/09` §7 batch sizes                | States 640/90/80/45/15                                                                        | Measured **662/59/79/58/12**                                                                                  |
+This section used to record 6 inconsistencies inside `docs/spec/`. The `spec/`
+directory was deleted in the 2026-09-29 docs purge, so the conflicts are void with it;
+**this guide is authoritative** — no line-by-line comparison is kept.
 
 ---
 
@@ -720,27 +712,25 @@ been revised yet** — follow this section when executing.
 
 ---
 
-## 17. Recommended Build Order
+## 17. Current Development Stage (2026-09-29)
 
-Do not start by mass-generating all 870 tools. Suggested sequence:
+The mass rollout is done: v0.0.5 shipped **797 tools** (merged across 9 PRs);
+current master has **798 tools** (plus #798 drawing-board), with **900** planned in total.
+The skeleton, bilingual copy, theme, SSG, CI gates and the binary deployment path are
+all live and verified in production.
 
-```text
-Stage 0  Skeleton     Turborepo + Vite + packages/catalog + route generation
-                      + search index + CI
-                      ↓ acceptance: one sample tool registered (json-formatter),
-                        T2 template renders, 4-group nav works, Cmd+K finds it, CI green
-Stage 1  P0, 148      pure-frontend high-frequency — validates the architecture
-Stage 2  P1, 322      WASM / medium complexity
-Stage 3  P2, 332      API-based, all with data-flow notices
-Stage 4  P3, 68 + PWA wrap-up
-```
-
-**The Stage 0 acceptance gate is critical.** Scaling up before the skeleton works
-means multiplying the same mistake across ~7,000 files.
+New tools follow the §8 "Full Walkthrough" directly; releases follow
+[`RELEASE.md`](RELEASE.md). The `online` group and 21st category have **not** been
+approved by the project owner — **do not** add more online-category tools until then.
 
 ---
 
-## 18. Stage 0 Implementation Status (2026-09-23, deployment added 2026-09-24)
+## 18. Stage 0 Implementation Status (historical archive — 2026-09-23, deployment added 2026-09-24)
+
+> 📦 **Historical archive**: this section records the project's starting state.
+> Its numbers (20 categories / 4 groups / 870 / Vite 6 / native Windows) describe
+> that moment, **not the present**. The environment pitfalls (§18.3) are still useful
+> reference; current state is in the other sections of this guide.
 
 ### 18.1 What exists
 
@@ -886,7 +876,7 @@ messages.en.ts   → export const en: Record<MessageKey, string>
 
 - **A missing translation breaks the build**: drop a key from the English bundle and
   `tsc --noEmit` fails.
-- **Dynamic keys stay checked**: `t(`group.${id}.name`)` resolves to the four concrete keys via
+- **Dynamic keys stay checked**: `t(`group.${id}.name`)` resolves to the five concrete keys via
   template-literal types, so a wrong prefix surfaces at the type level.
 - **Interpolation**: `t('featured.stage', { live, planned, percent })`, placeholders as `{name}`.
 
@@ -904,7 +894,7 @@ messages.en.ts   → export const en: Record<MessageKey, string>
 
 | Kind                                                             | Approach                                                                         | Why                                                                                                           |
 | ---------------------------------------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| Group / category / feasibility labels (29 values, a closed enum) | live in the i18n layer as `group.*` / `category.*` / `feasibility.*`             | keeps copy in one place and the catalog as pure data                                                          |
+| Group / category / feasibility labels (31 values, a closed enum) | live in the i18n layer as `group.*` / `category.*` / `feasibility.*`             | keeps copy in one place and the catalog as pure data                                                          |
 | Tool titles and descriptions (per-item content)                  | `ToolMeta` gains **optional** `titleEn` / `descriptionEn`; falls back to Chinese | per-item content belongs in each tool's own `meta.ts`; being optional means existing tools validate untouched |
 | Search index                                                     | still built from the Chinese metadata, **localised at render time**              | the index is a single build-time artifact; duplicating it per language is wasteful                            |
 
@@ -929,11 +919,11 @@ messages.en.ts   → export const en: Record<MessageKey, string>
 
 ### 20.1 Which one to pick
 
-| Path        | Location                 | Target machine needs             | Good for                                                    |
-| ----------- | ------------------------ | -------------------------------- | ----------------------------------------------------------- |
-| From source | repo root `package.json` | Node ≥ 22.22 / pnpm / the source | development, CI                                             |
-| Container   | `deploy/docker/`         | Docker                           | self-hosting, scale-out                                     |
-| **Binary**  | `deploy/binary/`         | `sh` + `tar` + `systemd` + nginx | single-server rollouts, internal servers, Docker-free hosts |
+| Path        | Location                 | Target machine needs               | Good for                                                    |
+| ----------- | ------------------------ | ---------------------------------- | ----------------------------------------------------------- |
+| From source | repo root `package.json` | Node ≥ 24.15.0 / pnpm / the source | development, CI                                             |
+| Container   | `deploy/docker/`         | Docker                             | self-hosting, scale-out                                     |
+| **Binary**  | `deploy/binary/`         | `sh` + `tar` + `systemd` + nginx   | single-server rollouts, internal servers, Docker-free hosts |
 
 All three ship **exactly the same artifact** (the static files in `apps/web/dist`);
 they differ only in how that artifact is delivered and operated.
@@ -995,7 +985,7 @@ existing tag are in [`RELEASE.md`](RELEASE.md) §1 / §2 / §3.
 | I want to…                                       | Read                                                              |
 | ------------------------------------------------ | ----------------------------------------------------------------- |
 | Install with one line                            | repo root [`README.md`](../README.md) "Quick start" · §20.2 above |
-| The full guide to the four scenarios             | [`../deploy/binary/README.md`](../deploy/binary/README.md)        |
+| Binary deployment operations and target topology | [`RELEASE.md`](RELEASE.md) §6 (Chinese) · `toolboxctl --help`     |
 | Build, tag, publish a release, write a changelog | [`RELEASE.md`](RELEASE.md)                                        |
 | Container details and nginx gotchas              | §18.3 above                                                       |
 
@@ -1048,6 +1038,12 @@ means at least one stage failed.
    the bind mount.
 
 ## 22. Binary and Docker Deployment Verification
+
+> ⚠️ The verification environment below (`root@192.168.100.4`) was the **old intranet
+> target from 2026-09-24 and is no longer reachable**; the current target is
+> `192.129.237.190` (RackNerd VPS, see [`RELEASE.md`](RELEASE.md) §6, Chinese).
+> `deploy/docker/verify-*.sh` still hard-codes the old IP — **update the target address
+> before reusing them**. The known pitfalls (§22.5) remain valid.
 
 Unit and E2E tests answer "is the code correct". Deployment verification answers
 "does it actually work once installed". The latter only makes sense on a **real

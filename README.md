@@ -3,8 +3,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![CI](https://github.com/zhang123999-qq/toolbox/actions/workflows/ci.yml/badge.svg)](https://github.com/zhang123999-qq/toolbox/actions/workflows/ci.yml)
 
-> **870 个纯前端在线工具**：本地优先（数据不上传）、纯静态部署、建目录即自动注册。
-> 中英双语 · 明暗主题 · 免登录 · 可离线（规划中）
+> **798 个纯前端在线工具**：本地优先（数据不上传）、纯静态部署、建目录即自动注册。
+> 中英双语 · 明暗主题 · 免登录
 
 **中文** | [English](README.en.md)
 
@@ -12,13 +12,17 @@
 
 ## 状态
 
-| 项         | 值                                                                                                                      |
-| ---------- | ----------------------------------------------------------------------------------------------------------------------- |
-| 规划总量   | **870 个 / 20 域 / 4 大组**（dev / design / office / life，设计目标，脚本校验闭合）                                     |
-| 最新已发布 | [`v0.0.5`](https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.5)（2026-09-29）— **797 个工具**（4 大组全覆盖） |
-| 上一版本   | [`v0.0.4`](https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.4) — 310 个工具（域 01–05）                      |
+| 项                 | 值                                                                                                      |
+| ------------------ | ------------------------------------------------------------------------------------------------------- |
+| 规划总量           | **900 个 / 21 域 / 5 大组**（dev / design / office / life / online，脚本校验闭合）                      |
+| 最新正式发布       | [`v0.0.5`](https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.5)（2026-09-29）— **797 个工具** |
+| 当前 master / 线上 | **798 个工具**（v0.0.5 之后新增在线画图，随下一次正式发布并入版本号）                                   |
 
-> 大组注册数：dev 377 · design 203 · office 37 · life 180 = **797**；870 规划中剩余 73 个待铺量。
+> 大组注册数：dev 377 · design 203 · office 37 · life 180 · online 1 = **798**；
+> 900 规划中剩余 102 个待铺量。
+>
+> 注：online 大组与第 21 域（在线工具）为 v0.0.5 之后新增，增设尚未经项目所有者定案；
+> 本表如实记录当前代码状态。
 
 ---
 
@@ -50,8 +54,7 @@
 
 ## 快速开始
 
-三条部署链路，按目标机环境任选一条。逐步说明与验证方式见
-[`docs/guide/getting-started.md`](docs/guide/getting-started.md)。
+三条部署链路，按目标机环境任选一条。
 
 ### ① 二进制部署（Linux 服务器，推荐）
 
@@ -113,7 +116,7 @@ docker run -d --name toolbox-web -p 8081:8081 toolbox-web:dev   # 容器内外�
 ```bash
 pnpm install --ignore-scripts   # esbuild 的 postinstall 在部分 Windows 环境会 EBUSY
 pnpm dev                        # 开发服务器；Windows 沙箱下若报 os error 231，加 --concurrency=1
-pnpm check:tools                # 元数据校验（20 域合计 870）
+pnpm check:tools                # 元数据校验（21 域合计 900，注册数闭合）
 pnpm build:ssg                  # 构建 + SSR 构建 + 预渲染全部静态页（工具页随目录自动生成）
 ```
 
@@ -142,7 +145,7 @@ pnpm build:ssg                  # 构建 + SSR 构建 + 预渲染全部静态页
 > 优先级为 `--source <基址>` > 配置文件 `UPDATE_SOURCE` > 该默认值；
 > 用自建源时把 `UPDATE_SOURCE='<基址>'` 写进 `/etc/toolbox/toolbox.conf` 即可免传参数。
 
-完整说明（四类场景 + 目录布局 + 排障）：[`deploy/binary/README.md`](deploy/binary/README.md)。
+完整说明（参数、场景、目录布局、排障）见 `install.sh --help` 与 `toolboxctl --help`。
 
 ---
 
@@ -166,18 +169,18 @@ pnpm build:ssg                  # 构建 + SSR 构建 + 预渲染全部静态页
 ## 项目结构
 
 ```text
-packages/catalog/    20 域 ↔ 4 大组唯一真源表 + Zod 元数据契约 + 路由派生
+packages/catalog/    21 域 ↔ 5 大组唯一真源表 + Zod 元数据契约 + 路由派生
 packages/search/     检索门面（Orama 适配位）
-apps/web/            Vite 6 + React 19 + TS + Tailwind v4（含 i18n / theme / 工具目录）
+apps/web/            Vite 8 + React 19 + TS + Tailwind v4（含 i18n / theme / 工具目录）
 scripts/             目录生成 / 元数据校验 / sitemap / SSG 预渲染 / 文档一致性校验
 deploy/docker/       容器部署（多阶段构建 + nginx）
 deploy/binary/       二进制部署（bundle 打包 + toolboxctl + 一键安装脚本）
-docs/                使用指南、开发手册、规范、发布流程
+docs/                开发手册、发布流程
 ```
 
 ## 技术栈与页面模型
 
-- **工程栈**：pnpm monorepo；Vite 6 + React 19 + TypeScript + Tailwind v4；检索用 Orama；
+- **工程栈**：pnpm monorepo；Vite 8 + React 19 + TypeScript + Tailwind v4；检索用 Orama；
   测试用 vitest + Playwright（驱动系统已装的 Edge）；SSG 用 React 19 的 `prerender` 在构建期预渲染。
 - **双语与主题**：中英双语在客户端实时切换（无 `/en` 路由）；明暗主题首帧前由内联脚本应用，无闪动。
 - **独立路由（方案 A，已实现）**：1 个工具 = 1 条路由 `/tools/<slug>` = 1 个独立懒加载 chunk
@@ -185,20 +188,16 @@ docs/                使用指南、开发手册、规范、发布流程
 - **每页 head**：title / description / canonical / Open Graph / Twitter Card（summary）/
   JSON-LD（工具页 `SoftwareApplication` + 全站 `BreadcrumbList`）。
   暂未配置 `og:image`，列为后续可选增强。
-- **构建产物**：主线 `pnpm build:ssg` 预渲染 **336 个静态页 + `404.html`**。
+- **构建产物**：主线 `pnpm build:ssg` 预渲染 **826 个静态页 + `404.html`**
+  （798 工具页 + 5 大组页 + 21 域页 + 首页 + 工具索引页）。
 
 ## 文档
 
-| 我想…                      | 看                                                                                            |
-| -------------------------- | --------------------------------------------------------------------------------------------- |
-| 浏览全部文档               | [`docs/README.md`](docs/README.md)                                                            |
-| 安装 / 使用 / 配置 / 排障  | [`docs/guide/`](docs/guide/README.md)                                                         |
-| 参与开发 / 新增工具        | [`CONTRIBUTING.md`](CONTRIBUTING.md) + [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md)           |
-| 看源码组织规范（强制约束） | [`docs/source-organization.md`](docs/source-organization.md) — 一工具一文件夹、命名、依赖范围 |
-| 部署到服务器               | [`deploy/binary/README.md`](deploy/binary/README.md)                                          |
-| 发包、打 tag、写 changelog | [`docs/RELEASE.md`](docs/RELEASE.md)                                                          |
-| 查术语的中英对照           | [`docs/glossary.md`](docs/glossary.md)                                                        |
-| 看版本变更                 | [`CHANGELOG.md`](CHANGELOG.md)                                                                |
+| 我想…                      | 看                                                                                  |
+| -------------------------- | ----------------------------------------------------------------------------------- |
+| 参与开发 / 新增工具        | [`CONTRIBUTING.md`](CONTRIBUTING.md) + [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) |
+| 发包、打 tag、写 changelog | [`docs/RELEASE.md`](docs/RELEASE.md)                                                |
+| 看版本变更                 | [`CHANGELOG.md`](CHANGELOG.md)                                                      |
 
 ---
 

@@ -3,10 +3,10 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![CI](https://github.com/zhang123999-qq/toolbox/actions/workflows/ci.yml/badge.svg)](https://github.com/zhang123999-qq/toolbox/actions/workflows/ci.yml)
 
-> **870 client-side online tools** that run entirely in your browser: local-first
+> **798 client-side online tools** that run entirely in your browser: local-first
 > (nothing is uploaded), deployed as plain static files, and registered
 > automatically the moment a directory is added.
-> Bilingual (Chinese / English) · light & dark themes · no sign-in · offline (planned)
+> Bilingual (Chinese / English) · light & dark themes · no sign-in
 
 [中文](README.md) | **English**
 
@@ -14,14 +14,17 @@
 
 ## Status
 
-| Item             | Value                                                                                                                         |
-| ---------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| Planned          | **870 tools across 20 categories in 4 groups** (dev / design / office / life; design goal, validated by script)               |
-| Latest release   | [`v0.0.5`](https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.5) (2026-09-29) — **797 tools** (all 4 groups covered) |
-| Previous release | [`v0.0.4`](https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.4) — 310 tools (domains 01–05)                         |
+| Item                | Value                                                                                                                 |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Planned             | **900 tools across 21 categories in 5 groups** (dev / design / office / life / online; validated by script)           |
+| Latest release      | [`v0.0.5`](https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.5) (2026-09-29) — **797 tools**                |
+| Current main / live | **798 tools** (drawing-board added after v0.0.5; will be folded into the version number with the next formal release) |
 
-> Registered per group on main: dev 377 · design 203 · office 37 · life 180 = **797**;
-> 73 of the planned 870 remain.
+> Registered per group on main: dev 377 · design 203 · office 37 · life 180 · online 1 = **798**;
+> 102 of the planned 900 remain.
+>
+> Note: the `online` group and the 21st category were added after v0.0.5 and their introduction
+> is not yet confirmed by the project owner; this table records the current state of the code.
 
 ---
 
@@ -57,8 +60,7 @@ contributions that anyone can self-host.
 
 ## Quick start
 
-Three deployment paths — pick whichever fits the target machine. Step-by-step instructions and
-verification steps are in [`docs/guide/getting-started.md`](docs/guide/getting-started.md).
+Three deployment paths — pick whichever fits the target machine.
 
 ### 1. Binary deployment (Linux server, recommended)
 
@@ -126,7 +128,7 @@ docker run -d --name toolbox-web -p 8081:8081 toolbox-web:dev   # 8081 inside an
 ```bash
 pnpm install --ignore-scripts   # esbuild's postinstall hits EBUSY on some Windows setups
 pnpm dev                        # dev server; add --concurrency=1 if you see os error 231
-pnpm check:tools                # validate metadata (20 categories, 870 total)
+pnpm check:tools                # validate metadata (21 categories, 900 total, counts closed)
 pnpm build:ssg                  # client build + SSR build + pre-render every static page (tool pages are generated from their directories)
 ```
 
@@ -156,8 +158,8 @@ Available globally after install (`/usr/local/bin/toolboxctl`).
 > With a self-hosted source, write `UPDATE_SOURCE='<base-url>'` into
 > `/etc/toolbox/toolbox.conf` and you never need to pass the flag again.
 
-Full guide (four scenarios, directory layout, troubleshooting):
-[`deploy/binary/README.md`](deploy/binary/README.md).
+Full guide (flags, scenarios, directory layout, troubleshooting):
+`install.sh --help` and `toolboxctl --help`.
 
 ---
 
@@ -182,18 +184,18 @@ nginx sites on the same machine.
 ## Repository layout
 
 ```text
-packages/catalog/    single source of truth for 20 categories ↔ 4 groups, Zod contract, route derivation
+packages/catalog/    single source of truth for 21 categories ↔ 5 groups, Zod contract, route derivation
 packages/search/     search facade (Orama adapter slot)
-apps/web/            Vite 6 + React 19 + TS + Tailwind v4 (i18n / theme / tool registry)
+apps/web/            Vite 8 + React 19 + TS + Tailwind v4 (i18n / theme / tool registry)
 scripts/             catalog generation / metadata validation / sitemap / SSG pre-render / docs consistency check
 deploy/docker/       container deployment (multi-stage build + nginx)
 deploy/binary/       binary deployment (bundle builder + toolboxctl + one-line installer)
-docs/                usage guides, developer handbook, specifications, release process
+docs/                developer handbook, release process
 ```
 
 ## Stack and page model
 
-- **Engineering**: pnpm monorepo; Vite 6 + React 19 + TypeScript + Tailwind v4; search via
+- **Engineering**: pnpm monorepo; Vite 8 + React 19 + TypeScript + Tailwind v4; search via
   Orama; tests with vitest + Playwright (driving the system-installed Edge); SSG via React 19
   `prerender` at build time.
 - **Bilingual & themes**: Chinese / English switch live on the client (no `/en` route); light &
@@ -204,20 +206,16 @@ docs/                usage guides, developer handbook, specifications, release p
 - **Per-page head**: title / description / canonical / Open Graph / Twitter Card (summary) /
   JSON-LD (tool pages `SoftwareApplication` + site-wide `BreadcrumbList`). `og:image` is not
   set yet and is listed as an optional future enhancement.
-- **Build output**: mainline `pnpm build:ssg` pre-renders **336 static pages + `404.html`**.
+- **Build output**: mainline `pnpm build:ssg` pre-renders **826 static pages + `404.html`**
+  (798 tool pages + 5 group pages + 21 category pages + home + tool index).
 
 ## Documentation
 
-| I want to…                        | Read                                                                                                          |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| Browse all docs                   | [`docs/README.md`](docs/README.md)                                                                            |
-| Install / use / configure / debug | [`docs/guide/`](docs/guide/README.md)                                                                         |
-| Contribute, or add a tool         | [`CONTRIBUTING.md`](CONTRIBUTING.md) + [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md)                           |
-| Read the source organization rule | [`docs/source-organization.md`](docs/source-organization.md) — one tool, one folder; naming; dependency scope |
-| Deploy to a server                | [`deploy/binary/README.md`](deploy/binary/README.md)                                                          |
-| Cut a release, tag, changelog     | [`docs/RELEASE.md`](docs/RELEASE.md)                                                                          |
-| Check how a term is translated    | [`docs/glossary.md`](docs/glossary.md)                                                                        |
-| See what changed                  | [`CHANGELOG.md`](CHANGELOG.md)                                                                                |
+| I want to…                    | Read                                                                                |
+| ----------------------------- | ----------------------------------------------------------------------------------- |
+| Contribute, or add a tool     | [`CONTRIBUTING.md`](CONTRIBUTING.md) + [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) |
+| Cut a release, tag, changelog | [`docs/RELEASE.md`](docs/RELEASE.md)                                                |
+| See what changed              | [`CHANGELOG.md`](CHANGELOG.md)                                                      |
 
 ---
 

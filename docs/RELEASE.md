@@ -13,15 +13,15 @@
 
 版本号有**五个落点**，必须一致，脚本已尽量自动对齐：
 
-| 落点                      | 值                                      | 由谁写入            | 用途                         |
-| ------------------------- | --------------------------------------- | ------------------- | ---------------------------- |
-| `deploy/binary/VERSION`   | `0.0.1-beta`                            | 手工（真源）        | 打包与 CLI 版本号的唯一来源  |
-| bundle 文件名             | `toolbox-0.0.1-beta-linux-amd64.tar.gz` | `build-bundle.sh`   | 用户可见、升级源按名解析版本 |
-| bundle 内 `VERSION`       | `0.0.1-beta`                            | `build-bundle.sh`   | 安装时校验「包内版本」       |
-| bundle 内 `manifest.json` | `"version": "0.0.1-beta"` + `gitCommit` | `build-bundle.sh`   | 追溯「这个包出自哪个提交」   |
-| git tag / Release         | `v0.0.1-beta`                           | `gh release create` | 与源码历史绑定               |
+| 落点                      | 值                                 | 由谁写入            | 用途                         |
+| ------------------------- | ---------------------------------- | ------------------- | ---------------------------- |
+| `deploy/binary/VERSION`   | `0.0.5`                            | 手工（真源）        | 打包与 CLI 版本号的唯一来源  |
+| bundle 文件名             | `toolbox-0.0.5-linux-amd64.tar.gz` | `build-bundle.sh`   | 用户可见、升级源按名解析版本 |
+| bundle 内 `VERSION`       | `0.0.5`                            | `build-bundle.sh`   | 安装时校验「包内版本」       |
+| bundle 内 `manifest.json` | `"version": "0.0.5"` + `gitCommit` | `build-bundle.sh`   | 追溯「这个包出自哪个提交」   |
+| git tag / Release         | `v0.0.5`                           | `gh release create` | 与源码历史绑定               |
 
-运行时还提供一个**自证**落点：`GET /healthz` 返回 `ok v0.0.4`。
+运行时还提供一个**自证**落点：`GET /healthz` 返回 `ok v0.0.5`。
 它由 nginx 配置在渲染期写死，因此能证明「当前真正在跑的是哪个版本」，
 是升级/回滚判定的依据（见第四节）。
 
@@ -34,10 +34,12 @@
   各 workspace 的 `package.json` 版本号在发版时**同步**为同一版本（供工具链与包元数据使用），
   一律以 `VERSION` 为准对齐，避免两处漂移。
 
-> **当前进度**：最新已发布 = **v0.0.4**（2026-09-27，**310 个工具**，域 01–05，分域
-> 70 / 61 / 59 / 90 / 30；Release 含 5 个附件：`toolbox-0.0.4-linux-amd64.tar.gz` + `.sha256`、
-> `latest.txt`、`index.json`、`install.sh`）。上一版本 v0.0.3 为 280 个工具（域 01–04，
-> commit `30e3baf`）。
+> **当前进度**：最新正式发布 = **v0.0.5**（2026-09-29，**797 个工具**，4 大组全覆盖；
+> tag `51bb444`；Release 含 5 个附件：`toolbox-0.0.5-linux-amd64.tar.gz` + `.sha256`、
+> `latest.txt`、`index.json`、`install.sh`）。
+> v0.0.5 之后 master 又新增了第 5 大组（online）与 #798 在线画图，
+> 当前 master / 线上为 798 个工具——这部分随下一次正式发布并入版本号（见
+> [`CHANGELOG.md`](../CHANGELOG.md) 的 `[Unreleased]` 段）。
 
 ## 二、发布流程（推 tag 全自动，无需手工打包 / 上传）
 
@@ -185,30 +187,35 @@ curl -fsSL http://<发布源>/install.sh | sudo bash -s -- --source http://<发�
 | 权限       | root（安装、卸载、服务管理）                                            |
 | **不需要** | Go、Node、pnpm、Docker、Python                                          |
 
-开发机（打包用）：Node ≥ 22.22 与 pnpm（跑构建），bash、`tar`、`sha256sum`。
+开发机（打包用）：Node ≥ 24.15.0 与 pnpm（跑构建），bash、`tar`、`sha256sum`。
 
-## 六、内网/目标服务器的访问与部署方式
+## 六、目标服务器的访问与部署方式
 
-当前环境的实际拓扑与约束（已实测）：
+当前实际拓扑（2026-09-29 已实测）：
 
 ```
-开发机 (Windows, F:/max)
-   │  git push 走 127.0.0.1:10808 代理 → GitHub
-   │  ssh/scp 直连内网
+开发机（Linux 云主机）
+   │  git push → GitHub；CI 出 Release 产物
+   │  无 Release 更新时：本地打包 → scp 到目标机
    ▼
-目标机 192.168.100.4  (Ubuntu 24.04.5, x86_64, systemd 255, Docker 29.7, nginx 1.24)
-   └─ toolbox.service : 独立 nginx 实例，监听 :8081，root=/opt/toolbox/current/app
+目标机 192.129.237.190（RackNerd VPS，Ubuntu 24.04.5）
+   └─ /opt/toolbox：current → releases/<版本>；独立 nginx 实例监听 :8081
 ```
 
-- **访问方式**：`http://192.168.100.4:8081/`（内网直连；`/healthz` 可查版本）。
-  从开发机验证时需绕开系统代理：`curl --noproxy '*' http://192.168.100.4:8081/`。
-- **首次部署**（内网无外网时）：
-  `scp dist-release/* root@192.168.100.4:/root/tb-upload/`
-  → 解包 → `install --from <包> --install-deps`。
-- **在线升级**：把 `dist-release/` 用任意静态服务器托管（本例用
-  `python3 -m http.server 8899 --directory /srv/toolbox-releases`）作为发布源，
-  目标机执行 `toolboxctl upgrade --source http://<发布源>`。
-- **关于 `192.168.200.4` 代理**：本流程**不需要**它。`gh` 与 `git push`
-  已能通过开发机本地代理 `127.0.0.1:10808` 完成；把带认证的推送绕经一个
-  额外代理没有收益，只增加凭据暴露面。仅当开发机到 GitHub 完全不通、
-  且该代理确为受控出口时，才应考虑使用。
+- **线上地址**：`https://006336.xyz/`（Cloudflare 代理回源）；`/healthz` 可查版本。
+- **正式发布更新**：`toolboxctl upgrade --to <版本>`（从 GitHub Release 拉包，自动 sha256 校验）。
+- **无 Release 更新**（v0.0.5 之后的小改动走此通道，已验证两次）：本地按顺序跑完
+  构建管线再打包，避免产物与源码不一致——
+  ```bash
+  tsx scripts/generate-catalog.ts                                  # 先重建 catalog（meta 改动不跑这一步不会进预渲染 HTML）
+  vite build                                                        # 客户端构建
+  vite build --ssr src/entry-server.tsx --outDir dist-ssr           # SSR 构建
+  tsx scripts/generate-sitemap.ts && tsx scripts/prerender.ts       # sitemap + 预渲染
+  deploy/binary/build-bundle.sh --version 0.0.5 --skip-build --no-index --out /tmp/toolbox-pkg
+  scp /tmp/toolbox-pkg/* root@192.129.237.190:/root/toolbox-local-src/
+  ssh root@192.129.237.190 "toolboxctl upgrade --source /root/toolbox-local-src --to 0.0.5 --force \
+    && chmod -R u=rwX,go=rX /opt/toolbox/releases/0.0.5"
+  ```
+  > ⚠️ **权限坑**：本地打的包文件权限是 660（umask），CI 包是 644；
+  > 升级后必须 `chmod -R u=rwX,go=rX /opt/toolbox/releases/<版本>`，
+  > 否则 nginx（worker 用户 `toolbox` 不在文件属组里）会全站 403。

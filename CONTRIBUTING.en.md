@@ -2,24 +2,22 @@
 
 > [中文](CONTRIBUTING.md) | **English**
 > This document covers **how to change the project**: environment, conventions, workflow and gates.
-> For what the project is and how to deploy it, see [`README.md`](README.md) and
-> [`docs/guide/`](docs/guide/README.md).
+> For what the project is and how to deploy it, see [`README.md`](README.md).
 >
-> The project currently registers **797 tools** (all 4 groups shipped with **v0.0.5**: dev 377 /
-> design 203 / office 37 / life 180; 73 of the planned 870 remain). The latest release is
-> **v0.0.5 (797 tools)**; the previous v0.0.4 had 310. Routes are derived
+> The project currently registers **798 tools** (5 groups: dev 377 / design 203 / office 37 /
+> life 180 / online 1; 102 of the planned 900 remain). The latest formal release is
+> **v0.0.5 (797 tools)**. Routes are derived
 > automatically from the catalog — adding a tool only needs a directory plus `meta.ts`.
 
 ---
 
-## 1. Read these four first
+## 1. Read these three first
 
-| Document                                                     | Why first                                                                                          |
-| ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
-| [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md)                 | the developer handbook: catalog mechanics, metadata contract, template choice, the eight red lines |
-| [`docs/source-organization.md`](docs/source-organization.md) | the source organization standard (mandatory): one tool, one folder, naming, dependency scope       |
-| [`docs/guide/configuration.md`](docs/guide/configuration.md) | configuration has three layers; editing the wrong one looks like "nothing happened"                |
-| [`docs/glossary.md`](docs/glossary.md)                       | the terminology source of truth; it decides which word you use in English                          |
+| Document                                     | Why first                                                                                          |
+| -------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) | the developer handbook: catalog mechanics, metadata contract, template choice, the eight red lines |
+| [`docs/RELEASE.md`](docs/RELEASE.md)         | the release process: tagging, changelog, artifacts and rollback                                    |
+| [`CHANGELOG.md`](CHANGELOG.md)               | what changed recently and where the project stands                                                 |
 
 ---
 
@@ -27,8 +25,9 @@
 
 ### 2.1 Requirements
 
-Node ≥ 22.22 and pnpm ≥ 9. No Docker, no Go, no WSL. Browser automation can drive the Edge that is
-already installed, so there is no Chromium download.
+Node ≥ 24.15.0 (required by `package.json` engines; 24.x LTS recommended) and pnpm ≥ 9.
+No Docker, Go or WSL is required. Browser automation can use the system-installed
+Edge, so there is no Chromium download.
 
 ### 2.2 First-time setup
 
@@ -48,7 +47,7 @@ pnpm dev                        # development server
 
 | Directory                        | Responsibility                                                            | Keep out                    |
 | -------------------------------- | ------------------------------------------------------------------------- | --------------------------- |
-| `packages/catalog`               | the 20-category ↔ 4-group source of truth, Zod contract, route derivation | any UI                      |
+| `packages/catalog`               | the 21-category ↔ 5-group source of truth, Zod contract, route derivation | any UI                      |
 | `packages/search`                | the search facade (Orama adapter slot)                                    | helpers unrelated to search |
 | `apps/web/src/tools/<slug>/`     | the 8 files of one tool                                                   | logic shared across tools   |
 | `apps/web/src/components/`       | layout, tool shell, templates, shared pieces                              | business logic              |
@@ -245,17 +244,17 @@ It runs, in order: metadata validation → documentation consistency → licence
 Prettier check → type check → unit tests. Do not commit if any of them fails. CI runs the same
 commands, so passing locally means passing remotely.
 
-| Gate               | Catches                                                                                                            |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------ |
-| `check:tools`      | missing metadata fields, non-contiguous numbering, category totals not adding up to 870                            |
-| `check:source-org` | one tool per folder violations, cross-tool imports, non-compliant naming ([standard](docs/source-organization.md)) |
-| `check:env`        | a tool that calls an external API missing from `.env.example`, or a real-looking key committed                     |
-| `check:docs`       | a missing half of a pair, misaligned structure, broken links, dead anchors, inconsistent terminology               |
-| `check:licenses`   | a dependency pulling in a restricted licence (GPL / AGPL / SSPL / BUSL, and so on)                                 |
-| `lint`             | unused variables, accessibility defects, hook rule violations                                                      |
-| `format:check`     | formatting drift                                                                                                   |
-| `typecheck`        | type errors across the three packages                                                                              |
-| `test`             | behavioural regressions                                                                                            |
+| Gate               | Catches                                                                                                       |
+| ------------------ | ------------------------------------------------------------------------------------------------------------- |
+| `check:tools`      | missing metadata fields, non-contiguous numbering, category totals not adding up to 900                       |
+| `check:source-org` | one tool per folder violations, cross-tool imports, non-compliant naming (standard: `docs/DEVELOPMENT.md` §9) |
+| `check:env`        | a tool that calls an external API missing from `.env.example`, or a real-looking key committed                |
+| `check:docs`       | a missing half of a pair, misaligned structure, broken links, dead anchors                                    |
+| `check:licenses`   | a dependency pulling in a restricted licence (GPL / AGPL / SSPL / BUSL, and so on)                            |
+| `lint`             | unused variables, accessibility defects, hook rule violations                                                 |
+| `format:check`     | formatting drift                                                                                              |
+| `typecheck`        | type errors across the three packages                                                                         |
+| `test`             | behavioural regressions                                                                                       |
 
 ---
 
@@ -274,14 +273,12 @@ commands, so passing locally means passing remotely.
 
 ## 9. Contributing documentation
 
-| Rule                   | Requirement                                                                                                      |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| Paired languages       | `<name>.md` and `<name>.en.md` in the same directory; the switcher links at the top must work in both directions |
-| Aligned structure      | matching section counts and code-block counts (checked by script)                                                |
-| Consistent terminology | follow [`docs/glossary.md`](docs/glossary.md); forbidden translations are machine-checked                        |
-| Indexed on arrival     | a new document must appear in the map in [`docs/README.md`](docs/README.md)                                      |
-| Explicit anchors       | prefer `<a id="x"></a>` for cross-section links instead of relying on slugs derived from Chinese headings        |
-| Runnable commands      | every command in the docs must actually run; give the expected result rather than "it should work"               |
+| Rule              | Requirement                                                                                                      |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Paired languages  | `<name>.md` and `<name>.en.md` in the same directory; the switcher links at the top must work in both directions |
+| Aligned structure | matching section counts and code-block counts (checked by script)                                                |
+| Explicit anchors  | prefer `<a id="x"></a>` for cross-section links instead of relying on slugs derived from Chinese headings        |
+| Runnable commands | every command in the docs must actually run; give the expected result rather than "it should work"               |
 
 After editing, run:
 
@@ -300,7 +297,7 @@ GPL / AGPL / SSPL / BUSL — are never introduced.
 | Rule                   | Requirement                                                                                                  |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------ |
 | Permissive only        | check a package's LICENSE and SPDX field before adding it; if you cannot tell, do not add it                 |
-| Prefer no dependency   | most of the 870 tools are plain JS; hand-write utils rather than inflating the dependency tree               |
+| Prefer no dependency   | most of the 900 planned tools are plain JS; hand-write utils rather than inflating the dependency tree       |
 | Enforced in CI         | `pnpm check:licenses` scans every installed package and fails on restricted licences                         |
 | Register exceptions    | a **build-time** dependency under weak copyleft (MPL-2.0, say) goes into `APPROVED_EXCEPTIONS` with a reason |
 | No closed-source parts | proprietary binaries and anything requiring a licence to redistribute are out                                |

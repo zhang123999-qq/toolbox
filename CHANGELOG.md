@@ -8,12 +8,33 @@
 每个版本对应一个 git tag（`vX.Y.Z`）与一个 GitHub Release，
 Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELEASE.md)）。
 
+## [Unreleased]
+
+### 新增
+
+- **第 5 大组「在线工具」（online）**：新增第 21 域（在线工具，规划 30 个，编号 871–900）；
+  首个工具为 **#798 在线画图**（`drawing-board`）：13 种绘图工具、图片底图、形状填充、
+  快捷键、PNG / JPG 导出、40 步撤销 / 重做、全屏、画布自适应居中
+  （⚠️ online 大组与第 21 域的增设尚未经项目所有者定案，以下如实记录当前代码状态）
+
+### 文档
+
+- **文档清理**（62 个文件、9432 行）：删除 `docs/spec/`、`docs/tools/`、`docs/guide/`、
+  `docs/catalog/`、`docs/deploy/`、术语表、文档中心索引、审计 / 验证报告、
+  `deploy/binary/README.md`；保留 README / CONTRIBUTING / CHANGELOG /
+  DEVELOPMENT / RELEASE 与 798 个工具自带 README；
+  `scripts/check-docs.ts` 校验范围同步收缩为现存核心文档
+
+### 修复
+
+- drawing-board 历史记录测试并入 `Tool.test.tsx`（符合一工具一文件夹 8 文件集规范）
+
 ## [0.0.5] - 2026-09-29
 
-把「已交付工具数」从 310 推进到 **798 个**：新增 488 个工具（编号 311–870 及 #798 在线画图），
+把「已交付工具数」从 310 推进到 **797 个**：新增 487 个工具，
 分 9 个 PR 陆续合入（#1、#2、#4、#5、#6、#7、#8、#9 及分支同步）；
 覆盖图片 / 音视频 / PDF 文档 / AI / SEO / 无障碍 / 浏览器扩展 / 边缘计算 /
-教育游戏等全新能力域，5 大组（dev / design / office / life / online）全部开花；
+教育游戏等全新能力域，4 大组（dev / design / office / life）全覆盖；
 28 个需外部 API 的工具已在 `.env.example` 登记（密钥走环境变量，不入库）。
 
 ### 新增
@@ -37,14 +58,12 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
 - `master` CI 全绿（PR #9 合并时）；发布前本地 `check-tools` 通过
 - 测试文件 **807 个**（v0.0.4 发布时为 628 个）
 
-### 发布后补丁（同版本重发）
+### 发布后补丁（同版本删除重发，tag 从 c392ad5 重新指向 51bb444）
 
 - 主页去掉「阶段 0：797 / 870（92%）」进度条与「规划工具 870」统计，只显示实际已上线工具总数；
   同步修正页脚站点描述、静态 `index.html` 标题与描述中的 870 表述；
   `SITE_TITLE` / `SITE_DESCRIPTION` 改为随 `TOOL_COUNT` 自动取值，不再写死数字
 - 主页 Hero 主视觉占位图替换为 6 张实拍截图轮播（淡入淡出约 100 秒自动轮换，悬停暂停）
-- 新增第 5 大组「在线工具」（online），新增工具 #798 在线画图（13 种工具 / 图片底图 / 快捷键 / JPG 导出 / 全屏）
-- 修复 drawing-board 测试文件组织违规（历史记录测试并入 `Tool.test.tsx`，符合 8 文件集规范）
 
 ## [0.0.4] - 2026-09-27
 
@@ -258,8 +277,8 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
   `check:docs` / `verify` 脚本，CI 增加静态检查门禁
 - **双语文档体系**：`docs/guide/`（安装与快速上手 / 使用示例 / 配置说明 / 排障，四篇中英成对）、
   `docs/glossary.md`（术语真源 + 禁用译法）、`CONTRIBUTING.md`、`docs/README.en.md`
-- **文档一致性校验**：`pnpm check:docs` 机检双语配对、结构对齐、链接与锚点、术语统一、
-  在线地址与「已上线」标注、新文档是否已入索引
+- **文档一致性校验**：`pnpm check:docs` 机检双语配对、结构对齐、链接与锚点、
+  在线地址与「已上线」标注、文件名规范
 - **MIT 许可证**：新增 `LICENSE`；根与各 workspace 包的 `package.json` 补齐 `license` /
   `repository` / `bugs` / `homepage` 字段；两份 README 加许可徽标与许可证章节
 - **依赖许可校验**：新增 `scripts/check-licenses.ts`（`pnpm check:licenses`），扫描全部已安装
@@ -271,8 +290,8 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
 
 **三类强制约束**
 
-- **源码组织规范**：新增 [`docs/source-organization.md`](docs/source-organization.md)
-  （中英成对），明确「一工具一文件夹」：工具目录自包含 8 个文件、禁止跨工具 import、
+- **源码组织规范**：新增 `docs/source-organization.md`（中英成对，2026-09-29 文档清理时删除），
+  明确「一工具一文件夹」：工具目录自包含 8 个文件、禁止跨工具 import、
   命名须 kebab-case 且与 catalog id 一致、禁止多工具混放；配套
   `scripts/check-source-org.ts`（`pnpm check:source-org`）机检目录 ↔ catalog 对应、
   标准文件集、跨工具 import、多工具混放、命名合规、公共层反向依赖六条规则
@@ -352,8 +371,8 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
   `curl -fsSL https://github.com/zhang123999-qq/toolbox/releases/latest/download/install.sh | sudo bash`，
   并附「先审阅脚本再执行」提示；原先占位式的 `<发布源>/install.sh` 与
   「仓库私有、匿名请求 404」的说明一并更正
-- **`docs/审核报告.md` 改名为 `docs/audit-report.md`**：按
-  [`docs/spec/11-文档命名规范.md`](docs/spec/11-文档命名规范.md) 的映射统一为英文文件名，
+- **`docs/审核报告.md` 改名为 `docs/audit-report.md`**：按 `docs/spec/11-文档命名规范.md`
+  （2026-09-29 文档清理时删除）的映射统一为英文文件名，
   同步更新两份文档索引与 `check-docs` 的豁免清单
 
 ### 修复
