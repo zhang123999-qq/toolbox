@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom'
 import { CATEGORIES, GROUPS, TOOL_COUNT } from '@toolbox/catalog'
 import { useTranslate } from '../../i18n'
+import { HeroCarousel } from './HeroCarousel'
 
 /**
  * 主视觉区（Hero）
  * 桌面端左右分栏，移动端上下堆叠（图在下）。
- * 图片为占位图（/images/hero-placeholder.svg），后续替换为真实插画即可。
+ * 右侧为网站实拍截图轮播（HeroCarousel），100 秒自动切换，可手动点圆点切换。
  */
 export function Hero() {
   const t = useTranslate()
@@ -74,14 +75,7 @@ export function Hero() {
       </div>
 
       <div>
-        <img
-          src="/images/hero-placeholder.svg"
-          alt={t('hero.imageAlt')}
-          width={640}
-          height={420}
-          loading="lazy"
-          className="mx-auto w-full max-w-md rounded-xl"
-        />
+        <HeroCarousel />
       </div>
     </section>
   )

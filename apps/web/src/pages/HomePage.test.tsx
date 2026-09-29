@@ -32,10 +32,14 @@ describe('HomePage（Landing Page）', () => {
     )
   })
 
-  it('主视觉含占位图', () => {
+  it('主视觉为实拍截图轮播', () => {
     renderHome()
-    const img = screen.getByAltText('产品主视觉占位图') as HTMLImageElement
-    expect(img.getAttribute('src')).toBe('/images/hero-placeholder.svg')
+    const carousel = screen.getByTestId('hero-carousel')
+    const imgs = screen.getAllByAltText('网站实拍预览') as HTMLImageElement[]
+    expect(imgs).toHaveLength(6)
+    expect(imgs[0].getAttribute('src')).toBe('/images/hero/hero-home.webp')
+    // 6 个圆点，可手动切换
+    expect(carousel.querySelectorAll('button')).toHaveLength(6)
   })
 
   it('亮点区渲染 4 条核心价值', () => {
