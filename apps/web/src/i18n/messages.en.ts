@@ -483,6 +483,8 @@ export const en: Record<MessageKey, string> = {
   'group.office.desc': 'PDF and Office document processing',
   'group.life.name': 'Life & Learning',
   'group.life.desc': 'Math, AI, Web3, accessibility, automation, extensions, edge, education',
+  'group.online.name': 'Online Tools',
+  'group.online.desc': 'General-purpose online utilities',
 
   // —— 20 categories ——
   'category.text.name': 'Text & Content',

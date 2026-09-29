@@ -1,7 +1,7 @@
 import type { CategoryDef, CategoryId, GroupId } from './types'
 
 /**
- * 20 域 ↔ 4 大组 真源表
+ * 20 域 ↔ 5 大组 真源表
  *
  * 口径来源 DEVELOPMENT.md §5 / docs/tools/README.md：
  *   dev    = text70 + encoding60 + data-format60 + devops90 + datetime30 + seo50  = 360

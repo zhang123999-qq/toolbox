@@ -4,10 +4,10 @@
  */
 
 // ---------------------------------------------------------------------------
-// 4 大组
+// 5 大组
 // ---------------------------------------------------------------------------
 
-export const GROUP_IDS = ['dev', 'design', 'office', 'life'] as const
+export const GROUP_IDS = ['dev', 'design', 'office', 'life', 'online'] as const
 export type GroupId = (typeof GROUP_IDS)[number]
 
 // ---------------------------------------------------------------------------

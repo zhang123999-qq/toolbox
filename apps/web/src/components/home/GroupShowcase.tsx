@@ -3,7 +3,7 @@ import { GROUPS, categoriesOfGroup } from '@toolbox/catalog'
 import { groupDescription, groupName } from '../../i18n/catalog-text'
 import { useTranslate } from '../../i18n'
 
-/** 4 大组展示：每组给出工具数与域数，均从 catalog 真源表推导 */
+/** 5 大组展示：每组给出工具数与域数，均从 catalog 真源表推导 */
 export function GroupShowcase() {
   const t = useTranslate()
 

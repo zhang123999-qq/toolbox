@@ -935,7 +935,7 @@ export const zh = {
   'footer.popularCategories': '热门域',
   'footer.copyright': '© {year} {name} · 纯本地运行，数据不出浏览器',
 
-  // —— 4 大组 ——
+  // —— 5 大组 ——
   'group.dev.name': '开发编码',
   'group.dev.desc': '文本、编码、数据格式、运维、时间、网络',
   'group.design.name': '设计媒体',
@@ -944,6 +944,8 @@ export const zh = {
   'group.office.desc': 'PDF 与 Office 文档处理',
   'group.life.name': '生活学习',
   'group.life.desc': '数学、AI、Web3、无障碍、自动化、扩展、边缘、教育',
+  'group.online.name': '在线工具',
+  'group.online.desc': '通用在线实用工具',
 
   // —— 20 个域 ——
   'category.text.name': '文本与内容处理',
