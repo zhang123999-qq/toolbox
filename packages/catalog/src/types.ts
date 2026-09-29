@@ -35,6 +35,7 @@ export const CATEGORY_IDS = [
   'game',
   'edge',
   'education',
+  'online',
 ] as const
 export type CategoryId = (typeof CATEGORY_IDS)[number]
 

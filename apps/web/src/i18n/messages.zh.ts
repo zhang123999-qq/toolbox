@@ -968,6 +968,7 @@ export const zh = {
   'category.game.name': '游戏开发 / 像素',
   'category.edge.name': '边缘计算 / Serverless',
   'category.education.name': '教育 / 学习 / 趣味',
+  'category.online.name': '在线工具',
 
   // —— 星座配对（#363）——
   'zodiacMatch.you': '你的星座',

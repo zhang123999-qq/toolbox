@@ -1,7 +1,7 @@
 import type { CategoryDef, CategoryId, GroupId } from './types'
 
 /**
- * 20 域 ↔ 5 大组 真源表
+ * 21 域 ↔ 5 大组 真源表
  *
  * 口径来源 DEVELOPMENT.md §5 / docs/tools/README.md：
  *   dev    = text70 + encoding60 + data-format60 + devops90 + datetime30 + seo50  = 360
@@ -9,7 +9,8 @@ import type { CategoryDef, CategoryId, GroupId } from './types'
  *   office = pdf60                                                                 =  60
  *   life   = math60 + ai30 + web3_25 + a11y25 + automation30
  *            + extension15 + edge15 + education50                                 = 250
- *   合计 870
+ *   online = online30                                                             =  30
+ *   合计 900
  */
 export const CATEGORIES: readonly CategoryDef[] = [
   { id: 'text', name: '文本与内容处理', group: 'dev', plannedTools: 70, range: [1, 70] },
@@ -56,6 +57,7 @@ export const CATEGORIES: readonly CategoryDef[] = [
     plannedTools: 50,
     range: [821, 870],
   },
+  { id: 'online', name: '在线工具', group: 'online', plannedTools: 30, range: [871, 900] },
 ]
 
 const CATEGORY_MAP: ReadonlyMap<CategoryId, CategoryDef> = new Map(CATEGORIES.map((c) => [c.id, c]))

@@ -2,7 +2,7 @@
  * 元数据校验（DEVELOPMENT.md §9：pnpm check:tools）
  *
  * 校验内容：
- *  1. 20 域真源表合计是否为 870、各组工具数是否匹配
+ *  1. 21 域真源表合计是否为 900、各组工具数是否匹配
  *  2. 每个工具的 16 字段契约（Zod Schema）
  *  3. slug 唯一性
  *  4. 模板 T1-T6 合法性（由 Schema 保证）
@@ -18,10 +18,10 @@ function fail(message: string): void {
 }
 
 console.log('=== 1. 真源表校验 ===')
-if (PLANNED_TOTAL_TOOLS !== 870) {
-  fail(`20 域规划工具总数应为 870，实际 ${PLANNED_TOTAL_TOOLS}`)
+if (PLANNED_TOTAL_TOOLS !== 900) {
+  fail(`21 域规划工具总数应为 900，实际 ${PLANNED_TOTAL_TOOLS}`)
 } else {
-  console.log(`  ✓ 20 域合计 ${PLANNED_TOTAL_TOOLS}`)
+  console.log(`  ✓ 21 域合计 ${PLANNED_TOTAL_TOOLS}`)
 }
 
 const expectedGroupCount: Record<string, number> = {
@@ -29,6 +29,7 @@ const expectedGroupCount: Record<string, number> = {
   design: 200,
   office: 60,
   life: 250,
+  online: 30,
 }
 for (const group of GROUPS) {
   const total = categoriesOfGroup(group.id).reduce((sum, c) => sum + c.plannedTools, 0)
@@ -40,10 +41,10 @@ for (const group of GROUPS) {
   }
 }
 
-if (CATEGORIES.length !== 20) {
-  fail(`域数量应为 20，实际 ${CATEGORIES.length}`)
+if (CATEGORIES.length !== 21) {
+  fail(`域数量应为 21，实际 ${CATEGORIES.length}`)
 } else {
-  console.log('  ✓ 域数量 20')
+  console.log('  ✓ 域数量 21')
 }
 
 console.log('=== 2. 工具元数据契约 ===')

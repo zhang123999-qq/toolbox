@@ -1,7 +1,7 @@
 /**
  * 工具注册表 —— 由 scripts/generate-catalog.ts 自动生成，请勿手工编辑。
  * 改了任何 meta.ts 后请重跑：pnpm generate:catalog
- * 工具数：797
+ * 工具数：798
  */
 import type { ToolMeta } from './types'
 
@@ -4159,6 +4159,27 @@ export const TOOLS: readonly ToolMeta[] = [
     inputs: ['text'],
     outputs: ['text'],
     options: ['baseImage', 'version', 'workdir', 'port', 'command'],
+    deps: [],
+    worker: false,
+    wasm: false,
+    api: false,
+  },
+  {
+    id: 'drawing-board',
+    slug: 'drawing-board',
+    title: '在线画图',
+    description: '在线画布：画笔、橡皮、直线、矩形、圆形、油漆桶填充，支持撤销重做，一键导出 PNG',
+    titleEn: 'Drawing Board',
+    descriptionEn: 'Online drawing canvas: brush, eraser, line, rectangle, ellipse, flood fill, with undo/redo and PNG export',
+    category: 'online',
+    group: 'online',
+    tags: ['drawing', 'canvas', 'paint', 'online', 'image'],
+    priority: 'P2',
+    feasibility: 'A',
+    template: 'T3',
+    inputs: ['text'],
+    outputs: ['file'],
+    options: [],
     deps: [],
     worker: false,
     wasm: false,

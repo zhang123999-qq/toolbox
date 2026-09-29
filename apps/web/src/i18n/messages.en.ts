@@ -507,6 +507,7 @@ export const en: Record<MessageKey, string> = {
   'category.game.name': 'Game Dev & Pixel Art',
   'category.edge.name': 'Edge Computing & Serverless',
   'category.education.name': 'Education & Fun',
+  'category.online.name': 'Online Tools',
 
   // —— Zodiac match (#363) ——
   'zodiacMatch.you': 'Your sign',
