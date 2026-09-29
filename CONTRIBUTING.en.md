@@ -5,8 +5,9 @@
 > For what the project is and how to deploy it, see [`README.md`](README.md) and
 > [`docs/guide/`](docs/guide/README.md).
 >
-> The project currently registers **310 tools** (domains 01–05 shipped with **v0.0.4**; 560 tools across
-> domains 06–20 remain). The latest release is **v0.0.4 (310 tools)**; the previous v0.0.3 had 280. Routes are derived
+> The project currently registers **797 tools** (all 4 groups shipped with **v0.0.5**: dev 377 /
+> design 203 / office 37 / life 180; 73 of the planned 870 remain). The latest release is
+> **v0.0.5 (797 tools)**; the previous v0.0.4 had 310. Routes are derived
 > automatically from the catalog — adding a tool only needs a directory plus `meta.ts`.
 
 ---

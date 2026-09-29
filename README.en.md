@@ -14,15 +14,14 @@
 
 ## Status
 
-| Item             | Value                                                                                                                  |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| Planned          | **870 tools across 20 categories in 4 groups** (dev / design / office / life; design goal, validated by script)        |
-| Latest release   | [`v0.0.4`](https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.4) (2026-09-27) — **310 tools** (domains 01–05) |
-| Previous release | [`v0.0.3`](https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.3) — 280 tools (domains 01–04)                  |
+| Item             | Value                                                                                                                         |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| Planned          | **870 tools across 20 categories in 4 groups** (dev / design / office / life; design goal, validated by script)               |
+| Latest release   | [`v0.0.5`](https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.5) (2026-09-29) — **797 tools** (all 4 groups covered) |
+| Previous release | [`v0.0.4`](https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.4) — 310 tools (domains 01–05)                         |
 
-> Registered per-domain on main: domain 01 text 70 · domain 02 encoding/crypto/security 61 ·
-> domain 03 data formats 59 · domain 04 DevOps/cloud-native 90 · domain 05 time/date 30 = 310;
-> domains 06–20 (560 tools) have not started.
+> Registered per group on main: dev 377 · design 203 · office 37 · life 180 = **797**;
+> 73 of the planned 870 remain.
 
 ---
 

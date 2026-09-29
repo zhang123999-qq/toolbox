@@ -8,6 +8,35 @@
 每个版本对应一个 git tag（`vX.Y.Z`）与一个 GitHub Release，
 Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELEASE.md)）。
 
+## [0.0.5] - 2026-09-29
+
+把「已交付工具数」从 310 推进到 **797 个**：新增 487 个工具（编号 311–870），
+分 9 个 PR 陆续合入（#1、#2、#4、#5、#6、#7、#8、#9 及分支同步）；
+覆盖图片 / 音视频 / PDF 文档 / AI / SEO / 无障碍 / 浏览器扩展 / 边缘计算 /
+教育游戏等全新能力域，4 大组（dev / design / office / life）全部开花；
+28 个需外部 API 的工具已在 `.env.example` 登记（密钥走环境变量，不入库）。
+
+### 新增
+
+- **图片 / 图形 60 个**：背景移除、调色、图片压缩、Base64 互转、条码 / 二维码生成与识别等
+- **音视频 / 媒体 63 个**：音频压缩 / 裁剪 / 降噪 / 淡入淡出、视频提取音频、ASS 字幕转换等
+- **PDF / 文档 37 个**：合并 / 拆分 / 加密解密、Markdown / HTML / JSON 转 PDF、发票生成等
+- **数学 / 单位 / 健康 60 个**：进制换算、BMI / BMR / 体脂、面积 / 角度换算等
+- **随机 / 生成 64 个**：密码 / UUID 生成、头像 / 名片 / 图形验证码生成、图表生成等
+- **AI / LLM 23 个**：文案 / 邮件 / 代码生成、AI 文本检测、token 计数等
+- **SEO / 网站 31 个**：死链检查、Canonical、Favicon 生成、Alt 检查等
+- **无障碍 / 国际化 24 个**：ARIA 生成、颜色无障碍、焦点顺序可视化等
+- **浏览器扩展 15 个**：manifest / Content Script / Background 模板、打包等
+- **边缘计算 13 个**：Cloudflare / D1 / KV 配置、边缘缓存 / 鉴权 / 日志等
+- **教育 / 游戏 / 趣味 61 个**：化学方程式、五子棋 / 2048 / 扫雷、听力 / 色盲测试、
+  硬件自检（蓝牙 / USB / 串口 / 摄像头 / 麦克风）等
+- **编码 / 安全 +22、开发运维 +14**：Web3 的 ABI 编解码 / 地址校验等
+
+### 质量验证
+
+- `master` CI 全绿（PR #9 合并时）；发布前本地 `check-tools` 通过
+- 测试文件 **807 个**（v0.0.4 发布时为 628 个）
+
 ## [0.0.4] - 2026-09-27
 
 把「已交付工具数」从 280 推进到 **310 个**：新增时间 / 日期 / 调度域（05）30 个工具
@@ -160,7 +189,8 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
 - 静态预渲染产物固定中文口径，仍无 `/en` 路由（英文在客户端切换生效）
 - 个别大型工具 chunk 超过 500KB 打包告警阈值（构建成功，仅为体积提示），后续按需做代码分割
 
-[Unreleased]: https://github.com/zhang123999-qq/toolbox/compare/v0.0.4...HEAD
+[Unreleased]: https://github.com/zhang123999-qq/toolbox/compare/v0.0.5...HEAD
+[0.0.5]: https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.5
 [0.0.4]: https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.4
 [0.0.3]: https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.3
 [0.0.2]: https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.2

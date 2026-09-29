@@ -1,9 +1,9 @@
 # Static Tool Site · Documentation Hub
 
-> Status: **v0.0.4 released** (2026-09-27, 310 tools shipped across domains 01–05; previous
-> release v0.0.3 had 280)
-> Updated: 2026-09-27
-> Planned total: **870 across 20 categories in 4 groups** (310 released; the planned figures
+> Status: **v0.0.5 released** (2026-09-29, 797 tools shipped across all 4 groups; previous
+> release v0.0.4 had 310)
+> Updated: 2026-09-29
+> Planned total: **870 across 20 categories in 4 groups** (797 released; the planned figures
 > are in §3)
 
 > [中文](README.md) | **English**
@@ -134,11 +134,10 @@ These are **script-measured** values; the whole documentation set defers to them
 | Client-side-only ratio | A+B+C = **92.0%** (planned)                                                                                       |
 | Total pages            | 870 tool pages + 4 group pages + 20 category pages + 10–20 collection pages + 10 static pages ≈ **924** (planned) |
 
-> **Progress (measured 2026-09-27)**: the latest release is **v0.0.4 = 310 tools** (domains
-> 01–05: 70/61/59/90/30); the previous release v0.0.3 had 280. Categories 06–20, 560 tools,
-> have not started. Tests: **5247 cases across 628 files** all green at v0.0.4 (4663 / 568 at
-> v0.0.3); build: `pnpm build:ssg` emits **336 static pages + 404.html** at v0.0.4 (306 at
-> v0.0.3). The 870 / 20 / 924 figures above are planning targets.
+> **Progress (measured 2026-09-29)**: the latest release is **v0.0.5 = 797 tools** (groups:
+> dev 377 / design 203 / office 37 / life 180); the previous release v0.0.4 had 310.
+> 73 of the planned 870 remain. Tests: CI on master all green at v0.0.5, **807 test files**
+> (628 at v0.0.4). The 870 / 20 / 924 figures above are planning targets.
 
 > Statistics methodology and validation records live in [`catalog/README.md`](catalog/README.md).
 

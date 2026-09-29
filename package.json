@@ -1,6 +1,6 @@
 {
   "name": "toolbox",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "private": true,
   "license": "MIT",
   "description": "870 client-side online tools: local-first, static deployment, bilingual",
