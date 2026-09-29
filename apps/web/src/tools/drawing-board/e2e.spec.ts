@@ -23,11 +23,32 @@ test.describe('在线画图 (#798)', () => {
   test('画布与导出按钮可见', async ({ page }) => {
     await expect(page.getByTestId('drawing-canvas')).toBeVisible()
     await expect(page.getByTestId('drawing-export')).toBeVisible()
+    await expect(page.getByTestId('drawing-export-jpg')).toBeVisible()
   })
 
-  test('六种工具按钮可见', async ({ page }) => {
-    for (const t of ['brush', 'line', 'rect', 'ellipse', 'eraser', 'fill']) {
+  test('十三种工具按钮可见', async ({ page }) => {
+    for (const t of [
+      'brush',
+      'spray',
+      'marker',
+      'line',
+      'arrow',
+      'rect',
+      'ellipse',
+      'triangle',
+      'diamond',
+      'star',
+      'text',
+      'eraser',
+      'fill',
+    ]) {
       await expect(page.getByTestId('drawing-tool-' + t)).toBeVisible()
     }
+  })
+
+  test('画布尺寸/背景色/图片上传控件可见', async ({ page }) => {
+    await expect(page.getByTestId('drawing-canvassize')).toBeVisible()
+    await expect(page.getByTestId('drawing-bgcolor')).toBeVisible()
+    await expect(page.getByTestId('drawing-upload')).toBeAttached()
   })
 })

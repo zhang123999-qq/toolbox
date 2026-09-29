@@ -1,8 +1,8 @@
 /**
- * drawing-board（#798）utils 单测：颜色解析与洪水填充。
+ * drawing-board（#798）utils 单测：颜色解析、洪水填充与几何函数。
  */
 import { describe, expect, it } from 'vitest'
-import { floodFill, hexToRgba } from './utils'
+import { arrowHeadPoints, floodFill, hexToRgba, shapePoints, sprayPoints } from './utils'
 
 function makeImage(width: number, height: number, fill: [number, number, number, number]): ImageData {
   const data = new Uint8ClampedArray(width * height * 4)
@@ -69,5 +69,66 @@ describe('drawing-board · utils', () => {
     floodFill(img, -1, 0, [255, 0, 0, 255])
     floodFill(img, 5, 5, [255, 0, 0, 255])
     expect(pixel(img, 0, 0)).toBe('255,255,255')
+  })
+})
+
+describe('drawing-board · 几何函数', () => {
+  it('shapePoints 三角形：顶点在顶边中点', () => {
+    const pts = shapePoints('triangle', 0, 0, 100, 60)
+    expect(pts).toHaveLength(3)
+    expect(pts[0]).toEqual([50, 0])
+    expect(pts[1]).toEqual([0, 60])
+    expect(pts[2]).toEqual([100, 60])
+  })
+
+  it('shapePoints 菱形：四个顶点在各边中点', () => {
+    const pts = shapePoints('diamond', 0, 0, 100, 60)
+    expect(pts).toHaveLength(4)
+    expect(pts[0]).toEqual([50, 0])
+    expect(pts[2]).toEqual([50, 60])
+  })
+
+  it('shapePoints 星形：10 个交错顶点，首顶点在正上方', () => {
+    const pts = shapePoints('star', 0, 0, 100, 100)
+    expect(pts).toHaveLength(10)
+    // 首顶点在正上方（外顶点）
+    expect(pts[0][0]).toBeCloseTo(50, 5)
+    expect(pts[0][1]).toBeCloseTo(50 - Math.hypot(100, 100) / 2, 5)
+    // 外顶点到中心距离大于内顶点
+    const d = (p: readonly [number, number]) => Math.hypot(p[0] - 50, p[1] - 50)
+    expect(d(pts[0])).toBeGreaterThan(d(pts[1]))
+  })
+
+  it('arrowHeadPoints：箭头指向 +x 时头部对称张开', () => {
+    const [p1, p2] = arrowHeadPoints(0, 0, 100, 0, 20)
+    expect(p1[0]).toBeLessThan(100)
+    expect(p2[0]).toBeLessThan(100)
+    // 两斜边端点关于箭杆对称（canvas y 轴向下，符号相反即可）
+    expect(p1[1]).toBeCloseTo(-p2[1], 8)
+    expect(p1[1]).not.toBeCloseTo(0, 8)
+    expect(Math.hypot(p1[0] - 100, p1[1])).toBeCloseTo(20, 5)
+    expect(Math.hypot(p2[0] - 100, p2[1])).toBeCloseTo(20, 5)
+  })
+
+  it('sprayPoints：点数 = (步进+1) × 密度', () => {
+    let seed = 42
+    const rand = () => {
+      seed = (seed * 1103515245 + 12345) % 2147483648
+      return seed / 2147483648
+    }
+    // 单点：dist=0 → steps=1 → 2 轮 × 5 = 10 个点
+    const pts = sprayPoints(0, 0, 0, 0, 10, 5, rand)
+    expect(pts).toHaveLength(10)
+  })
+
+  it('sprayPoints：雾点围绕线段分布', () => {
+    const pts = sprayPoints(0, 0, 100, 0, 10, 4, () => 0.5)
+    expect(pts.length).toBeGreaterThan(0)
+    // rand()=0.5 → 角度 π，r=√0.5×10，点应在线段附近 ± 半径内
+    for (const [x, y] of pts) {
+      expect(x).toBeGreaterThanOrEqual(-10)
+      expect(x).toBeLessThanOrEqual(110)
+      expect(Math.abs(y)).toBeLessThanOrEqual(10)
+    }
   })
 })
