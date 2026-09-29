@@ -110,14 +110,7 @@ function strokeSegment(
   y1: number,
 ): void {
   if (tool === 'spray') {
-    const pts = sprayPoints(
-      x0,
-      y0,
-      x1,
-      y1,
-      width * 2.2,
-      Math.max(4, Math.round(width * 1.5)),
-    )
+    const pts = sprayPoints(x0, y0, x1, y1, width * 2.2, Math.max(4, Math.round(width * 1.5)))
     ctx.fillStyle = color
     for (const [px, py] of pts) ctx.fillRect(px, py, 2, 2)
     return
@@ -257,8 +250,7 @@ export default function Tool() {
   const shapeStartRef = useRef<[number, number] | null>(null)
   const previewRef = useRef<ImageData | null>(null)
 
-  const ctxOf = (): CanvasRenderingContext2D | null =>
-    canvasRef.current?.getContext('2d') ?? null
+  const ctxOf = (): CanvasRenderingContext2D | null => canvasRef.current?.getContext('2d') ?? null
 
   /** 每次操作完成后调用：记录完成态（修复旧版只存绘制前快照导致重做失效的问题） */
   const pushHistory = (): void => {
@@ -322,7 +314,10 @@ export default function Tool() {
       const t = e.target as HTMLElement | null
       if (
         t &&
-        (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable)
+        (t.tagName === 'INPUT' ||
+          t.tagName === 'TEXTAREA' ||
+          t.tagName === 'SELECT' ||
+          t.isContentEditable)
       )
         return
       const mod = e.ctrlKey || e.metaKey
@@ -641,8 +636,8 @@ export default function Tool() {
               />
             </label>
             <span className="text-xs text-slate-400 dark:text-slate-500">
-              快捷键：B 画笔 · S 喷雾 · M 荧光笔 · E 橡皮 · T 文本 · L 直线 · R 矩形 · A 箭头 ·
-              F 填充 · Ctrl+Z 撤销 · Ctrl+Y 重做
+              快捷键：B 画笔 · S 喷雾 · M 荧光笔 · E 橡皮 · T 文本 · L 直线 · R 矩形 · A 箭头 · F
+              填充 · Ctrl+Z 撤销 · Ctrl+Y 重做
             </span>
           </div>
 

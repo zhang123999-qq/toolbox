@@ -60,15 +60,19 @@ export function downloadImage(
   mime: 'image/png' | 'image/jpeg',
   quality?: number,
 ): void {
-  canvas.toBlob((blob) => {
-    if (!blob) return
-    const url = URL.createObjectURL(blob)
-    const anchor = document.createElement('a')
-    anchor.href = url
-    anchor.download = filename
-    anchor.click()
-    URL.revokeObjectURL(url)
-  }, mime, quality)
+  canvas.toBlob(
+    (blob) => {
+      if (!blob) return
+      const url = URL.createObjectURL(blob)
+      const anchor = document.createElement('a')
+      anchor.href = url
+      anchor.download = filename
+      anchor.click()
+      URL.revokeObjectURL(url)
+    },
+    mime,
+    quality,
+  )
 }
 
 /** 画布导出为 PNG 并触发下载 */

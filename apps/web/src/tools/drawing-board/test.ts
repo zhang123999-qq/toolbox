@@ -4,7 +4,11 @@
 import { describe, expect, it } from 'vitest'
 import { arrowHeadPoints, floodFill, hexToRgba, shapePoints, sprayPoints } from './utils'
 
-function makeImage(width: number, height: number, fill: [number, number, number, number]): ImageData {
+function makeImage(
+  width: number,
+  height: number,
+  fill: [number, number, number, number],
+): ImageData {
   const data = new Uint8ClampedArray(width * height * 4)
   for (let i = 0; i < width * height; i += 1) {
     data.set(fill, i * 4)
