@@ -248,6 +248,7 @@ function main(): void {
     )
 
     console.log(`[prerender] 已生成 ${count} 个静态页 + 404.html → apps/web/dist`)
+    // 构建优化提示：当前 SSG 产出已包含真实 DOM（无 Suspense fallback），工具页体积由 manualChunks 控制（见 vite.config.ts）。预渲染产物可直接部署到静态托管（Cloudflare Pages / Vercel / nginx）。
   })()
 }
 

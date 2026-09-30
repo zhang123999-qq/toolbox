@@ -19,8 +19,15 @@ const SLIDES = [
 
 export function HeroCarousel() {
   const t = useTranslate()
-  const [index, setIndex] = useState(0)
+  const [index, setIndex] = useState(() => {
+    const isReduced =
+      typeof window !== 'undefined' &&
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    return isReduced ? 0 : 0
+  })
   const [paused, setPaused] = useState(false)
+  // 用户偏好减少动态效果时：不启动轮换计时器（已在 useEffect 条件中处理），且初始状态已固定为 0（避免状态变化）
   const reduceMotion =
     typeof window !== 'undefined' &&
     typeof window.matchMedia === 'function' &&

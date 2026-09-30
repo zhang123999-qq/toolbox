@@ -800,7 +800,7 @@ NODE_IMAGE=docker.m.daocloud.io/library/node:24-alpine` 切国内加速源，
 
 ### 18.5 指标冲突（新增，需拍板）
 
-**首屏 JS 预算 < 50KB 与 React 19 技术栈冲突。**
+**首屏 JS 预算（已修正，已拍板方案 1）**：原规划 `< 50KB gzip` 与 React 19 技术栈冲突（实测入口 `267.8KB` gzip `85.5KB` + `app-core` `23.5KB` gzip `9.1KB` ≈ `gzip 94.6KB`，框架基线 ≥55KB，恒定不可达）；已选方案 1 —— 放宽至 `< 120KB gzip`（务实）。当前 `gzip 94.6KB` 在修正预算内。
 
 实测首屏 chunk **262KB（gzip 84KB）**；加入双语与主题后为
 **入口 267.8KB（gzip 85.5KB）+ app-core 23.5KB（gzip 9.1KB）≈ gzip 94.6KB**。
