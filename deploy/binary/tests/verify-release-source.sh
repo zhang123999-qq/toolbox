@@ -23,9 +23,14 @@ ok()  { pass=$((pass + 1)); printf '  [✓] %s\n' "$*"; }
 bad() { fail=$((fail + 1)); printf '  [✗] %s\n' "$*"; }
 step() { printf '\n== %s\n' "$*"; }
 
-# 统计文件里某段文本出现几次（没有匹配时返回 0，不要把 grep 的退出码带进 set -e）
+# 统计文件里某段文本出现几次（文件不存在也返回 0，不要把 grep 的退出码带进 set -e；
+# 注意：缺文件时 grep -c 无输出，直接 -ge 会在 dash 下报 "Illegal number"，先判存在）
 count_in() {
-  grep -c -F -- "$2" "$1" 2>/dev/null || true
+  if [ -f "$1" ]; then
+    grep -c -F -- "$2" "$1" 2>/dev/null || true
+  else
+    echo 0
+  fi
 }
 
 # chk_contains <描述> <文件> <文本>
@@ -53,14 +58,16 @@ else
   bad '回落 DEFAULT_UPDATE_SOURCE 的地方少于 2 处（check-update / upgrade 各需一处）'
 fi
 
+# 2026-10-05：docs 精简后仅保留根 README.md/README.en.md 承载一键安装命令；
+# docs/README*.md 与 deploy/binary/README.md 已删除，不再校验
 step '3. 文档里的一键安装命令指向同一条直链'
-for f in README.md README.en.md docs/README.md docs/README.en.md deploy/binary/README.md; do
+for f in README.md README.en.md; do
   chk_contains "$f 含一键安装命令" "$ROOT/$f" "$ONE_LINER"
 done
 
 step '4. 不允许再出现占位式的一键命令（防回退）'
 # 只拦「默认一键命令」写成占位符的情况；`http://<发布源>/…` 这种自建源示例是本意，不拦
-for f in README.md README.en.md docs/README.md docs/README.en.md deploy/binary/README.md; do
+for f in README.md README.en.md; do
   if [ "$(count_in "$ROOT/$f" 'curl -fsSL <发布源>/install.sh')" -ge 1 ] ||
      [ "$(count_in "$ROOT/$f" 'curl -fsSL <release-source>/install.sh')" -ge 1 ]; then
     bad "$f 里仍有占位式的一键命令（curl -fsSL <发布源>/install.sh）"
