@@ -709,7 +709,7 @@ grep -E 'og:title|twitter:card|canonical|BreadcrumbList|SoftwareApplication' \
 ### 18.1 已实现
 
 ```text
-packages/catalog     20 域真源表 / 4 大组 / Zod 契约 / 路由生成 / 搜索索引
+packages/catalog     21 域真源表 / 5 大组 / Zod 契约 / 路由生成 / 搜索索引
 packages/search      检索门面（Orama 适配位预留）
 apps/web             Vite 6 + React 19 + TS + Tailwind v4
                      路由由 catalog 生成（红线第 1 条已落地）
@@ -734,7 +734,7 @@ apps/web/public/     sitemap.xml / robots.txt
 
 | 门禁               | 结果                                                                                                                                                        |
 | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `pnpm check:tools` | ✅ 20 域合计 870；dev 360 / design 200 / office 60 / life 250                                                                                               |
+| `pnpm check:tools` | ✅ 21 域合计 900；dev 360 / design 200 / office 60 / life 250 / online 30                                                                                               |
 | `pnpm typecheck`   | ✅ catalog / search / web 三包 0 error                                                                                                                      |
 | `pnpm test`        | ✅ **31 passed**（json-formatter 8+7、首页 7、偏好控件 9）                                                                                                  |
 | `pnpm build`       | ✅ 工具 chunk **5.08KB**（gzip 2.08KB）< 30KB 预算；`app-core` 23.45KB（gzip 9.10KB）                                                                       |
@@ -775,14 +775,14 @@ NODE_IMAGE=docker.m.daocloud.io/library/node:24-alpine` 切国内加速源，
 | `Cannot destructure property 'basename' of useContext(...) as it is null` | `pnpm add react-router` 装成了 **8.x**，与 `react-router-dom` 内置的 7.x 形成两份实例，Router context 互不相通 | 两者都留在 **7.x 且解析到同一版本**（当前 `react-router@^7.18.4` / `react-router-dom@^7.1.1`，均为 7.18.4）。`react-router` 已有 8.x，但 **`react-router-dom` 至今没有 8.x**，单独升前者必然双实例 |
 | 预渲染产物全是「加载中…」                                                 | `router.tsx` / `ToolPage` 用了 `React.lazy`，`renderToString` 只输出 Suspense fallback                         | 必须用 React 19 的 `prerender`（`react-dom/static`），它会等待 Suspense 解析                                                                                                                       |
 
-**构建分块坑（新增，870 铺量前务必理解）：**
+**构建分块坑（新增，900 铺量前务必理解）：**
 
 | 现象                                                                    | 原因                                                                                                                                                                                 | 解法                                                                                                                                                                           |
 | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 入口 chunk 反向静态 import 某个**工具 chunk**，首屏被迫加载整包工具代码 | `manualChunks` 只为工具模块命名、其余返回 `undefined` 时，rollup 会把「被多处共享但未命名」的模块（如 i18n）塞进**首个被命名的 chunk**（即 `tool-json-formatter`），入口反过来依赖它 | 共享基础设施必须**显式命名**：`/src/(i18n\|theme\|lib)/` → `app-core`（且排除 `node_modules` 以免误命中依赖内部目录）。校验方法：检查入口 chunk 的静态 import 里不出现 `tool-` |
 
 > 该坑在只有 1 个工具时表现为「工具 chunk 13.6KB → 5.1KB、入口多背 23KB」；
-> 若不修，870 个工具铺开后共享代码会持续堆积在**随机某个工具 chunk**里，
+> 若不修，900 个工具铺开后共享代码会持续堆积在**随机某个工具 chunk**里，
 > 使「工具页 < 30KB」这条预算彻底失真。
 
 ### 18.4 未实现（后续补齐）

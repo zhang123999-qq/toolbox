@@ -735,7 +735,7 @@ approved by the project owner — **do not** add more online-category tools unti
 ### 18.1 What exists
 
 ```text
-packages/catalog     20-category source table / 4 groups / Zod contract
+packages/catalog     21-category source table / 5 groups / Zod contract
                      / route generation / search index
 packages/search      search facade (Orama adapter slot reserved)
 apps/web             Vite 6 + React 19 + TS + Tailwind v4
@@ -761,7 +761,7 @@ apps/web/public/     sitemap.xml / robots.txt
 
 | Gate                    | Result                                                                                                                                                                                |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `pnpm check:tools`      | ✅ 20 categories total 870; dev 360 / design 200 / office 60 / life 250                                                                                                               |
+| `pnpm check:tools`      | ✅ 21 categories total 900; dev 360 / design 200 / office 60 / life 250 / online 30                                                                                                               |
 | `pnpm typecheck`        | ✅ catalog / search / web: 0 errors                                                                                                                                                   |
 | `pnpm test`             | ✅ **31 passed** (json-formatter 8+7, home page 7, preference controls 9)                                                                                                             |
 | `pnpm build`            | ✅ tool chunk **5.08KB** (gzip 2.08KB), under the 30KB budget; `app-core` 23.45KB (gzip 9.10KB)                                                                                       |
@@ -802,14 +802,14 @@ apps/web/public/     sitemap.xml / robots.txt
 | `Cannot destructure property 'basename' of useContext(...) as it is null` | `pnpm add react-router` resolved to **8.x**, creating a second instance alongside the 7.x that `react-router-dom` bundles — the Router contexts never meet | keep both on **7.x resolving to the same version** (currently `react-router@^7.18.4` / `react-router-dom@^7.1.1`, both 7.18.4). `react-router` 8.x exists, but **`react-router-dom` has no 8.x yet**, so upgrading one alone guarantees two instances |
 | Pre-rendered output is all "加载中…"                                      | `router.tsx` / `ToolPage` use `React.lazy`; `renderToString` only emits the Suspense fallback                                                              | Use React 19's `prerender` from `react-dom/static`, which awaits Suspense resolution                                                                                                                                                                  |
 
-**Chunking gotcha (new — read this before scaling to 870 tools):**
+**Chunking gotcha (new — read this before scaling to 900 tools):**
 
 | Symptom                                                                                                   | Cause                                                                                                                                                                                                                                                     | Fix                                                                                                                                                                                                                                                |
 | --------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | The entry chunk statically imports a **tool chunk**, forcing the first load to pull the whole tool bundle | When `manualChunks` names only tool modules and returns `undefined` for everything else, rollup dumps every shared-but-unnamed module (i18n, for instance) into the **first named chunk** — here `tool-json-formatter` — and the entry then depends on it | Name the shared infrastructure explicitly: `/src/(i18n\|theme\|lib)/` → `app-core` (excluding `node_modules` so dependency-internal `src/lib` folders are not caught). Verify by checking that the entry chunk's static imports contain no `tool-` |
 
 > With a single tool this shows up as "tool chunk 13.6KB → 5.1KB, entry carries 23KB more".
-> Left unfixed across 870 tools, shared code keeps piling into an arbitrary tool chunk,
+> Left unfixed across 900 tools, shared code keeps piling into an arbitrary tool chunk,
 > making the "< 30KB per tool page" budget meaningless.
 
 ### 18.4 Not yet implemented
