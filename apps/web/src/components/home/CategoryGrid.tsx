@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom'
-import { CATEGORIES } from '@toolbox/catalog'
+import { CATEGORIES, toolsOfCategory } from '@toolbox/catalog'
 import { categoryName } from '../../i18n/catalog-text'
 import { useTranslate } from '../../i18n'
 
-/** 20 个域速览：移动端 2 列，桌面端 5 列 */
+/** 域速览：数字为各域实际上线工具数；移动端 2 列，桌面端 5 列 */
 export function CategoryGrid() {
   const t = useTranslate()
 
@@ -26,7 +26,7 @@ export function CategoryGrid() {
           >
             <span className="block">{categoryName(t, category.id)}</span>
             <span className="text-xs text-slate-500 dark:text-slate-400">
-              {t('categories.count', { count: category.plannedTools })}
+              {t('categories.count', { count: toolsOfCategory(category.id).length })}
             </span>
           </Link>
         ))}
