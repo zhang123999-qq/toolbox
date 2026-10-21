@@ -39,7 +39,7 @@ export default function Tool() {
               onClick={() => setFilter(l)}
               className={`w-fit rounded px-2 py-1 text-sm ${
                 filter === l
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-brand text-white'
                   : 'border border-slate-300 dark:border-slate-700'
               }`}
             >

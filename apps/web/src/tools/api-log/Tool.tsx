@@ -4,8 +4,7 @@ import { meta } from './meta'
 import type { ApiLogInput } from './schema'
 import { EXAMPLE_LOG, analyzeLogs, parseAccessLog, type LogStats } from './utils'
 
-const BTN_CLS =
-  'rounded bg-blue-600 px-4 py-1.5 text-sm text-white disabled:opacity-50 dark:bg-blue-500'
+const BTN_CLS = 'rounded bg-brand px-4 py-1.5 text-sm text-white disabled:opacity-50 dark:bg-brand'
 
 export default function Tool() {
   const [stats, setStats] = useState<LogStats | null>(null)

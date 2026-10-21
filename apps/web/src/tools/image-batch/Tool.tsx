@@ -243,7 +243,7 @@ export default function Tool() {
         }}
         className={`cursor-pointer rounded-lg border-2 border-dashed p-8 text-center transition-colors ${
           dragOver
-            ? 'border-blue-500 bg-blue-50 dark:bg-blue-950'
+            ? 'border-brand bg-sky-50 dark:bg-sky-950'
             : 'border-slate-300 dark:border-slate-700'
         }`}
       >
@@ -324,10 +324,7 @@ export default function Tool() {
       {items.length > 0 && (
         <div data-testid="progress" className="flex flex-col gap-1">
           <div className="h-2 overflow-hidden rounded bg-slate-200 dark:bg-slate-700">
-            <div
-              className="h-2 rounded bg-blue-600 transition-all"
-              style={{ width: `${percent}%` }}
-            />
+            <div className="h-2 rounded bg-brand transition-all" style={{ width: `${percent}%` }} />
           </div>
           <p className="text-sm text-slate-600 dark:text-slate-400">
             {t('imageBatch.progress')} {done} / {total}
@@ -341,7 +338,7 @@ export default function Tool() {
           data-testid="process"
           type="button"
           onClick={() => void runBatch()}
-          className="w-fit rounded bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
+          className="w-fit rounded bg-brand px-4 py-2 text-sm text-white hover:opacity-90"
         >
           {t('imageBatch.process')}
         </button>
@@ -388,7 +385,7 @@ export default function Tool() {
                     type="button"
                     // success 分支已收窄出 result，无需空守卫
                     onClick={() => downloadBlob(item.result.blob, item.result.fileName)}
-                    className="shrink-0 rounded bg-blue-600 px-3 py-1 text-sm text-white hover:bg-blue-700"
+                    className="shrink-0 rounded bg-brand px-3 py-1 text-sm text-white hover:opacity-90"
                   >
                     {t('imageBatch.download')}
                   </button>

@@ -117,7 +117,7 @@ export default function Tool() {
         }}
         className={`cursor-pointer rounded-lg border-2 border-dashed p-8 text-center transition-colors ${
           dragOver
-            ? 'border-blue-500 bg-blue-50 dark:bg-blue-950'
+            ? 'border-brand bg-sky-50 dark:bg-sky-950'
             : 'border-slate-300 dark:border-slate-700'
         }`}
       >

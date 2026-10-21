@@ -169,7 +169,7 @@ export default function Tool() {
             type="button"
             disabled={processing}
             onClick={() => void openCamera(options.facing)}
-            className="rounded bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700 disabled:opacity-50"
+            className="rounded bg-brand px-4 py-2 text-sm text-white hover:opacity-90 disabled:opacity-50"
           >
             {t('cameraSnapshot.open')}
           </button>
@@ -180,7 +180,7 @@ export default function Tool() {
               type="button"
               disabled={processing}
               onClick={() => void snap()}
-              className="rounded bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700 disabled:opacity-50"
+              className="rounded bg-brand px-4 py-2 text-sm text-white hover:opacity-90 disabled:opacity-50"
             >
               {t('cameraSnapshot.snap')}
             </button>
@@ -239,7 +239,7 @@ export default function Tool() {
             type="button"
             // result 非空才渲染此按钮，TS 已收窄，无需空守卫
             onClick={() => downloadBlob(result.blob, result.fileName)}
-            className="w-fit rounded bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
+            className="w-fit rounded bg-brand px-4 py-2 text-sm text-white hover:opacity-90"
           >
             {t('cameraSnapshot.download')}
           </button>

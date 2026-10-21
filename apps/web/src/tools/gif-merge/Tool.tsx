@@ -243,7 +243,7 @@ export default function Tool() {
         }}
         className={`cursor-pointer rounded-lg border-2 border-dashed p-8 text-center transition-colors ${
           dragOver
-            ? 'border-blue-500 bg-blue-50 dark:bg-blue-950'
+            ? 'border-brand bg-sky-50 dark:bg-sky-950'
             : 'border-slate-300 dark:border-slate-700'
         }`}
       >
@@ -377,7 +377,7 @@ export default function Tool() {
           type="button"
           onClick={() => void startMerge()}
           disabled={frames.length < MIN_FRAMES || progress !== null}
-          className="rounded bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700 disabled:opacity-50"
+          className="rounded bg-brand px-4 py-2 text-sm text-white hover:opacity-90 disabled:opacity-50"
         >
           {t('gifMerge.merge')}
         </button>
@@ -399,7 +399,7 @@ export default function Tool() {
           <div className="h-2 w-full rounded bg-slate-200 dark:bg-slate-700">
             <div
               data-testid="progress-bar"
-              className="h-2 rounded bg-blue-600 transition-all"
+              className="h-2 rounded bg-brand transition-all"
               style={{ width: `${Math.round(progress * 100)}%` }}
             />
           </div>
@@ -434,7 +434,7 @@ export default function Tool() {
             type="button"
             // result 非空才渲染此按钮，TS 已收窄，无需空守卫
             onClick={() => downloadBlob(result.blob, result.fileName)}
-            className="w-fit rounded bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
+            className="w-fit rounded bg-brand px-4 py-2 text-sm text-white hover:opacity-90"
           >
             {t('gifMerge.download')}
           </button>

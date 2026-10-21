@@ -4,8 +4,7 @@ import { meta } from './meta'
 import type { SpriteSplitToolInput } from './schema'
 import { computeFrames, drawFrame, parseSpriteParams, renderFrames } from './utils'
 
-const BTN_CLS =
-  'rounded bg-blue-600 px-4 py-1.5 text-sm text-white disabled:opacity-50 dark:bg-blue-500'
+const BTN_CLS = 'rounded bg-brand px-4 py-1.5 text-sm text-white disabled:opacity-50 dark:bg-brand'
 const PRE_CLS =
   'max-h-80 overflow-auto rounded bg-slate-50 p-3 font-mono text-xs break-all whitespace-pre-wrap dark:bg-slate-900'
 

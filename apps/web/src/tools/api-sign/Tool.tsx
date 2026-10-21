@@ -174,7 +174,7 @@ export default function Tool() {
               data-testid="apisign-sign"
               disabled={pending}
               onClick={() => void handleSign(input)}
-              className="rounded bg-blue-600 px-4 py-1.5 text-sm text-white disabled:opacity-50 dark:bg-blue-500"
+              className="rounded bg-brand px-4 py-1.5 text-sm text-white disabled:opacity-50 dark:bg-brand"
             >
               {pending ? '签名中…' : '生成签名'}
             </button>

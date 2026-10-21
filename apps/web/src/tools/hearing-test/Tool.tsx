@@ -68,7 +68,7 @@ export default function Tool() {
                 data-testid={`ht-play-${freq}`}
                 onClick={() => void play(freq)}
                 disabled={playing !== null}
-                className="rounded bg-blue-600 px-3 py-1 text-white disabled:opacity-50"
+                className="rounded bg-brand px-3 py-1 text-white disabled:opacity-50"
               >
                 {playing === freq ? '播放中…' : '播放'}
               </button>

@@ -80,7 +80,7 @@ export default function Tool() {
               type="button"
               data-testid="sse-connect"
               onClick={() => handleConnect(input)}
-              className="rounded bg-blue-600 px-4 py-1.5 text-sm text-white dark:bg-blue-500"
+              className="rounded bg-brand px-4 py-1.5 text-sm text-white dark:bg-brand"
             >
               连接
             </button>

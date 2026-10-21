@@ -163,7 +163,7 @@ export default function Tool() {
         }}
         className={`cursor-pointer rounded-lg border-2 border-dashed p-8 text-center transition-colors ${
           dragOver
-            ? 'border-blue-500 bg-blue-50 dark:bg-blue-950'
+            ? 'border-brand bg-sky-50 dark:bg-sky-950'
             : 'border-slate-300 dark:border-slate-700'
         }`}
       >
@@ -287,7 +287,7 @@ export default function Tool() {
                   type="button"
                   // map 渲染天然非空，直接传 blob 与文件名，无需空守卫
                   onClick={() => downloadBlob(tile.blob, tile.fileName)}
-                  className="w-fit rounded bg-blue-600 px-3 py-1 text-xs text-white hover:bg-blue-700"
+                  className="w-fit rounded bg-brand px-3 py-1 text-xs text-white hover:opacity-90"
                 >
                   {t('gridImage.download')}
                 </button>

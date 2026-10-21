@@ -181,7 +181,7 @@ describe('image-flip 组件', () => {
     render(<Tool />)
     const zone = screen.getByTestId('dropzone')
     fireEvent.dragOver(zone, { dataTransfer: { files: [] } })
-    expect(zone.className).toContain('border-blue-500')
+    expect(zone.className).toContain('border-brand')
     fireEvent.dragLeave(zone)
     // 无文件的 drop 不处理
     await act(async () => {

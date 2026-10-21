@@ -338,7 +338,7 @@ describe('pdf-encrypt 组件', () => {
     render(<Tool />)
     const zone = screen.getByTestId('dropzone')
     fireEvent.dragOver(zone, { dataTransfer: { files: [] } })
-    expect(zone.className).toContain('border-blue-500')
+    expect(zone.className).toContain('border-brand')
     fireEvent.dragLeave(zone)
     await act(async () => {
       fireEvent.drop(zone, { dataTransfer: { files: [makeFile('a.pdf', await makePdfBytes())] } })

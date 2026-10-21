@@ -292,7 +292,7 @@ export default function Tool() {
         }}
         className={`cursor-pointer rounded-lg border-2 border-dashed p-8 text-center transition-colors ${
           dragOver
-            ? 'border-blue-500 bg-blue-50 dark:bg-blue-950'
+            ? 'border-brand bg-sky-50 dark:bg-sky-950'
             : 'border-slate-300 dark:border-slate-700'
         }`}
       >
@@ -435,7 +435,7 @@ export default function Tool() {
           data-testid="process"
           type="button"
           onClick={() => void handleProcess()}
-          className="rounded bg-blue-600 px-4 py-1 text-sm text-white hover:bg-blue-700"
+          className="rounded bg-brand px-4 py-1 text-sm text-white hover:opacity-90"
         >
           {t('watermarkBatch.process')}
         </button>
@@ -504,7 +504,7 @@ export default function Tool() {
                     type="button"
                     // done 分支已收窄，blob/outName 必存在，无需空守卫
                     onClick={() => downloadBlob(it.blob, it.outName)}
-                    className="shrink-0 rounded bg-blue-600 px-3 py-1 text-sm text-white hover:bg-blue-700"
+                    className="shrink-0 rounded bg-brand px-3 py-1 text-sm text-white hover:opacity-90"
                   >
                     {t('watermarkBatch.download')}
                   </button>

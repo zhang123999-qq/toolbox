@@ -182,7 +182,7 @@ describe('image-annotate 组件', () => {
     render(<Tool />)
     const zone = screen.getByTestId('dropzone')
     fireEvent.dragOver(zone, { dataTransfer: { files: [] } })
-    expect(zone.className).toContain('border-blue-500')
+    expect(zone.className).toContain('border-brand')
     fireEvent.dragLeave(zone)
     await act(async () => {
       fireEvent.drop(zone, { dataTransfer: { files: [makeFile()] } })
@@ -197,10 +197,10 @@ describe('image-annotate 组件', () => {
     const ids = ['brush', 'line', 'arrow', 'rect', 'ellipse', 'text', 'mosaic']
     for (const id of ids) {
       selectTool(id)
-      expect(screen.getByTestId(`tool-${id}`).className).toContain('bg-blue-600')
+      expect(screen.getByTestId(`tool-${id}`).className).toContain('bg-brand')
     }
     // 切到 mosaic 后 brush 应回到非激活态
-    expect(screen.getByTestId('tool-brush').className).not.toContain('bg-blue-600')
+    expect(screen.getByTestId('tool-brush').className).not.toContain('bg-brand')
   })
 
   it('画笔绘制落笔成线并可撤销', async () => {

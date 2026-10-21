@@ -229,14 +229,14 @@ export default function Tool() {
         data-testid="dropzone"
         onDragOver={(e) => {
           e.preventDefault()
-          e.currentTarget.classList.add('border-blue-500')
+          e.currentTarget.classList.add('border-brand')
         }}
         onDragLeave={(e) => {
-          e.currentTarget.classList.remove('border-blue-500')
+          e.currentTarget.classList.remove('border-brand')
         }}
         onDrop={(e) => {
           e.preventDefault()
-          e.currentTarget.classList.remove('border-blue-500')
+          e.currentTarget.classList.remove('border-brand')
           void handleFiles(e.dataTransfer.files)
         }}
         className="cursor-pointer rounded-lg border-2 border-dashed border-slate-300 p-8 text-center transition-colors dark:border-slate-700"
@@ -432,7 +432,7 @@ export default function Tool() {
             type="button"
             // result 非空才渲染此按钮，TS 已收窄，无需空守卫
             onClick={() => downloadBlob(result.blob, result.fileName)}
-            className="w-fit rounded bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
+            className="w-fit rounded bg-brand px-4 py-2 text-sm text-white hover:opacity-90"
           >
             {t('longImage.download')}
           </button>

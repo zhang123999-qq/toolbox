@@ -30,7 +30,7 @@ function statusBadge(status: LinkCheckResult['status']): string {
     case '正常':
       return 'bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300'
     case '重定向':
-      return 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300'
+      return 'bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300'
     case '死链':
       return 'bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300'
     case '超时':

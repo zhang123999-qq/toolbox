@@ -64,7 +64,7 @@ function ScaleForm({ scaleId }: { scaleId: string }) {
           type="button"
           data-testid="psychology-submit"
           onClick={submit}
-          className="w-fit rounded bg-blue-600 px-3 py-1 text-sm text-white"
+          className="w-fit rounded bg-brand px-3 py-1 text-sm text-white"
         >
           查看评估
         </button>
@@ -108,7 +108,7 @@ export default function Tool() {
             onClick={() => setScaleId(s.id)}
             className={`w-fit rounded px-3 py-1 text-sm ${
               scaleId === s.id
-                ? 'bg-blue-600 text-white'
+                ? 'bg-brand text-white'
                 : 'border border-slate-300 dark:border-slate-700'
             }`}
           >

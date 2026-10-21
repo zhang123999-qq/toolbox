@@ -89,7 +89,7 @@ export default function Tool() {
           type="button"
           data-testid="sudoku-check"
           onClick={check}
-          className="rounded bg-blue-600 px-4 py-1 text-sm text-white"
+          className="rounded bg-brand px-4 py-1 text-sm text-white"
         >
           检查
         </button>

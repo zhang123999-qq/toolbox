@@ -557,7 +557,7 @@ describe('pdf-compare 组件', () => {
     render(<Tool />)
     const zone = screen.getByTestId('dropzone-a')
     fireEvent.dragOver(zone, { dataTransfer: { files: [] } })
-    expect(zone.className).toContain('border-blue-500')
+    expect(zone.className).toContain('border-brand')
     fireEvent.dragLeave(zone)
     const file = makePdfFile('drag.pdf')
     await act(async () => {

@@ -14,8 +14,7 @@ import {
 } from './utils'
 import type { AnimationClip } from './utils'
 
-const BTN_CLS =
-  'rounded bg-blue-600 px-4 py-1.5 text-sm text-white disabled:opacity-50 dark:bg-blue-500'
+const BTN_CLS = 'rounded bg-brand px-4 py-1.5 text-sm text-white disabled:opacity-50 dark:bg-brand'
 const SMALL_CLS = 'rounded border border-slate-300 px-2 py-1 text-xs dark:border-slate-600'
 const PRE_CLS =
   'max-h-80 overflow-auto rounded bg-slate-50 p-3 font-mono text-xs break-all whitespace-pre-wrap dark:bg-slate-900'
@@ -140,7 +139,7 @@ export default function Tool() {
               <div key={`${f.spriteId}-${i}`} className="flex items-center gap-2 text-sm">
                 <span
                   data-testid={`animframe-frame-${i}`}
-                  className={`rounded px-2 py-0.5 font-mono ${i === current ? 'bg-blue-100 font-bold dark:bg-blue-900' : ''}`}
+                  className={`rounded px-2 py-0.5 font-mono ${i === current ? 'bg-sky-100 font-bold dark:bg-sky-900' : ''}`}
                 >
                   #{i} {f.spriteId} · {f.durationMs}ms
                 </span>

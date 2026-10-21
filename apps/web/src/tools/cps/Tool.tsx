@@ -52,7 +52,7 @@ export default function Tool() {
             onClick={() => start(sec)}
             className={`rounded px-3 py-1 ${
               durationSec === sec && phase !== 'idle'
-                ? 'bg-blue-600 text-white'
+                ? 'bg-brand text-white'
                 : 'bg-slate-200 dark:bg-slate-700'
             }`}
           >
@@ -64,7 +64,7 @@ export default function Tool() {
         type="button"
         data-testid="cps-pad"
         onClick={onClickPad}
-        className="flex h-56 w-full max-w-md select-none items-center justify-center rounded-lg bg-blue-100 text-lg font-medium dark:bg-blue-900"
+        className="flex h-56 w-full max-w-md select-none items-center justify-center rounded-lg bg-sky-100 text-lg font-medium dark:bg-sky-900"
       >
         {phase === 'running'
           ? `点击！已点 ${session.clicks.length} 次`

@@ -311,9 +311,9 @@ describe('long-image 组件', () => {
     render(<Tool />)
     const zone = screen.getByTestId('dropzone')
     fireEvent.dragOver(zone)
-    expect(zone.className).toContain('border-blue-500')
+    expect(zone.className).toContain('border-brand')
     fireEvent.dragLeave(zone)
-    expect(zone.className).not.toContain('border-blue-500')
+    expect(zone.className).not.toContain('border-brand')
     await act(async () => {
       fireEvent.drop(zone, { dataTransfer: { files: [makeFile('a.png'), makeFile('b.png')] } })
     })

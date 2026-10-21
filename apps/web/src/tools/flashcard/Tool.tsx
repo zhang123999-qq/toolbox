@@ -90,7 +90,7 @@ function StudySession({ csv }: { csv: string }) {
           type="button"
           data-testid="flashcard-show"
           onClick={() => setShowBack(true)}
-          className="w-fit rounded bg-blue-600 px-3 py-1 text-sm text-white"
+          className="w-fit rounded bg-brand px-3 py-1 text-sm text-white"
         >
           显示答案
         </button>

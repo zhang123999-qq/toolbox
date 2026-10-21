@@ -273,7 +273,7 @@ export default function Tool() {
                         href={thumb.url}
                         download={thumbnailFileName(result.fileName, i)}
                         data-testid={`download-thumb-${i}`}
-                        className="text-blue-600 hover:underline dark:text-blue-400"
+                        className="text-brand hover:underline dark:text-sky-400"
                       >
                         下载 PNG
                       </a>

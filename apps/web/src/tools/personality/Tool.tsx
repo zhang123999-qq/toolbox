@@ -64,7 +64,7 @@ function Questionnaire() {
           type="button"
           data-testid="personality-submit"
           onClick={submit}
-          className="w-fit rounded bg-blue-600 px-3 py-1 text-sm text-white"
+          className="w-fit rounded bg-brand px-3 py-1 text-sm text-white"
         >
           查看结果
         </button>

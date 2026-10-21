@@ -120,7 +120,7 @@ export default function Tool() {
             className={`flex h-16 w-16 items-center justify-center rounded text-2xl shadow ${
               c.flipped || c.matched
                 ? 'bg-white dark:bg-slate-800'
-                : 'bg-blue-500 text-transparent dark:bg-blue-700'
+                : 'bg-brand text-transparent dark:bg-brand'
             } ${c.matched ? 'ring-2 ring-green-500' : ''}`}
           >
             {c.flipped || c.matched ? SYMBOLS[c.value] : '?'}
