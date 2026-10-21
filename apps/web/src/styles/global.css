@@ -47,3 +47,16 @@ html.i18n-pending #root {
     bottom: 0;
   }
 }
+
+/**
+ * T3 输出区排版基线（MultiPanel 模板的 .tool-output 容器）：工具自绘的 <pre>
+ * 统一等宽、长串换行。用 :where() 保持零特异性——工具自己声明的样式
+ * （如 text-xs、whitespace-nowrap）仍然优先，这条只是兜底基线。
+ */
+:where(.tool-output) pre {
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+    monospace;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
