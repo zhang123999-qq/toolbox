@@ -45,6 +45,10 @@ export function MultiPanel<I extends { text: string }, O extends object>({
   const [input, setInput] = useState<I>(initialInput)
   const [options, setOptions] = useState<O>(initialOptions)
   const [copied, setCopied] = useState(false)
+  // 「运行」按钮的强制重算触发器（与 T2 模板的 nonce 同义）：renderOutput 在每次
+  // 渲染时都以当前 input/options 执行，点一次运行只需触发一次重渲染，
+  // 不必像旧实现那样用 setInput({...prev}) 伪造一次输入变更
+  const [, setNonce] = useState(0)
   const t = useTranslate()
 
   function updateOption(key: keyof O & string, value: string | boolean) {
@@ -205,7 +209,7 @@ export function MultiPanel<I extends { text: string }, O extends object>({
 
         <div
           data-testid="output"
-          className="min-h-64 w-full flex-1 overflow-auto rounded border border-slate-200 bg-slate-50 p-2 text-sm dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
+          className="tool-output min-h-64 w-full flex-1 overflow-auto rounded border border-slate-200 bg-slate-50 p-2 text-sm dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
         >
           {renderOutput(input, options)}
         </div>
@@ -215,7 +219,7 @@ export function MultiPanel<I extends { text: string }, O extends object>({
             type="button"
             data-testid="run"
             className="rounded bg-brand px-3 py-1.5 text-sm text-white hover:opacity-90"
-            onClick={() => setInput((prev) => ({ ...prev }))}
+            onClick={() => setNonce((n) => n + 1)}
           >
             {t('tool.run')}
           </button>

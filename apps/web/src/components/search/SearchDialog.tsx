@@ -19,6 +19,8 @@ export function SearchDialog() {
   const [query, setQuery] = useState('')
   const [active, setActive] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
+  const listRef = useRef<HTMLUListElement>(null)
+  const dialogRef = useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
   const { locale, t } = useI18n()
 
@@ -58,6 +60,43 @@ export function SearchDialog() {
     if (open) inputRef.current?.focus()
   }, [open])
 
+  // 键盘切换高亮项时把高亮项滚进可见区：结果列表是定高滚动容器，
+  // 只改高亮不滚动的话，连按 ↓ 会把高亮送出视野
+  useEffect(() => {
+    if (!open) return
+    const el = listRef.current?.querySelector<HTMLElement>(`[data-index="${active}"]`)
+    el?.scrollIntoView?.({ block: 'nearest' })
+  }, [active, open])
+
+  // 焦点圈定：弹窗打开期间监听 Tab，让焦点只在弹窗内的可聚焦元素间循环，
+  // 不落到背景页面（背板按钮 tabIndex={-1} 被选择器排除，不参与 Tab 序）。
+  // 用原生监听而非在 div 上挂 onKeyDown（后者触发 jsx-a11y 规则）。
+  useEffect(() => {
+    if (!open) return
+    function onTab(event: KeyboardEvent) {
+      if (event.key !== 'Tab') return
+      const root = dialogRef.current
+      if (!root || !root.contains(document.activeElement)) return
+      const focusables = root.querySelectorAll<HTMLElement>(
+        'button:not([tabindex="-1"]), input, [href]',
+      )
+      if (focusables.length === 0) return
+      const first = focusables[0]
+      const last = focusables[focusables.length - 1]
+      if (event.shiftKey) {
+        if (document.activeElement === first) {
+          event.preventDefault()
+          last.focus()
+        }
+      } else if (document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
+    }
+    document.addEventListener('keydown', onTab)
+    return () => document.removeEventListener('keydown', onTab)
+  }, [open])
+
   function go(slug: string) {
     close()
     navigate(`/tools/${slug}`)
@@ -95,6 +134,7 @@ export function SearchDialog() {
 
       {open ? (
         <div
+          ref={dialogRef}
           role="dialog"
           aria-modal="true"
           aria-label={t('search.dialogLabel')}
@@ -126,7 +166,7 @@ export function SearchDialog() {
               onChange={(event) => setQuery(event.target.value)}
               onKeyDown={onResultKeyDown}
             />
-            <ul className="max-h-80 overflow-auto py-1">
+            <ul ref={listRef} className="max-h-80 overflow-auto py-1">
               {results.length === 0 ? (
                 <li className="px-4 py-3 text-sm text-slate-500 dark:text-slate-400">
                   {query ? t('search.empty') : t('search.hint')}
@@ -139,6 +179,7 @@ export function SearchDialog() {
                     <li key={doc.id}>
                       <button
                         type="button"
+                        data-index={index}
                         onClick={() => go(doc.slug)}
                         className={`flex w-full items-center justify-between px-4 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-800 ${
                           index === active ? 'bg-slate-100 dark:bg-slate-800' : ''
