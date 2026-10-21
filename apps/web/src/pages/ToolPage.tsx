@@ -14,6 +14,7 @@ import { toolTitle } from '../i18n/catalog-text'
 import { useI18n } from '../i18n'
 import { useDocumentTitle } from '../lib/useDocumentTitle'
 import { ToolShell } from '../components/tool/ToolShell'
+import { ToolErrorBoundary } from '../components/tool/ToolErrorBoundary'
 
 /**
  * 工具组件按需加载。
@@ -71,13 +72,25 @@ export function ToolPage({ slug }: { slug: string }) {
 
   return (
     <ToolShell meta={meta}>
-      <Suspense
+      <ToolErrorBoundary
+        key={meta.id}
         fallback={
-          <p className="text-sm text-slate-500 dark:text-slate-400">{t('common.loading')}</p>
+          <p
+            role="alert"
+            className="rounded border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300"
+          >
+            {t('toolPage.renderError')}
+          </p>
         }
       >
-        <ToolComponent />
-      </Suspense>
+        <Suspense
+          fallback={
+            <p className="text-sm text-slate-500 dark:text-slate-400">{t('common.loading')}</p>
+          }
+        >
+          <ToolComponent />
+        </Suspense>
+      </ToolErrorBoundary>
     </ToolShell>
   )
 }
