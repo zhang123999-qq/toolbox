@@ -761,7 +761,7 @@ apps/web/public/     sitemap.xml / robots.txt
 
 | Gate                    | Result                                                                                                                                                                                |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `pnpm check:tools`      | ✅ 21 categories total 900; dev 360 / design 200 / office 60 / life 250 / online 30                                                                                                               |
+| `pnpm check:tools`      | ✅ 21 categories total 900; dev 360 / design 200 / office 60 / life 250 / online 30                                                                                                   |
 | `pnpm typecheck`        | ✅ catalog / search / web: 0 errors                                                                                                                                                   |
 | `pnpm test`             | ✅ **31 passed** (json-formatter 8+7, home page 7, preference controls 9)                                                                                                             |
 | `pnpm build`            | ✅ tool chunk **5.08KB** (gzip 2.08KB), under the 30KB budget; `app-core` 23.45KB (gzip 9.10KB)                                                                                       |

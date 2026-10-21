@@ -734,7 +734,7 @@ apps/web/public/     sitemap.xml / robots.txt
 
 | 门禁               | 结果                                                                                                                                                        |
 | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `pnpm check:tools` | ✅ 21 域合计 900；dev 360 / design 200 / office 60 / life 250 / online 30                                                                                               |
+| `pnpm check:tools` | ✅ 21 域合计 900；dev 360 / design 200 / office 60 / life 250 / online 30                                                                                   |
 | `pnpm typecheck`   | ✅ catalog / search / web 三包 0 error                                                                                                                      |
 | `pnpm test`        | ✅ **31 passed**（json-formatter 8+7、首页 7、偏好控件 9）                                                                                                  |
 | `pnpm build`       | ✅ 工具 chunk **5.08KB**（gzip 2.08KB）< 30KB 预算；`app-core` 23.45KB（gzip 9.10KB）                                                                       |
