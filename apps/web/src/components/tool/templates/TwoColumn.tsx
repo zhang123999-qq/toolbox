@@ -58,6 +58,11 @@ interface TwoColumnProps<I extends { text: string }, O extends object> {
   /** 需要二进制输入的工具开启此项；与 text 文本区并存，二者互不覆盖语义 */
   readonly fileInput?: FileInputDef<O>
   /**
+   * 下载文件的扩展名（决定文件名与 MIME）。
+   * 默认 txt；输出确为 JSON 的工具传 'json'（与 T3 模板同名约定）。
+   */
+  readonly downloadExt?: string
+  /**
    * 异步工具未运行时的占位文案。
    * 默认按「填好接口信息后点运行」写，但浏览器原生能力类工具（哈希 / 语音）
    * 不需要接口，可自行覆盖。
@@ -105,6 +110,7 @@ export function TwoColumn<I extends { text: string }, O extends object>({
   optionDefs,
   extraInputs,
   fileInput,
+  downloadExt = 'txt',
   idleText,
 }: TwoColumnProps<I, O>) {
   const [input, setInput] = useState<I>(initialInput)
@@ -221,11 +227,13 @@ export function TwoColumn<I extends { text: string }, O extends object>({
 
   function download() {
     if (!output) return
-    const blob = new Blob([output], { type: 'application/json;charset=utf-8' })
+    const mime =
+      downloadExt === 'json' ? 'application/json;charset=utf-8' : 'text/plain;charset=utf-8'
+    const blob = new Blob([output], { type: mime })
     const url = URL.createObjectURL(blob)
     const anchor = document.createElement('a')
     anchor.href = url
-    anchor.download = `${meta.slug}.json`
+    anchor.download = `${meta.slug}.${downloadExt}`
     anchor.click()
     URL.revokeObjectURL(url)
   }
@@ -416,7 +424,7 @@ export function TwoColumn<I extends { text: string }, O extends object>({
         ) : view.ok ? (
           <pre
             data-testid="output"
-            className="min-h-64 w-full flex-1 overflow-auto rounded border border-slate-200 bg-slate-50 p-2 font-mono text-sm dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
+            className="min-h-64 w-full flex-1 overflow-auto whitespace-pre-wrap [overflow-wrap:anywhere] rounded border border-slate-200 bg-slate-50 p-2 font-mono text-sm dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
           >
             {output || (view.idle ? (idleText ?? t('tool.asyncIdle')) : t('tool.empty'))}
           </pre>
@@ -424,7 +432,7 @@ export function TwoColumn<I extends { text: string }, O extends object>({
           <p
             data-testid="output"
             role="alert"
-            className="min-h-64 w-full flex-1 overflow-auto rounded border border-red-200 bg-red-50 p-2 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300"
+            className="min-h-64 w-full flex-1 overflow-auto [overflow-wrap:anywhere] rounded border border-red-200 bg-red-50 p-2 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300"
           >
             {view.value}
           </p>

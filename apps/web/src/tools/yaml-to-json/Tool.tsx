@@ -31,6 +31,7 @@ export default function Tool() {
   return (
     <TwoColumn<YamlToJsonInput, YamlToJsonOptions>
       meta={meta}
+      downloadExt="json"
       initialInput={{ text: '' }}
       initialOptions={{ direction: 'yaml2json', indent: '2' }}
       run={transform}

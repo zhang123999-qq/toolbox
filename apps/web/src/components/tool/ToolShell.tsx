@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { Link } from 'react-router-dom'
 import { getCategory, getGroup } from '@toolbox/catalog'
 import type { ToolMeta } from '@toolbox/catalog'
 import {
@@ -25,17 +26,17 @@ export function ToolShell({ meta, children }: { meta: ToolMeta; children: ReactN
         aria-label={t('breadcrumb.label')}
         className="text-sm text-slate-500 dark:text-slate-400"
       >
-        <a href="/" className="hover:text-brand">
+        <Link to="/" className="hover:text-brand">
           {t('breadcrumb.home')}
-        </a>
+        </Link>
         <span className="mx-1">/</span>
-        <a href={`/c/${group.id}`} className="hover:text-brand">
+        <Link to={`/c/${group.id}`} className="hover:text-brand">
           {groupName(t, group.id)}
-        </a>
+        </Link>
         <span className="mx-1">/</span>
-        <a href={`/c/${group.id}/${category.id}`} className="hover:text-brand">
+        <Link to={`/c/${group.id}/${category.id}`} className="hover:text-brand">
           {categoryName(t, category.id)}
-        </a>
+        </Link>
       </nav>
 
       <header>

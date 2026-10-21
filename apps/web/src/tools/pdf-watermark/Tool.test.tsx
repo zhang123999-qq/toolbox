@@ -382,7 +382,7 @@ describe('pdf-watermark 组件', () => {
     render(<Tool />)
     const zone = screen.getByTestId('dropzone')
     fireEvent.dragOver(zone, { dataTransfer: { files: [] } })
-    expect(zone.className).toContain('border-blue-500')
+    expect(zone.className).toContain('border-brand')
     fireEvent.dragLeave(zone)
     const file = makePdfFile()
     await act(async () => {
@@ -396,9 +396,9 @@ describe('pdf-watermark 组件', () => {
     switchToImageType()
     const zone = screen.getByTestId('image-dropzone')
     fireEvent.dragOver(zone, { dataTransfer: { files: [] } })
-    expect(zone.className).toContain('border-blue-500')
+    expect(zone.className).toContain('border-brand')
     fireEvent.dragLeave(zone)
-    expect(zone.className).not.toContain('border-blue-500')
+    expect(zone.className).not.toContain('border-brand')
   })
 
   it('图片投放区可拖拽上传', async () => {

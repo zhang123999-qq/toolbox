@@ -92,7 +92,7 @@ export default function Tool() {
               type="button"
               data-testid="cbt-next"
               onClick={submit}
-              className="rounded bg-blue-600 px-4 py-1 text-sm text-white"
+              className="rounded bg-brand px-4 py-1 text-sm text-white"
             >
               {idx + 1 >= PLATES.length ? '查看结果' : '下一图'}
             </button>

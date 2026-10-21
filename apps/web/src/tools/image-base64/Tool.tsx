@@ -193,7 +193,7 @@ export default function Tool() {
             }}
             className={`cursor-pointer rounded-lg border-2 border-dashed p-8 text-center transition-colors ${
               dragOver
-                ? 'border-blue-500 bg-blue-50 dark:bg-blue-950'
+                ? 'border-brand bg-sky-50 dark:bg-sky-950'
                 : 'border-slate-300 dark:border-slate-700'
             }`}
           >
@@ -277,7 +277,7 @@ export default function Tool() {
                   type="button"
                   // encodeResult 非空才渲染此按钮，TS 已收窄，无需空守卫
                   onClick={() => handleCopy(encodeResult.text)}
-                  className="rounded bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
+                  className="rounded bg-brand px-4 py-2 text-sm text-white hover:opacity-90"
                 >
                   {t(msg('copy'))}
                 </button>
@@ -316,7 +316,7 @@ export default function Tool() {
               data-testid="btn-convert"
               type="button"
               onClick={handleConvert}
-              className="rounded bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
+              className="rounded bg-brand px-4 py-2 text-sm text-white hover:opacity-90"
             >
               {t(msg('decode.convert'))}
             </button>
@@ -341,7 +341,7 @@ export default function Tool() {
                 data-testid="btn-download-img"
                 href={decodeResult.url}
                 download={decodeResult.fileName}
-                className="w-fit rounded bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
+                className="w-fit rounded bg-brand px-4 py-2 text-sm text-white hover:opacity-90"
               >
                 {t(msg('decode.download'))}
               </a>

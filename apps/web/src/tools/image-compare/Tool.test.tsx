@@ -265,9 +265,9 @@ describe('image-compare 组件', () => {
     render(<Tool />)
     const zone = screen.getByTestId('dropzone-a')
     fireEvent.dragOver(zone, { dataTransfer: { files: [] } })
-    expect(zone.className).toContain('border-blue-500')
+    expect(zone.className).toContain('border-brand')
     fireEvent.dragLeave(zone)
-    expect(zone.className).not.toContain('border-blue-500')
+    expect(zone.className).not.toContain('border-brand')
     await act(async () => {
       fireEvent.drop(zone, { dataTransfer: { files: [makeFile('a.png')] } })
     })
@@ -278,7 +278,7 @@ describe('image-compare 组件', () => {
     render(<Tool />)
     const zone = screen.getByTestId('dropzone-b')
     fireEvent.dragOver(zone, { dataTransfer: { files: [] } })
-    expect(zone.className).toContain('border-blue-500')
+    expect(zone.className).toContain('border-brand')
   })
 
   it('投放区为 label 且包含文件输入', () => {

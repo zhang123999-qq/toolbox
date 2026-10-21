@@ -13,8 +13,7 @@ import {
   type LevelObjectType,
 } from './utils'
 
-const BTN_CLS =
-  'rounded bg-blue-600 px-4 py-1.5 text-sm text-white disabled:opacity-50 dark:bg-blue-500'
+const BTN_CLS = 'rounded bg-brand px-4 py-1.5 text-sm text-white disabled:opacity-50 dark:bg-brand'
 const INPUT_CLS =
   'rounded border border-slate-300 px-2 py-1 text-sm dark:border-slate-600 dark:bg-slate-800'
 const PRE_CLS =

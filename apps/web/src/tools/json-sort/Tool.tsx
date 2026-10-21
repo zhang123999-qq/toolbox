@@ -21,6 +21,7 @@ export default function Tool() {
   return (
     <TwoColumn<JsonSortInput, JsonSortOptions>
       meta={meta}
+      downloadExt="json"
       initialInput={{ text: '' }}
       initialOptions={{ descending: false, format: 'pretty' }}
       run={transform}

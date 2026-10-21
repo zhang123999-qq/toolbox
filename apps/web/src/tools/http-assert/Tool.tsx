@@ -106,7 +106,7 @@ export default function Tool() {
             data-testid="assert-run"
             disabled={pending}
             onClick={() => void handleRun(input)}
-            className="w-fit rounded bg-blue-600 px-4 py-1.5 text-sm text-white disabled:opacity-50 dark:bg-blue-500"
+            className="w-fit rounded bg-brand px-4 py-1.5 text-sm text-white disabled:opacity-50 dark:bg-brand"
           >
             {pending ? '执行中…' : '执行测试'}
           </button>

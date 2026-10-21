@@ -81,7 +81,7 @@ export default function Tool() {
             key={p.id}
             type="button"
             data-testid={`screen-pattern-${p.id}`}
-            className={`${BTN_CLASS} ${p.id === current ? 'bg-blue-50 dark:bg-blue-950' : ''}`}
+            className={`${BTN_CLASS} ${p.id === current ? 'bg-sky-50 dark:bg-sky-950' : ''}`}
             onClick={() => setCurrent(p.id)}
           >
             {p.name}

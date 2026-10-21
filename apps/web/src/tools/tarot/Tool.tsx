@@ -25,7 +25,7 @@ export default function Tool() {
             }}
             className={`w-fit rounded px-3 py-1 text-sm ${
               spreadId === s.id
-                ? 'bg-blue-600 text-white'
+                ? 'bg-brand text-white'
                 : 'border border-slate-300 dark:border-slate-700'
             }`}
           >

@@ -586,6 +586,8 @@ export const zh = {
   'toolPage.notFoundTitle': '工具不存在',
   'toolPage.notFoundBody': '未找到 {slug}，它可能尚未实现。',
   'toolPage.notImplemented': '该工具已在 catalog 注册，但 Tool.tsx 尚未实现。',
+  'toolPage.renderError':
+    '工具渲染出错了，页面其余部分不受影响。可以切换到其他工具，或刷新页面重试。',
 
   // —— 面包屑 ——
   'breadcrumb.label': '面包屑',

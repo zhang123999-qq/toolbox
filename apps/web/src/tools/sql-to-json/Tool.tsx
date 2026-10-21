@@ -24,6 +24,7 @@ export default function Tool() {
   return (
     <TwoColumn<SqlToJsonInput, SqlToJsonOptions>
       meta={meta}
+      downloadExt="json"
       initialInput={{ text: '' }}
       initialOptions={{}}
       run={transform}

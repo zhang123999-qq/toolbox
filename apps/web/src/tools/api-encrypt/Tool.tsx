@@ -73,7 +73,7 @@ export default function Tool() {
               data-testid="apiencrypt-run"
               disabled={pending}
               onClick={() => void handleRun(input)}
-              className="rounded bg-blue-600 px-4 py-1.5 text-sm text-white disabled:opacity-50 dark:bg-blue-500"
+              className="rounded bg-brand px-4 py-1.5 text-sm text-white disabled:opacity-50 dark:bg-brand"
             >
               {pending ? '执行中…' : MODE_TEXT[mode]}
             </button>

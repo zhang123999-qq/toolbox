@@ -115,7 +115,7 @@ export default function Tool() {
             data-testid="start"
             type="button"
             onClick={() => void handleStart()}
-            className="rounded bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
+            className="rounded bg-brand px-4 py-2 text-sm text-white hover:opacity-90"
           >
             {phase === 'captured' ? t('screenCapture.restart') : t('screenCapture.start')}
           </button>
@@ -126,7 +126,7 @@ export default function Tool() {
               data-testid="capture"
               type="button"
               onClick={() => void handleCapture()}
-              className="rounded bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
+              className="rounded bg-brand px-4 py-2 text-sm text-white hover:opacity-90"
             >
               {t('screenCapture.capture')}
             </button>
@@ -176,7 +176,7 @@ export default function Tool() {
             type="button"
             // result 非空才渲染此按钮，TS 已收窄，无需空守卫
             onClick={() => downloadBlob(result.blob, result.fileName)}
-            className="w-fit rounded bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
+            className="w-fit rounded bg-brand px-4 py-2 text-sm text-white hover:opacity-90"
           >
             {t('screenCapture.download')}
           </button>

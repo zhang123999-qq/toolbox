@@ -87,7 +87,7 @@ export default function Tool() {
               type="button"
               data-testid="ws-connect"
               onClick={() => handleConnect(input)}
-              className="rounded bg-blue-600 px-4 py-1.5 text-sm text-white dark:bg-blue-500"
+              className="rounded bg-brand px-4 py-1.5 text-sm text-white dark:bg-brand"
             >
               连接
             </button>
@@ -120,7 +120,7 @@ export default function Tool() {
                 type="button"
                 data-testid="ws-send"
                 onClick={handleSend}
-                className="shrink-0 rounded bg-blue-600 px-4 py-1.5 text-sm text-white dark:bg-blue-500"
+                className="shrink-0 rounded bg-brand px-4 py-1.5 text-sm text-white dark:bg-brand"
               >
                 发送
               </button>
@@ -151,7 +151,7 @@ export default function Tool() {
                 className={`rounded px-2 py-1 font-mono text-xs ${
                   m.dir === 'in'
                     ? 'bg-green-50 text-green-800 dark:bg-green-950 dark:text-green-300'
-                    : 'bg-blue-50 text-blue-800 dark:bg-blue-950 dark:text-blue-300'
+                    : 'bg-sky-50 text-sky-800 dark:bg-sky-950 dark:text-sky-300'
                 }`}
               >
                 <span className="text-slate-400">[{m.time}]</span>{' '}

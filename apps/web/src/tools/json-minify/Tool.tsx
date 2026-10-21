@@ -20,6 +20,7 @@ export default function Tool() {
   return (
     <TwoColumn<MinifyInput, MinifyOptions>
       meta={meta}
+      downloadExt="json"
       initialInput={{ text: '' }}
       initialOptions={{ sortKeys: false }}
       run={transform}

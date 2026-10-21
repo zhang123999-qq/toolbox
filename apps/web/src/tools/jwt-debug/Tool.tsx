@@ -29,6 +29,7 @@ export default function Tool() {
   return (
     <TwoColumn<JwtDebugInput, JwtDebugOptions>
       meta={meta}
+      downloadExt="json"
       initialInput={{ text: '' }}
       initialOptions={{ secret: '', publicKeyPem: '' }}
       runAsync={transform}

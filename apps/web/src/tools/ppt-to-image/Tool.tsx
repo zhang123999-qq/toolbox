@@ -233,7 +233,7 @@ export default function Tool() {
                       data-testid={`download-slide-${image.index}`}
                       href={image.dataUrl}
                       download={`slide-${image.index}.png`}
-                      className="text-blue-600 hover:underline dark:text-blue-400"
+                      className="text-brand hover:underline dark:text-sky-400"
                     >
                       下载 PNG
                     </a>

@@ -121,6 +121,8 @@ export const en: Record<MessageKey, string> = {
   'toolPage.notFoundTitle': 'Tool not found',
   'toolPage.notFoundBody': 'Nothing found for {slug}; it may not be implemented yet.',
   'toolPage.notImplemented': 'Registered in the catalog, but its Tool.tsx is not implemented yet.',
+  'toolPage.renderError':
+    'This tool failed to render. The rest of the page is unaffected — switch to another tool or refresh to retry.',
 
   // —— Breadcrumb ——
   'breadcrumb.label': 'Breadcrumb',

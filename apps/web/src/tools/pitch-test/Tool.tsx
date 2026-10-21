@@ -85,7 +85,7 @@ export default function Tool() {
               data-testid="pt-play1"
               onClick={() => void play('first')}
               disabled={playing !== null}
-              className="rounded bg-blue-600 px-4 py-1 text-sm text-white disabled:opacity-50"
+              className="rounded bg-brand px-4 py-1 text-sm text-white disabled:opacity-50"
             >
               {playing === 'first' ? '播放中…' : '播放第一个音'}
             </button>
@@ -94,7 +94,7 @@ export default function Tool() {
               data-testid="pt-play2"
               onClick={() => void play('second')}
               disabled={playing !== null}
-              className="rounded bg-blue-600 px-4 py-1 text-sm text-white disabled:opacity-50"
+              className="rounded bg-brand px-4 py-1 text-sm text-white disabled:opacity-50"
             >
               {playing === 'second' ? '播放中…' : '播放第二个音'}
             </button>

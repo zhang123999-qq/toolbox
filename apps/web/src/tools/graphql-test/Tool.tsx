@@ -94,7 +94,7 @@ export default function Tool() {
             data-testid="gql-send"
             disabled={pending}
             onClick={() => void handleSend(input)}
-            className="w-fit rounded bg-blue-600 px-4 py-1.5 text-sm text-white disabled:opacity-50 dark:bg-blue-500"
+            className="w-fit rounded bg-brand px-4 py-1.5 text-sm text-white disabled:opacity-50 dark:bg-brand"
           >
             {pending ? '发送中…' : '发送查询'}
           </button>

@@ -124,7 +124,7 @@ export default function Tool() {
         }}
         className={`cursor-pointer rounded-lg border-2 border-dashed p-8 text-center transition-colors ${
           dragOver
-            ? 'border-blue-500 bg-blue-50 dark:bg-blue-950'
+            ? 'border-brand bg-sky-50 dark:bg-sky-950'
             : 'border-slate-300 dark:border-slate-700'
         }`}
       >
@@ -237,7 +237,7 @@ export default function Tool() {
                   type="button"
                   // results 非空才渲染此按钮，TS 已收窄，无需空守卫
                   onClick={() => downloadBlob(r.blob, r.fileName)}
-                  className="w-fit shrink-0 rounded bg-blue-600 px-4 py-1.5 text-sm text-white hover:bg-blue-700"
+                  className="w-fit shrink-0 rounded bg-brand px-4 py-1.5 text-sm text-white hover:opacity-90"
                 >
                   {t('pdfSplit.download')}
                 </button>

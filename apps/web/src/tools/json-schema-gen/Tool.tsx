@@ -26,6 +26,7 @@ export default function Tool() {
   return (
     <TwoColumn<SchemaGenInput, SchemaGenOptions>
       meta={meta}
+      downloadExt="json"
       initialInput={{ text: '' }}
       initialOptions={{ format: 'draft-07', strict: false }}
       run={transform}

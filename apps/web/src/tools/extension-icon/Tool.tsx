@@ -10,8 +10,7 @@ import {
   type IconCanvas,
 } from './utils'
 
-const BTN_CLS =
-  'rounded bg-blue-600 px-4 py-1.5 text-sm text-white disabled:opacity-50 dark:bg-blue-500'
+const BTN_CLS = 'rounded bg-brand px-4 py-1.5 text-sm text-white disabled:opacity-50 dark:bg-brand'
 const PRE_CLS =
   'max-h-80 overflow-auto rounded bg-slate-50 p-3 font-mono text-xs break-all whitespace-pre-wrap dark:bg-slate-900'
 
@@ -81,7 +80,7 @@ export default function Tool() {
                     data-testid={`extensionicon-download-${p.size}`}
                     href={p.url}
                     download={`icon${p.size}.png`}
-                    className="text-sm text-blue-600 underline dark:text-blue-400"
+                    className="text-sm text-brand underline dark:text-sky-400"
                   >
                     下载 PNG
                   </a>

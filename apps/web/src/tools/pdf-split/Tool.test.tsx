@@ -277,7 +277,7 @@ describe('pdf-split 组件', () => {
     render(<Tool />)
     const zone = screen.getByTestId('dropzone')
     fireEvent.dragOver(zone, { dataTransfer: { files: [] } })
-    expect(zone.className).toContain('border-blue-500')
+    expect(zone.className).toContain('border-brand')
     fireEvent.dragLeave(zone)
     fireEvent.change(screen.getByTestId('opt-pages'), { target: { value: '1-2' } })
     const file = makePdfFile()

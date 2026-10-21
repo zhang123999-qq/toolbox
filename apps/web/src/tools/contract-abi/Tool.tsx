@@ -44,7 +44,7 @@ export default function Tool() {
                   data-testid="value-kind"
                   className={
                     it.kind === 'function'
-                      ? 'mr-2 rounded bg-blue-100 px-1 text-blue-700'
+                      ? 'mr-2 rounded bg-sky-100 px-1 text-sky-700'
                       : 'mr-2 rounded bg-purple-100 px-1 text-purple-700'
                   }
                 >

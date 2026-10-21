@@ -19,6 +19,7 @@ export default function Tool() {
   return (
     <TwoColumn<JsonInput, JsonOptions>
       meta={meta}
+      downloadExt="json"
       initialInput={{ text: '' }}
       initialOptions={{ indent: '2', sortKeys: false }}
       run={transform}
