@@ -28,6 +28,7 @@ export default function Tool() {
   return (
     <TwoColumn<XmlToJsonInput, XmlToJsonOptions>
       meta={meta}
+      downloadExt="json"
       initialInput={{ text: '' }}
       initialOptions={{ prefix: '@', mode: 'auto', textKey: '#text', indent: '2' }}
       run={transform}

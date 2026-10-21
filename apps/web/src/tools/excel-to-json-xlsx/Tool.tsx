@@ -27,6 +27,7 @@ export default function Tool() {
   return (
     <TwoColumn<ExcelToJsonInput, ExcelToJsonOptions>
       meta={meta}
+      downloadExt="json"
       initialInput={{ text: '' }}
       initialOptions={{ withHeader: true }}
       run={transform}

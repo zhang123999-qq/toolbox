@@ -20,6 +20,7 @@ export default function Tool() {
   return (
     <TwoColumn<JwtDecodeInput, JwtDecodeOptions>
       meta={meta}
+      downloadExt="json"
       initialInput={{ text: '' }}
       initialOptions={{ format: 'pretty' }}
       run={transform}

@@ -26,6 +26,7 @@ export default function Tool() {
   return (
     <TwoColumn<CsvToJsonInput, CsvToJsonOptions>
       meta={meta}
+      downloadExt="json"
       initialInput={{ text: '' }}
       initialOptions={{ header: true, delimiter: 'comma', indent: '2' }}
       run={transform}

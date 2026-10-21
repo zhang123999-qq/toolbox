@@ -22,6 +22,7 @@ export default function Tool() {
   return (
     <TwoColumn<JsonMergeInput, JsonMergeOptions>
       meta={meta}
+      downloadExt="json"
       initialInput={{ text: '', textB: '' }}
       initialOptions={{ mode: 'deep', prefer: 'override' }}
       run={transform}
