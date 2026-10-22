@@ -6,7 +6,7 @@
 >
 > The project currently registers **798 tools** (5 groups: dev 377 / design 203 / office 37 /
 > life 180 / online 1; 102 of the planned 900 remain). The latest formal release is
-> **v0.0.5 (797 tools)**. Routes are derived
+> **v0.0.6 (798 tools)**. Routes are derived
 > automatically from the catalog — adding a tool only needs a directory plus `meta.ts`.
 
 ---

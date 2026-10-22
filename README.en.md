@@ -14,17 +14,17 @@
 
 ## Status
 
-| Item                | Value                                                                                                                 |
-| ------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| Planned             | **900 tools across 21 categories in 5 groups** (dev / design / office / life / online; validated by script)           |
-| Latest release      | [`v0.0.5`](https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.5) (2026-09-29) — **797 tools**                |
-| Current main / live | **798 tools** (drawing-board added after v0.0.5; will be folded into the version number with the next formal release) |
+| Item                | Value                                                                                                       |
+| ------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Planned             | **900 tools across 21 categories in 5 groups** (dev / design / office / life / online; validated by script) |
+| Latest release      | [`v0.0.6`](https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.6) (2026-10-22) — **798 tools**      |
+| Current main / live | **798 tools** (identical to v0.0.6)                                                                         |
 
 > Registered per group on main: dev 377 · design 203 · office 37 · life 180 · online 1 = **798**;
 > 102 of the planned 900 remain.
 >
-> Note: the `online` group and the 21st category were added after v0.0.5 and their introduction
-> is not yet confirmed by the project owner; this table records the current state of the code.
+> Note: the `online` group and the 21st category ship for the first time in v0.0.6 and their
+> introduction is not yet confirmed by the project owner; this table records the current state of the code.
 
 ---
 

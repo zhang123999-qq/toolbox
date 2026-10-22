@@ -10,12 +10,48 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
 
 ## [Unreleased]
 
+## [0.0.6] - 2026-10-22
+
+把「已交付工具数」从 797 推进到 **798 个**：新增第 5 大组「在线工具」（online）与第 21 域，
+首个工具为 **#798 在线画图**（`drawing-board`）。
+本次发布同时合入 #10–#13：修复自 2026-09-29 起持续三周的 CI 红灯，
+统一首页 / 工具页的口径与布局，并补上搜索弹窗的键盘体验。
+
 ### 新增
 
 - **第 5 大组「在线工具」（online）**：新增第 21 域（在线工具，规划 30 个，编号 871–900）；
   首个工具为 **#798 在线画图**（`drawing-board`）：13 种绘图工具、图片底图、形状填充、
   快捷键、PNG / JPG 导出、40 步撤销 / 重做、全屏、画布自适应居中
   （⚠️ online 大组与第 21 域的增设尚未经项目所有者定案，以下如实记录当前代码状态）
+
+### 变更
+
+- **首页工具数改实际口径**（#11）：分组卡片与域卡片原先展示规划数（`plannedTools`）且不带
+  「规划」字样，与同页 Hero / 已上线区的实际数打架（21 个域中 15 个与实际不符）；
+  改为各域**实际上线数**之和，网格顺带由 4 列改 5 列
+- **已上线区改每域代表工具**（#11）：此前全量渲染 798 张工具卡、与 /tools 页完全重复，
+  首页 DOM 与预渲染 HTML 膨胀；改为每个域展示 1 个代表工具（共 18 个），底部加「查看全部」入口
+- **面包屑改指前端路由**（#12）：ToolShell 的原生 `<a>` 换 React Router `Link`，不再整页刷新
+- **自绘工具色值统一到品牌色**（#12）：213 个自绘工具文件（138 个工具）里 350 处硬编码
+  blue 色板统一到设计 token，替换后残留 blue 工具类为 0
+
+### 修复
+
+- **CI 连续三周红灯**（#10）：文档精简删掉了 `docs/README.md`、`docs/README.en.md`、
+  `deploy/binary/README.md`，但发布源校验脚本仍按旧清单检查这 3 份文件，
+  CI 的「Check deployment scripts」步骤必挂；校验清单与现行文档结构对齐后 8 项全通过
+- **HeroCarousel 死逻辑**（#10）：移除恒为 0 的 `isReduced ? 0 : 0` 初始状态分支（行为不变）
+- **T2 输出长串换行**（#12）：`<pre>` 补 `whitespace-pre-wrap` + `overflow-wrap:anywhere`，
+  Base64 / 哈希 / JWT / 密文等长串不再只能框内横向滚动（影响 559 个 T2 工具）
+- **下载扩展名参数化**（#12）：新增 `downloadExt`，12 个 JSON 输出工具显式标注 `json`、
+  其余默认 `txt`，不再把所有输出都存成 `.json`
+- **单工具渲染错误边界**（#12）：工具渲染期抛错只降级当前工具区（双语兜底文案），不再整页白屏
+- **搜索弹窗键盘体验**（#13）：方向键切换高亮时结果列表自动滚动跟随；Tab 焦点在弹窗内圈定
+- **MultiPanel 运行机制改 nonce**（#13）：不再用伪造输入变更触发重算，改为与 T2 模板同款的
+  nonce 计数
+- **T3 输出排版基线**（#13）：给输出容器加 `tool-output` 类并补 `:where(.tool-output) pre`
+  基线（等宽字体 / pre-wrap / overflow-wrap），零特异性、不覆盖工具自身的显式样式
+- **drawing-board 历史记录测试并入** `Tool.test.tsx`（符合一工具一文件夹 8 文件集规范）
 
 ### 文档
 
@@ -24,10 +60,6 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
   `deploy/binary/README.md`；保留 README / CONTRIBUTING / CHANGELOG /
   DEVELOPMENT / RELEASE 与 798 个工具自带 README；
   `scripts/check-docs.ts` 校验范围同步收缩为现存核心文档
-
-### 修复
-
-- drawing-board 历史记录测试并入 `Tool.test.tsx`（符合一工具一文件夹 8 文件集规范）
 
 ## [0.0.5] - 2026-09-29
 
@@ -217,7 +249,8 @@ Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELE
 - 静态预渲染产物固定中文口径，仍无 `/en` 路由（英文在客户端切换生效）
 - 个别大型工具 chunk 超过 500KB 打包告警阈值（构建成功，仅为体积提示），后续按需做代码分割
 
-[Unreleased]: https://github.com/zhang123999-qq/toolbox/compare/v0.0.5...HEAD
+[Unreleased]: https://github.com/zhang123999-qq/toolbox/compare/v0.0.6...HEAD
+[0.0.6]: https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.6
 [0.0.5]: https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.5
 [0.0.4]: https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.4
 [0.0.3]: https://github.com/zhang123999-qq/toolbox/releases/tag/v0.0.3
