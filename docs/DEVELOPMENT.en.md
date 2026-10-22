@@ -667,7 +667,7 @@ per-route `index.html`, and a root `404.html` (usable directly by static hosts).
 |   2 | Tool granularity                  | **Independent routes** (`/tools/:slug`) — 798 tools today, 900 planned                   | tool sites live on search long-tail; standalone URLs are the top SEO asset             |
 |   3 | 5 groups ↔ 21 categories          | **Use the §5 table**                                                                     | script-verified, sums to 900; the online group/category addition awaits owner sign-off |
 |   4 | Execution host                    | **No OS lock-in** (currently a Linux cloud VM)                                           | frontend builds are cross-platform; the §18.3 Windows pitfalls are historical records  |
-|   5 | Batch sizes                       | **Done**: v0.0.5 shipped 797 tools across 9 PRs                                          | mass rollout is over; new tools follow the §8 flow                                     |
+|   5 | Batch sizes                       | **Done**: v0.0.5 shipped 797 tools across 9 PRs; v0.0.6 ships 798 tools                  | mass rollout is over; new tools follow the §8 flow                                     |
 |   6 | i18n scope                        | **Bilingual (zh/en) with instant client-side switching** (no longer "reserve keys only") | product requires a bilingual entry point, see §19                                      |
 |   7 | Theme                             | **Manual light/dark toggle**, defaults to the system preference                          | the product needs a light/dark theme, see §19                                          |
 |   8 | Where the locale preference lives | **localStorage**, no `/en` route prefix                                                  | the requirement is "switch instantly + survive refresh", not an SEO multi-locale site  |
@@ -712,10 +712,10 @@ directory was deleted in the 2026-09-29 docs purge, so the conflicts are void wi
 
 ---
 
-## 17. Current Development Stage (2026-09-29)
+## 17. Current Development Stage (2026-10-22)
 
 The mass rollout is done: v0.0.5 shipped **797 tools** (merged across 9 PRs);
-current master has **798 tools** (plus #798 drawing-board), with **900** planned in total.
+v0.0.6 ships **798 tools** (plus #798 drawing-board), with **900** planned in total.
 The skeleton, bilingual copy, theme, SSG, CI gates and the binary deployment path are
 all live and verified in production.
 

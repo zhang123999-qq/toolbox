@@ -15,13 +15,13 @@
 
 | 落点                      | 值                                 | 由谁写入            | 用途                         |
 | ------------------------- | ---------------------------------- | ------------------- | ---------------------------- |
-| `deploy/binary/VERSION`   | `0.0.5`                            | 手工（真源）        | 打包与 CLI 版本号的唯一来源  |
-| bundle 文件名             | `toolbox-0.0.5-linux-amd64.tar.gz` | `build-bundle.sh`   | 用户可见、升级源按名解析版本 |
-| bundle 内 `VERSION`       | `0.0.5`                            | `build-bundle.sh`   | 安装时校验「包内版本」       |
-| bundle 内 `manifest.json` | `"version": "0.0.5"` + `gitCommit` | `build-bundle.sh`   | 追溯「这个包出自哪个提交」   |
-| git tag / Release         | `v0.0.5`                           | `gh release create` | 与源码历史绑定               |
+| `deploy/binary/VERSION`   | `0.0.6`                            | 手工（真源）        | 打包与 CLI 版本号的唯一来源  |
+| bundle 文件名             | `toolbox-0.0.6-linux-amd64.tar.gz` | `build-bundle.sh`   | 用户可见、升级源按名解析版本 |
+| bundle 内 `VERSION`       | `0.0.6`                            | `build-bundle.sh`   | 安装时校验「包内版本」       |
+| bundle 内 `manifest.json` | `"version": "0.0.6"` + `gitCommit` | `build-bundle.sh`   | 追溯「这个包出自哪个提交」   |
+| git tag / Release         | `v0.0.6`                           | `gh release create` | 与源码历史绑定               |
 
-运行时还提供一个**自证**落点：`GET /healthz` 返回 `ok v0.0.5`。
+运行时还提供一个**自证**落点：`GET /healthz` 返回 `ok v0.0.6`。
 它由 nginx 配置在渲染期写死，因此能证明「当前真正在跑的是哪个版本」，
 是升级/回滚判定的依据（见第四节）。
 
@@ -34,12 +34,11 @@
   各 workspace 的 `package.json` 版本号在发版时**同步**为同一版本（供工具链与包元数据使用），
   一律以 `VERSION` 为准对齐，避免两处漂移。
 
-> **当前进度**：最新正式发布 = **v0.0.5**（2026-09-29，**797 个工具**，4 大组全覆盖；
-> tag `51bb444`；Release 含 5 个附件：`toolbox-0.0.5-linux-amd64.tar.gz` + `.sha256`、
+> **当前进度**：最新正式发布 = **v0.0.6**（2026-10-22，**798 个工具**，5 大组全覆盖；
+> tag `v0.0.6`；Release 含 5 个附件：`toolbox-0.0.6-linux-amd64.tar.gz` + `.sha256`、
 > `latest.txt`、`index.json`、`install.sh`）。
-> v0.0.5 之后 master 又新增了第 5 大组（online）与 #798 在线画图，
-> 当前 master / 线上为 798 个工具——这部分随下一次正式发布并入版本号（见
-> [`CHANGELOG.md`](../CHANGELOG.md) 的 `[Unreleased]` 段）。
+> 第 5 大组（online）与 #798 在线画图随本次发布并入版本号（见
+> [`CHANGELOG.md`](../CHANGELOG.md) 的 `[0.0.6]` 段）。
 
 ## 二、发布流程（推 tag 全自动，无需手工打包 / 上传）
 
@@ -149,7 +148,7 @@ curl -fsSL http://<发布源>/install.sh | sudo bash -s -- --source http://<发�
 ```
 
 > ✅ **仓库已于 2026-09-24 转为 public**：① ② ③ 三条对匿名请求均可访问（已实测 200）。
-> 当前 Release（v0.0.4，310 个工具）附件里的 `install.sh` **已同步为仓库内最新版本**，
+> 当前 Release（v0.0.6，798 个工具）附件里的 `install.sh` **已同步为仓库内最新版本**，
 > 因此「对外一键安装入口」与「源码」不会再出现版本漂移。
 >
 > - 仍需离线分发时走 ④ 自建 / 内网发布源 —— 生产环境首选，顺带解决内网机器无外网的问题。
@@ -204,17 +203,17 @@ curl -fsSL http://<发布源>/install.sh | sudo bash -s -- --source http://<发�
 
 - **线上地址**：`https://006336.xyz/`（Cloudflare 代理回源）；`/healthz` 可查版本。
 - **正式发布更新**：`toolboxctl upgrade --to <版本>`（从 GitHub Release 拉包，自动 sha256 校验）。
-- **无 Release 更新**（v0.0.5 之后的小改动走此通道，已验证两次）：本地按顺序跑完
+- **无 Release 更新**（v0.0.5 之后的小改动走此通道，已验证两次；该批改动已随 v0.0.6 发布）：本地按顺序跑完
   构建管线再打包，避免产物与源码不一致——
   ```bash
   tsx scripts/generate-catalog.ts                                  # 先重建 catalog（meta 改动不跑这一步不会进预渲染 HTML）
   vite build                                                        # 客户端构建
   vite build --ssr src/entry-server.tsx --outDir dist-ssr           # SSR 构建
   tsx scripts/generate-sitemap.ts && tsx scripts/prerender.ts       # sitemap + 预渲染
-  deploy/binary/build-bundle.sh --version 0.0.5 --skip-build --no-index --out /tmp/toolbox-pkg
+  deploy/binary/build-bundle.sh --version 0.0.6 --skip-build --no-index --out /tmp/toolbox-pkg
   scp /tmp/toolbox-pkg/* root@192.129.237.190:/root/toolbox-local-src/
-  ssh root@192.129.237.190 "toolboxctl upgrade --source /root/toolbox-local-src --to 0.0.5 --force \
-    && chmod -R u=rwX,go=rX /opt/toolbox/releases/0.0.5"
+  ssh root@192.129.237.190 "toolboxctl upgrade --source /root/toolbox-local-src --to 0.0.6 --force \
+    && chmod -R u=rwX,go=rX /opt/toolbox/releases/0.0.6"
   ```
   > ⚠️ **权限坑**：本地打的包文件权限是 660（umask），CI 包是 644；
   > 升级后必须 `chmod -R u=rwX,go=rX /opt/toolbox/releases/<版本>`，
