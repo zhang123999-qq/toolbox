@@ -9,6 +9,7 @@ import type { OptionDef } from '../../components/tool/templates/TwoColumn'
 import { SECONDARY_BUTTON } from '../../components/tool/templates/TwoColumn'
 import { useTranslate } from '../../i18n'
 import { meta } from './meta'
+import { SafeHtml } from '../../shared/SafeHtml'
 import {
   assertPagesHaveText,
   checkPdfPageCount,
@@ -185,10 +186,10 @@ export default function Tool() {
 
           {view.status === 'done' &&
             (view.tab === 'preview' ? (
-              <div
+              <SafeHtml
+                html={pdfToHtmlFragments(view.pages, options)}
                 data-testid="html-preview"
                 className="prose-sm max-w-none"
-                dangerouslySetInnerHTML={{ __html: pdfToHtmlFragments(view.pages, options) }}
               />
             ) : (
               <pre

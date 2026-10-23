@@ -3,6 +3,7 @@ import type { ChangeEvent } from 'react'
 import { MultiPanel } from '../../components/tool/templates/MultiPanel'
 import { SECONDARY_BUTTON } from '../../components/tool/templates/TwoColumn'
 import { meta } from './meta'
+import { SafeHtml } from '../../shared/SafeHtml'
 import {
   assertDocxFile,
   assertNonEmptyPreview,
@@ -133,10 +134,10 @@ export default function Tool() {
           )}
 
           {view.status === 'done' && view.preview && (
-            <div
+            <SafeHtml
+              html={view.preview.html}
               data-testid="word-preview"
               className="prose-sm max-w-none rounded border border-slate-200 p-4 dark:border-slate-700 dark:prose-invert"
-              dangerouslySetInnerHTML={{ __html: view.preview.html }}
             />
           )}
         </div>
