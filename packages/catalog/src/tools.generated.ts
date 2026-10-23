@@ -1,7 +1,7 @@
 /**
  * 工具注册表 —— 由 scripts/generate-catalog.ts 自动生成，请勿手工编辑。
  * 改了任何 meta.ts 后请重跑：pnpm generate:catalog
- * 工具数：798
+ * 工具数：799
  */
 import type { ToolMeta } from './types'
 
@@ -1051,6 +1051,27 @@ export const TOOLS: readonly ToolMeta[] = [
     inputs: ['text'],
     outputs: ['text'],
     options: ['label', 'message', 'color'],
+    deps: [],
+    worker: false,
+    wasm: false,
+    api: false,
+  },
+  {
+    id: 'bar-chart',
+    slug: 'bar-chart',
+    title: '条形图生成',
+    description: '将简单数据行（标签 + 数值）转换为纯 SVG 条形图',
+    titleEn: 'Bar Chart Generator',
+    descriptionEn: 'Convert simple label-value rows into a pure SVG bar chart',
+    category: 'visualization',
+    group: 'design',
+    tags: ['visualization', 'chart', 'svg', 'data'],
+    priority: 'P1',
+    feasibility: 'A',
+    template: 'T2',
+    inputs: ['text'],
+    outputs: ['text'],
+    options: ['barColor'],
     deps: [],
     worker: false,
     wasm: false,
