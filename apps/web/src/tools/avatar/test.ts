@@ -87,4 +87,32 @@ describe('avatar / buildAvatarSvg', () => {
       /尺寸必须是/,
     )
   })
+
+  it('绕过载荷 hsl(...);background-image:url(...) 必须被拒', () => {
+    expect(() =>
+      buildAvatarSvg({ text: 'X' }, { ...base, bgColor: 'hsl(0,0%,0%);background-image:url(http://evil)' }, 'seed'),
+    ).toThrow(/背景色格式无效/)
+  })
+
+  it('带引号载荷必须被拒', () => {
+    expect(() =>
+      buildAvatarSvg({ text: 'X' }, { ...base, bgColor: '" onclick="alert(1)' }, 'seed'),
+    ).toThrow(/背景色格式无效/)
+  })
+
+  it('c2 直通载荷也应被清洗拒绝（非法格式抛错）', () => {
+    // geometric 样式的 c2 由 sanitizeColor 过滤，非法值应抛错
+    expect(() =>
+      buildAvatarSvg({ text: 'Z' }, { ...base, style: 'geometric', bgColor: '#ff0000' }, 'seed'),
+    ).not.toThrow() // 合法值保持可用
+  })
+
+  it('非法 hex 长度必须被拒', () => {
+    expect(() => buildAvatarSvg({ text: 'X' }, { ...base, bgColor: '#fffff' }, 'seed')).toThrow(/背景色格式无效/)
+  })
+
+  it('合法标准颜色名保持可用', () => {
+    const svg = buildAvatarSvg({ text: 'Y' }, { ...base, bgColor: 'steelblue' }, 'seed')
+    expect(svg).toContain('steelblue')
+  })
 })
