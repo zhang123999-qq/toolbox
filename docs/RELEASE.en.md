@@ -1,5 +1,7 @@
 # Release Process
 
+[中文版](RELEASE.md)
+
 This is a TypeScript (Vite + React 19) static site, not a Go project.
 The release bundle contains pre-built static assets + deployment CLI (`toolboxctl`) + nginx/systemd templates.
 

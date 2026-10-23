@@ -20,9 +20,10 @@ export const DEFAULT_SIZE = 128
 function escapeXml(value: string): string {
   return value
     .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
 }
 
 /** 字符串 → 32 位无符号整数（FNV-1a），相同文本得到相同种子 */
@@ -86,32 +87,107 @@ function randomLetter(rand: () => number): string {
   return String.fromCharCode(65 + Math.floor(rand() * 26))
 }
 
-/** 严格验证颜色值格式：只允许 #hex、hsl(...)、rgb(...)、标准颜色名，防止 XSS 注入 SVG 属性 */
+/** 严格验证颜色值格式：只允许 #hex、rgb()/rgba()、hsl()/hsla()、标准 CSS 颜色名白名单，防止 XSS 注入 SVG 属性 */
+const CSS_COLOR_NAMES = new Set([
+  'aliceblue', 'antiquewhite', 'aqua', 'aquamarine', 'azure', 'beige', 'bisque',
+  'black', 'blanchedalmond', 'blue', 'blueviolet', 'brown', 'burlywood',
+  'cadetblue', 'chartreuse', 'chocolate', 'coral', 'cornflowerblue', 'cornsilk',
+  'crimson', 'cyan', 'darkblue', 'darkcyan', 'darkgoldenrod', 'darkgray', 'darkgrey',
+  'darkgreen', 'darkkhaki', 'darkmagenta', 'darkolivegreen', 'darkorange',
+  'darkorchid', 'darkred', 'darksalmon', 'darkseagreen', 'darkslateblue',
+  'darkslategray', 'darkslategrey', 'darkturquoise', 'darkviolet', 'deeppink',
+  'deepskyblue', 'dimgray', 'dimgrey', 'dodgerblue', 'firebrick', 'floralwhite',
+  'forestgreen', 'fuchsia', 'gainsboro', 'ghostwhite', 'gold', 'goldenrod', 'gray',
+  'grey', 'green', 'greenyellow', 'honeydew', 'hotpink', 'indianred', 'indigo',
+  'ivory', 'khaki', 'lavender', 'lavenderblush', 'lawngreen', 'lemonchiffon',
+  'lightblue', 'lightcoral', 'lightcyan', 'lightgoldenrodyellow', 'lightgray',
+  'lightgrey', 'lightgreen', 'lightpink', 'lightsalmon', 'lightseagreen',
+  'lightskyblue', 'lightslategray', 'lightslategrey', 'lightsteelblue',
+  'lightyellow', 'lime', 'limegreen', 'linen', 'magenta', 'maroon',
+  'mediumaquamarine', 'mediumblue', 'mediumorchid', 'mediumpurple',
+  'mediumseagreen', 'mediumslateblue', 'mediumspringgreen', 'mediumturquoise',
+  'mediumvioletred', 'midnightblue', 'mintcream', 'mistyrose', 'moccasin',
+  'navajowhite', 'navy', 'oldlace', 'olive', 'olivedrab', 'orange', 'orangered',
+  'orchid', 'palegoldenrod', 'palegreen', 'paleturquoise', 'palevioletred',
+  'papayawhip', 'peachpuff', 'peru', 'pink', 'plum', 'powderblue', 'purple',
+  'rebeccapurple', 'red', 'rosybrown', 'royalblue', 'saddlebrown', 'salmon',
+  'sandybrown', 'seagreen', 'seashell', 'sienna', 'silver', 'skyblue', 'slateblue',
+  'slategray', 'slategrey', 'snow', 'springgreen', 'steelblue', 'tan', 'teal',
+  'thistle', 'tomato', 'turquoise', 'violet', 'wheat', 'white', 'whitesmoke',
+  'yellow', 'yellowgreen',
+])
+
 function sanitizeColor(value: string): string {
   const trimmed = value.trim()
-  // 允许：# + 3/6/8 位十六进制，或 hsl(...)/rgb(...)/rgba(...)，或标准颜色名（字母 + 空格）
-  const safePattern = /^(#[0-9a-fA-F]{3,8}|hsl\([^)]+\)|rgb\([^)]+\)|rgba\([^)]+\)|[a-zA-Z][a-zA-Z0-9\s-]*[a-zA-Z0-9])$/
-  if (!safePattern.test(trimmed)) {
-    throw new Error('背景色格式无效，仅支持 #hex、hsl、rgb 或标准颜色名')
+  if (!trimmed) throw new Error('背景色格式无效，仅支持 #hex、rgb、hsl 或标准颜色名')
+
+  // 1) 标准 CSS 颜色名（显式白名单）
+  if (/^[a-zA-Z][a-zA-Z0-9]*$/.test(trimmed) && CSS_COLOR_NAMES.has(trimmed.toLowerCase())) {
+    return escapeXml(trimmed)
   }
-  // 对已通过格式验证的值再做 XML 属性转义（双重防护）
-  return trimmed.replace(/"/g, '&quot;').replace(/'/g, '&apos;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/&/g, '&amp;')
+
+  // 2) #hex：恰好 3、4、6、8 位十六进制
+  if (/^#[0-9a-fA-F]{3}$/.test(trimmed) || /^#[0-9a-fA-F]{4}$/.test(trimmed) || /^#[0-9a-fA-F]{6}$/.test(trimmed) || /^#[0-9a-fA-F]{8}$/.test(trimmed)) {
+    return escapeXml(trimmed)
+  }
+
+  // 3) rgb()/rgba()：通道 0-255 整数，alpha 0-1 数值
+  const rgbMatch = trimmed.match(/^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*(?:,\s*([0-9]*\.?[0-9]+)\s*)?\)$/)
+  if (rgbMatch) {
+    const r = parseInt(rgbMatch[1], 10)
+    const g = parseInt(rgbMatch[2], 10)
+    const b = parseInt(rgbMatch[3], 10)
+    const aStr = rgbMatch[4]
+    if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
+      throw new Error('背景色格式无效：rgb 通道超出 0-255')
+    }
+    if (aStr !== undefined) {
+      const a = parseFloat(aStr)
+      if (isNaN(a) || a < 0 || a > 1) {
+        throw new Error('背景色格式无效：alpha 必须在 0-1 之间')
+      }
+    }
+    return escapeXml(trimmed)
+  }
+
+  // 4) hsl()/hsla()：色相 0-360 数值、饱和度/明度百分比、alpha 0-1
+  const hslMatch = trimmed.match(/^hsla?\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)%\s*,\s*(\d+(?:\.\d+)?)%\s*(?:,\s*([0-9]*\.?[0-9]+)\s*)?\)$/)
+  if (hslMatch) {
+    const h = parseFloat(hslMatch[1])
+    const s = parseFloat(hslMatch[2])
+    const l = parseFloat(hslMatch[3])
+    const aStr = hslMatch[4]
+    if (h < 0 || h > 360 || s < 0 || s > 100 || l < 0 || l > 100) {
+      throw new Error('背景色格式无效：hsl 参数超出范围')
+    }
+    if (aStr !== undefined) {
+      const a = parseFloat(aStr)
+      if (isNaN(a) || a < 0 || a > 1) {
+        throw new Error('背景色格式无效：alpha 必须在 0-1 之间')
+      }
+    }
+    return escapeXml(trimmed)
+  }
+
+  throw new Error('背景色格式无效，仅支持 #hex、rgb、hsl 或标准颜色名')
 }
 
 /** 生成线性渐变 defs 片段 */
 function gradientDef(id: string, c1: string, c2: string): string {
   const safeC1 = sanitizeColor(c1)
+  const safeC2 = sanitizeColor(c2)
   const safeId = id.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 20) || 'g'
   return (
     `<defs><linearGradient id="${safeId}" x1="0" y1="0" x2="1" y2="1">` +
     `<stop offset="0" stop-color="${safeC1}"/>` +
-    `<stop offset="1" stop-color="${c2}"/>` +
+    `<stop offset="1" stop-color="${safeC2}"/>` +
     `</linearGradient></defs>`
   )
 }
 
 /** 几何图案：基于确定性随机源摆放圆形与三角形 */
 function geometricShapes(size: number, rand: () => number, c2: string): string {
+  const safeC2 = sanitizeColor(c2)
   const parts: string[] = []
   const count = 5
   for (let i = 0; i < count; i += 1) {
@@ -132,7 +208,7 @@ function geometricShapes(size: number, rand: () => number, c2: string): string {
       const y3 = (cy + r * 0.7).toFixed(1)
       parts.push(
         `<polygon points="${x1},${y1} ${x2},${y2} ${x3},${y3}" ` +
-          `fill="${c2}" opacity="${(0.4 + rand() * 0.4).toFixed(2)}"/>`,
+          `fill="${safeC2}" opacity="${(0.4 + rand() * 0.4).toFixed(2)}"/>`,
       )
     }
   }

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { MultiPanel } from '../../components/tool/templates/MultiPanel'
+import { SafeHtml } from '../../shared/SafeHtml'
 import { meta } from './meta'
 import type { SvgGameToolInput } from './schema'
 import { getSpriteTemplate, listSpriteTemplates, renderSpriteTemplate } from './utils'
@@ -119,12 +120,11 @@ export default function Tool() {
             </button>
           </div>
           <div className="flex items-start gap-4">
-            <div
+            <SafeHtml
+              html={svg.replace('width="64" height="64"', 'width="128" height="128"')}
+              trusted={true}
               data-testid="svggame-preview"
               className="rounded border border-slate-300 p-4 dark:border-slate-600"
-              dangerouslySetInnerHTML={{
-                __html: svg.replace('width="64" height="64"', 'width="128" height="128"'),
-              }}
             />
             <pre data-testid="svggame-output" className={`${PRE_CLS} flex-1`}>
               {svg}

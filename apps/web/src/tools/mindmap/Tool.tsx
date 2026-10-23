@@ -1,5 +1,6 @@
 import { useEffect, useId, useState } from 'react'
 import { MultiPanel } from '../../components/tool/templates/MultiPanel'
+import { SafeHtml } from '../../shared/SafeHtml'
 import { meta } from './meta'
 import { EXAMPLES, MAX_CODE_LENGTH, prepareCode, validate } from './utils'
 import type { MindmapInput, MindmapOptions } from './schema'
@@ -93,11 +94,9 @@ function DiagramPreview({ code, invalidMessage }: DiagramPreviewProps) {
     return <p className={HINT_CLASS}>渲染中…</p>
   }
   return (
-    <div
-      data-testid="preview-svg"
-      className="overflow-auto"
-      dangerouslySetInnerHTML={{ __html: render.svg }}
-    />
+    <div data-testid="preview-svg" className="overflow-auto">
+      <SafeHtml html={render.svg} trusted={true} data-testid="preview-svg-inner" />
+    </div>
   )
 }
 

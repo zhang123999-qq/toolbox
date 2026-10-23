@@ -71,6 +71,15 @@ export default defineConfig(
         { prefer: 'type-imports', fixStyle: 'inline-type-imports' },
       ],
       '@typescript-eslint/no-explicit-any': 'warn',
+      // 安全审计：全应用只有 SafeHtml 内部允许使用 dangerouslySetInnerHTML
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'JSXAttribute[name.name="dangerouslySetInnerHTML"]',
+          message:
+            'dangerouslySetInnerHTML 只能出现在 SafeHtml（src/shared/SafeHtml.tsx）内部；其余位置请先经 sanitizeHtml 清洗并通过 SafeHtml 渲染。例外需在 ESLint 例外清单登记。',
+        },
+      ],
     },
   },
 

@@ -1,4 +1,5 @@
 import { MultiPanel } from '../../components/tool/templates/MultiPanel'
+import { SafeHtml } from '../../shared/SafeHtml'
 import type { OptionDef } from '../../components/tool/templates/TwoColumn'
 import { useTranslate } from '../../i18n'
 import { meta } from './meta'
@@ -65,9 +66,10 @@ export default function Tool() {
                 {t('timelineGen.notice.truncated', { max: MAX_EVENTS })}
               </p>
             ) : null}
-            <div
+            <SafeHtml
+              html={buildTimelineHtml(parsed.events, options, t)}
+              trusted={true}
               data-testid="timeline-html"
-              dangerouslySetInnerHTML={{ __html: buildTimelineHtml(parsed.events, options, t) }}
             />
           </div>
         )

@@ -1,5 +1,7 @@
 # 发布流程（Release）
 
+[English version](RELEASE.en.md)
+
 本项目**不是 Go 项目**：全部代码为 TypeScript（Vite + React 19），
 构建产物是纯静态文件，不存在 Go 二进制、`go.mod` 或 Go 工具链依赖。
 因此「构建 Release」在本项目里的含义是：

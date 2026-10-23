@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { MultiPanel } from '../../components/tool/templates/MultiPanel'
 import type { OptionDef } from '../../components/tool/templates/TwoColumn'
+import { SafeHtml } from '../../shared/SafeHtml'
 import { meta } from './meta'
 import { buildAvatarSvg, randomSeed } from './utils'
 import type { AvatarInput, AvatarOptions } from './schema'
@@ -34,7 +35,8 @@ export default function Tool() {
           return (
             <div className="flex justify-center p-4">
               {/* SVG 由本地 buildAvatarSvg 生成，用户输入已通过 utils.ts 的 escapeXml() 转义为 XML 实体（& < > "），无 XSS 执行路径 */}
-              <div data-testid="avatar-svg" dangerouslySetInnerHTML={{ __html: svg }} />
+              {/* SVG 由本地 buildAvatarSvg 生成，用户输入已通过 utils.ts 的 sanitizeColor + escapeXml 清洗，无 XSS 执行路径；通过 SafeHtml 以 trusted 方式渲染 */}
+              <SafeHtml html={svg} trusted={true} data-testid="avatar-svg" />
             </div>
           )
         } catch (error) {

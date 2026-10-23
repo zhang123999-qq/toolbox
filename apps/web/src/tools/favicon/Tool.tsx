@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { MultiPanel } from '../../components/tool/templates/MultiPanel'
+import { SafeHtml } from '../../shared/SafeHtml'
 import type { OptionDef } from '../../components/tool/templates/TwoColumn'
 import { meta } from './meta'
 import { buildFaviconSvg, randomSeed } from './utils'
@@ -59,10 +60,11 @@ export default function Tool() {
           const svg = buildFaviconSvg(input, options, seed)
           return (
             <div className="flex flex-col items-center gap-4 p-4">
-              <div
+              <SafeHtml
+                html={svg}
+                trusted={true}
                 data-testid="favicon-svg"
                 className="rounded border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-950"
-                dangerouslySetInnerHTML={{ __html: svg }}
               />
               <button
                 type="button"

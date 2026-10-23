@@ -1,5 +1,7 @@
+// @vitest-environment jsdom
 import { describe, expect, it } from 'vitest'
 import { STEP_HELP, pipelineFinal, pipelineHtml } from './utils'
+import { sanitizeHtml } from '../../shared/sanitizeHtml'
 
 describe('text-workbench / pipelineFinal', () => {
   it('按顺序跑完整条流水线', () => {
@@ -51,6 +53,24 @@ describe('text-workbench / pipelineHtml', () => {
 
   it('HTML 特殊字符被转义', () => {
     expect(pipelineHtml({ text: '<script>' }, { steps: 'trim' })).toContain('&lt;script&gt;')
+  })
+})
+
+describe('text-workbench / sanitizeHtml XSS 载荷（WP1 要求至少 3 个）', () => {
+  it('事件属性被清除（onclick）', () => {
+    const html = sanitizeHtml('<p onclick="alert(1)">x</p>')
+    expect(html).not.toContain('onclick')
+    expect(html).toContain('<p>x</p>')
+  })
+  it('javascript: 链接被清除（href）', () => {
+    const html = sanitizeHtml('<a href="javascript:alert(1)">x</a>')
+    expect(html).not.toContain('javascript:')
+    expect(html).toContain('<a>x</a>')
+  })
+  it('标签注入被清除（script 标签）', () => {
+    const html = sanitizeHtml('<script>alert(1)</script><p>x</p>')
+    expect(html).not.toContain('<script>')
+    expect(html).toContain('<p>x</p>')
   })
 })
 

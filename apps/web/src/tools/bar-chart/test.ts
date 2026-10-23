@@ -1,3 +1,5 @@
+/// <reference types="vitest/globals" />
+import { describe, expect, it } from 'vitest'
 import { generateSvg } from './utils'
 
 describe('bar-chart 工具', () => {
