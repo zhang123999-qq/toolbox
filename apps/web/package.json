@@ -50,8 +50,6 @@
     "openpgp": "^6.3.1",
     "otpauth": "^9.5.2",
     "papaparse": "^5.7.0",
-    "pdf-lib": "1.17.1",
-    "pdfjs-dist": "6.3.289",
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^6.3.289",
     "pinyin-pro": "^3.29.4",
