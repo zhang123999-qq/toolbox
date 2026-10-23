@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { MultiPanel } from '../../components/tool/templates/MultiPanel'
+import { SafeHtml } from '../../shared/SafeHtml'
 import type { OptionDef } from '../../components/tool/templates/TwoColumn'
 import { meta } from './meta'
 import { transform } from './utils'
@@ -25,7 +26,14 @@ export default function Tool() {
   function renderOutput(input: BlobGenInput, options: BlobGenOptions) {
     try {
       const svg = transform(input, options, salt)
-      return <div className="flex justify-center" dangerouslySetInnerHTML={{ __html: svg }} />
+      return (
+        <SafeHtml
+          html={svg}
+          trusted={true}
+          className="flex justify-center"
+          data-testid="blob-gen-svg"
+        />
+      )
     } catch (e) {
       return (
         <p role="alert" className={ERROR_CLASS}>

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { MultiPanel } from '../../components/tool/templates/MultiPanel'
+import { SafeHtml } from '../../shared/SafeHtml'
 import type { OptionDef } from '../../components/tool/templates/TwoColumn'
 import { meta } from './meta'
 import { buildLogoSvg, randomSeed } from './utils'
@@ -43,7 +44,7 @@ export default function Tool() {
           const svg = buildLogoSvg(input, options, seed)
           return (
             <div className="flex justify-center p-8">
-              <div data-testid="logo-svg" dangerouslySetInnerHTML={{ __html: svg }} />
+              <SafeHtml html={svg} trusted={true} data-testid="logo-svg" />
             </div>
           )
         } catch (error) {

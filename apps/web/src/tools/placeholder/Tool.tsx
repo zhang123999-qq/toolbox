@@ -1,4 +1,5 @@
 import { MultiPanel } from '../../components/tool/templates/MultiPanel'
+import { SafeHtml } from '../../shared/SafeHtml'
 import type { OptionDef } from '../../components/tool/templates/TwoColumn'
 import { meta } from './meta'
 import { buildPlaceholderSvg } from './utils'
@@ -29,7 +30,7 @@ export default function Tool() {
           const svg = buildPlaceholderSvg(input, options)
           return (
             <div className="flex justify-center p-4">
-              <div data-testid="placeholder-svg" dangerouslySetInnerHTML={{ __html: svg }} />
+              <SafeHtml html={svg} trusted={true} data-testid="placeholder-svg" />
             </div>
           )
         } catch (error) {

@@ -26,6 +26,7 @@ export const SafeHtml: React.FC<SafeHtmlProps> = ({
     <div
       data-testid={dataTestId}
       className={className}
+      // eslint-disable-next-line no-restricted-syntax
       dangerouslySetInnerHTML={{ __html: html }}
     />
   )

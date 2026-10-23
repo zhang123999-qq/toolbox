@@ -1,5 +1,6 @@
 import { useEffect, useId, useState } from 'react'
 import { MultiPanel } from '../../components/tool/templates/MultiPanel'
+import { SafeHtml } from '../../shared/SafeHtml'
 import { useTranslate } from '../../i18n'
 import type { Translate } from '../../i18n'
 import { meta } from './meta'
@@ -106,11 +107,9 @@ function DiagramPreview({ code, invalidMessage, t }: DiagramPreviewProps) {
     return <p className={HINT_CLASS}>{t('uml.preview.rendering')}</p>
   }
   return (
-    <div
-      data-testid="preview-svg"
-      className="overflow-auto"
-      dangerouslySetInnerHTML={{ __html: render.svg }}
-    />
+    <div data-testid="preview-svg" className="overflow-auto">
+      <SafeHtml html={render.svg} trusted={true} data-testid="preview-svg-inner" />
+    </div>
   )
 }
 
