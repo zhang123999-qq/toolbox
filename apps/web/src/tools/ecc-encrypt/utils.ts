@@ -12,6 +12,7 @@ export const CURVES = ['P-256', 'P-384', 'P-521'] as const
 /**
  * 演示用固定密钥对（P-256）。
  * 只用于「示例」与单测：ECDH 协商结果是确定性的，固定密钥才能得到可断言的共享密钥。
+ * ⚠️ 演示密钥不可用于真实数据加密。
  */
 export const DEMO_PUBLIC_KEY = `-----BEGIN PUBLIC KEY-----
 MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE/p9ZFnRDBzWiLSQDANABjlTH3bxo
@@ -136,6 +137,13 @@ function encode(bytes: Uint8Array, options: EccOptions): string {
 }
 
 export async function transform(input: EccInput, options: EccOptions): Promise<string> {
+  // 开发警告：演示密钥不可用于真实数据（浏览器端无 NODE_ENV 区分，故始终提示）
+  if (
+    input.privateKey.trim() === DEMO_PRIVATE_KEY.trim() ||
+    input.publicKey.trim() === DEMO_PUBLIC_KEY.trim()
+  ) {
+    console.warn('演示密钥不可用于真实数据：DEMO_PRIVATE_KEY / DEMO_PUBLIC_KEY 仅用于示例与测试')
+  }
   if (input.text === '') return ''
   if (options.direction === 'generate') {
     const pair = await generateKeyPair(options.curve)
