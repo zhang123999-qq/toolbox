@@ -56,6 +56,14 @@ http {
 
     charset utf-8;
 
+    # 安全响应头（直接生效）
+    add_header X-Frame-Options "DENY" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+    # CSP 观察版（Report-Only，不强制）；策略按站点实际：允许 self、data:/blob: 图片、inline style/script 现状
+    add_header Content-Security-Policy-Report-Only "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; media-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self';" always;
+
     server {
         listen       @PORT@;
         server_name  _;
