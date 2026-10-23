@@ -1,4 +1,6 @@
 import { MultiPanel } from '../../components/tool/templates/MultiPanel'
+import { SafeHtml } from '../../shared/SafeHtml'
+import { sanitizeHtml } from '../../shared/sanitizeHtml'
 import type { OptionDef } from '../../components/tool/templates/TwoColumn'
 import { useTranslate } from '../../i18n'
 import { meta } from './meta'
@@ -23,7 +25,7 @@ export default function Tool() {
       optionDefs={optionDefs}
       // 默认按「渲染 HTML 字符串」包裹；工具可用 renderJsx 给出自定义 JSX 表达式
       renderOutput={(input, options) => (
-        <div dangerouslySetInnerHTML={{ __html: pipelineHtml(input, options) }} />
+        <SafeHtml html={sanitizeHtml(pipelineHtml(input, options))} data-testid="pipeline-html" />
       )}
       toText={(input, options) => pipelineFinal(input, options)}
       downloadExt="txt"
