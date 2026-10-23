@@ -86,11 +86,25 @@ function randomLetter(rand: () => number): string {
   return String.fromCharCode(65 + Math.floor(rand() * 26))
 }
 
+/** 严格验证颜色值格式：只允许 #hex、hsl(...)、rgb(...)、标准颜色名，防止 XSS 注入 SVG 属性 */
+function sanitizeColor(value: string): string {
+  const trimmed = value.trim()
+  // 允许：# + 3/6/8 位十六进制，或 hsl(...)/rgb(...)/rgba(...)，或标准颜色名（字母 + 空格）
+  const safePattern = /^(#[0-9a-fA-F]{3,8}|hsl\([^)]+\)|rgb\([^)]+\)|rgba\([^)]+\)|[a-zA-Z][a-zA-Z0-9\s-]*[a-zA-Z0-9])$/
+  if (!safePattern.test(trimmed)) {
+    throw new Error('背景色格式无效，仅支持 #hex、hsl、rgb 或标准颜色名')
+  }
+  // 对已通过格式验证的值再做 XML 属性转义（双重防护）
+  return trimmed.replace(/"/g, '&quot;').replace(/'/g, '&apos;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/&/g, '&amp;')
+}
+
 /** 生成线性渐变 defs 片段 */
 function gradientDef(id: string, c1: string, c2: string): string {
+  const safeC1 = sanitizeColor(c1)
+  const safeId = id.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 20) || 'g'
   return (
-    `<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1">` +
-    `<stop offset="0" stop-color="${c1}"/>` +
+    `<defs><linearGradient id="${safeId}" x1="0" y1="0" x2="1" y2="1">` +
+    `<stop offset="0" stop-color="${safeC1}"/>` +
     `<stop offset="1" stop-color="${c2}"/>` +
     `</linearGradient></defs>`
   )

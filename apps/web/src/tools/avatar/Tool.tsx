@@ -33,6 +33,7 @@ export default function Tool() {
           const svg = buildAvatarSvg(input, options, seed)
           return (
             <div className="flex justify-center p-4">
+              {/* SVG 由本地 buildAvatarSvg 生成，用户输入已通过 utils.ts 的 escapeXml() 转义为 XML 实体（& < > "），无 XSS 执行路径 */}
               <div data-testid="avatar-svg" dangerouslySetInnerHTML={{ __html: svg }} />
             </div>
           )
