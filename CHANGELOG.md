@@ -8,7 +8,40 @@
 每个版本对应一个 git tag（`vX.Y.Z`）与一个 GitHub Release，
 Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELEASE.md)）。
 
-## [Unreleased]
+## [0.0.7] - 2026-10-24
+
+安全加固版本：收敛全站 `dangerouslySetInnerHTML` 到统一防线，堵住头像工具的
+颜色注入真洞，补齐部署安全头（对应 #15 安全审计修复）。
+
+### 安全
+
+- **HTML 注入面收敛**：全站 23 处 `dangerouslySetInnerHTML` 收敛到统一 `SafeHtml`
+  组件 + `sanitizeHtml` 白名单清洗；新增 ESLint 规则卡住后续新增，
+  未经清洗的用法直接 lint 报错
+- **头像颜色注入修复**：`sanitizeColor` 重写为严格解析器（hex 精确长度、
+  rgb/hsl 数值范围校验、颜色名白名单）；堵住 `gradientDef` 第二个颜色
+  未清洗直接拼进 SVG 的真洞；转义顺序修正（`&` 优先转义）
+- **演示密钥防误用**：`ecc-encrypt` 演示密钥改名 `DEMO_*` 前缀并加注释警告，
+  transform 路径加 `console.warn` 提示
+
+### 修复
+
+- **bar-chart 工具目录补齐**：补 catalog 注册、缺失的 `Tool.test.tsx` 与
+  `e2e.spec.ts`、修复 `test.ts` 类型问题（此前 `check:source-org` 因此失败）
+- **依赖去重**：`apps/web/package.json` 删除 `pdf-lib`、`pdfjs-dist` 的重复登记，
+  lockfile 已同步
+
+### 变更
+
+- **部署安全头**：nginx 配置新增防嵌套、防嗅探、`Referrer-Policy` 三个响应头；
+  CSP 暂为 Report-Only 观察版（强制策略待确认不影响站上工具后再上）
+
+### 已知限制
+
+- `escapeHtml`/`escapeXml` 各工具自写重复实现约 25 份，尚未收敛到统一工具
+  函数（P2，后续版本处理）
+- 3 个文件有预存格式债（avatar/test.ts、avatar/utils.ts、bar-chart/utils.ts），
+  本次仅清理修复分支自身触碰的文件
 
 ## [0.0.6] - 2026-10-22
 
