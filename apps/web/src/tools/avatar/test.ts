@@ -90,7 +90,11 @@ describe('avatar / buildAvatarSvg', () => {
 
   it('绕过载荷 hsl(...);background-image:url(...) 必须被拒', () => {
     expect(() =>
-      buildAvatarSvg({ text: 'X' }, { ...base, bgColor: 'hsl(0,0%,0%);background-image:url(http://evil)' }, 'seed'),
+      buildAvatarSvg(
+        { text: 'X' },
+        { ...base, bgColor: 'hsl(0,0%,0%);background-image:url(http://evil)' },
+        'seed',
+      ),
     ).toThrow(/背景色格式无效/)
   })
 
@@ -108,7 +112,9 @@ describe('avatar / buildAvatarSvg', () => {
   })
 
   it('非法 hex 长度必须被拒', () => {
-    expect(() => buildAvatarSvg({ text: 'X' }, { ...base, bgColor: '#fffff' }, 'seed')).toThrow(/背景色格式无效/)
+    expect(() => buildAvatarSvg({ text: 'X' }, { ...base, bgColor: '#fffff' }, 'seed')).toThrow(
+      /背景色格式无效/,
+    )
   })
 
   it('合法标准颜色名保持可用', () => {
