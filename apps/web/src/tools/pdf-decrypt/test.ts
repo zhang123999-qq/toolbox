@@ -1,11 +1,13 @@
 import { beforeAll, describe, expect, it } from 'vitest'
 import { PDFDocument } from 'pdf-lib'
-// 真实 qpdf-wasm：只用来在测试现场生成“已加密 PDF”夹具，
+// 真实 qpdf-wasm：只用来在测试现场生成"已加密 PDF"夹具，
 // 不经过 src/lib/qpdf.ts（该封装在组件测试中 mock）。
 // vitest 下 `?url` 解析为 /@fs/ 开头的 dev URL，Emscripten 在 node
-// 环境打不开，需剥掉前缀还原为真实文件路径（已实测可用）。
+// 环境打不开，需转为 file:// URL 或绝对路径。
 import createModule from '@neslinesli93/qpdf-wasm'
 import wasmUrl from '@neslinesli93/qpdf-wasm/dist/qpdf.wasm?url'
+import { fileURLToPath } from 'node:url'
+import { resolve } from 'node:path'
 import {
   DECRYPT_FAILURE_KEYS,
   MAX_FILE_SIZE,
@@ -19,6 +21,20 @@ import {
   probePdfEncryption,
   validatePassword,
 } from './utils'
+
+// 将 /@fs/... URL 转为 Node 可读的绝对路径
+function resolveWasmPath(url: string): string {
+  // url 形如: /@fs/D:/default-workspace/.../qpdf.wasm
+  const stripped = url.replace(/^\/@fs\//, '')
+  // 在 Windows 上 stripped 为 D:/default-workspace/... 形式
+  // 使用 fileURLToPath 确保跨平台兼容
+  try {
+    return fileURLToPath(`file:///${stripped}`)
+  } catch {
+    // 兜底：直接返回绝对路径
+    return resolve(stripped)
+  }
+}
 
 interface TestFs {
   writeFile(path: string, data: Uint8Array): void
@@ -36,8 +52,10 @@ beforeAll(async () => {
   doc.addPage([600, 800])
   plainPdf = await doc.save()
 
-  const wasmPath = (wasmUrl as string).replace(/^\/@fs/, '')
-  // 与 src/lib/qpdf.ts 一致：locateFile 无条件返回 wasm 真实路径
+  // Debug: log wasmUrl to understand its format
+  console.log('[DEBUG] wasmUrl:', wasmUrl)
+  const wasmPath = resolveWasmPath(wasmUrl as string)
+  console.log('[DEBUG] wasmPath:', wasmPath)
   const qpdf = (await createModule({
     locateFile: () => wasmPath,
   })) as unknown as { callMain: (args: string[]) => number; FS: TestFs }

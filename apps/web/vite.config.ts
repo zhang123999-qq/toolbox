@@ -1,9 +1,10 @@
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import wasm from 'vite-plugin-wasm'
 
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss(), wasm()],
   build: {
     target: 'es2022',
     // 每工具独立 chunk，便于控制工具页 JS < 30KB（DEVELOPMENT.md §11）
@@ -26,6 +27,13 @@ export default defineConfig({
         },
       },
     },
+    // 确保 pdfjs-dist 的 worker 文件被复制到 dist
+    assetsDir: 'assets',
+    copyPublicDir: true,
+  },
+  // 确保 @neslinesli93/qpdf-wasm 的 WASM 文件在测试环境中可用
+  optimizeDeps: {
+    exclude: ['@neslinesli93/qpdf-wasm'],
   },
   test: {
     environment: 'node',
@@ -39,5 +47,7 @@ export default defineConfig({
     // 用例之间有共享的可变状态（localStorage / document.title），
     // 每次跑完清一遍，避免新增用例互相污染
     restoreMocks: true,
+    // 确保 pdfjs-dist worker 在测试环境可用
+    setupFiles: ['./src/test-setup.ts'],
   },
 })

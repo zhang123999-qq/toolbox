@@ -1,0 +1,111 @@
+# =============================================================================
+# Toolbox - Production Docker Compose
+# =============================================================================
+# Security hardening:
+# - Non-root containers
+# - Read-only root filesystem where possible
+# - Dropped capabilities
+# - Resource limits
+# - Security options
+# - Health checks
+# - Network isolation
+# =============================================================================
+
+version: "3.8"
+
+services:
+  toolbox:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # Build args for traceability
+      args:
+        BUILD_DATE: ${BUILD_DATE:-$(date -u +"%Y-%m-%dT%H:%M:%SZ")}
+        VERSION: ${VERSION:-latest}
+        VCS_REF: ${VCS_REF:-$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")}
+        SITE_ORIGIN: ${SITE_ORIGIN:-https://006336.xyz}
+    image: toolbox:${VERSION:-latest}
+    container_name: toolbox-prod
+    restart: unless-stopped
+    # Security: run as non-root (handled in Dockerfile USER nginx)
+    # Security: read-only root filesystem (nginx needs /var/cache, /var/log, /run writable)
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx:exec,nosuid,nodev,size=100m
+      - /var/log/nginx:exec,nosuid,nodev,size=10m
+      - /run/nginx:exec,nosuid,nodev,size=10m
+    # Security: drop all capabilities, add only what's needed
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE # Required for binding to port 8081 (though 8081 > 1024, kept for flexibility)
+    # Security: prevent privilege escalation
+    security_opt:
+      - no-new-privileges:true
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 128M
+    # Port mapping
+    ports:
+      - "8081:8081"
+    # Health check (also in Dockerfile, but compose can override)
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8081/healthz"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    # Environment
+    environment:
+      - TZ=UTC
+    # Networks
+    networks:
+      - toolbox-network
+
+  # Optional: Reverse proxy with TLS termination (nginx or Traefik)
+  # Uncomment and configure for production with HTTPS
+  # reverse-proxy:
+  #   image: nginx:1.27-alpine
+  #   container_name: toolbox-proxy
+  #   restart: unless-stopped
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./deploy/nginx/proxy.conf:/etc/nginx/conf.d/default.conf:ro
+  #     - ./certs:/etc/nginx/certs:ro
+  #   depends_on:
+  #     - toolbox
+  #   networks:
+  #     - toolbox-network
+  #   healthcheck:
+  #     test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/healthz"]
+  #     interval: 30s
+  #     timeout: 3s
+  #     retries: 3
+
+networks:
+  toolbox-network:
+    driver: bridge
+    # Enable IPv6 if needed
+    # enable_ipv6: true
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+
+# Volumes (not needed for static site, but available for persistence if needed)
+# volumes:
+#   toolbox-logs:
+#   toolbox-cache:

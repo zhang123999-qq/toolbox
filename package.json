@@ -51,5 +51,12 @@
     "turbo": "^2.11.3",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.70.1"
+  },
+  "pnpm": {
+    "overrides": {
+      "image-size": "^2.0.3",
+      "source-map-js": "^1.2.2",
+      "dompurify": "^3.4.17"
+    }
   }
 }

@@ -1,0 +1,1906 @@
+﻿pnpm.exe : $ vitest run
+所在位置 D:\admin\npm-global\pnpm.ps1:14 字符: 3
++   & "$basedir/node_modules/pnpm/pnpm.exe"   $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ($ vitest run:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+ RUN  v5.0.2 D:/default-workspace/toolbox/apps/web
+
+ ✓ src/tools/hd-wallet/test.ts (37 tests) 707ms
+ ✓ src/tools/scrypt-derive/test.ts (16 tests) 940ms
+ ✓ src/tools/sign-verify/test.ts (46 tests) 972ms
+ ✓ src/tools/tuner/test.ts (29 tests) 982ms
+ ✓ src/tools/excel-view/test.ts (11 tests) 1013ms
+   ✓ excel-view / 解析 (4)
+     ✓ 超限表格截断行列并标记 651ms
+   ✓ excel-view / 文本与文件入口 (4)
+     ✓ previewToText 标注截断 311ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ src/tools/whois-lookup/test.ts (8 tests) 693ms
+   ✓ whois-lookup / transform (4)
+     ✓ 端到端输出本地信息（RDAP 可能失败但不报错） 682ms
+ ✓ src/tools/pdf-encrypt/Tool.test.tsx (22 tests) 613ms
+ ✓ src/tools/map/Tool.test.tsx (8 tests) 736ms
+ ✓ src/tools/audio-denoise/Tool.test.tsx (8 tests) 765ms
+ ✓ src/tools/watermark-batch/Tool.test.tsx (25 tests) 737ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ src/tools/drawing-board/Tool.test.tsx (10 tests) 921ms
+   ✓ drawing-board · 历史记录 (4)
+     ✓ 油漆桶填充可撤销 712ms
+ ✓ src/tools/video-thumbnail/Tool.test.tsx (8 tests) 913ms
+   ✓ video-thumbnail · Tool (8)
+     ✓ 修改时间点后重新截取，数量随之变化 326ms
+ ✓ src/tools/image-resize/Tool.test.tsx (21 tests) 912ms
+ ✓ src/tools/chart-export/Tool.test.tsx (9 tests) 767ms
+ ✓ src/tools/mnemonic/test.ts (23 tests) 2721ms
+   ✓ mnemonicToSeed (4)
+     ✓ 默认手写 PBKDF2 与 Node crypto 一致（2048 轮） 1047ms
+     ✓ 空 passphrase 与 Node 一致 711ms
+     ✓ 种子长度 64 字节 931ms
+ ✓ src/tools/pdf-sign/Tool.test.tsx (30 tests) 868ms
+ ✓ src/tools/pdf-watermark/Tool.test.tsx (26 tests) 920ms
+ ✓ src/tools/rotate-batch/Tool.test.tsx (24 tests) 864ms
+ ✓ src/tools/mnemonic/Tool.test.tsx (7 tests) 1319ms
+   ✓ mnemonic · Tool (7)
+     ✓ 转种子模式：输出 128 位 hex 1048ms
+ ✓ src/tools/heatmap/Tool.test.tsx (8 tests) 1344ms
+   ✓ heatmap · Tool (8)
+     ✓ 点下载 PNG 触发 getDataURL 并点击下载链接 1129ms
+ ✓ src/tools/hd-wallet/Tool.test.tsx (4 tests) 1338ms
+   ✓ hd-wallet · Tool (4)
+     ✓ 示例种子派生出首地址 0x022b971dFF0C43305e691DEd7a14367AF19D6407 513ms
+ ✓ src/tools/audio-spectrogram/Tool.test.tsx (8 tests) 982ms
+   ✓ audio-spectrogram · Tool (8)
+     ✓ 载入示例音频 → 频谱图画布出现并显示报告 462ms
+ ✓ src/tools/pdf-compare/Tool.test.tsx (33 tests) 1392ms
+ ✓ src/tools/sankey/Tool.test.tsx (9 tests) 1454ms
+   ✓ sankey · Tool (9)
+     ✓ getDataURL 抛错进入错误态 1160ms
+ ✓ src/tools/image-annotate/Tool.test.tsx (28 tests) 805ms
+ ✓ src/tools/sprite-gen/Tool.test.tsx (24 tests) 740ms
+ ✓ src/tools/gif-split/Tool.test.tsx (17 tests) 738ms
+   ✓ gif-split 组件 (17)
+     ✓ 全部下载逐个触发每帧下载 406ms
+ ✓ src/tools/zh-convert/test.ts (8 tests) 542ms
+ ✓ src/tools/watermark/Tool.test.tsx (21 tests) 640ms
+ ✓ src/tools/ocr/Tool.test.tsx (24 tests) 659ms
+ ✓ src/tools/image-merge/Tool.test.tsx (21 tests) 572ms
+ ✓ src/tools/image-slider/Tool.test.tsx (20 tests) 490ms
+ ✓ src/tools/image-crop/Tool.test.tsx (21 tests) 628ms
+ ✓ src/tools/pdf-decrypt/Tool.test.tsx (18 tests) 525ms
+ ✓ src/tools/long-image/Tool.test.tsx (24 tests) 751ms
+ ✓ src/tools/pdf-page-number/Tool.test.tsx (21 tests) 554ms
+ ✓ src/tools/image-dimension/Tool.test.tsx (26 tests) 682ms
+ ✓ src/tools/color-adjust/Tool.test.tsx (15 tests) 404ms
+ ✓ src/tools/audio-mix/Tool.test.tsx (9 tests) 388ms
+ ✓ src/tools/color-picker/Tool.test.tsx (25 tests) 413ms
+ ✓ src/tools/id-photo/Tool.test.tsx (20 tests) 474ms
+ ✓ src/tools/pdf-delete/Tool.test.tsx (22 tests) 622ms
+ ✓ src/tools/audio-fade/Tool.test.tsx (9 tests) 469ms
+ ✓ src/tools/compress-size/Tool.test.tsx (18 tests) 400ms
+ ✓ src/tools/audio-volume/Tool.test.tsx (9 tests) 521ms
+ ✓ src/tools/pdf-form/Tool.test.tsx (16 tests) 488ms
+ ✓ src/tools/pdf-metadata/Tool.test.tsx (17 tests) 468ms
+ ✓ src/tools/svg-to-png/Tool.test.tsx (27 tests) 643ms
+ ✓ src/tools/doc-convert/Tool.test.tsx (10 tests) 391ms
+ ✓ src/tools/gif-merge/Tool.test.tsx (21 tests) 781ms
+ ✓ src/components/layout/PreferenceControls.test.tsx (9 tests) 551ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ src/tools/file-split/test.ts (23 tests) 337ms
+   ✓ file-split / 切分方案 (8)
+     ✓ 片数超限中文报错 302ms
+ ✓ src/tools/camera-snapshot/Tool.test.tsx (14 tests) 382ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ src/tools/statistics/Tool.test.tsx (7 tests) 557ms
+ ✓ src/tools/merge-batch/Tool.test.tsx (17 tests) 366ms
+ ✓ src/tools/sign-verify/Tool.test.tsx (6 tests) 456ms
+ ✓ src/tools/image-compare/Tool.test.tsx (23 tests) 388ms
+ ✓ src/tools/pdf-to-image-extract/Tool.test.tsx (22 tests) 512ms
+ ✓ src/tools/pdf-to-image/Tool.test.tsx (19 tests) 385ms
+ ✓ src/tools/image-rotate/Tool.test.tsx (22 tests) 452ms
+ ✓ src/tools/compress-compare/Tool.test.tsx (15 tests) 516ms
+ ✓ src/tools/csr-generate/test.ts (6 tests) 582ms
+ ✓ src/tools/image-base64/Tool.test.tsx (26 tests) 451ms
+ ✓ src/tools/filter/Tool.test.tsx (14 tests) 309ms
+ ✓ src/tools/svg-optimize-img/Tool.test.tsx (19 tests) 441ms
+ ✓ src/tools/word-to-html/Tool.test.tsx (9 tests) 317ms
+ ✓ src/tools/grid-image/Tool.test.tsx (17 tests) 502ms
+ ✓ src/tools/sharpen/Tool.test.tsx (13 tests) 299ms
+ ✓ src/tools/audio-merge/Tool.test.tsx (8 tests) 352ms
+ ✓ src/tools/image-round/Tool.test.tsx (17 tests) 407ms
+ ✓ src/tools/png-to-svg/Tool.test.tsx (15 tests) 431ms
+ ✓ src/tools/audio-speed/Tool.test.tsx (8 tests) 347ms
+ ✓ src/tools/background-remove/Tool.test.tsx (18 tests) 443ms
+ ✓ src/tools/personality/Tool.test.tsx (5 tests) 469ms
+Not implemented: navigation to another Document
+ ✓ src/tools/invoice-gen/Tool.test.tsx (9 tests) 341ms
+ ✓ src/tools/image-batch/Tool.test.tsx (20 tests) 505ms
+ ✓ src/tools/hue/Tool.test.tsx (16 tests) 298ms
+ ✓ src/tools/cert-generate/test.ts (8 tests) 393ms
+ ✓ src/tools/base64-to-image/Tool.test.tsx (16 tests) 385ms
+ ✓ src/tools/image-to-webp/Tool.test.tsx (13 tests) 292ms
+ ✓ src/tools/brightness-contrast/Tool.test.tsx (15 tests) 294ms
+ ✓ src/tools/pdf-split/Tool.test.tsx (17 tests) 338ms
+ ✓ src/tools/image-to-base64/Tool.test.tsx (18 tests) 386ms
+ ✓ src/tools/sequence/Tool.test.tsx (8 tests) 243ms
+ ✓ src/tools/qr-scan/Tool.test.tsx (17 tests) 388ms
+ ✓ src/tools/text-to-qr/Tool.test.tsx (6 tests) 333ms
+ ✓ src/tools/chat-history/Tool.test.tsx (9 tests) 383ms
+ ✓ src/tools/image-flip/Tool.test.tsx (15 tests) 370ms
+ ✓ src/tools/image-to-ascii/Tool.test.tsx (15 tests) 449ms
+Not implemented: navigation to another Document
+ ✓ src/tools/exif-remove/Tool.test.tsx (14 tests) 311ms
+ ✓ src/tools/resume/Tool.test.tsx (8 tests) 326ms
+ ✓ src/tools/audio-visualizer/Tool.test.tsx (6 tests) 359ms
+ ✓ src/tools/csr-generate/Tool.test.tsx (5 tests) 442ms
+ ✓ src/tools/gauge/Tool.test.tsx (7 tests) 337ms
+ ✓ src/tools/wheel/Tool.test.tsx (9 tests) 363ms
+ ✓ src/tools/pdf-to-excel/Tool.test.tsx (17 tests) 343ms
+ ✓ src/tools/psychology/Tool.test.tsx (6 tests) 305ms
+ ✓ src/tools/audio-cut/Tool.test.tsx (8 tests) 379ms
+ ✓ src/tools/image-convert/Tool.test.tsx (15 tests) 322ms
+ ✓ src/tools/pdf-rotate/Tool.test.tsx (17 tests) 342ms
+ ✓ src/tools/audio-pitch/Tool.test.tsx (8 tests) 456ms
+ ✓ src/tools/probability/Tool.test.tsx (7 tests) 294ms
+ ✓ src/tools/image-to-pdf/Tool.test.tsx (18 tests) 337ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ src/tools/flashcard/Tool.test.tsx (8 tests) 275ms
+ ✓ src/tools/pdf-sort/Tool.test.tsx (19 tests) 369ms
+ ✓ src/tools/redirect-check/Tool.test.tsx (5 tests) 388ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ src/tools/text-stats/Tool.test.tsx (6 tests) 421ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ src/tools/embedding-vis/Tool.test.tsx (5 tests) 289ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ src/tools/number-format/Tool.test.tsx (7 tests) 281ms
+ ✓ src/tools/spectrum/Tool.test.tsx (7 tests) 218ms
+ ✓ src/tools/pdf-to-text/Tool.test.tsx (15 tests) 332ms
+ ✓ src/tools/seo-audit/Tool.test.tsx (8 tests) 351ms
+ ✓ src/tools/calorie/Tool.test.tsx (7 tests) 322ms
+ ✓ src/tools/mosaic/Tool.test.tsx (13 tests) 330ms
+ ✓ src/tools/video-transcode/Tool.test.tsx (8 tests) 253ms
+ ✓ src/tools/mindmap/Tool.test.tsx (6 tests) 270ms
+ ✓ src/tools/pdf-compress/Tool.test.tsx (14 tests) 245ms
+ ✓ src/tools/timeline-gen/Tool.test.tsx (9 tests) 362ms
+ ✓ src/tools/ico/Tool.test.tsx (12 tests) 359ms
+Not implemented: navigation to another Document
+ ✓ src/tools/receipt/Tool.test.tsx (9 tests) 369ms
+ ✓ src/tools/ovulation/Tool.test.tsx (6 tests) 262ms
+ ✓ src/tools/image-compress/Tool.test.tsx (12 tests) 265ms
+ ✓ src/tools/api-encrypt/Tool.test.tsx (5 tests) 376ms
+ ✓ src/tools/audio-trim/Tool.test.tsx (9 tests) 481ms
+ ✓ src/tools/bcrypt-hash/Tool.test.tsx (7 tests) 332ms
+ ✓ src/tools/scrypt-derive/Tool.test.tsx (7 tests) 247ms
+ ✓ src/tools/image-to-avif/Tool.test.tsx (15 tests) 276ms
+ ✓ src/tools/pdf-ocr/Tool.test.tsx (10 tests) 256ms
+ ✓ src/tools/radar/Tool.test.tsx (7 tests) 281ms
+ ✓ src/tools/edge-redirect/Tool.test.tsx (5 tests) 293ms
+ ✓ src/tools/email-gen/Tool.test.tsx (8 tests) 261ms
+ ✓ src/tools/text-pad/Tool.test.tsx (6 tests) 229ms
+ ✓ src/tools/link-check/Tool.test.tsx (6 tests) 294ms
+ ✓ src/tools/text-hash/Tool.test.tsx (6 tests) 253ms
+ ✓ src/tools/tetris/Tool.test.tsx (2 tests) 312ms
+ ✓ src/tools/color-extract/Tool.test.tsx (15 tests) 190ms
+ ✓ src/tools/physics-formula/Tool.test.tsx (5 tests) 265ms
+ ✓ src/tools/md5-hash/Tool.test.tsx (8 tests) 262ms
+ ✓ src/tools/audio-compress/Tool.test.tsx (7 tests) 327ms
+ ✓ src/tools/video-editor/Tool.test.tsx (9 tests) 287ms
+ ✓ src/tools/pixelate/Tool.test.tsx (13 tests) 313ms
+ ✓ src/tools/pdf-merge/Tool.test.tsx (18 tests) 328ms
+ ✓ src/tools/text-align/Tool.test.tsx (6 tests) 312ms
+ ✓ src/tools/tag-gen/Tool.test.tsx (6 tests) 308ms
+ ✓ src/tools/flowchart/Tool.test.tsx (5 tests) 244ms
+ ✓ src/tools/image-hash/Tool.test.tsx (15 tests) 371ms
+ ✓ src/tools/funnel/Tool.test.tsx (7 tests) 302ms
+ ✓ src/tools/zh-convert/Tool.test.tsx (5 tests) 277ms
+ ✓ src/tools/saturation/Tool.test.tsx (12 tests) 296ms
+ ✓ src/tools/audio-convert/Tool.test.tsx (8 tests) 401ms
+ ✓ src/tools/ocr-post/Tool.test.tsx (6 tests) 377ms
+ ✓ src/tools/api-encrypt/test.ts (26 tests) 321ms
+ ✓ src/tools/equation/Tool.test.tsx (7 tests) 316ms
+ ✓ src/tools/wrangler/Tool.test.tsx (6 tests) 301ms
+ ✓ src/tools/matrix/Tool.test.tsx (6 tests) 376ms
+ ✓ src/tools/blur/Tool.test.tsx (13 tests) 268ms
+ ✓ src/tools/color-a11y/Tool.test.tsx (4 tests) 197ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ src/tools/copywriting/Tool.test.tsx (7 tests) 192ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ src/tools/pdf-to-ppt/Tool.test.tsx (15 tests) 302ms
+ ✓ src/tools/word-view/Tool.test.tsx (7 tests) 251ms
+ ✓ src/tools/image-format/Tool.test.tsx (14 tests) 301ms
+ ✓ src/tools/cert-generate/Tool.test.tsx (5 tests) 291ms
+ ✓ src/tools/blank-lines/Tool.test.tsx (6 tests) 204ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ src/components/search/SearchDialog.test.tsx (2 tests) 234ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ src/tools/image-info/Tool.test.tsx (14 tests) 276ms
+ ✓ src/tools/bmr/Tool.test.tsx (8 tests) 305ms
+ ✓ src/tools/text-truncate/Tool.test.tsx (6 tests) 215ms
+Not implemented: navigation to another Document
+ ✓ src/tools/graph/Tool.test.tsx (7 tests) 235ms
+ ✓ src/tools/poster/Tool.test.tsx (8 tests) 290ms
+ ✓ src/tools/gantt/Tool.test.tsx (8 tests) 332ms
+ ✓ src/tools/barcode-scan/Tool.test.tsx (15 tests) 334ms
+ ✓ src/tools/waveform/Tool.test.tsx (7 tests) 354ms
+ ✓ src/tools/worker-template/Tool.test.tsx (6 tests) 288ms
+ ✓ src/tools/random-decision/Tool.test.tsx (8 tests) 321ms
+ ✓ src/tools/api-sign/Tool.test.tsx (6 tests) 369ms
+ ✓ src/tools/due-date/Tool.test.tsx (7 tests) 311ms
+ ✓ src/tools/edge-auth/Tool.test.tsx (6 tests) 281ms
+ ✓ src/tools/random-number/Tool.test.tsx (6 tests) 228ms
+ ✓ src/tools/duplicate-lines/Tool.test.tsx (6 tests) 222ms
+ ✓ src/pages/HomePage.test.tsx (7 tests) 293ms
+ ✓ src/tools/sudoku/Tool.test.tsx (4 tests) 195ms
+ ✓ src/tools/summarize/Tool.test.tsx (6 tests) 269ms
+ ✓ src/tools/edge-cache/Tool.test.tsx (5 tests) 243ms
+ ✓ src/tools/salary/Tool.test.tsx (7 tests) 243ms
+ ✓ src/tools/pdf-to-word/Tool.test.tsx (14 tests) 268ms
+ ✓ src/tools/http-assert/Tool.test.tsx (6 tests) 166ms
+ ✓ src/tools/token-count/Tool.test.tsx (5 tests) 333ms
+ ✓ src/tools/zip-create/Tool.test.tsx (8 tests) 235ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ src/tools/pbkdf2-derive/Tool.test.tsx (7 tests) 179ms
+ ✓ src/tools/math-formula/Tool.test.tsx (4 tests) 202ms
+ ✓ src/tools/geometry/Tool.test.tsx (6 tests) 233ms
+ ✓ src/tools/fraction/Tool.test.tsx (6 tests) 263ms
+ ✓ src/tools/coin/Tool.test.tsx (7 tests) 232ms
+ ✓ src/tools/qr-styling/Tool.test.tsx (4 tests) 275ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ src/tools/regex-gen/Tool.test.tsx (8 tests) 208ms
+ ✓ src/tools/tax/Tool.test.tsx (5 tests) 257ms
+ ✓ src/tools/lottery/Tool.test.tsx (7 tests) 310ms
+Not implemented: navigation to another Document
+ ✓ src/tools/audio-to-text/Tool.test.tsx (8 tests) 297ms
+ ✓ src/tools/pdf-insert/Tool.test.tsx (8 tests) 297ms
+ ✓ src/tools/naming-gen/Tool.test.tsx (7 tests) 223ms
+ ✓ src/tools/er-gen/Tool.test.tsx (8 tests) 269ms
+ ✓ src/tools/ssh-key/Tool.test.tsx (7 tests) 190ms
+ ✓ src/tools/log-exp/Tool.test.tsx (7 tests) 246ms
+ ✓ src/tools/placeholder/Tool.test.tsx (5 tests) 233ms
+ ✓ src/tools/form-a11y/test.ts (28 tests) 241ms
+ ✓ src/tools/chemistry/Tool.test.tsx (5 tests) 230ms
+ ✓ src/tools/speed/Tool.test.tsx (6 tests) 263ms
+ ✓ src/tools/favicon/Tool.test.tsx (5 tests) 273ms
+ ✓ src/tools/aes-encrypt/Tool.test.tsx (8 tests) 229ms
+ ✓ src/tools/text-wrap/Tool.test.tsx (6 tests) 221ms
+ ✓ src/tools/pdf-to-markdown/Tool.test.tsx (9 tests) 208ms
+ ✓ src/tools/body-fat/Tool.test.tsx (7 tests) 275ms
+ ✓ src/tools/gas/Tool.test.tsx (6 tests) 230ms
+ ✓ src/tools/cloudflare/Tool.test.tsx (5 tests) 197ms
+ ✓ src/tools/volume/Tool.test.tsx (6 tests) 292ms
+ ✓ src/tools/exchange-rate/Tool.test.tsx (7 tests) 181ms
+stderr | src/tools/ecc-encrypt/Tool.test.tsx > ecc-encrypt · Tool > 示例 → 运行 → 输出已知共享密钥
+演示密钥不可用于真实数据：DEMO_PRIVATE_KEY / DEMO_PUBLIC_KEY 仅用于示例与测试
+
+ ✓ src/tools/ens/Tool.test.tsx (4 tests) 302ms
+stderr | src/tools/ecc-encrypt/Tool.test.tsx > ecc-encrypt · Tool > 切到 hex 编码后输出同一字节的十六进制
+演示密钥不可用于真实数据：DEMO_PRIVATE_KEY / DEMO_PUBLIC_KEY 仅用于示例与测试
+
+ ✓ src/tools/trigonometry/Tool.test.tsx (7 tests) 298ms
+ ✓ src/tools/tip/Tool.test.tsx (6 tests) 284ms
+ ✓ src/tools/exif-view/Tool.test.tsx (14 tests) 340ms
+stderr | src/tools/ecc-encrypt/Tool.test.tsx > ecc-encrypt · Tool > 切到 hex 编码后输出同一字节的十六进制
+演示密钥不可用于真实数据：DEMO_PRIVATE_KEY / DEMO_PUBLIC_KEY 仅用于示例与测试
+
+ ✓ src/tools/ecc-encrypt/Tool.test.tsx (7 tests) 192ms
+ ✓ src/tools/uml/Tool.test.tsx (8 tests) 273ms
+ ✓ src/tools/sampling/Tool.test.tsx (7 tests) 345ms
+ ✓ src/tools/text-compare/Tool.test.tsx (6 tests) 283ms
+ ✓ src/tools/qr-scan-media/Tool.test.tsx (6 tests) 257ms
+ ✓ src/tools/barcode-scan-media/Tool.test.tsx (9 tests) 283ms
+ ✓ src/tools/screen-reader/test.ts (38 tests) 241ms
+ ✓ src/tools/mobile-friendly/Tool.test.tsx (5 tests) 210ms
+ ✓ src/tools/ratio/Tool.test.tsx (6 tests) 251ms
+ ✓ src/tools/file-compare/Tool.test.tsx (8 tests) 253ms
+ ✓ src/tools/word-to-markdown/Tool.test.tsx (5 tests) 181ms
+ ✓ src/tools/average/Tool.test.tsx (6 tests) 205ms
+Not implemented: navigation to another Document
+ ✓ src/tools/json-to-pdf/Tool.test.tsx (5 tests) 179ms
+ ✓ src/tools/favicon-gen/Tool.test.tsx (5 tests) 207ms
+ ✓ src/tools/subtitle-merge/Tool.test.tsx (8 tests) 178ms
+ ✓ src/tools/compound-interest/Tool.test.tsx (5 tests) 223ms
+ ✓ src/tools/prompt-optimize/Tool.test.tsx (8 tests) 199ms
+ ✓ src/tools/audio-extract/Tool.test.tsx (6 tests) 189ms
+ ✓ src/tools/avatar/Tool.test.tsx (5 tests) 237ms
+ ✓ src/tools/voting/Tool.test.tsx (7 tests) 214ms
+ ✓ src/tools/percentage/Tool.test.tsx (6 tests) 299ms
+ ✓ src/tools/edge-log/Tool.test.tsx (5 tests) 271ms
+ ✓ src/tools/subtitle-extract/Tool.test.tsx (8 tests) 245ms
+ ✓ src/tools/alt-gen/Tool.test.tsx (7 tests) 258ms
+ ✓ src/tools/plagiarism/Tool.test.tsx (7 tests) 261ms
+ ✓ src/tools/local-qa/Tool.test.tsx (6 tests) 223ms
+ ✓ src/tools/loan/Tool.test.tsx (6 tests) 347ms
+ ✓ src/tools/sentiment/Tool.test.tsx (5 tests) 167ms
+ ✓ src/tools/dice/Tool.test.tsx (7 tests) 269ms
+Not implemented: navigation to another Document
+ ✓ src/tools/invoice-pdf/Tool.test.tsx (5 tests) 196ms
+ ✓ src/tools/decimal/Tool.test.tsx (6 tests) 193ms
+ ✓ src/tools/split-bill/Tool.test.tsx (6 tests) 229ms
+ ✓ src/tools/title-check/Tool.test.tsx (6 tests) 197ms
+ ✓ src/tools/semver-gen/Tool.test.tsx (5 tests) 194ms
+ ✓ src/tools/unzip/Tool.test.tsx (6 tests) 161ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ src/tools/rsa-encrypt/Tool.test.tsx (7 tests) 202ms
+ ✓ src/tools/ed25519-sign/Tool.test.tsx (7 tests) 188ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ src/tools/gomoku/Tool.test.tsx (3 tests) 215ms
+ ✓ src/tools/noise-gen/Tool.test.tsx (5 tests) 161ms
+ ✓ src/tools/pdf-to-html/Tool.test.tsx (7 tests) 201ms
+ ✓ src/tools/sha256-hash/Tool.test.tsx (7 tests) 204ms
+ ✓ src/tools/text-watermark/Tool.test.tsx (6 tests) 244ms
+ ✓ src/tools/hmac-calc/Tool.test.tsx (8 tests) 222ms
+ ✓ src/tools/interest/Tool.test.tsx (5 tests) 263ms
+ ✓ src/tools/rag/Tool.test.tsx (7 tests) 155ms
+ ✓ src/tools/structured-data/Tool.test.tsx (5 tests) 207ms
+ ✓ src/tools/eyedropper/Tool.test.tsx (8 tests) 248ms
+Not implemented: navigation to another Document
+ ✓ src/tools/html-to-pdf/Tool.test.tsx (5 tests) 191ms
+ ✓ src/tools/subtitle-burn/Tool.test.tsx (7 tests) 265ms
+Not implemented: navigation to another Document
+ ✓ src/tools/pdf-link/Tool.test.tsx (7 tests) 219ms
+ ✓ src/tools/encoding-convert/test.ts (13 tests) 228ms
+ ✓ src/tools/code-explain/Tool.test.tsx (6 tests) 171ms
+ ✓ src/tools/temperature/Tool.test.tsx (6 tests) 289ms
+ ✓ src/tools/video-merge/Tool.test.tsx (7 tests) 266ms
+ ✓ src/tools/tuner/Tool.test.tsx (6 tests) 234ms
+ ✓ src/tools/file-split/Tool.test.tsx (7 tests) 191ms
+Not implemented: navigation to another Document
+ ✓ src/tools/file-compare/test.ts (22 tests) 240ms
+ ✓ src/tools/pdf-attach/Tool.test.tsx (7 tests) 196ms
+ ✓ src/tools/keyboard-nav/test.ts (29 tests) 192ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ src/tools/ping/Tool.test.tsx (7 tests) 166ms
+(node:34624) ExperimentalWarning: The SHA3-256 Web Crypto API algorithm is an experimental feature and might change at 
+any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:34624) ExperimentalWarning: The SHA3-512 Web Crypto API algorithm is an experimental feature and might change at 
+any time
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ src/tools/pixel-art/Tool.test.tsx (7 tests) 134ms
+ ✓ src/tools/sha3-hash/Tool.test.tsx (7 tests) 165ms
+ ✓ src/tools/emoji/Tool.test.tsx (6 tests) 135ms
+ ✓ src/tools/camera-photo/Tool.test.tsx (7 tests) 192ms
+ ✓ src/tools/file-hash/Tool.test.tsx (7 tests) 177ms
+Not implemented: navigation to another Document
+ ✓ src/tools/jws-parse/Tool.test.tsx (7 tests) 140ms
+ ✓ src/tools/metronome/Tool.test.tsx (6 tests) 212ms
+ ✓ src/tools/key-generate/Tool.test.tsx (7 tests) 228ms
+ ✓ src/tools/model-compare/Tool.test.tsx (7 tests) 186ms
+ ✓ src/tools/pdf-bookmark/Tool.test.tsx (8 tests) 193ms
+ ✓ src/tools/embedding/Tool.test.tsx (5 tests) 209ms
+ ✓ src/tools/periodic-table/Tool.test.tsx (4 tests) 239ms
+Not implemented: navigation to another Document
+ ✓ src/tools/xxhash-hash/Tool.test.tsx (5 tests) 171ms
+ ✓ src/tools/contract-sim/Tool.test.tsx (5 tests) 191ms
+ ✓ src/tools/i18n-diff/Tool.test.tsx (4 tests) 237ms
+ ✓ src/tools/receipt-pdf/Tool.test.tsx (5 tests) 167ms
+ ✓ src/tools/screen-recorder/Tool.test.tsx (6 tests) 201ms
+ ✓ src/tools/data-table/Tool.test.tsx (7 tests) 197ms
+Not implemented: navigation to another Document
+ ✓ src/tools/resume-pdf/Tool.test.tsx (6 tests) 177ms
+ ✓ src/tools/pdf-form/test.ts (27 tests) 142ms
+ ✓ src/tools/schema-diff/Tool.test.tsx (8 tests) 151ms
+ ✓ src/tools/discount/Tool.test.tsx (5 tests) 216ms
+ ✓ src/tools/icu-message/Tool.test.tsx (4 tests) 191ms
+ ✓ src/tools/translate/Tool.test.tsx (6 tests) 115ms
+ ✓ src/tools/media-metadata/Tool.test.tsx (6 tests) 170ms
+ ✓ src/tools/webhook-test/Tool.test.tsx (5 tests) 141ms
+ ✓ src/tools/text-unwatermark/Tool.test.tsx (6 tests) 213ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ src/tools/unit-convert/Tool.test.tsx (6 tests) 136ms
+ ✓ src/tools/sse/Tool.test.tsx (7 tests) 88ms
+Not implemented: navigation to another Document
+ ✓ src/tools/video-to-audio/Tool.test.tsx (7 tests) 162ms
+ ✓ src/tools/video-cut/Tool.test.tsx (8 tests) 215ms
+ ✓ src/tools/screen-capture/Tool.test.tsx (18 tests) 258ms
+ ✓ src/tools/markdown-to-pdf/Tool.test.tsx (6 tests) 167ms
+ ✓ src/tools/chart-gen/Tool.test.tsx (5 tests) 157ms
+ ✓ src/tools/og-preview/Tool.test.tsx (6 tests) 181ms
+ ✓ src/tools/ecdsa-sign/Tool.test.tsx (7 tests) 205ms
+ ✓ src/tools/screen-record/Tool.test.tsx (14 tests) 145ms
+ ✓ src/tools/audio-format/Tool.test.tsx (6 tests) 124ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ src/tools/captcha/Tool.test.tsx (4 tests) 248ms
+ ✓ src/tools/excel-view/Tool.test.tsx (5 tests) 180ms
+ ✓ src/tools/des-encrypt/Tool.test.tsx (8 tests) 184ms
+ ✓ src/tools/key-generate/test.ts (18 tests) 36ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ src/tools/ppt-to-image/Tool.test.tsx (7 tests) 203ms
+ ✓ src/tools/skip-link/Tool.test.tsx (7 tests) 202ms
+ ✓ src/tools/text-encrypt/test.ts (10 tests) 208ms
+Not implemented: navigation to another Document
+ ✓ src/tools/code-to-pdf/Tool.test.tsx (5 tests) 175ms
+stderr | src/tools/symbols/Tool.test.tsx > symbols · Tool > 渲染后 7 个必需 data-testid 全部存在
+Encountered two children with the same key, `°度`. Keys should be unique so that components maintain their identity acro
+ss updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could 
+change in a future version.
+
+stderr | src/tools/symbols/Tool.test.tsx > symbols · Tool > 点击「示例」后输出包含预期内容
+Encountered two children with the same key, `°度`. Keys should be unique so that components maintain their identity acro
+ss updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could 
+change in a future version.
+
+stderr | src/tools/symbols/Tool.test.tsx > symbols · Tool > 点击「清空」回到空输入
+Encountered two children with the same key, `°度`. Keys should be unique so that components maintain their identity acro
+ss updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could 
+change in a future version.
+Encountered two children with the same key, `°度`. Keys should be unique so that components maintain their identity acro
+ss updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could 
+change in a future version.
+
+ ✓ src/tools/nft-metadata/Tool.test.tsx (5 tests) 133ms
+stderr | src/tools/symbols/Tool.test.tsx > symbols · Tool > 空输入不进入错误态
+Encountered two children with the same key, `°度`. Keys should be unique so that components maintain their identity acro
+ss updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could 
+change in a future version.
+
+stderr | src/tools/symbols/Tool.test.tsx > symbols · Tool > 搜索后网格里出现对应符号
+Encountered two children with the same key, `°度`. Keys should be unique so that components maintain their identity acro
+ss updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could 
+change in a future version.
+
+stderr | src/tools/symbols/Tool.test.tsx > symbols · Tool > 点一下符号会记录已选
+Encountered two children with the same key, `°度`. Keys should be unique so that components maintain their identity acro
+ss updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could 
+change in a future version.
+
+ ✓ src/tools/symbols/Tool.test.tsx (6 tests) 166ms
+ ✓ src/tools/excel-to-csv/Tool.test.tsx (8 tests) 134ms
+ ✓ src/tools/http-client/Tool.test.tsx (5 tests) 156ms
+ ✓ src/tools/focus-style/Tool.test.tsx (7 tests) 166ms
+ ✓ src/tools/crc-checksum/Tool.test.tsx (7 tests) 106ms
+ ✓ src/tools/csp-config/Tool.test.tsx (6 tests) 185ms
+ ✓ src/tools/passphrase-gen/Tool.test.tsx (6 tests) 105ms
+ ✓ src/tools/chart-theme/Tool.test.tsx (5 tests) 163ms
+ ✓ src/tools/pdf-to-csv/Tool.test.tsx (8 tests) 223ms
+ ✓ src/tools/batch-rename/Tool.test.tsx (6 tests) 165ms
+ ✓ src/tools/chain-query/Tool.test.tsx (5 tests) 136ms
+ ✓ src/tools/blake3-hash/Tool.test.tsx (5 tests) 129ms
+ ✓ src/tools/binary-viewer/Tool.test.tsx (8 tests) 140ms
+ ✓ src/tools/jwt-generate/Tool.test.tsx (7 tests) 201ms
+ ✓ src/tools/argon2-hash/Tool.test.tsx (7 tests) 168ms
+ ✓ src/tools/vtt-convert/Tool.test.tsx (8 tests) 155ms
+Not implemented: navigation to another Document
+ ✓ src/tools/currency/Tool.test.tsx (7 tests) 204ms
+ ✓ src/tools/speech-recognition/Tool.test.tsx (10 tests) 197ms
+ ✓ src/tools/encoding-convert/Tool.test.tsx (7 tests) 184ms
+Not implemented: navigation to another Document
+ ✓ src/tools/ai-image-rec/Tool.test.tsx (8 tests) 208ms
+ ✓ src/tools/pdf-background/Tool.test.tsx (5 tests) 203ms
+ ✓ src/tools/markdown-to-pdf/test.ts (28 tests) 74ms
+ ✓ src/tools/sitemap-check/test.ts (22 tests) 208ms
+ ✓ src/tools/code-diff/Tool.test.tsx (5 tests) 88ms
+ ✓ src/tools/mock-data/Tool.test.tsx (8 tests) 126ms
+ ✓ src/tools/reduced-motion/Tool.test.tsx (9 tests) 94ms
+ ✓ src/tools/favicon-check/Tool.test.tsx (6 tests) 153ms
+ ✓ src/tools/reading-mode/Tool.test.tsx (6 tests) 142ms
+ ✓ src/tools/hex/Tool.test.tsx (7 tests) 124ms
+ ✓ src/tools/prompt-template/Tool.test.tsx (6 tests) 123ms
+ ✓ src/tools/api-mock/Tool.test.tsx (6 tests) 75ms
+ ✓ src/tools/text-classify/Tool.test.tsx (6 tests) 135ms
+ ✓ src/tools/aria-gen/Tool.test.tsx (6 tests) 119ms
+ ✓ src/tools/uuid/Tool.test.tsx (7 tests) 115ms
+ ✓ src/tools/sql-gen/Tool.test.tsx (7 tests) 235ms
+ ✓ src/tools/ass-convert/Tool.test.tsx (8 tests) 143ms
+ ✓ src/tools/password-generator/Tool.test.tsx (7 tests) 163ms
+ ✓ src/tools/graphql-formatter/Tool.test.tsx (5 tests) 93ms
+ ✓ src/tools/speed-test-net/Tool.test.tsx (5 tests) 146ms
+ ✓ src/tools/otp-qr/Tool.test.tsx (7 tests) 181ms
+Not implemented: navigation to another Document
+ ✓ src/tools/semantic-search/Tool.test.tsx (5 tests) 116ms
+ ✓ src/tools/minesweeper/Tool.test.tsx (3 tests) 177ms
+ ✓ src/tools/text-to-pdf/Tool.test.tsx (5 tests) 212ms
+ ✓ src/tools/ai-detect/Tool.test.tsx (7 tests) 174ms
+ ✓ src/tools/video-compress/Tool.test.tsx (7 tests) 248ms
+ ✓ src/tools/token-decimals/Tool.test.tsx (6 tests) 235ms
+ ✓ src/tools/video-frame/Tool.test.tsx (8 tests) 205ms
+ ✓ src/tools/cors-config/Tool.test.tsx (5 tests) 117ms
+ ✓ src/tools/websocket/Tool.test.tsx (7 tests) 100ms
+ ✓ src/tools/csv-to-excel/Tool.test.tsx (7 tests) 125ms
+ ✓ src/tools/bitmap-font/Tool.test.tsx (5 tests) 114ms
+ ✓ src/tools/htaccess/Tool.test.tsx (5 tests) 104ms
+ ✓ src/tools/screen-test/Tool.test.tsx (5 tests) 134ms
+ ✓ src/tools/audio-record/Tool.test.tsx (6 tests) 165ms
+ ✓ src/tools/hash-verify/Tool.test.tsx (4 tests) 151ms
+ ✓ src/tools/properties-parse/Tool.test.tsx (7 tests) 116ms
+ ✓ src/tools/physics/Tool.test.tsx (6 tests) 113ms
+ ✓ src/tools/prime/Tool.test.tsx (6 tests) 116ms
+ ✓ src/tools/hreflang/Tool.test.tsx (7 tests) 159ms
+ ✓ src/tools/random-salt/Tool.test.tsx (7 tests) 144ms
+ ✓ src/tools/passphrase/Tool.test.tsx (7 tests) 145ms
+ ✓ src/tools/power/Tool.test.tsx (6 tests) 130ms
+ ✓ src/tools/excel-to-markdown/Tool.test.tsx (4 tests) 154ms
+ ✓ src/tools/invoice/Tool.test.tsx (7 tests) 150ms
+ ✓ src/tools/json-to-ts/Tool.test.tsx (6 tests) 129ms
+ ✓ src/tools/ppt-view/Tool.test.tsx (6 tests) 180ms
+ ✓ src/tools/json-formatter/Tool.test.tsx (7 tests) 160ms
+ ✓ src/tools/dead-link/Tool.test.tsx (5 tests) 162ms
+ ✓ src/tools/dns-query/Tool.test.tsx (5 tests) 158ms
+ ✓ src/tools/pdf-page-number/test.ts (46 tests) 112ms
+ ✓ src/tools/pdf-watermark/test.ts (50 tests) 150ms
+ ✓ src/tools/landmark/test.ts (24 tests) 123ms
+ ✓ src/tools/jsonl/Tool.test.tsx (7 tests) 157ms
+ ✓ src/tools/blob-gen/Tool.test.tsx (5 tests) 94ms
+ ✓ src/tools/url-codec/Tool.test.tsx (5 tests) 81ms
+ ✓ src/tools/sql-escape/Tool.test.tsx (7 tests) 95ms
+ ✓ src/tools/toml-parse/Tool.test.tsx (6 tests) 97ms
+ ✓ src/tools/text-to-table/Tool.test.tsx (5 tests) 117ms
+ ✓ src/tools/regex-tester/Tool.test.tsx (6 tests) 90ms
+ ✓ src/tools/invisible-chars/Tool.test.tsx (5 tests) 86ms
+ ✓ src/tools/logo/Tool.test.tsx (5 tests) 113ms
+ ✓ src/tools/graphql-test/Tool.test.tsx (6 tests) 152ms
+ ✓ src/tools/jwt-decode/Tool.test.tsx (6 tests) 76ms
+ ✓ src/tools/jwe-parse/Tool.test.tsx (6 tests) 135ms
+ ✓ src/tools/utm/Tool.test.tsx (5 tests) 126ms
+ ✓ src/tools/srt-convert/Tool.test.tsx (9 tests) 147ms
+ ✓ src/tools/json-schema-validate/Tool.test.tsx (7 tests) 151ms
+ ✓ src/tools/checksum/Tool.test.tsx (6 tests) 112ms
+ ✓ src/tools/pem-parse/Tool.test.tsx (5 tests) 158ms
+ ✓ src/tools/ssh-config/Tool.test.tsx (5 tests) 97ms
+ ✓ src/tools/font-size/Tool.test.tsx (8 tests) 167ms
+ ✓ src/tools/grid-gen/Tool.test.tsx (5 tests) 186ms
+ ✓ src/tools/high-contrast/Tool.test.tsx (6 tests) 217ms
+ ✓ src/tools/link-check/test.ts (32 tests) 134ms
+stdout | src/tools/pdf-decrypt/test.ts
+[DEBUG] wasmUrl: /@fs/D:/default-workspace/toolbox/node_modules/.pnpm/@neslinesli93+qpdf-wasm@0.3.0/node_modules/@neslinesli93/qpdf-wasm/dist/qpdf.wasm
+[DEBUG] wasmPath: D:\default-workspace\toolbox\node_modules\.pnpm\@neslinesli93+qpdf-wasm@0.3.0\node_modules\@neslinesli93\qpdf-wasm\dist\qpdf.wasm
+
+stderr | src/tools/pdf-decrypt/test.ts > isEncryptedPdfError > 按 message 识别 pdf-lib 加密错误（原型链断裂，instanceof 不可用）
+Trying to parse invalid object: {"line":12,"column":6,"offset":130})
+Invalid object ref: 2 0 R
+
+stderr | src/tools/pdf-decrypt/test.ts > probePdfEncryption > 加密 PDF → encrypted（真实 qpdf 加密夹具 + 真实 pdf-lib 探测）
+Trying to parse invalid object: {"line":12,"column":6,"offset":130})
+Invalid object ref: 2 0 R
+
+stderr | src/tools/pdf-decrypt/test.ts > buildDecryptArgs > 错误密码时真实退出码为 2
+threads.js: /d-in2.pdf: invalid password
+
+ ✓ src/tools/pdf-decrypt/test.ts (20 tests) 247ms
+ ✓ src/tools/quoted-printable/Tool.test.tsx (6 tests) 123ms
+ ✓ src/tools/rewrite/Tool.test.tsx (6 tests) 134ms
+ ✓ src/tools/json-merge/Tool.test.tsx (7 tests) 127ms
+ ✓ src/tools/json-to-xml/Tool.test.tsx (5 tests) 91ms
+ ✓ src/tools/sort/Tool.test.tsx (5 tests) 100ms
+ ✓ src/tools/cookie-parse/Tool.test.tsx (7 tests) 109ms
+ ✓ src/tools/xml-escape/Tool.test.tsx (7 tests) 110ms
+ ✓ src/tools/sha1-hash/Tool.test.tsx (7 tests) 159ms
+ ✓ src/tools/gitignore/Tool.test.tsx (6 tests) 110ms
+ ✓ src/tools/csp/Tool.test.tsx (8 tests) 181ms
+ ✓ src/tools/file-encoding/Tool.test.tsx (4 tests) 140ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ src/tools/table-to-text/Tool.test.tsx (5 tests) 102ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ src/tools/sprite-preview/Tool.test.tsx (6 tests) 124ms
+ ✓ src/tools/cert-parser/Tool.test.tsx (5 tests) 179ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ src/tools/color-blind-test/Tool.test.tsx (4 tests) 111ms
+ ✓ src/tools/data-filter/Tool.test.tsx (6 tests) 133ms
+ ✓ src/tools/bulk-password/Tool.test.tsx (7 tests) 171ms
+ ✓ src/tools/angle/Tool.test.tsx (6 tests) 88ms
+ ✓ src/tools/og/Tool.test.tsx (5 tests) 122ms
+ ✓ src/tools/protobuf-codec/Tool.test.tsx (6 tests) 122ms
+ ✓ src/tools/yaml-formatter/Tool.test.tsx (8 tests) 173ms
+ ✓ src/tools/video-to-gif/Tool.test.tsx (7 tests) 201ms
+ ✓ src/tools/ssl-check/Tool.test.tsx (4 tests) 154ms
+ ✓ src/tools/vim-cheatsheet/Tool.test.tsx (5 tests) 98ms
+ ✓ src/tools/world-clock/Tool.test.tsx (6 tests) 92ms
+ ✓ src/tools/serial-test/Tool.test.tsx (5 tests) 111ms
+ ✓ src/tools/pomodoro/Tool.test.tsx (6 tests) 92ms
+ ✓ src/tools/shadow-gen/Tool.test.tsx (5 tests) 106ms
+ ✓ src/tools/sitemap-generate/Tool.test.tsx (7 tests) 124ms
+ ✓ src/tools/json-validate/Tool.test.tsx (6 tests) 95ms
+ ✓ src/tools/csv-to-json/Tool.test.tsx (7 tests) 165ms
+ ✓ src/tools/directory-tree/Tool.test.tsx (7 tests) 117ms
+ ✓ src/tools/date-locale/Tool.test.tsx (5 tests) 106ms
+ ✓ src/tools/json-schema-gen/Tool.test.tsx (7 tests) 138ms
+ ✓ src/tools/ai-image-gen/Tool.test.tsx (6 tests) 149ms
+ ✓ src/tools/svg-gen/Tool.test.tsx (5 tests) 90ms
+ ✓ src/tools/length/Tool.test.tsx (6 tests) 115ms
+ ✓ src/tools/desc-check/Tool.test.tsx (5 tests) 123ms
+ ✓ src/tools/pivot/Tool.test.tsx (5 tests) 123ms
+ ✓ src/tools/graphql-to-code/Tool.test.tsx (6 tests) 131ms
+ ✓ src/tools/title-gen/Tool.test.tsx (6 tests) 140ms
+ ✓ src/tools/file-mime/Tool.test.tsx (7 tests) 174ms
+ ✓ src/tools/screen-reader/Tool.test.tsx (4 tests) 106ms
+ ✓ src/tools/animation-gen/Tool.test.tsx (6 tests) 144ms
+ ✓ src/tools/color-palette-gen/Tool.test.tsx (6 tests) 109ms
+ ✓ src/tools/dead-link/test.ts (22 tests) 119ms
+ ✓ src/tools/date-calc/Tool.test.tsx (7 tests) 114ms
+ ✓ src/tools/json-to-rust/Tool.test.tsx (5 tests) 127ms
+ ✓ src/tools/data-url/Tool.test.tsx (6 tests) 105ms
+ ✓ src/tools/permission/Tool.test.tsx (5 tests) 128ms
+ ✓ src/tools/batch-replace/Tool.test.tsx (5 tests) 72ms
+ ✓ src/tools/whois-lookup/Tool.test.tsx (5 tests) 121ms
+ ✓ src/tools/jsonpath/Tool.test.tsx (7 tests) 105ms
+ ✓ src/tools/api-doc/Tool.test.tsx (5 tests) 95ms
+ ✓ src/tools/gradient-gen-dev/Tool.test.tsx (6 tests) 109ms
+ ✓ src/tools/social-share/Tool.test.tsx (7 tests) 117ms
+ ✓ src/tools/avro-parse/Tool.test.tsx (5 tests) 98ms
+ ✓ src/tools/lunar/Tool.test.tsx (6 tests) 99ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ src/tools/timezone-convert-dev/Tool.test.tsx (6 tests) 151ms
+ ✓ src/tools/keyboard-nav/Tool.test.tsx (4 tests) 144ms
+ ✓ src/tools/form-a11y/Tool.test.tsx (3 tests) 102ms
+ ✓ src/tools/data-url-parser/Tool.test.tsx (7 tests) 106ms
+ ✓ src/tools/shuffle/Tool.test.tsx (5 tests) 97ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ src/tools/wordcloud/Tool.test.tsx (5 tests) 115ms
+ ✓ src/tools/license/Tool.test.tsx (5 tests) 110ms
+ ✓ src/tools/blake2-hash/Tool.test.tsx (7 tests) 191ms
+ ✓ src/tools/gradient-gen/Tool.test.tsx (5 tests) 101ms
+ ✓ src/tools/base85-codec/Tool.test.tsx (5 tests) 90ms
+ ✓ src/tools/receipt-pdf/test.ts (27 tests) 66ms
+ ✓ src/tools/box-shadow-gen/Tool.test.tsx (6 tests) 103ms
+ ✓ src/tools/calculator/Tool.test.tsx (6 tests) 74ms
+ ✓ src/tools/k8s-config/Tool.test.tsx (5 tests) 111ms
+ ✓ src/tools/lorem/Tool.test.tsx (5 tests) 103ms
+ ✓ src/tools/keyword-density/Tool.test.tsx (5 tests) 96ms
+ ✓ src/tools/http-header-parser/Tool.test.tsx (7 tests) 100ms
+ ✓ src/tools/bluetooth-test/Tool.test.tsx (5 tests) 121ms
+ ✓ src/tools/json-sort/Tool.test.tsx (7 tests) 110ms
+ ✓ src/tools/mime-encode/Tool.test.tsx (7 tests) 105ms
+ ✓ src/tools/linux-cheatsheet/Tool.test.tsx (5 tests) 102ms
+ ✓ src/tools/json-tree/Tool.test.tsx (7 tests) 105ms
+ ✓ src/tools/stt/Tool.test.tsx (5 tests) 96ms
+ ✓ src/tools/data-workbench/Tool.test.tsx (8 tests) 133ms
+ ✓ src/tools/random-string/Tool.test.tsx (6 tests) 111ms
+ ✓ src/tools/svg-game/Tool.test.tsx (6 tests) 134ms
+ ✓ src/tools/business-card/Tool.test.tsx (6 tests) 99ms
+ ✓ src/tools/db-connection/Tool.test.tsx (5 tests) 137ms
+ ✓ src/tools/query-string/Tool.test.tsx (8 tests) 134ms
+ ✓ src/tools/timezone-convert/Tool.test.tsx (6 tests) 122ms
+ ✓ src/tools/file-to-base64/Tool.test.tsx (5 tests) 139ms
+ ✓ src/tools/zodiac-match/Tool.test.tsx (6 tests) 115ms
+ ✓ src/tools/fake-data/Tool.test.tsx (5 tests) 104ms
+ ✓ src/tools/json-to-go/Tool.test.tsx (6 tests) 110ms
+ ✓ src/tools/json-ld/Tool.test.tsx (7 tests) 112ms
+ ✓ src/tools/bson-codec/Tool.test.tsx (6 tests) 141ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ src/tools/heading-structure/Tool.test.tsx (4 tests) 82ms
+ ✓ src/tools/lb-config/Tool.test.tsx (6 tests) 101ms
+ ✓ src/tools/css-gen/Tool.test.tsx (5 tests) 91ms
+ ✓ src/tools/short-id/Tool.test.tsx (7 tests) 146ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ src/tools/tilemap/Tool.test.tsx (7 tests) 124ms
+ ✓ src/tools/regex-cheatsheet/Tool.test.tsx (5 tests) 99ms
+ ✓ src/tools/wave-gen/Tool.test.tsx (5 tests) 98ms
+ ✓ src/tools/mime-lookup/Tool.test.tsx (7 tests) 100ms
+ ✓ src/tools/video-format/Tool.test.tsx (6 tests) 132ms
+ ✓ src/tools/json-diff/Tool.test.tsx (6 tests) 121ms
+ ✓ src/tools/level-editor/Tool.test.tsx (7 tests) 150ms
+ ✓ src/tools/base32/Tool.test.tsx (5 tests) 73ms
+ ✓ src/tools/file-magic/Tool.test.tsx (6 tests) 140ms
+ ✓ src/tools/totp-generate/Tool.test.tsx (6 tests) 99ms
+ ✓ src/tools/flex-generator/Tool.test.tsx (6 tests) 131ms
+ ✓ src/tools/usb-test/Tool.test.tsx (5 tests) 108ms
+ ✓ src/tools/meta/Tool.test.tsx (6 tests) 104ms
+ ✓ src/tools/xml-to-json/Tool.test.tsx (7 tests) 156ms
+ ✓ src/tools/code-beautify/Tool.test.tsx (6 tests) 123ms
+ ✓ src/tools/escape/Tool.test.tsx (5 tests) 159ms
+ ✓ src/tools/docker-config/Tool.test.tsx (6 tests) 162ms
+ ✓ src/tools/energy/Tool.test.tsx (6 tests) 97ms
+ ✓ src/tools/programmer-calc/Tool.test.tsx (6 tests) 62ms
+ ✓ src/tools/random-password/Tool.test.tsx (7 tests) 116ms
+ ✓ src/tools/data-storage/Tool.test.tsx (6 tests) 101ms
+ ✓ src/tools/keccak256/Tool.test.tsx (5 tests) 113ms
+ ✓ src/tools/messagepack/Tool.test.tsx (6 tests) 91ms
+ ✓ src/tools/json-to-python/Tool.test.tsx (5 tests) 93ms
+ ✓ src/tools/cron-next/Tool.test.tsx (6 tests) 94ms
+ ✓ src/tools/mac-address/Tool.test.tsx (6 tests) 102ms
+ ✓ src/tools/ini-parse/Tool.test.tsx (6 tests) 92ms
+ ✓ src/tools/short-url/Tool.test.tsx (5 tests) 91ms
+ ✓ src/tools/unicode-escape/Tool.test.tsx (6 tests) 113ms
+ ✓ src/tools/precision/Tool.test.tsx (6 tests) 114ms
+ ✓ src/tools/timezone-list/Tool.test.tsx (6 tests) 108ms
+ ✓ src/tools/focus-order/Tool.test.tsx (4 tests) 111ms
+ ✓ src/tools/twitter-card/Tool.test.tsx (5 tests) 93ms
+ ✓ src/tools/dedupe/Tool.test.tsx (5 tests) 111ms
+ ✓ src/tools/csv-to-tsv/Tool.test.tsx (5 tests) 140ms
+ ✓ src/tools/date-format/Tool.test.tsx (6 tests) 116ms
+ ✓ src/tools/hotp-generate/Tool.test.tsx (7 tests) 124ms
+ ✓ src/tools/tx-build/Tool.test.tsx (4 tests) 139ms
+ ✓ src/tools/octal/Tool.test.tsx (6 tests) 131ms
+ ✓ src/tools/cron-generator/Tool.test.tsx (6 tests) 92ms
+ ✓ src/tools/commit-gen/Tool.test.tsx (6 tests) 177ms
+ ✓ src/tools/area/Tool.test.tsx (6 tests) 133ms
+ ✓ src/tools/timestamp-convert/Tool.test.tsx (6 tests) 85ms
+ ✓ src/tools/vision/Tool.test.tsx (4 tests) 108ms
+ ✓ src/tools/url-parser/Tool.test.tsx (5 tests) 57ms
+ ✓ src/tools/json-minify/Tool.test.tsx (6 tests) 99ms
+ ✓ src/tools/ansible-config/Tool.test.tsx (5 tests) 85ms
+ ✓ src/tools/reading-time/Tool.test.tsx (5 tests) 109ms
+ ✓ src/tools/pressure/Tool.test.tsx (6 tests) 113ms
+ ✓ src/tools/multi-diff/Tool.test.tsx (5 tests) 81ms
+ ✓ src/tools/slug/Tool.test.tsx (5 tests) 98ms
+ ✓ src/tools/game-value/Tool.test.tsx (6 tests) 113ms
+ ✓ src/tools/blood-type/Tool.test.tsx (5 tests) 83ms
+ ✓ src/tools/case-convert/Tool.test.tsx (5 tests) 99ms
+ ✓ src/tools/split-columns/Tool.test.tsx (5 tests) 98ms
+ ✓ src/tools/exp-curve/Tool.test.tsx (5 tests) 92ms
+ ✓ src/tools/tts/Tool.test.tsx (5 tests) 91ms
+ ✓ src/tools/mock-api-dev/Tool.test.tsx (5 tests) 98ms
+ ✓ src/tools/read-aloud/Tool.test.tsx (8 tests) 149ms
+ ✓ src/tools/regex-visualize/Tool.test.tsx (5 tests) 100ms
+ ✓ src/tools/port-scan/Tool.test.tsx (7 tests) 182ms
+ ✓ src/tools/countdown/Tool.test.tsx (7 tests) 135ms
+ ✓ src/tools/js-escape/Tool.test.tsx (6 tests) 91ms
+ ✓ src/tools/age/Tool.test.tsx (6 tests) 93ms
+ ✓ src/tools/pdf-extract/Tool.test.tsx (5 tests) 144ms
+ ✓ src/tools/word-frequency/Tool.test.tsx (5 tests) 114ms
+ ✓ src/tools/prefix-suffix/Tool.test.tsx (5 tests) 69ms
+ ✓ src/tools/sql-format/Tool.test.tsx (6 tests) 128ms
+ ✓ src/tools/mic-test/Tool.test.tsx (4 tests) 91ms
+ ✓ src/tools/sitemap-check/Tool.test.tsx (5 tests) 79ms
+ ✓ src/tools/extract-column/Tool.test.tsx (5 tests) 90ms
+ ✓ src/tools/json-to-csv/Tool.test.tsx (5 tests) 97ms
+ ✓ src/tools/yaml-to-json/Tool.test.tsx (6 tests) 112ms
+ ✓ src/tools/grid-generator/Tool.test.tsx (6 tests) 97ms
+ ✓ src/tools/uuencode-codec/Tool.test.tsx (7 tests) 104ms
+ ✓ src/tools/makefile/Tool.test.tsx (5 tests) 86ms
+ ✓ src/tools/robots/Tool.test.tsx (7 tests) 103ms
+Not implemented: HTMLMediaElement's play() method
+ ✓ src/tools/week-number/Tool.test.tsx (6 tests) 76ms
+Not implemented: HTMLMediaElement's play() method
+ ✓ src/tools/jwt-debug/Tool.test.tsx (5 tests) 108ms
+ ✓ src/tools/password-strength/Tool.test.tsx (5 tests) 79ms
+Not implemented: HTMLMediaElement's play() method
+ ✓ src/tools/helm-config/Tool.test.tsx (5 tests) 116ms
+ ✓ src/tools/rich-to-text/Tool.test.tsx (5 tests) 85ms
+ ✓ src/tools/base-convert/Tool.test.tsx (6 tests) 117ms
+ ✓ src/tools/camera-test/Tool.test.tsx (5 tests) 131ms
+ ✓ src/tools/random-group/Tool.test.tsx (6 tests) 103ms
+ ✓ src/tools/complexity/Tool.test.tsx (5 tests) 114ms
+ ✓ src/tools/big-json/Tool.test.tsx (6 tests) 155ms
+ ✓ src/tools/text-workbench/Tool.test.tsx (6 tests) 131ms
+ ✓ src/tools/public-key/test.ts (33 tests) 126ms
+ ✓ src/tools/data-sort/Tool.test.tsx (5 tests) 161ms
+ ✓ src/tools/puzzle/Tool.test.tsx (3 tests) 99ms
+ ✓ src/tools/csv-formatter/Tool.test.tsx (6 tests) 147ms
+ ✓ src/tools/date-diff/Tool.test.tsx (6 tests) 83ms
+ ✓ src/tools/cloc/Tool.test.tsx (5 tests) 86ms
+ ✓ src/tools/gcd-lcm/Tool.test.tsx (6 tests) 83ms
+ ✓ src/tools/changelog/Tool.test.tsx (5 tests) 84ms
+ ✓ src/tools/naming-convert/Tool.test.tsx (5 tests) 75ms
+ ✓ src/tools/texture-pack/Tool.test.tsx (5 tests) 83ms
+Not implemented: navigation to another Document
+ ✓ src/tools/binary/Tool.test.tsx (6 tests) 124ms
+ ✓ src/tools/landmark/Tool.test.tsx (4 tests) 115ms
+ ✓ src/tools/cron-time/Tool.test.tsx (6 tests) 86ms
+ ✓ src/tools/loot/Tool.test.tsx (5 tests) 101ms
+ ✓ src/tools/word-count/Tool.test.tsx (5 tests) 80ms
+ ✓ src/tools/chmod/Tool.test.tsx (5 tests) 74ms
+ ✓ src/tools/base64-to-file/Tool.test.tsx (7 tests) 99ms
+ ✓ src/tools/time-unit/Tool.test.tsx (6 tests) 104ms
+ ✓ src/tools/cidr/Tool.test.tsx (6 tests) 88ms
+ ✓ src/tools/git-diff/Tool.test.tsx (6 tests) 91ms
+ ✓ src/tools/markdown-preview/Tool.test.tsx (5 tests) 122ms
+ ✓ src/tools/speed-test/Tool.test.tsx (5 tests) 137ms
+ ✓ src/tools/yaml-to-xml/Tool.test.tsx (6 tests) 103ms
+ ✓ src/tools/address-validate/Tool.test.tsx (5 tests) 124ms
+ ✓ src/tools/markdown-to-html/Tool.test.tsx (5 tests) 76ms
+ ✓ src/tools/random-sort/Tool.test.tsx (5 tests) 118ms
+ ✓ src/tools/pwa-manifest/Tool.test.tsx (6 tests) 95ms
+ ✓ src/tools/css-escape/Tool.test.tsx (6 tests) 120ms
+ ✓ src/tools/fullwidth-halfwidth/Tool.test.tsx (5 tests) 71ms
+ ✓ src/tools/sensitive-words/Tool.test.tsx (5 tests) 65ms
+ ✓ src/tools/weight/Tool.test.tsx (6 tests) 89ms
+ ✓ src/tools/sql-to-orm/Tool.test.tsx (5 tests) 73ms
+ ✓ src/tools/median/Tool.test.tsx (6 tests) 73ms
+ ✓ src/tools/jenkinsfile/Tool.test.tsx (6 tests) 84ms
+ ✓ src/tools/bom/Tool.test.tsx (5 tests) 81ms
+ ✓ src/tools/qr-share-dev/Tool.test.tsx (5 tests) 90ms
+ ✓ src/tools/gif-to-sprite/Tool.test.tsx (3 tests) 62ms
+ ✓ src/tools/postman-import/Tool.test.tsx (6 tests) 74ms
+ ✓ src/tools/devtools/Tool.test.tsx (5 tests) 82ms
+ ✓ src/tools/moon-phase/Tool.test.tsx (6 tests) 74ms
+ ✓ src/tools/gitlab-ci/Tool.test.tsx (6 tests) 102ms
+ ✓ src/tools/bezier-editor/Tool.test.tsx (6 tests) 89ms
+ ✓ src/tools/diff-highlight/Tool.test.tsx (6 tests) 102ms
+ ✓ src/tools/extension-publish/Tool.test.tsx (5 tests) 100ms
+ ✓ src/tools/sunrise/Tool.test.tsx (7 tests) 84ms
+ ✓ src/tools/heading-check/Tool.test.tsx (5 tests) 91ms
+ ✓ src/tools/qrcode/Tool.test.tsx (5 tests) 111ms
+ ✓ src/tools/abi-codec/Tool.test.tsx (4 tests) 114ms
+ ✓ src/tools/redirect-check/test.ts (50 tests) 69ms
+ ✓ src/tools/sql-minify/Tool.test.tsx (6 tests) 90ms
+ ✓ src/tools/text-to-pdf/test.ts (12 tests) 61ms
+ ✓ src/tools/punycode/Tool.test.tsx (6 tests) 115ms
+ ✓ src/tools/sql-dialect/Tool.test.tsx (6 tests) 143ms
+ ✓ src/tools/fortune/Tool.test.tsx (4 tests) 100ms
+ ✓ src/tools/content-script/Tool.test.tsx (5 tests) 84ms
+ ✓ src/tools/git-cheatsheet/Tool.test.tsx (5 tests) 107ms
+ ✓ src/tools/html-entity/Tool.test.tsx (5 tests) 87ms
+ ✓ src/tools/ci-config/Tool.test.tsx (6 tests) 112ms
+ ✓ src/tools/tx-decode/Tool.test.tsx (4 tests) 89ms
+ ✓ src/tools/curl-to-code/Tool.test.tsx (6 tests) 89ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ src/tools/date-picker/Tool.test.tsx (5 tests) 110ms
+ ✓ src/tools/cross-browser/Tool.test.tsx (4 tests) 58ms
+ ✓ src/tools/text-merge/Tool.test.tsx (5 tests) 87ms
+ ✓ src/tools/wallet-connect/Tool.test.tsx (4 tests) 107ms
+ ✓ src/tools/base64-encode/Tool.test.tsx (6 tests) 88ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ src/tools/random-map/Tool.test.tsx (5 tests) 78ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ src/tools/template/Tool.test.tsx (5 tests) 83ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ src/tools/code-to-image/Tool.test.tsx (5 tests) 141ms
+ ✓ src/tools/text-encrypt/Tool.test.tsx (6 tests) 127ms
+ ✓ src/tools/xml-formatter/Tool.test.tsx (6 tests) 117ms
+ ✓ src/tools/workday/Tool.test.tsx (7 tests) 138ms
+ ✓ src/tools/animation-frame/Tool.test.tsx (5 tests) 119ms
+ ✓ src/tools/sensor/Tool.test.tsx (3 tests) 73ms
+ ✓ src/tools/json-to-java/Tool.test.tsx (5 tests) 132ms
+ ✓ src/tools/indent/Tool.test.tsx (5 tests) 78ms
+ ✓ src/tools/code-convert/Tool.test.tsx (5 tests) 213ms
+ ✓ src/tools/clipboard-test/Tool.test.tsx (3 tests) 122ms
+ ✓ src/tools/userscript/Tool.test.tsx (5 tests) 84ms
+ ✓ src/tools/hearing-test/Tool.test.tsx (4 tests) 111ms
+ ✓ src/tools/readme/Tool.test.tsx (5 tests) 104ms
+ ✓ src/tools/http-status/Tool.test.tsx (6 tests) 72ms
+ ✓ src/tools/graphql-schema/Tool.test.tsx (4 tests) 65ms
+ ✓ src/tools/base58/Tool.test.tsx (5 tests) 87ms
+ ✓ src/tools/er-diagram/Tool.test.tsx (4 tests) 77ms
+ ✓ src/tools/fiscal-year/Tool.test.tsx (6 tests) 112ms
+ ✓ src/tools/wcag-contrast/Tool.test.tsx (5 tests) 69ms
+ ✓ src/tools/factorization/Tool.test.tsx (6 tests) 83ms
+ ✓ src/tools/extension-icon/Tool.test.tsx (4 tests) 69ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ src/tools/terraform-config/Tool.test.tsx (5 tests) 80ms
+ ✓ src/tools/border-radius-gen/Tool.test.tsx (6 tests) 127ms
+ ✓ src/tools/nanoid/Tool.test.tsx (6 tests) 90ms
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ✓ src/tools/function-plot/Tool.test.tsx (6 tests) 79ms
+ ✓ src/tools/zhuyin/Tool.test.tsx (5 tests) 111ms
+ ✓ src/tools/line-numbers/Tool.test.tsx (5 tests) 89ms
+ ✓ src/tools/api-log/Tool.test.tsx (5 tests) 84ms
+ ✓ src/tools/mouse-test/Tool.test.tsx (6 tests) 85ms
+ ✓ src/tools/code-minify/Tool.test.tsx (5 tests) 83ms
+ ✓ src/tools/timestamp-gen/Tool.test.tsx (6 tests) 121ms
+ ✓ src/tools/json-to-yaml/Tool.test.tsx (5 tests) 117ms
+ ✓ src/tools/package-manager/Tool.test.tsx (5 tests) 98ms
+ ✓ src/tools/focus-order/test.ts (18 tests) 98ms
+ ✓ src/tools/ua-parser/Tool.test.tsx (6 tests) 57ms
+ ✓ src/tools/json-to-toml/Tool.test.tsx (5 tests) 73ms
+ ✓ src/tools/battery/Tool.test.tsx (2 tests) 70ms
+ ✓ src/tools/badge/Tool.test.tsx (5 tests) 71ms
+ ✓ src/tools/pagination-seo/Tool.test.tsx (5 tests) 81ms
+ ✓ src/tools/private-key/Tool.test.tsx (5 tests) 96ms
+ ✓ src/tools/chinese-zodiac/Tool.test.tsx (6 tests) 76ms
+ ✓ src/tools/nginx-config/Tool.test.tsx (5 tests) 88ms
+ ✓ src/tools/typing/Tool.test.tsx (5 tests) 92ms
+ ✓ src/tools/regex-cross/Tool.test.tsx (5 tests) 97ms
+ ✓ src/tools/game-2048/Tool.test.tsx (2 tests) 71ms
+ ✓ src/tools/chain-id-lookup/Tool.test.tsx (5 tests) 71ms
+ ✓ src/tools/stddev/Tool.test.tsx (5 tests) 66ms
+ ✓ src/tools/charset-detect/Tool.test.tsx (5 tests) 95ms
+ ✓ src/tools/api-retry/Tool.test.tsx (4 tests) 83ms
+ ✓ src/tools/docker-compose/Tool.test.tsx (5 tests) 106ms
+ ✓ src/tools/palette/Tool.test.tsx (4 tests) 79ms
+ ✓ src/tools/pinyin/Tool.test.tsx (5 tests) 128ms
+ ✓ src/tools/mode/Tool.test.tsx (6 tests) 90ms
+ ✓ src/tools/mobile-friendly/test.ts (27 tests) 85ms
+ ✓ src/tools/random-color/Tool.test.tsx (4 tests) 98ms
+ ✓ src/tools/nft-metadata/test.ts (59 tests) 112ms
+ ✓ src/tools/translation-convert/Tool.test.tsx (4 tests) 106ms
+ ✓ src/tools/netlify/Tool.test.tsx (4 tests) 62ms
+ ✓ src/tools/notification/Tool.test.tsx (5 tests) 117ms
+ ✓ src/tools/heading-structure/test.ts (20 tests) 93ms
+ ✓ src/tools/postman-to-code/Tool.test.tsx (5 tests) 79ms
+ ✓ src/tools/ulid/Tool.test.tsx (6 tests) 90ms
+ ✓ src/tools/cors-check/Tool.test.tsx (4 tests) 81ms
+ ✓ src/tools/excel-to-json-xlsx/Tool.test.tsx (4 tests) 82ms
+ ✓ src/tools/line-ending/Tool.test.tsx (5 tests) 72ms
+ ✓ src/tools/meeting-time/Tool.test.tsx (6 tests) 106ms
+ ✓ src/tools/memory-game/Tool.test.tsx (3 tests) 73ms
+ ✓ src/tools/zodiac/Tool.test.tsx (6 tests) 67ms
+ ✓ src/tools/env/Tool.test.tsx (5 tests) 82ms
+ ✓ src/tools/route-debug/Tool.test.tsx (6 tests) 84ms
+ ✓ src/tools/parquet-view/Tool.test.tsx (4 tests) 94ms
+ ✓ src/tools/stopwatch/Tool.test.tsx (6 tests) 117ms
+ ✓ src/tools/csp-config-ext/Tool.test.tsx (4 tests) 67ms
+ ✓ src/tools/canonical/Tool.test.tsx (6 tests) 118ms
+ ✓ src/tools/whitespace/Tool.test.tsx (5 tests) 107ms
+ ✓ src/tools/sprite-split/Tool.test.tsx (4 tests) 108ms
+ ✓ src/tools/audio-spectrogram/test.ts (24 tests) 48ms
+ ✓ src/tools/oauth/Tool.test.tsx (5 tests) 85ms
+ ✓ src/tools/regex-ast/Tool.test.tsx (5 tests) 95ms
+ ✓ src/tools/contract-sim/test.ts (91 tests) 54ms
+ ✓ src/tools/zero-width/Tool.test.tsx (5 tests) 96ms
+ ✓ src/tools/speed-test/test.ts (36 tests) 90ms
+ ✓ src/tools/html-to-markdown/Tool.test.tsx (4 tests) 87ms
+ ✓ src/tools/invoice-pdf/test.ts (31 tests) 70ms
+ ✓ src/tools/extension-pack/Tool.test.tsx (5 tests) 104ms
+ ✓ src/tools/geolocation/Tool.test.tsx (2 tests) 80ms
+ ✓ src/tools/breadcrumb/Tool.test.tsx (5 tests) 79ms
+ ✓ src/tools/ip-lookup/Tool.test.tsx (6 tests) 62ms
+ ✓ src/tools/variance/Tool.test.tsx (5 tests) 70ms
+ ✓ src/tools/multi-chain/Tool.test.tsx (4 tests) 76ms
+ ✓ src/tools/quarter/Tool.test.tsx (6 tests) 69ms
+ ✓ src/tools/openapi-lint/Tool.test.tsx (5 tests) 57ms
+ ✓ src/tools/alt-check/Tool.test.tsx (5 tests) 85ms
+ ✓ src/tools/number-locale/Tool.test.tsx (4 tests) 83ms
+ ✓ src/tools/barcode/Tool.test.tsx (5 tests) 77ms
+ ✓ src/tools/charset-lookup/Tool.test.tsx (4 tests) 75ms
+ ✓ src/tools/resolution/Tool.test.tsx (3 tests) 83ms
+ ✓ src/tools/rtl/Tool.test.tsx (5 tests) 61ms
+ ✓ src/tools/canonical-check/Tool.test.tsx (5 tests) 94ms
+ ✓ src/tools/keyboard-test/Tool.test.tsx (5 tests) 63ms
+ ✓ src/tools/duplicate-code/Tool.test.tsx (5 tests) 80ms
+ ✓ src/tools/port-lookup/Tool.test.tsx (6 tests) 74ms
+ ✓ src/tools/api-rate/Tool.test.tsx (4 tests) 97ms
+ ✓ src/tools/sql-to-json/Tool.test.tsx (4 tests) 94ms
+ ✓ src/tools/robots-check/Tool.test.tsx (5 tests) 84ms
+ ✓ src/tools/eip712/test.ts (26 tests) 93ms
+ ✓ src/tools/unicode-lookup/Tool.test.tsx (5 tests) 69ms
+ ✓ src/tools/permutation/Tool.test.tsx (6 tests) 81ms
+ ✓ src/tools/openapi-preview/Tool.test.tsx (5 tests) 95ms
+ ✓ src/tools/timer/Tool.test.tsx (7 tests) 88ms
+ ✓ src/tools/reading-mode/test.ts (19 tests) 64ms
+ ✓ src/tools/autoprefixer/Tool.test.tsx (5 tests) 78ms
+ ✓ src/tools/pgp-tool/Tool.test.tsx (4 tests) 64ms
+ ✓ src/tools/iso8601/Tool.test.tsx (6 tests) 75ms
+ ✓ src/tools/json-to-k8s/Tool.test.tsx (5 tests) 63ms
+ ✓ src/tools/damage/Tool.test.tsx (4 tests) 80ms
+ ✓ src/tools/public-key/Tool.test.tsx (4 tests) 69ms
+ ✓ src/tools/contract-abi/Tool.test.tsx (3 tests) 80ms
+ ✓ src/tools/cps/Tool.test.tsx (4 tests) 62ms
+ ✓ src/tools/dependency/Tool.test.tsx (5 tests) 78ms
+ ✓ src/tools/security-headers/Tool.test.tsx (4 tests) 60ms
+ ✓ src/tools/reaction/Tool.test.tsx (3 tests) 51ms
+ ✓ src/tools/random-name/Tool.test.tsx (4 tests) 90ms
+ ✓ src/tools/edge-route/Tool.test.tsx (6 tests) 77ms
+ ✓ src/tools/cron-parser/Tool.test.tsx (6 tests) 74ms
+ ✓ src/tools/bmi/Tool.test.tsx (6 tests) 84ms
+ ✓ src/tools/text-diff/Tool.test.tsx (5 tests) 97ms
+ ✓ src/tools/timestamp-convert-dev/Tool.test.tsx (6 tests) 94ms
+ ✓ src/tools/birthday/Tool.test.tsx (6 tests) 67ms
+ ✓ src/tools/ens/test.ts (19 tests) 77ms
+ ✓ src/tools/resume-pdf/test.ts (24 tests) 75ms
+ ✓ src/tools/audio-denoise/test.ts (29 tests) 65ms
+ ✓ src/tools/pdf-link/test.ts (11 tests) 44ms
+ ✓ src/tools/holiday/Tool.test.tsx (6 tests) 113ms
+ ✓ src/tools/regex-replace/Tool.test.tsx (5 tests) 78ms
+ ✓ src/tools/screenshot-dev/Tool.test.tsx (5 tests) 78ms
+ ✓ src/tools/iso-week/Tool.test.tsx (6 tests) 87ms
+ ✓ src/tools/sql-plan/Tool.test.tsx (5 tests) 67ms
+ ✓ src/tools/timeline/Tool.test.tsx (6 tests) 83ms
+ ✓ src/tools/language-tag/Tool.test.tsx (4 tests) 60ms
+ ✓ src/tools/date-parse/Tool.test.tsx (6 tests) 72ms
+ ✓ src/tools/svgo-optimize/Tool.test.tsx (5 tests) 67ms
+ ✓ src/tools/income-tax/Tool.test.tsx (7 tests) 83ms
+ ✓ src/tools/background/Tool.test.tsx (3 tests) 58ms
+ ✓ src/tools/kv-config/Tool.test.tsx (5 tests) 68ms
+ ✓ src/tools/api-cache/Tool.test.tsx (4 tests) 62ms
+ ✓ src/tools/connection-parser/Tool.test.tsx (5 tests) 75ms
+ ✓ src/tools/eip712/Tool.test.tsx (5 tests) 94ms
+ ✓ src/tools/ast-viewer/Tool.test.tsx (5 tests) 96ms
+stderr | src/tools/pdf-to-word/test.ts
+Warning: Please use the `legacy` build in Node.js environments.
+
+ ✓ src/tools/sqlite-viewer/Tool.test.tsx (4 tests) 83ms
+(node:34624) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ src/tools/semver-compare/Tool.test.tsx (5 tests) 78ms
+ ✓ src/tools/cert-parser/test.ts (7 tests) 78ms
+ ✓ src/tools/d1-config/Tool.test.tsx (4 tests) 76ms
+ ✓ src/tools/keyword-extract/Tool.test.tsx (5 tests) 108ms
+ ✓ src/tools/chain-query/test.ts (53 tests) 60ms
+ ✓ src/tools/pdf-to-word/test.ts (20 tests) 58ms
+ ✓ src/tools/ssl-check/test.ts (8 tests) 62ms
+ ✓ src/tools/pem-parse/test.ts (9 tests) 74ms
+ ✓ src/tools/json-to-pdf/test.ts (14 tests) 56ms
+ ✓ src/tools/pdf-sort/test.ts (23 tests) 50ms
+ ✓ src/tools/rsa-encrypt/test.ts (15 tests) 66ms
+ ✓ src/tools/doc-convert/test.ts (26 tests) 46ms
+ ✓ src/tools/pdf-background/test.ts (10 tests) 58ms
+ ✓ src/tools/color-blind-test/test.ts (13 tests) 68ms
+ ✓ src/tools/popup/Tool.test.tsx (3 tests) 79ms
+ ✓ src/tools/sampling/test.ts (46 tests) 79ms
+ ✓ src/tools/vercel/Tool.test.tsx (4 tests) 68ms
+ ✓ src/tools/readability/Tool.test.tsx (4 tests) 70ms
+ ✓ src/tools/html-to-pdf/test.ts (20 tests) 68ms
+ ✓ src/tools/pdf-compress/test.ts (14 tests) 68ms
+ ✓ src/tools/sentiment/test.ts (11 tests) 53ms
+ ✓ src/tools/http-assert/test.ts (50 tests) 39ms
+ ✓ src/tools/code-to-pdf/test.ts (16 tests) 63ms
+ ✓ src/tools/pdf-sign/test.ts (51 tests) 46ms
+ ✓ src/tools/mixed-content/Tool.test.tsx (5 tests) 89ms
+ ✓ src/tools/base64-to-image/test.ts (34 tests) 49ms
+ ✓ src/tools/extension-debug/Tool.test.tsx (4 tests) 94ms
+ ✓ src/tools/pdf-metadata/test.ts (35 tests) 48ms
+ ✓ src/tools/ssh-key/test.ts (16 tests) 156ms
+ ✓ src/tools/pdf-insert/test.ts (11 tests) 49ms
+ ✓ src/tools/pdf-delete/test.ts (33 tests) 43ms
+ ✓ src/lib/ai.test.ts (10 tests) 32ms
+ ✓ src/tools/pdf-merge/test.ts (22 tests) 37ms
+ ✓ src/tools/options/Tool.test.tsx (3 tests) 57ms
+ ✓ src/tools/yaml-to-k8s/Tool.test.tsx (5 tests) 83ms
+ ✓ src/tools/snake/Tool.test.tsx (2 tests) 56ms
+ ✓ src/tools/excel-to-markdown/test.ts (12 tests) 46ms
+ ✓ src/tools/pitch-test/Tool.test.tsx (4 tests) 79ms
+ ✓ src/tools/tarot/Tool.test.tsx (5 tests) 47ms
+ ✓ src/tools/cn-en-count/Tool.test.tsx (4 tests) 57ms
+ ✓ src/tools/speed-test-net/test.ts (31 tests) 50ms
+ ✓ src/tools/audio-compress/test.ts (23 tests) 43ms
+ ✓ src/tools/cron-time/test.ts (23 tests) 22ms
+ ✓ src/tools/bcrypt-hash/test.ts (8 tests) 36ms
+ ✓ src/tools/websocket/test.ts (32 tests) 34ms
+ ✓ src/tools/manifest-v3/Tool.test.tsx (4 tests) 100ms
+ ✓ src/tools/random-decision/test.ts (37 tests) 46ms
+ ✓ src/tools/skip-link/test.ts (23 tests) 76ms
+stderr | src/tools/pdf-to-excel/test.ts
+Warning: Please use the `legacy` build in Node.js environments.
+
+ ✓ src/tools/probability/test.ts (53 tests) 21ms
+ ✓ src/tools/timezone-list/test.ts (8 tests) 29ms
+ ✓ src/tools/pdf-split/test.ts (32 tests) 62ms
+ ✓ src/tools/word-to-markdown/test.ts (19 tests) 37ms
+ ✓ src/tools/pdf-rotate/test.ts (30 tests) 51ms
+ ✓ src/tools/tx-decode/test.ts (50 tests) 42ms
+ ✓ src/tools/pdf-to-excel/test.ts (30 tests) 56ms
+ ✓ src/tools/slug/test.ts (10 tests) 38ms
+ ✓ src/tools/random-password/test.ts (18 tests) 41ms
+ ✓ src/tools/word-view/test.ts (19 tests) 101ms
+ ✓ src/tools/browser-info/Tool.test.tsx (3 tests) 74ms
+ ✓ src/tools/loot/test.ts (25 tests) 23ms
+ ✓ src/tools/browser-info/test.ts (15 tests) 32ms
+ ✓ src/tools/ppt-view/test.ts (14 tests) 31ms
+ ✓ src/components/layout/GitHubLink.test.tsx (3 tests) 46ms
+ ✓ src/tools/audio-extract/test.ts (18 tests) 25ms
+ ✓ src/tools/userscript-debug/Tool.test.tsx (3 tests) 59ms
+ ✓ src/tools/pbkdf2-derive/test.ts (15 tests) 43ms
+ ✓ src/tools/audio-speed/test.ts (21 tests) 32ms
+ ✓ src/tools/pdf-bookmark/test.ts (15 tests) 39ms
+ ✓ src/tools/short-id/test.ts (20 tests) 27ms
+ ✓ src/tools/gas/test.ts (39 tests) 48ms
+ ✓ src/tools/audio-trim/test.ts (23 tests) 39ms
+ ✓ src/tools/binary-viewer/test.ts (14 tests) 32ms
+ ✓ src/tools/aes-encrypt/test.ts (18 tests) 52ms
+ ✓ src/tools/audio-merge/test.ts (27 tests) 50ms
+ ✓ src/tools/r2-config/Tool.test.tsx (4 tests) 79ms
+ ✓ src/tools/device-info/Tool.test.tsx (2 tests) 50ms
+ ✓ src/tools/image-hash/test.ts (29 tests) 34ms
+ ✓ src/tools/factorization/test.ts (18 tests) 21ms
+ ✓ src/tools/audio-pitch/test.ts (22 tests) 34ms
+ ✓ src/tools/audio-volume/test.ts (25 tests) 44ms
+ ✓ src/tools/sudoku/test.ts (17 tests) 47ms
+ ✓ src/tools/vibration/Tool.test.tsx (3 tests) 70ms
+ ✓ src/tools/text-to-qr/test.ts (9 tests) 22ms
+ ✓ src/tools/abi-codec/test.ts (62 tests) 31ms
+ ✓ src/tools/ppt-to-image/test.ts (20 tests) 25ms
+ ✓ src/tools/file-to-base64/test.ts (14 tests) 19ms
+ ✓ src/tools/pdf-encrypt/test.ts (21 tests) 29ms
+ ✓ src/tools/mini-game/Tool.test.tsx (2 tests) 44ms
+ ✓ src/tools/unzip/test.ts (16 tests) 27ms
+ ✓ src/tools/pdf-attach/test.ts (9 tests) 37ms
+ ✓ src/tools/audio-record/test.ts (23 tests) 33ms
+ ✓ src/tools/audio-cut/test.ts (20 tests) 39ms
+ ✓ src/tools/qr-share-dev/test.ts (6 tests) 24ms
+ ✓ src/tools/password-strength/test.ts (11 tests) 18ms
+ ✓ src/tools/excel-to-csv/test.ts (13 tests) 28ms
+ ✓ src/tools/cron-next/test.ts (13 tests) 22ms
+ ✓ src/tools/random-string/test.ts (18 tests) 23ms
+ ✓ src/tools/otp-qr/test.ts (11 tests) 28ms
+ ✓ src/tools/audio-convert/test.ts (25 tests) 32ms
+ ✓ src/tools/og-preview/test.ts (45 tests) 25ms
+ ✓ src/tools/jwt-debug/test.ts (11 tests) 18ms
+ ✓ src/tools/seo-audit/test.ts (34 tests) 30ms
+(node:34624) ExperimentalWarning: The SHA3-256 Web Crypto API algorithm is an experimental feature and might change at 
+any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:34624) ExperimentalWarning: The SHA3-384 Web Crypto API algorithm is an experimental feature and might change at 
+any time
+(node:34624) ExperimentalWarning: The SHA3-512 Web Crypto API algorithm is an experimental feature and might change at 
+any time
+ ✓ src/tools/openapi-lint/test.ts (59 tests) 14ms
+ ✓ src/tools/random-map/test.ts (23 tests) 20ms
+ ✓ src/tools/sha3-hash/test.ts (16 tests) 30ms
+ ✓ src/tools/palette/test.ts (21 tests) 26ms
+ ✓ src/tools/random-name/test.ts (15 tests) 33ms
+ ✓ src/tools/noise-gen/test.ts (18 tests) 23ms
+ ✓ src/tools/coin/test.ts (20 tests) 17ms
+ ✓ src/tools/zhuyin/test.ts (13 tests) 24ms
+ ✓ src/tools/audio-fade/test.ts (19 tests) 25ms
+ ✓ src/tools/favicon-check/test.ts (47 tests) 22ms
+stderr | src/tools/ecc-encrypt/test.ts > ecc-encrypt / transform > 协商方向输出已知共享密钥
+演示密钥不可用于真实数据：DEMO_PRIVATE_KEY / DEMO_PUBLIC_KEY 仅用于示例与测试
+
+stderr | src/tools/ecc-encrypt/test.ts > ecc-encrypt / transform > 缺少密钥时报错
+演示密钥不可用于真实数据：DEMO_PRIVATE_KEY / DEMO_PUBLIC_KEY 仅用于示例与测试
+
+ ✓ src/tools/ecc-encrypt/test.ts (11 tests) 29ms
+ ✓ src/tools/timeline-gen/test.ts (41 tests) 26ms
+ ✓ src/tools/ovulation/test.ts (41 tests) 15ms
+ ✓ src/tools/invoice-gen/test.ts (44 tests) 17ms
+ ✓ src/tools/translation-convert/test.ts (53 tests) 14ms
+ ✓ src/tools/fake-data/test.ts (23 tests) 27ms
+ ✓ src/tools/api-sign/test.ts (29 tests) 25ms
+ ✓ src/tools/prime/test.ts (20 tests) 20ms
+ ✓ src/tools/ed25519-sign/test.ts (10 tests) 24ms
+ ✓ src/tools/address-validate/test.ts (23 tests) 21ms
+ ✓ src/tools/zip-create/test.ts (25 tests) 25ms
+ ✓ src/tools/wordcloud/test.ts (40 tests) 20ms
+ ✓ src/tools/passphrase/test.ts (15 tests) 16ms
+ ✓ src/tools/pitch-test/test.ts (10 tests) 28ms
+ ✓ src/tools/extension-icon/test.ts (22 tests) 15ms
+ ✓ src/tools/hearing-test/test.ts (8 tests) 37ms
+ ✓ src/tools/hmac-calc/test.ts (17 tests) 19ms
+ ✓ src/tools/ecdsa-sign/test.ts (12 tests) 29ms
+ ✓ src/tools/blake3-hash/test.ts (8 tests) 19ms
+ ✓ src/tools/pinyin/test.ts (8 tests) 23ms
+ ✓ src/tools/jws-parse/test.ts (10 tests) 19ms
+ ✓ src/tools/nanoid/test.ts (14 tests) 28ms
+ ✓ src/tools/xxhash-hash/test.ts (9 tests) 19ms
+ ✓ src/tools/zodiac-match/test.ts (21 tests) 19ms
+ ✓ src/components/tool/ToolErrorBoundary.test.tsx (2 tests) 55ms
+ ✓ src/tools/keccak256/test.ts (14 tests) 18ms
+ ✓ src/tools/precision/test.ts (28 tests) 18ms
+ ✓ src/tools/sha256-hash/test.ts (11 tests) 14ms
+ ✓ src/tools/dice/test.ts (24 tests) 20ms
+ ✓ src/tools/receipt/test.ts (31 tests) 15ms
+ ✓ src/tools/wheel/test.ts (32 tests) 15ms
+ ✓ src/tools/spectrum/test.ts (30 tests) 22ms
+ ✓ src/tools/file-hash/test.ts (15 tests) 23ms
+ ✓ src/tools/heading-check/test.ts (22 tests) 13ms
+ ✓ src/tools/network-info/Tool.test.tsx (2 tests) 40ms
+ ✓ src/tools/alt-gen/test.ts (27 tests) 23ms
+ ✓ src/tools/text-align/test.ts (12 tests) 11ms
+ ✓ src/tools/audio-mix/test.ts (22 tests) 15ms
+ ✓ src/tools/random-number/test.ts (12 tests) 15ms
+ ✓ src/tools/jwe-parse/test.ts (8 tests) 20ms
+ ✓ src/tools/bar-chart/Tool.test.tsx (2 tests) 47ms
+ ✓ src/tools/random-color/test.ts (14 tests) 18ms
+ ✓ src/tools/png-to-svg/test.ts (55 tests) 20ms
+ ✓ src/tools/color-picker/test.ts (23 tests) 10ms
+ ✓ src/tools/des-encrypt/test.ts (18 tests) 14ms
+ ✓ src/tools/jwt-generate/test.ts (9 tests) 18ms
+ ✓ src/tools/passphrase-gen/test.ts (19 tests) 26ms
+ ✓ src/tools/api-doc/test.ts (32 tests) 18ms
+ ✓ src/tools/captcha/test.ts (9 tests) 16ms
+ ✓ src/tools/mixed-content/test.ts (25 tests) 13ms
+ ✓ src/tools/random-group/test.ts (23 tests) 15ms
+ ✓ src/tools/bulk-password/test.ts (20 tests) 24ms
+ ✓ src/tools/aria-gen/test.ts (23 tests) 10ms
+ ✓ src/tools/date-locale/test.ts (16 tests) 8ms
+ ✓ src/lib/image.test.ts (23 tests) 22ms
+ ✓ src/tools/multi-chain/test.ts (29 tests) 11ms
+ ✓ src/tools/srt-convert/test.ts (25 tests) 14ms
+ ✓ src/tools/voting/test.ts (26 tests) 10ms
+ ✓ src/tools/audio-visualizer/test.ts (17 tests) 21ms
+ ✓ src/tools/markdown-to-html/test.ts (6 tests) 13ms
+ ✓ src/tools/graphql-schema/test.ts (8 tests) 9ms
+ ✓ src/tools/qrcode/test.ts (10 tests) 15ms
+ ✓ src/tools/graphql-test/test.ts (33 tests) 17ms
+ ✓ src/tools/qr-styling/test.ts (10 tests) 15ms
+ ✓ src/tools/pgp-tool/test.ts (8 tests) 9ms
+ ✓ src/tools/subtitle-burn/test.ts (23 tests) 22ms
+ ✓ src/tools/blood-type/test.ts (32 tests) 17ms
+ ✓ src/tools/exchange-rate/test.ts (27 tests) 17ms
+ ✓ src/tools/compress-size/test.ts (22 tests) 11ms
+ ✓ src/tools/file-encoding/test.ts (22 tests) 15ms
+ ✓ src/tools/pdf-compare/test.ts (39 tests) 13ms
+ ✓ src/tools/subtitle-extract/test.ts (11 tests) 10ms
+ ✓ src/tools/subtitle-merge/test.ts (22 tests) 16ms
+ ✓ src/tools/video-frame/test.ts (24 tests) 14ms
+ ✓ src/tools/contract-abi/test.ts (22 tests) 18ms
+ ✓ src/tools/random-salt/test.ts (11 tests) 13ms
+ ✓ src/tools/diff-highlight/test.ts (10 tests) 17ms
+stderr | src/tools/currency/test.ts > currency / transform 边界 > Intl 抛异常时转为格式化失败错误
+[vitest] The NumberFormat mock did not use 'function' or 'class' in its implementation, see https://vitest.dev/api/vi#v
+i-spyon for examples.
+
+ ✓ src/tools/color-palette-gen/test.ts (24 tests) 21ms
+ ✓ src/tools/currency/test.ts (22 tests) 16ms
+ ✓ src/tools/base64-to-file/test.ts (21 tests) 18ms
+ ✓ src/tools/image-to-ascii/test.ts (27 tests) 13ms
+ ✓ src/tools/flowchart/test.ts (14 tests) 13ms
+ ✓ src/tools/plagiarism/test.ts (19 tests) 14ms
+stderr | src/tools/pdf-to-image-extract/test.ts
+Warning: Please use the `legacy` build in Node.js environments.
+
+ ✓ src/tools/image-slider/test.ts (25 tests) 9ms
+ ✓ src/tools/sha1-hash/test.ts (11 tests) 13ms
+ ✓ src/tools/alt-check/test.ts (26 tests) 11ms
+ ✓ src/tools/number-locale/test.ts (12 tests) 12ms
+ ✓ src/tools/password-generator/test.ts (16 tests) 15ms
+ ✓ src/tools/pdf-to-image-extract/test.ts (46 tests) 13ms
+ ✓ src/tools/id-photo/test.ts (42 tests) 16ms
+ ✓ src/tools/ulid/test.ts (14 tests) 15ms
+ ✓ src/tools/ass-convert/test.ts (25 tests) 15ms
+ ✓ src/tools/title-check/test.ts (39 tests) 15ms
+ ✓ src/tools/chat-history/test.ts (21 tests) 14ms
+ ✓ src/tools/texture-pack/test.ts (21 tests) 11ms
+ ✓ src/tools/gantt/test.ts (15 tests) 13ms
+ ✓ src/tools/hash-verify/test.ts (19 tests) 22ms
+ ✓ src/tools/er-gen/test.ts (15 tests) 14ms
+ ✓ src/tools/due-date/test.ts (42 tests) 19ms
+ ✓ src/tools/image-annotate/test.ts (33 tests) 28ms
+ ✓ src/tools/lottery/test.ts (34 tests) 21ms
+ ✓ src/tools/markdown-preview/test.ts (6 tests) 14ms
+ ✓ src/tools/interest/test.ts (8 tests) 14ms
+ ✓ src/tools/media-metadata/test.ts (38 tests) 15ms
+ ✓ src/tools/drawing-board/test.ts (13 tests) 16ms
+ ✓ src/tools/sprite-gen/test.ts (32 tests) 16ms
+ ✓ src/tools/video-editor/test.ts (18 tests) 13ms
+ ✓ src/tools/desc-check/test.ts (21 tests) 13ms
+ ✓ src/tools/postman-import/test.ts (44 tests) 14ms
+ ✓ src/tools/lunar/test.ts (25 tests) 17ms
+ ✓ src/tools/poster/test.ts (18 tests) 12ms
+ ✓ src/tools/merge-batch/test.ts (35 tests) 15ms
+ ✓ src/tools/resume/test.ts (23 tests) 13ms
+ ✓ src/tools/data-workbench/test.ts (16 tests) 14ms
+ ✓ src/tools/schema-diff/test.ts (17 tests) 12ms
+ ✓ src/tools/fiscal-year/test.ts (12 tests) 11ms
+ ✓ src/tools/pdf-to-html/test.ts (20 tests) 15ms
+ ✓ src/tools/image-batch/test.ts (28 tests) 11ms
+ ✓ src/tools/base64-encode/test.ts (13 tests) 15ms
+ ✓ src/tools/summarize/test.ts (11 tests) 12ms
+ ✓ src/tools/wave-gen/test.ts (13 tests) 11ms
+ ✓ src/tools/mock-data/test.ts (15 tests) 14ms
+ ✓ src/tools/pagination-seo/test.ts (32 tests) 13ms
+ ✓ src/tools/image-dimension/test.ts (27 tests) 12ms
+ ✓ src/tools/pdf-to-markdown/test.ts (23 tests) 16ms
+ ✓ src/tools/font-size/test.ts (18 tests) 9ms
+ ✓ src/tools/image-to-pdf/test.ts (23 tests) 11ms
+ ✓ src/tools/gif-merge/test.ts (26 tests) 17ms
+ ✓ src/tools/function-plot/test.ts (42 tests) 18ms
+ ✓ src/tools/blake2-hash/test.ts (16 tests) 12ms
+ ✓ src/tools/data-filter/test.ts (27 tests) 11ms
+ ✓ src/tools/map/test.ts (27 tests) 12ms
+ ✓ src/tools/md5-hash/test.ts (13 tests) 10ms
+ ✓ src/tools/image-info/test.ts (33 tests) 14ms
+ ✓ src/tools/exif-view/test.ts (41 tests) 13ms
+ ✓ src/tools/structured-data/test.ts (25 tests) 12ms
+ ✓ src/tools/graph/test.ts (24 tests) 12ms
+ ✓ src/tools/serial-test/test.ts (19 tests) 9ms
+ ✓ src/tools/curl-to-code/test.ts (24 tests) 11ms
+ ✓ src/tools/json-ld/test.ts (35 tests) 16ms
+ ✓ src/tools/html-to-markdown/test.ts (6 tests) 16ms
+ ✓ src/tools/sql-to-orm/test.ts (11 tests) 10ms
+ ✓ src/tools/uuid/test.ts (15 tests) 9ms
+ ✓ src/tools/world-clock/test.ts (12 tests) 13ms
+ ✓ src/tools/watermark/test.ts (36 tests) 13ms
+ ✓ src/tools/watermark-batch/test.ts (36 tests) 15ms
+ ✓ src/tools/fortune/test.ts (12 tests) 15ms
+ ✓ src/tools/chain-id-lookup/test.ts (19 tests) 10ms
+ ✓ src/tools/sunrise/test.ts (21 tests) 13ms
+ ✓ src/tools/color-extract/test.ts (21 tests) 11ms
+ ✓ src/tools/tag-gen/test.ts (9 tests) 11ms
+ ✓ src/tools/animation-frame/test.ts (20 tests) 9ms
+ ✓ src/tools/pixel-art/test.ts (29 tests) 12ms
+ ✓ src/tools/text-workbench/test.ts (14 tests) 17ms
+ ✓ src/tools/math-formula/test.ts (35 tests) 13ms
+ ✓ src/tools/grid-image/test.ts (23 tests) 11ms
+ ✓ src/tools/image-to-base64/test.ts (19 tests) 9ms
+ ✓ src/tools/uml/test.ts (15 tests) 9ms
+ ✓ src/tools/tilemap/test.ts (27 tests) 15ms
+ ✓ src/tools/private-key/test.ts (20 tests) 13ms
+ ✓ src/tools/business-card/test.ts (19 tests) 14ms
+ ✓ src/tools/image-to-webp/test.ts (17 tests) 11ms
+ ✓ src/tools/embedding-vis/test.ts (16 tests) 12ms
+ ✓ src/tools/image-crop/test.ts (31 tests) 12ms
+ ✓ src/tools/read-aloud/test.ts (24 tests) 14ms
+ ✓ src/tools/salary/test.ts (34 tests) 10ms
+ ✓ src/tools/invoice/test.ts (28 tests) 13ms
+ ✓ src/tools/extension-pack/test.ts (16 tests) 15ms
+ ✓ src/tools/sprite-split/test.ts (16 tests) 11ms
+ ✓ src/tools/api-log/test.ts (17 tests) 9ms
+ ✓ src/tools/semver-compare/test.ts (12 tests) 9ms
+ ✓ src/tools/keyword-extract/test.ts (19 tests) 10ms
+ ✓ src/tools/tax/test.ts (8 tests) 13ms
+ ✓ src/tools/discount/test.ts (7 tests) 11ms
+ ✓ src/tools/wallet-connect/test.ts (21 tests) 16ms
+ ✓ src/tools/high-contrast/test.ts (19 tests) 10ms
+stderr | src/tools/pdf-to-ppt/test.ts
+Warning: Please use the `legacy` build in Node.js environments.
+
+ ✓ src/tools/pdf-to-ppt/test.ts (32 tests) 9ms
+ ✓ src/tools/language-tag/test.ts (37 tests) 14ms
+ ✓ src/tools/argon2-hash/test.ts (8 tests) 14ms
+ ✓ src/tools/rag/test.ts (18 tests) 10ms
+ ✓ src/tools/video-thumbnail/test.ts (11 tests) 10ms
+ ✓ src/tools/text-hash/test.ts (8 tests) 12ms
+ ✓ src/tools/image-merge/test.ts (28 tests) 14ms
+ ✓ src/tools/rtl/test.ts (15 tests) 11ms
+ ✓ src/tools/tx-build/test.ts (23 tests) 13ms
+ ✓ src/tools/vtt-convert/test.ts (17 tests) 14ms
+ ✓ src/tools/week-number/test.ts (18 tests) 9ms
+ ✓ src/tools/radar/test.ts (34 tests) 15ms
+ ✓ src/tools/bson-codec/test.ts (13 tests) 8ms
+ ✓ src/tools/programmer-calc/test.ts (19 tests) 12ms
+ ✓ src/tools/long-image/test.ts (29 tests) 14ms
+ ✓ src/tools/wcag-contrast/test.ts (18 tests) 17ms
+ ✓ src/tools/icu-message/test.ts (38 tests) 14ms
+ ✓ src/tools/excel-to-json-xlsx/test.ts (8 tests) 11ms
+ ✓ src/tools/charset-lookup/test.ts (13 tests) 8ms
+ ✓ src/tools/userscript/test.ts (22 tests) 12ms
+ ✓ src/tools/sql-plan/test.ts (8 tests) 9ms
+ ✓ src/tools/flashcard/test.ts (26 tests) 13ms
+ ✓ src/tools/mindmap/test.ts (13 tests) 13ms
+ ✓ src/tools/gif-to-sprite/test.ts (16 tests) 15ms
+ ✓ src/tools/holiday/test.ts (10 tests) 9ms
+ ✓ src/tools/permission/test.ts (14 tests) 11ms
+ ✓ src/tools/color-a11y/test.ts (13 tests) 14ms
+ ✓ src/tools/totp-generate/test.ts (12 tests) 10ms
+ ✓ src/tools/level-editor/test.ts (26 tests) 12ms
+ ✓ src/tools/ocr-post/test.ts (19 tests) 8ms
+ ✓ src/tools/sharpen/test.ts (16 tests) 10ms
+ ✓ src/tools/yaml-formatter/test.ts (10 tests) 9ms
+ ✓ src/tools/sse/test.ts (20 tests) 11ms
+ ✓ src/tools/statistics/test.ts (32 tests) 12ms
+ ✓ src/tools/bluetooth-test/test.ts (18 tests) 13ms
+ ✓ src/tools/moon-phase/test.ts (14 tests) 13ms
+ ✓ src/tools/image-rotate/test.ts (24 tests) 12ms
+ ✓ src/tools/regex-cheatsheet/test.ts (12 tests) 8ms
+ ✓ src/tools/rotate-batch/test.ts (27 tests) 14ms
+ ✓ src/tools/csv-formatter/test.ts (11 tests) 13ms
+ ✓ src/tools/image-format/test.ts (33 tests) 11ms
+ ✓ src/tools/embedding/test.ts (16 tests) 12ms
+ ✓ src/tools/mime-encode/test.ts (16 tests) 11ms
+ ✓ src/tools/timezone-convert/test.ts (13 tests) 13ms
+ ✓ src/tools/gomoku/test.ts (13 tests) 11ms
+ ✓ src/tools/timestamp-gen/test.ts (11 tests) 12ms
+ ✓ src/tools/background-remove/test.ts (32 tests) 15ms
+ ✓ src/tools/api-mock/test.ts (55 tests) 18ms
+ ✓ src/tools/sankey/test.ts (21 tests) 12ms
+ ✓ src/tools/chart-gen/test.ts (15 tests) 11ms
+ ✓ src/tools/image-resize/test.ts (26 tests) 14ms
+ ✓ src/tools/meeting-time/test.ts (14 tests) 10ms
+ ✓ src/tools/vercel/test.ts (24 tests) 9ms
+ ✓ src/tools/http-header-parser/test.ts (12 tests) 11ms
+ ✓ src/tools/matrix/test.ts (19 tests) 13ms
+ ✓ src/tools/file-mime/test.ts (17 tests) 11ms
+ ✓ src/tools/camera-test/test.ts (15 tests) 13ms
+ ✓ src/tools/eyedropper/test.ts (11 tests) 11ms
+ ✓ src/tools/ico/test.ts (15 tests) 11ms
+ ✓ src/tools/charset-detect/test.ts (10 tests) 12ms
+ ✓ src/tools/avro-parse/test.ts (11 tests) 11ms
+ ✓ src/tools/popup/test.ts (16 tests) 9ms
+ ✓ src/tools/tip/test.ts (14 tests) 6ms
+ ✓ src/tools/metronome/test.ts (18 tests) 10ms
+ ✓ src/tools/robots/test.ts (16 tests) 9ms
+ ✓ src/tools/edge-log/test.ts (21 tests) 13ms
+ ✓ src/tools/file-magic/test.ts (16 tests) 9ms
+ ✓ src/tools/canonical-check/test.ts (18 tests) 10ms
+ ✓ src/tools/i18n-diff/test.ts (12 tests) 8ms
+ ✓ src/tools/birthday/test.ts (14 tests) 11ms
+ ✓ src/tools/sequence/test.ts (15 tests) 8ms
+ ✓ src/tools/compound-interest/test.ts (8 tests) 10ms
+ ✓ src/tools/svg-to-png/test.ts (33 tests) 9ms
+ ✓ src/tools/edge-route/test.ts (20 tests) 7ms
+ ✓ src/tools/video-to-gif/test.ts (10 tests) 8ms
+ ✓ src/tools/calculator/test.ts (8 tests) 9ms
+ ✓ src/tools/video-format/test.ts (23 tests) 7ms
+ ✓ src/tools/mode/test.ts (13 tests) 7ms
+ ✓ src/tools/pdf-ocr/test.ts (27 tests) 9ms
+ ✓ src/tools/text-classify/test.ts (19 tests) 9ms
+ ✓ src/tools/video-to-audio/test.ts (14 tests) 9ms
+ ✓ src/tools/sqlite-viewer/test.ts (7 tests) 8ms
+ ✓ src/tools/options/test.ts (17 tests) 11ms
+ ✓ src/tools/translate/test.ts (6 tests) 9ms
+ ✓ src/tools/pdf-to-image/test.ts (26 tests) 11ms
+ ✓ src/tools/snake/test.ts (11 tests) 6ms
+ ✓ src/tools/camera-photo/test.ts (9 tests) 8ms
+ ✓ src/tools/data-sort/test.ts (25 tests) 11ms
+ ✓ src/tools/toml-parse/test.ts (10 tests) 11ms
+ ✓ src/tools/usb-test/test.ts (16 tests) 12ms
+ ✓ src/components/search/search.test.ts (5 tests) 12ms
+ ✓ src/tools/pdf-extract/test.ts (21 tests) 9ms
+ ✓ src/tools/punycode/test.ts (16 tests) 6ms
+ ✓ src/tools/text-wrap/test.ts (13 tests) 8ms
+ ✓ src/tools/speed/test.ts (11 tests) 8ms
+ ✓ src/tools/local-qa/test.ts (16 tests) 12ms
+ ✓ src/tools/breadcrumb/test.ts (12 tests) 11ms
+ ✓ src/tools/fraction/test.ts (20 tests) 12ms
+ ✓ src/tools/sql-to-json/test.ts (6 tests) 9ms
+ ✓ src/tools/multi-diff/test.ts (7 tests) 6ms
+ ✓ src/tools/power/test.ts (16 tests) 6ms
+ ✓ src/tools/data-storage/test.ts (17 tests) 7ms
+ ✓ src/tools/clipboard-test/test.ts (11 tests) 8ms
+ ✓ src/tools/pressure/test.ts (17 tests) 5ms
+ ✓ src/tools/pdf-to-csv/test.ts (22 tests) 7ms
+ ✓ src/tools/barcode/test.ts (14 tests) 12ms
+ ✓ src/tools/game-value/test.ts (19 tests) 8ms
+ ✓ src/tools/quoted-printable/test.ts (16 tests) 6ms
+ ✓ src/tools/yaml-to-json/test.ts (8 tests) 12ms
+ ✓ src/tools/cors-config/test.ts (16 tests) 11ms
+ ✓ src/tools/date-diff/test.ts (14 tests) 9ms
+ ✓ src/tools/number-format/test.ts (24 tests) 11ms
+ ✓ src/tools/exp-curve/test.ts (16 tests) 9ms
+ ✓ src/tools/worker-template/test.ts (16 tests) 10ms
+ ✓ src/tools/periodic-table/test.ts (16 tests) 13ms
+ ✓ src/tools/api-cache/test.ts (24 tests) 7ms
+ ✓ src/tools/image-compare/test.ts (16 tests) 10ms
+ ✓ src/tools/psychology/test.ts (14 tests) 9ms
+ ✓ src/tools/netlify/test.ts (31 tests) 14ms
+ ✓ src/tools/data-url-parser/test.ts (13 tests) 9ms
+ ✓ src/tools/decimal/test.ts (13 tests) 11ms
+ ✓ src/tools/ini-parse/test.ts (10 tests) 10ms
+ ✓ src/tools/uuencode-codec/test.ts (16 tests) 7ms
+ ✓ src/tools/er-diagram/test.ts (8 tests) 7ms
+ ✓ src/tools/waveform/test.ts (21 tests) 7ms
+ ✓ src/tools/regex-gen/test.ts (16 tests) 8ms
+ ✓ src/tools/data-table/test.ts (26 tests) 11ms
+ ✓ src/tools/pivot/test.ts (27 tests) 11ms
+ ✓ src/tools/stddev/test.ts (14 tests) 6ms
+ ✓ src/tools/typing/test.ts (19 tests) 7ms
+ ✓ src/tools/gitlab-ci/test.ts (12 tests) 8ms
+ ✓ src/tools/shadow-gen/test.ts (15 tests) 8ms
+ ✓ src/tools/geolocation/test.ts (11 tests) 8ms
+ ✓ src/tools/copywriting/test.ts (13 tests) 9ms
+ ✓ src/tools/video-cut/test.ts (11 tests) 7ms
+ ✓ src/tools/protobuf-codec/test.ts (10 tests) 10ms
+ ✓ src/tools/pdf-to-text/test.ts (29 tests) 10ms
+ ✓ src/tools/avatar/test.ts (20 tests) 12ms
+ ✓ src/tools/crc-checksum/test.ts (15 tests) 9ms
+ ✓ src/tools/graphql-to-code/test.ts (9 tests) 9ms
+ ✓ src/tools/extension-debug/test.ts (17 tests) 9ms
+ ✓ src/tools/json-to-rust/test.ts (13 tests) 7ms
+ ✓ src/tools/svg-optimize-img/test.ts (15 tests) 8ms
+ ✓ src/lib/qpdf.test.ts (11 tests) 10ms
+ ✓ src/tools/geometry/test.ts (15 tests) 8ms
+ ✓ src/tools/heatmap/test.ts (18 tests) 9ms
+ ✓ src/tools/sql-gen/test.ts (15 tests) 8ms
+ ✓ src/tools/percentage/test.ts (17 tests) 8ms
+ ✓ src/tools/personality/test.ts (12 tests) 8ms
+ ✓ src/tools/yaml-to-xml/test.ts (8 tests) 9ms
+ ✓ src/tools/physics-formula/test.ts (25 tests) 12ms
+ ✓ src/tools/age/test.ts (17 tests) 11ms
+ ✓ src/tools/chart-export/test.ts (18 tests) 10ms
+ ✓ src/tools/blob-gen/test.ts (11 tests) 10ms
+ ✓ src/tools/batch-rename/test.ts (16 tests) 14ms
+ ✓ src/tools/port-scan/test.ts (22 tests) 12ms
+ ✓ src/tools/content-script/test.ts (20 tests) 12ms
+ ✓ src/tools/memory-game/test.ts (11 tests) 8ms
+ ✓ src/tools/unit-convert/test.ts (25 tests) 10ms
+ ✓ src/tools/pwa-manifest/test.ts (20 tests) 12ms
+ ✓ src/tools/tarot/test.ts (14 tests) 10ms
+ ✓ src/tools/funnel/test.ts (24 tests) 9ms
+ ✓ src/tools/chemistry/test.ts (27 tests) 13ms
+ ✓ src/tools/docker-compose/test.ts (12 tests) 9ms
+ ✓ src/tools/equation/test.ts (17 tests) 11ms
+ ✓ src/tools/svg-game/test.ts (15 tests) 10ms
+ ✓ src/tools/token-decimals/test.ts (30 tests) 10ms
+ ✓ src/tools/volume/test.ts (13 tests) 7ms
+ ✓ src/tools/d1-config/test.ts (15 tests) 8ms
+ ✓ src/tools/gif-split/test.ts (18 tests) 8ms
+ ✓ src/tools/manifest-v3/test.ts (24 tests) 11ms
+ ✓ src/tools/image-compress/test.ts (19 tests) 16ms
+ ✓ src/tools/speech-recognition/test.ts (21 tests) 12ms
+ ✓ src/tools/cron-parser/test.ts (14 tests) 9ms
+ ✓ src/tools/code-diff/test.ts (14 tests) 7ms
+ ✓ src/tools/minesweeper/test.ts (9 tests) 9ms
+ ✓ src/tools/robots-check/test.ts (19 tests) 12ms
+ ✓ src/tools/cron-generator/test.ts (13 tests) 9ms
+ ✓ src/tools/rewrite/test.ts (6 tests) 9ms
+ ✓ src/tools/physics/test.ts (19 tests) 10ms
+ ✓ src/tools/webhook-test/test.ts (9 tests) 7ms
+ ✓ src/tools/reduced-motion/test.ts (20 tests) 11ms
+ ✓ src/tools/csp/test.ts (13 tests) 9ms
+ ✓ src/tools/mock-api-dev/test.ts (11 tests) 9ms
+ ✓ src/tools/dns-query/test.ts (8 tests) 6ms
+ ✓ src/tools/changelog/test.ts (8 tests) 8ms
+ ✓ src/tools/average/test.ts (17 tests) 10ms
+ ✓ src/tools/ratio/test.ts (18 tests) 8ms
+ ✓ src/tools/table-to-text/test.ts (7 tests) 8ms
+ ✓ src/tools/base58/test.ts (12 tests) 8ms
+ ✓ src/tools/image-base64/test.ts (23 tests) 9ms
+ ✓ src/tools/kv-config/test.ts (11 tests) 7ms
+ ✓ src/tools/image-round/test.ts (24 tests) 10ms
+ ✓ src/tools/date-calc/test.ts (17 tests) 8ms
+ ✓ src/tools/cross-browser/test.ts (19 tests) 10ms
+ ✓ src/tools/semantic-search/test.ts (17 tests) 10ms
+ ✓ src/tools/makefile/test.ts (11 tests) 9ms
+ ✓ src/tools/xml-to-json/test.ts (13 tests) 10ms
+ ✓ src/tools/vibration/test.ts (9 tests) 7ms
+ ✓ src/tools/ssh-config/test.ts (13 tests) 11ms
+ ✓ src/tools/date-parse/test.ts (14 tests) 8ms
+ ✓ src/tools/json-to-go/test.ts (14 tests) 9ms
+ ✓ src/lib/zerowidth.test.ts (16 tests) 11ms
+ ✓ src/tools/loan/test.ts (7 tests) 14ms
+ ✓ src/tools/regex-ast/test.ts (10 tests) 6ms
+ ✓ src/tools/regex-visualize/test.ts (10 tests) 9ms
+ ✓ src/tools/userscript-debug/test.ts (16 tests) 10ms
+ ✓ src/tools/color-adjust/test.ts (19 tests) 11ms
+ ✓ src/tools/gradient-gen/test.ts (15 tests) 10ms
+ ✓ src/tools/big-json/test.ts (8 tests) 8ms
+ ✓ src/tools/body-fat/test.ts (17 tests) 7ms
+ ✓ src/tools/sensor/test.ts (13 tests) 7ms
+ ✓ src/tools/title-gen/test.ts (6 tests) 10ms
+ ✓ src/tools/battery/test.ts (15 tests) 8ms
+ ✓ src/tools/postman-to-code/test.ts (10 tests) 9ms
+ ✓ src/tools/video-compress/test.ts (10 tests) 9ms
+ ✓ src/tools/svg-gen/test.ts (10 tests) 7ms
+ ✓ src/tools/game-2048/test.ts (8 tests) 9ms
+ ✓ src/tools/hotp-generate/test.ts (9 tests) 11ms
+ ✓ src/tools/wrangler/test.ts (14 tests) 12ms
+ ✓ src/tools/api-rate/test.ts (19 tests) 10ms
+ ✓ src/tools/graphql-formatter/test.ts (9 tests) 7ms
+ ✓ src/tools/json-to-java/test.ts (15 tests) 10ms
+ ✓ src/tools/json-schema-gen/test.ts (8 tests) 6ms
+ ✓ src/tools/jsonpath/test.ts (9 tests) 8ms
+ ✓ src/tools/median/test.ts (17 tests) 7ms
+ ✓ src/tools/animation-gen/test.ts (9 tests) 6ms
+ ✓ src/tools/word-count/test.ts (9 tests) 6ms
+ ✓ src/tools/http-status/test.ts (10 tests) 7ms
+ ✓ src/tools/date-picker/test.ts (9 tests) 6ms
+ ✓ src/tools/gauge/test.ts (16 tests) 9ms
+ ✓ src/tools/image-convert/test.ts (10 tests) 8ms
+ ✓ src/tools/checksum/test.ts (11 tests) 7ms
+ ✓ src/tools/resolution/test.ts (15 tests) 8ms
+ ✓ src/tools/regex-cross/test.ts (12 tests) 8ms
+ ✓ src/tools/bitmap-font/test.ts (16 tests) 10ms
+ ✓ src/tools/ocr/test.ts (19 tests) 13ms
+ ✓ src/tools/cloudflare/test.ts (23 tests) 10ms
+ ✓ src/tools/devtools/test.ts (17 tests) 8ms
+ ✓ src/tools/logo/test.ts (10 tests) 6ms
+ ✓ src/tools/email-gen/test.ts (17 tests) 10ms
+ ✓ src/tools/base85-codec/test.ts (13 tests) 9ms
+ ✓ src/tools/base-convert/test.ts (11 tests) 8ms
+ ✓ src/tools/edge-auth/test.ts (19 tests) 10ms
+ ✓ src/tools/text-merge/test.ts (14 tests) 14ms
+ ✓ src/tools/filter/test.ts (11 tests) 10ms
+ ✓ src/tools/image-to-avif/test.ts (20 tests) 12ms
+ ✓ src/tools/yaml-to-k8s/test.ts (12 tests) 7ms
+ ✓ src/tools/data-url/test.ts (17 tests) 11ms
+ ✓ src/tools/code-to-image/test.ts (10 tests) 6ms
+ ✓ src/tools/directory-tree/test.ts (14 tests) 9ms
+ ✓ src/tools/api-retry/test.ts (25 tests) 9ms
+ ✓ src/tools/image-flip/test.ts (13 tests) 10ms
+ ✓ src/tools/code-beautify/test.ts (14 tests) 10ms
+ ✓ src/tools/ping/test.ts (13 tests) 7ms
+ ✓ src/tools/word-to-html/test.ts (6 tests) 6ms
+ ✓ src/tools/ai-detect/test.ts (14 tests) 9ms
+ ✓ src/tools/keyboard-test/test.ts (18 tests) 8ms
+ ✓ src/tools/json-validate/test.ts (7 tests) 7ms
+ ✓ src/tools/notification/test.ts (11 tests) 9ms
+ ✓ src/tools/damage/test.ts (12 tests) 7ms
+ ✓ src/lib/text.test.ts (12 tests) 7ms
+ ✓ src/tools/semver-gen/test.ts (11 tests) 8ms
+ ✓ src/tools/prompt-template/test.ts (11 tests) 10ms
+ ✓ src/tools/xml-escape/test.ts (16 tests) 7ms
+ ✓ src/tools/placeholder/test.ts (10 tests) 11ms
+ ✓ src/tools/csv-to-excel/test.ts (12 tests) 10ms
+ ✓ src/tools/code-explain/test.ts (12 tests) 8ms
+ ✓ src/tools/text-compare/test.ts (16 tests) 9ms
+ ✓ src/tools/timer/test.ts (11 tests) 8ms
+ ✓ src/tools/variance/test.ts (16 tests) 13ms
+ ✓ src/tools/csp-config/test.ts (13 tests) 8ms
+ ✓ src/tools/security-headers/test.ts (12 tests) 9ms
+ ✓ src/tools/sprite-preview/test.ts (15 tests) 9ms
+ ✓ src/tools/zodiac/test.ts (11 tests) 9ms
+ ✓ src/tools/parquet-view/test.ts (7 tests) 9ms
+ ✓ src/tools/ai-image-gen/test.ts (12 tests) 6ms
+ ✓ src/tools/reaction/test.ts (12 tests) 6ms
+ ✓ src/tools/hue/test.ts (11 tests) 7ms
+ ✓ src/tools/svgo-optimize/test.ts (8 tests) 7ms
+ ✓ src/tools/json-merge/test.ts (8 tests) 6ms
+ ✓ src/tools/text-stats/test.ts (10 tests) 7ms
+ ✓ src/tools/bmi/test.ts (19 tests) 8ms
+ ✓ src/tools/port-lookup/test.ts (11 tests) 6ms
+ ✓ src/tools/gcd-lcm/test.ts (17 tests) 6ms
+ ✓ src/tools/edge-redirect/test.ts (26 tests) 8ms
+ ✓ src/tools/puzzle/test.ts (10 tests) 9ms
+ ✓ src/tools/video-merge/test.ts (9 tests) 11ms
+ ✓ src/tools/quarter/test.ts (10 tests) 8ms
+ ✓ src/tools/timestamp-convert/test.ts (11 tests) 9ms
+ ✓ src/tools/audio-to-text/test.ts (12 tests) 9ms
+ ✓ src/tools/chart-theme/test.ts (23 tests) 10ms
+ ✓ src/tools/env/test.ts (10 tests) 10ms
+ ✓ src/tools/favicon-gen/test.ts (10 tests) 8ms
+ ✓ src/tools/iso-week/test.ts (11 tests) 10ms
+ ✓ src/lib/diff.test.ts (6 tests) 7ms
+ ✓ src/tools/csv-to-json/test.ts (13 tests) 15ms
+ ✓ src/tools/json-to-toml/test.ts (13 tests) 12ms
+ ✓ src/tools/prompt-optimize/test.ts (12 tests) 11ms
+ ✓ src/tools/grid-gen/test.ts (13 tests) 7ms
+ ✓ src/tools/twitter-card/test.ts (8 tests) 7ms
+ ✓ src/tools/compress-compare/test.ts (19 tests) 9ms
+ ✓ src/tools/readme/test.ts (6 tests) 6ms
+ ✓ src/tools/hex/test.ts (16 tests) 8ms
+ ✓ src/tools/xml-formatter/test.ts (11 tests) 9ms
+ ✓ src/tools/line-ending/test.ts (11 tests) 6ms
+ ✓ src/tools/saturation/test.ts (10 tests) 7ms
+ ✓ src/tools/route-debug/test.ts (13 tests) 8ms
+ ✓ src/tools/package-manager/test.ts (8 tests) 7ms
+ ✓ src/tools/naming-gen/test.ts (15 tests) 8ms
+ ✓ src/tools/regex-tester/test.ts (12 tests) 10ms
+ ✓ src/tools/shuffle/test.ts (9 tests) 7ms
+ ✓ src/tools/social-share/test.ts (15 tests) 8ms
+ ✓ src/tools/extension-publish/test.ts (16 tests) 10ms
+ ✓ src/tools/weight/test.ts (16 tests) 9ms
+ ✓ src/tools/short-url/test.ts (8 tests) 8ms
+ ✓ src/tools/git-diff/test.ts (9 tests) 10ms
+ ✓ src/tools/split-bill/test.ts (11 tests) 8ms
+ ✓ src/tools/keyword-density/test.ts (7 tests) 7ms
+ ✓ src/tools/messagepack/test.ts (10 tests) 11ms
+ ✓ src/tools/hreflang/test.ts (15 tests) 9ms
+ ✓ src/tools/timezone-convert-dev/test.ts (9 tests) 10ms
+ ✓ src/tools/chinese-zodiac/test.ts (13 tests) 9ms
+ ✓ src/tools/http-client/test.ts (7 tests) 9ms
+ ✓ src/tools/lb-config/test.ts (13 tests) 8ms
+ ✓ src/tools/gradient-gen-dev/test.ts (13 tests) 8ms
+ ✓ src/tools/duplicate-code/test.ts (7 tests) 9ms
+ ✓ src/tools/workday/test.ts (15 tests) 8ms
+ ✓ src/tools/ast-viewer/test.ts (10 tests) 8ms
+ ✓ src/tools/qr-scan-media/test.ts (9 tests) 8ms
+ ✓ src/tools/json-diff/test.ts (7 tests) 7ms
+ ✓ src/tools/focus-style/test.ts (21 tests) 11ms
+ ✓ src/tools/db-connection/test.ts (12 tests) 9ms
+ ✓ src/tools/binary/test.ts (15 tests) 8ms
+ ✓ src/tools/income-tax/test.ts (26 tests) 8ms
+ ✓ src/tools/audio-format/test.ts (22 tests) 8ms
+ ✓ src/tools/temperature/test.ts (16 tests) 8ms
+ ✓ src/tools/ip-lookup/test.ts (14 tests) 9ms
+ ✓ src/tools/random-sort/test.ts (10 tests) 11ms
+ ✓ src/tools/dependency/test.ts (10 tests) 8ms
+ ✓ src/tools/mic-test/test.ts (17 tests) 11ms
+ ✓ src/tools/text-to-table/test.ts (6 tests) 6ms
+ ✓ src/tools/box-shadow-gen/test.ts (10 tests) 9ms
+ ✓ src/tools/word-frequency/test.ts (8 tests) 9ms
+ ✓ src/tools/json-to-yaml/test.ts (14 tests) 7ms
+ ✓ src/tools/token-count/test.ts (9 tests) 6ms
+ ✓ src/tools/jwt-decode/test.ts (9 tests) 14ms
+ ✓ src/tools/area/test.ts (16 tests) 8ms
+ ✓ src/tools/batch-replace/test.ts (11 tests) 14ms
+ ✓ src/tools/complexity/test.ts (12 tests) 6ms
+ ✓ src/tools/timeline/test.ts (7 tests) 7ms
+ ✓ src/tools/screen-record/test.ts (15 tests) 8ms
+ ✓ src/tools/octal/test.ts (15 tests) 8ms
+ ✓ src/tools/css-gen/test.ts (12 tests) 7ms
+ ✓ src/tools/tetris/test.ts (11 tests) 10ms
+ ✓ src/tools/brightness-contrast/test.ts (14 tests) 13ms
+ ✓ src/tools/mouse-test/test.ts (15 tests) 7ms
+ ✓ src/tools/log-exp/test.ts (12 tests) 9ms
+ ✓ src/tools/timestamp-convert-dev/test.ts (10 tests) 7ms
+ ✓ src/tools/angle/test.ts (16 tests) 7ms
+ ✓ src/tools/cookie-parse/test.ts (13 tests) 8ms
+ ✓ src/tools/mini-game/test.ts (8 tests) 9ms
+ ✓ src/tools/energy/test.ts (17 tests) 8ms
+ ✓ src/lib/pipeline.test.ts (22 tests) 9ms
+ ✓ src/tools/htaccess/test.ts (9 tests) 6ms
+ ✓ src/tools/bom/test.ts (10 tests) 6ms
+ ✓ src/tools/tts/test.ts (11 tests) 11ms
+ ✓ src/tools/unicode-escape/test.ts (13 tests) 6ms
+ ✓ src/tools/exif-remove/test.ts (14 tests) 8ms
+ ✓ src/tools/network-info/test.ts (14 tests) 7ms
+ ✓ src/tools/blank-lines/test.ts (13 tests) 7ms
+ ✓ src/tools/pixelate/test.ts (9 tests) 6ms
+ ✓ src/tools/length/test.ts (18 tests) 7ms
+ ✓ src/tools/jenkinsfile/test.ts (9 tests) 8ms
+ ✓ src/tools/csp-config-ext/test.ts (22 tests) 13ms
+ ✓ src/tools/cps/test.ts (10 tests) 7ms
+ ✓ src/tools/sql-escape/test.ts (15 tests) 7ms
+ ✓ src/tools/ai-image-rec/test.ts (11 tests) 9ms
+ ✓ src/tools/code-minify/test.ts (14 tests) 8ms
+ ✓ src/tools/blur/test.ts (11 tests) 8ms
+ ✓ src/tools/video-transcode/test.ts (11 tests) 12ms
+ ✓ src/tools/code-convert/test.ts (8 tests) 8ms
+ ✓ src/tools/sql-minify/test.ts (10 tests) 7ms
+ ✓ src/tools/oauth/test.ts (7 tests) 7ms
+ ✓ src/tools/device-info/test.ts (12 tests) 8ms
+ ✓ src/tools/favicon/test.ts (12 tests) 9ms
+ ✓ src/tools/lorem/test.ts (9 tests) 8ms
+ ✓ src/tools/json-to-ts/test.ts (15 tests) 15ms
+ ✓ src/tools/reading-time/test.ts (7 tests) 8ms
+ ✓ src/tools/sql-format/test.ts (10 tests) 8ms
+ ✓ src/tools/html-entity/test.ts (14 tests) 5ms
+ ✓ src/tools/pomodoro/test.ts (8 tests) 6ms
+ ✓ src/tools/duplicate-lines/test.ts (12 tests) 7ms
+ ✓ src/tools/grid-generator/test.ts (9 tests) 7ms
+ ✓ src/tools/stopwatch/test.ts (14 tests) 7ms
+ ✓ src/tools/k8s-config/test.ts (11 tests) 7ms
+ ✓ src/tools/screen-test/test.ts (14 tests) 8ms
+ ✓ src/tools/canonical/test.ts (13 tests) 6ms
+ ✓ src/tools/git-cheatsheet/test.ts (9 tests) 5ms
+ ✓ src/tools/csv-to-tsv/test.ts (6 tests) 7ms
+ ✓ src/tools/background/test.ts (13 tests) 7ms
+ ✓ src/tools/time-unit/test.ts (17 tests) 7ms
+ ✓ src/tools/extract-column/test.ts (13 tests) 6ms
+ ✓ src/tools/vim-cheatsheet/test.ts (8 tests) 5ms
+ ✓ src/tools/bmr/test.ts (14 tests) 9ms
+ ✓ src/tools/emoji/test.ts (9 tests) 8ms
+ ✓ src/tools/screenshot-dev/test.ts (5 tests) 8ms
+ ✓ src/tools/autoprefixer/test.ts (8 tests) 6ms
+ ✓ src/tools/edge-cache/test.ts (19 tests) 11ms
+ ✓ src/tools/r2-config/test.ts (13 tests) 9ms
+ ✓ src/tools/json-to-k8s/test.ts (9 tests) 6ms
+ ✓ src/tools/docker-config/test.ts (8 tests) 7ms
+ ✓ src/tools/jsonl/test.ts (8 tests) 9ms
+ ✓ src/tools/json-schema-validate/test.ts (10 tests) 9ms
+ ✓ src/tools/linux-cheatsheet/test.ts (9 tests) 7ms
+ ✓ src/tools/model-compare/test.ts (11 tests) 9ms
+ ✓ src/tools/openapi-preview/test.ts (9 tests) 7ms
+ ✓ src/tools/mime-lookup/test.ts (10 tests) 8ms
+ ✓ src/tools/escape/test.ts (13 tests) 7ms
+ ✓ src/tools/screen-recorder/test.ts (11 tests) 6ms
+ ✓ src/tools/json-to-csv/test.ts (13 tests) 7ms
+ ✓ src/tools/invisible-chars/test.ts (11 tests) 6ms
+ ✓ src/tools/utm/test.ts (10 tests) 6ms
+ ✓ src/tools/cors-check/test.ts (13 tests) 7ms
+ ✓ src/tools/connection-parser/test.ts (7 tests) 6ms
+ ✓ src/tools/flex-generator/test.ts (9 tests) 7ms
+ ✓ src/tools/license/test.ts (9 tests) 6ms
+ ✓ src/tools/url-codec/test.ts (14 tests) 5ms
+ ✓ src/tools/permutation/test.ts (15 tests) 7ms
+ ✓ src/tools/ci-config/test.ts (8 tests) 6ms
+ ✓ src/tools/cidr/test.ts (12 tests) 9ms
+ ✓ src/tools/properties-parse/test.ts (11 tests) 10ms
+ ✓ src/tools/css-escape/test.ts (13 tests) 8ms
+ ✓ src/tools/countdown/test.ts (11 tests) 9ms
+ ✓ src/tools/json-to-xml/test.ts (13 tests) 7ms
+ ✓ src/tools/sql-dialect/test.ts (11 tests) 10ms
+ ✓ src/tools/rich-to-text/test.ts (10 tests) 10ms
+ ✓ src/tools/sitemap-generate/test.ts (16 tests) 9ms
+ ✓ src/tools/dedupe/test.ts (10 tests) 5ms
+ ✓ src/tools/barcode-scan/test.ts (11 tests) 10ms
+ ✓ src/tools/vision/test.ts (8 tests) 9ms
+ ✓ src/tools/iso8601/test.ts (11 tests) 8ms
+ ✓ src/tools/chmod/test.ts (14 tests) 10ms
+ ✓ src/tools/terraform-config/test.ts (6 tests) 6ms
+ ✓ src/tools/base32/test.ts (11 tests) 7ms
+ ✓ src/tools/qr-scan/test.ts (9 tests) 8ms
+ ✓ src/tools/case-convert/test.ts (10 tests) 6ms
+ ✓ src/tools/ua-parser/test.ts (10 tests) 6ms
+ ✓ src/tools/mosaic/test.ts (9 tests) 7ms
+ ✓ src/tools/regex-replace/test.ts (10 tests) 6ms
+ ✓ src/tools/symbols/test.ts (8 tests) 7ms
+ ✓ src/tools/text-pad/test.ts (14 tests) 6ms
+ ✓ src/tools/template/test.ts (12 tests) 6ms
+ ✓ src/tools/json-tree/test.ts (7 tests) 5ms
+ ✓ src/tools/camera-snapshot/test.ts (11 tests) 7ms
+ ✓ src/tools/mac-address/test.ts (12 tests) 6ms
+ ✓ src/tools/readability/test.ts (7 tests) 9ms
+ ✓ src/tools/text-truncate/test.ts (12 tests) 6ms
+ ✓ src/tools/og/test.ts (7 tests) 6ms
+ ✓ src/tools/calorie/test.ts (13 tests) 8ms
+ ✓ src/tools/bezier-editor/test.ts (8 tests) 9ms
+ ✓ src/tools/sensitive-words/test.ts (9 tests) 6ms
+ ✓ src/tools/query-string/test.ts (13 tests) 8ms
+ ✓ src/tools/json-to-python/test.ts (12 tests) 14ms
+ ✓ src/tools/helm-config/test.ts (6 tests) 7ms
+ ✓ src/tools/date-format/test.ts (12 tests) 8ms
+ ✓ src/tools/url-parser/test.ts (6 tests) 6ms
+ ✓ src/tools/indent/test.ts (12 tests) 5ms
+ ✓ src/tools/barcode-scan-media/test.ts (9 tests) 7ms
+ ✓ src/tools/unicode-lookup/test.ts (7 tests) 6ms
+ ✓ src/tools/nginx-config/test.ts (10 tests) 6ms
+ ✓ src/tools/border-radius-gen/test.ts (7 tests) 5ms
+ ✓ src/tools/cloc/test.ts (6 tests) 5ms
+ ✓ src/tools/commit-gen/test.ts (10 tests) 6ms
+ ✓ src/tools/meta/test.ts (7 tests) 6ms
+ ✓ src/tools/ansible-config/test.ts (8 tests) 8ms
+ ✓ src/tools/whitespace/test.ts (8 tests) 6ms
+ ✓ src/tools/js-escape/test.ts (14 tests) 8ms
+ ✓ src/tools/gitignore/test.ts (7 tests) 7ms
+ ✓ src/tools/cn-en-count/test.ts (6 tests) 6ms
+ ✓ src/tools/json-formatter/test.ts (8 tests) 5ms
+ ✓ src/tools/sort/test.ts (10 tests) 9ms
+ ✓ src/tools/text-unwatermark/test.ts (10 tests) 4ms
+ ✓ src/tools/naming-convert/test.ts (11 tests) 5ms
+ ✓ src/tools/json-sort/test.ts (7 tests) 4ms
+ ✓ src/tools/json-minify/test.ts (5 tests) 2ms
+ ✓ src/tools/trigonometry/test.ts (9 tests) 3ms
+ ✓ src/tools/line-numbers/test.ts (9 tests) 4ms
+ ✓ src/tools/text-watermark/test.ts (8 tests) 3ms
+ ✓ src/tools/badge/test.ts (7 tests) 5ms
+ ✓ src/tools/prefix-suffix/test.ts (6 tests) 5ms
+ ✓ src/tools/zero-width/test.ts (8 tests) 3ms
+ ✓ src/tools/fullwidth-halfwidth/test.ts (9 tests) 2ms
+ ✓ src/tools/text-diff/test.ts (7 tests) 3ms
+ ✓ src/tools/screen-capture/test.ts (9 tests) 2ms
+ ✓ src/tools/stt/test.ts (4 tests) 2ms
+ ✓ src/tools/split-columns/test.ts (6 tests) 2ms
+ ✓ src/tools/bar-chart/test.ts (2 tests) 4ms
+
+ Test Files  1611 passed (1611)
+      Tests  19408 passed (19408)
+   Start at  16:14:17
+   Duration  86.37s (environment 67%, import 16%, tests 10%, transform 6%, worker 1%)
+
+    Isolate  1611 workers spawned · ~855ms startup each (spawn + environment, per file)
+             at least ~59.05s faster with isolate: false — reuses workers across files instead of one per file
+

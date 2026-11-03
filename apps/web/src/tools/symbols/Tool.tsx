@@ -32,9 +32,9 @@ function PickGrid({ items }: { items: readonly SymbolItem[] }) {
   return (
     <div>
       <div className="grid grid-cols-6 gap-1 sm:grid-cols-8">
-        {items.map((item) => (
+        {items.map((item, index) => (
           <button
-            key={item.char + item.name}
+            key={`${item.group}-${item.char}-${item.name}-${index}`}
             type="button"
             title={item.name}
             data-testid={'pick-' + item.char}

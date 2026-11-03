@@ -16,7 +16,7 @@ export default defineConfig({
   // CI 下默认给 2 次重试（网络/渲染抖动很常见），但「重试」会掩盖真失败：
   // 容器化全量测试用 E2E_RETRIES=0 跑严格模式，失败即失败。
   retries: Number(process.env.E2E_RETRIES ?? (process.env.CI ? 2 : 0)),
-  reporter: process.env.CI ? 'github' : 'list',
+  reporter: process.env.CI ? 'github' : [['line'], ['html', { outputFolder: 'test-results' }]],
   use: {
     baseURL: BASE_URL,
     trace: 'on-first-retry',

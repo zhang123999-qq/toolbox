@@ -4,3 +4,7 @@ packages:
 allowBuilds:
   esbuild: true
   tesseract.js: true
+overrides:
+  image-size: "^2.0.3"
+  source-map-js: "^1.2.2"
+  dompurify: "^3.4.17"
