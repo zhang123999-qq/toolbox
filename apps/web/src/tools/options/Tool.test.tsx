@@ -2,13 +2,20 @@
 /**
  * options 组件测试（#781）：Options 选项页模板生成。
  */
-import { afterEach, describe, expect, it } from 'vitest'
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import Tool from './Tool'
 
 afterEach(() => {
   cleanup()
 })
+
+/** 等待模板防抖快照（300ms）落定后再点运行，否则运行的是旧快照 */
+async function waitSnapshot(): Promise<void> {
+  await act(async () => {
+    await new Promise((r) => setTimeout(r, 350))
+  })
+}
 
 function byTestId(id: string): HTMLElement {
   const el = screen.queryByTestId(id)
@@ -34,10 +41,13 @@ describe('options · Tool', () => {
     expect(out).toContain('chrome.storage.sync')
   })
 
-  it('非法输入显示错误', () => {
+  it('非法输入显示错误', async () => {
     render(<Tool />)
     fireEvent.change(byTestId('input'), { target: { value: '{"fields":[]}' } })
+    await waitSnapshot()
     fireEvent.click(byTestId('options-run'))
-    expect(byTestId('options-error').textContent).toContain('至少需要一个选项字段')
+    await vi.waitFor(() =>
+      expect(byTestId('options-error').textContent).toContain('至少需要一个选项字段'),
+    )
   })
 })

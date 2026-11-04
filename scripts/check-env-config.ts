@@ -68,16 +68,23 @@ for (const tool of apiTools) {
 
 // ── 4. 无疑似真实密钥 ──
 console.log('=== 4. 密钥泄漏检查 ===')
-// 占位值形如 sk-xxxx / sk-… 才是合法的；长度够且非全 x 的视为真实密钥
+// P2：新增识别 sk-proj- / sk-ant- / AIza / PEM 头 -----BEGIN；DEMO_ 前缀仍放行。
+// 占位值形如 sk-xxxx / sk-… / DEMO_xxx 才是合法的；长度够且非占位的视为真实密钥
 const SECRET_RE =
-  /^[A-Z0-9_]+=(sk-[A-Za-z0-9_-]{20,}|ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|AKIA[0-9A-Z]{16,}|xox[baprs]-[A-Za-z0-9-]{10,})$/gm
+  /^[A-Z0-9_]+=(DEMO_(?:sk-proj-[A-Za-z0-9_-]{20,}|sk-ant-[A-Za-z0-9_-]{20,}|sk-[A-Za-z0-9_-]{20,}|ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|AKIA[0-9A-Z]{16,}|xox[baprs]-[A-Za-z0-9-]{10,}|AIza[A-Za-z0-9_-]{35,}|-----BEGIN [A-Z0-9 _-]*|.*)|sk-proj-[A-Za-z0-9_-]{20,}|sk-ant-[A-Za-z0-9_-]{20,}|sk-[A-Za-z0-9_-]{20,}|ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|AKIA[0-9A-Z]{16,}|xox[baprs]-[A-Za-z0-9-]{10,}|AIza[A-Za-z0-9_-]{35,}|-----BEGIN [A-Z0-9 _-]*)$/
+// 注意：不要加 /g 或 /m —— 本行用 exec 逐行匹配，带 /g 时 lastIndex 会跨行推进，
+// 隔行命中密钥会被静默跳过（实测：连续三行密钥只报第 1、3 行）；带 /m 的 ^$ 也不需要，行已 split。
 for (const line of example.split('\n')) {
   const m = SECRET_RE.exec(line.trim())
   if (!m) continue
   const value = m[1]!
   const isPlaceholder =
-    /^(sk-)?x{8,}$/i.test(value) || value.includes('xxxx') || value.includes('…')
+    value.startsWith('DEMO_') ||
+    /^(sk-)?x{8,}$/i.test(value) ||
+    value.includes('xxxx') ||
+    value.includes('…')
   if (!isPlaceholder) fail(`${EXAMPLE} 里出现疑似真实密钥：${line.trim().slice(0, 40)}…`)
+  else ok(`占位/DEMO_ 放行：${line.trim().slice(0, 40)}…`)
 }
 
 // ── 5. VITE_ 前缀不得承载密钥 ──

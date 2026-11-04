@@ -24,6 +24,15 @@ const AUDIO_OPTIONS: ReadonlyArray<ScreenRecordOptions['audio']> = ['on', 'off']
 export default function Tool() {
   const t = useTranslate()
   const [status, setStatus] = useState<Status>('idle')
+  const resultUrlRef = useRef<string | null>(null)
+
+  // 卸载时释放结果对象 URL（每次重新处理/重置也会释放旧 URL）
+  useEffect(
+    () => () => {
+      if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+    },
+    [],
+  )
   const [elapsedMs, setElapsedMs] = useState(0)
   const [result, setResult] = useState<Result | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -93,7 +102,12 @@ export default function Tool() {
         stopTimer()
         const blob = new Blob(chunks, { type: 'video/webm' })
         setResult({
-          url: URL.createObjectURL(blob),
+          url: (() => {
+            const u = URL.createObjectURL(blob)
+            if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+            resultUrlRef.current = u
+            return u
+          })(),
           fileName: buildOutputFileName(new Date()),
           blob,
         })

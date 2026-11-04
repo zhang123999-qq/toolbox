@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useRef, useState, useEffect } from 'react'
 import { PDFDocument } from 'pdf-lib'
 import { useTranslate } from '../../i18n'
 import { downloadBlob, formatBytes } from '../../lib/image'
@@ -33,6 +33,15 @@ export default function Tool() {
   const idRef = useRef(0)
   const [dragOver, setDragOver] = useState(false)
   const [items, setItems] = useState<PdfItem[]>([])
+  const resultUrlRef = useRef<string | null>(null)
+
+  // 卸载时释放结果对象 URL（每次重新处理/重置也会释放旧 URL）
+  useEffect(
+    () => () => {
+      if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+    },
+    [],
+  )
   const [result, setResult] = useState<Result | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [processing, setProcessing] = useState(false)
@@ -104,7 +113,12 @@ export default function Tool() {
       const blob = new Blob([pdfCopy.buffer as ArrayBuffer], { type: 'application/pdf' })
       const check = await PDFDocument.load(mergedBytes)
       setResult({
-        url: URL.createObjectURL(blob),
+        url: (() => {
+          const u = URL.createObjectURL(blob)
+          if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+          resultUrlRef.current = u
+          return u
+        })(),
         blob,
         fileName: buildOutputFileName(items[0].file.name),
         pageCount: check.getPageCount(),

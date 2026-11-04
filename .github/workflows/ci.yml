@@ -40,7 +40,19 @@ jobs:
       - name: Install
         # --ignore-scripts：esbuild 的 postinstall 在受限环境下会 EBUSY，
         # 而它的二进制来自平台可选包，不需要该脚本（DEVELOPMENT.md §18.3）。
+        # P1-3：--ignore-scripts 同时跳过 apps/web 的 qpdf postinstall，
+        # 显式物化校验见下面独立的「Verify qpdf wasm (P1-3)」步骤
+        #（postinstall 本身已改为缺文件非零退出，不再吞错）。
         run: pnpm install --frozen-lockfile --ignore-scripts
+
+      # P1-3：qpdf wasm 存在性校验（替代被 --ignore-scripts 跳过的 postinstall）。
+      # postinstall 已去掉 try{}catch{} 吞错，这里用同样的显式断言：
+      # node 解析 @neslinesli93/qpdf-wasm/dist/qpdf.js，且 test -f 同目录 qpdf.wasm。
+      # （已发布包 files: ["dist"] 只含 dist/qpdf.wasm，旧 download.js 路径恒失效。）
+      - name: Verify qpdf wasm (P1-3)
+        run: |
+          (cd apps/web && node -e "const fs=require('fs');const path=require('path');const f=require.resolve('@neslinesli93/qpdf-wasm/dist/qpdf.js');const w=path.join(path.dirname(f),'qpdf.wasm');if(!fs.existsSync(w)){console.error('[qpdf][P1-3] wasm missing: '+w);process.exit(1)}console.log('[qpdf] wasm ok: '+w)")
+          test -f apps/web/node_modules/@neslinesli93/qpdf-wasm/dist/qpdf.wasm
 
       # 门禁顺序见 DEVELOPMENT.md §十：静态检查在前，慢的在后。
       - name: Check tool metadata
@@ -81,8 +93,13 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
-      - name: Test
-        run: pnpm test
+      # 覆盖率门禁：阈值在 apps/web/vite.config.ts 的 test.coverage.thresholds
+      - name: Test (with coverage)
+        run: pnpm --filter @toolbox/web exec vitest run --coverage
+
+      # catalog 一致性门禁：改了 meta.ts 必须重跑 generate:catalog（审计 P1-5）
+      - name: Check catalog is up to date
+        run: pnpm generate:catalog:check
 
       # SSG：不补预渲染，870 个工具页对爬虫就是空壳（DEVELOPMENT.md §十二）
       # build:ssg = 客户端构建 + SSR 构建 + 预渲染，三步顺序不能反。
@@ -91,6 +108,10 @@ jobs:
         env:
           # 默认域名来自 packages/catalog/src/site.ts；部署到别处用仓库变量覆盖
           SITE_ORIGIN: ${{ vars.SITE_ORIGIN || 'https://006336.xyz' }}
+
+      # 体积预算门禁：首屏 gzip <120KB、单工具 chunk <30KB（PRD §4.1，审计 P1-1）
+      - name: Check bundle size budgets
+        run: pnpm check:bundle-size
 
       - name: Upload dist
         uses: actions/upload-artifact@v4

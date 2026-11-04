@@ -16,11 +16,11 @@ export function useOramaSearch(query: string, limit = 50): readonly SearchDoc[] 
 
   const canUseWorker = typeof Worker !== 'undefined' && typeof URL !== 'undefined'
 
+  // 同步回落路径直接在渲染期计算，避免在 effect 里 setState（lint 禁止）
+  const syncResults = canUseWorker ? null : searchTools(query, limit)
+
   useEffect(() => {
-    if (!canUseWorker) {
-      setResults(searchTools(query, limit))
-      return
-    }
+    if (!canUseWorker) return
     if (!workerRef.current) {
       try {
         workerRef.current = new Worker(new URL('./search.worker.ts', import.meta.url), {
@@ -31,21 +31,33 @@ export function useOramaSearch(query: string, limit = 50): readonly SearchDoc[] 
       }
     }
     const worker = workerRef.current
-    if (!worker) {
-      setResults(searchTools(query, limit))
-      return
-    }
+    if (!worker) return
 
     const seq = ++seqRef.current
+
+    // Worker 脚本加载/运行期出错（如 chunk 404）时回落同步检索，
+    // 否则结果永久停留在上一次查询的旧值且无任何提示
+    const onError = () => {
+      if (seqRef.current === seq) setResults(searchTools(query, limit))
+    }
+    worker.addEventListener('error', onError)
+    let removeTimer: number | undefined
+    const onMessage = (event: MessageEvent<{ id: number; results: readonly SearchDoc[] }>) => {
+      if (event.data.id === seq) setResults(event.data.results)
+    }
     const timer = window.setTimeout(() => {
-      const onMessage = (event: MessageEvent<{ id: number; results: readonly SearchDoc[] }>) => {
-        if (event.data.id === seq) setResults(event.data.results)
-      }
       worker.addEventListener('message', onMessage)
       worker.postMessage({ id: seq, query, limit })
-      window.setTimeout(() => worker.removeEventListener('message', onMessage), 5000)
+      removeTimer = window.setTimeout(() => worker.removeEventListener('message', onMessage), 5000)
     }, 120)
-    return () => window.clearTimeout(timer)
+    return () => {
+      // 清理防抖与「5s 后摘监听」两个定时器外，还要在卸载/查询变更时立即摘监听：
+      // 旧实现只靠 5s 定时摘除，卸载后迟到消息仍会调 setResults（卸载后状态更新）
+      window.clearTimeout(timer)
+      if (removeTimer !== undefined) window.clearTimeout(removeTimer)
+      worker.removeEventListener('message', onMessage)
+      worker.removeEventListener('error', onError)
+    }
   }, [query, limit, canUseWorker])
 
   useEffect(
@@ -56,5 +68,5 @@ export function useOramaSearch(query: string, limit = 50): readonly SearchDoc[] 
     [],
   )
 
-  return results
+  return syncResults ?? results
 }

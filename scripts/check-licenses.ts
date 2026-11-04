@@ -12,10 +12,15 @@
  *  3. 按 SPDX 表达式判定：allow / warn / deny，deny 即非零退出
  *
  * 用法：
- *  pnpm check:licenses                    默认：deny 报错，warn 只提示
- *  pnpm check:licenses --strict           warn 也报错
+ *  pnpm check:licenses                    默认：deny 报错，warn 只提示（不阻塞 verify/CI）
+ *  pnpm check:licenses:strict             warn 也报错阻塞（--strict）
  *  pnpm check:licenses --allow MPL-2.0    个案批准（可重复传）
  *  pnpm check:licenses --json             输出 JSON，供脚本消费
+ *
+ * 注意：当前有 2 个已知 warn（elkjs EPL-2.0、openpgp LGPL-3.0+，均为传递/直接依赖），
+ * 若直接把 verify 链改成 strict 会立刻变红。因此默认保持 warn 提示，待这两个依赖
+ * 替换或经评审后，再把根 package.json 的 check:licenses 切到 --strict。
+ * 不要改 ALLOW/WARN 清单来「绕过」strict，应为新增依赖办理评审/替换。
  */
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
@@ -346,6 +351,13 @@ function main(): void {
       reason,
       direct: directNames.has(name),
     })
+  }
+
+  // 空扫描绝不能放行：node_modules 缺失/为空时 pkgs=0，原逻辑会输出「✓ 通过：0 个包」假绿。
+  // 门禁脚本扫不到东西 = 环境坏了，必须失败（先装依赖再跑）。
+  if (pkgs.length === 0) {
+    console.error('✗ 失败：扫描到 0 个已安装包（node_modules 缺失或为空？），拒绝空转放行')
+    process.exit(1)
   }
 
   pkgs.sort((a, b) => a.name.localeCompare(b.name))

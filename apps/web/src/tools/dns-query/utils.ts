@@ -1,5 +1,8 @@
 import type { DnsQueryInput, DnsQueryOptions } from './schema'
 
+/** 单次 DoH 请求超时（AbortController 中断，见 queryDns） */
+const REQUEST_TIMEOUT_MS = 30_000
+
 const TYPE_NAMES: Record<number, string> = {
   1: 'A',
   2: 'NS',
@@ -58,25 +61,37 @@ export function renderResponse(json: unknown): string {
 /** 调 Google DoH 接口查询 */
 export async function queryDns(domain: string, type: string): Promise<string> {
   const url = `https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=${type}`
-  let res: Response
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
   try {
-    res = await fetch(url, { headers: { Accept: 'application/dns-json' } })
-  } catch (error) {
-    throw new Error(
-      '网络请求失败：' +
-        (error instanceof Error ? error.message : String(error)) +
-        '（可能是网络不通或被浏览器 CORS / 广告拦截插件拦截）',
-      { cause: error },
-    )
+    let res: Response
+    try {
+      res = await fetch(url, {
+        headers: { Accept: 'application/dns-json' },
+        signal: controller.signal,
+      })
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new Error(`请求超时（超过 ${REQUEST_TIMEOUT_MS / 1000} 秒）`, { cause: error })
+      }
+      throw new Error(
+        '网络请求失败：' +
+          (error instanceof Error ? error.message : String(error)) +
+          '（可能是网络不通或被浏览器 CORS / 广告拦截插件拦截）',
+        { cause: error },
+      )
+    }
+    if (!res.ok) throw new Error(`DoH 服务器返回 HTTP ${res.status}`)
+    let json: unknown
+    try {
+      json = await res.json()
+    } catch {
+      throw new Error('DoH 返回的不是合法 JSON')
+    }
+    return renderResponse(json)
+  } finally {
+    clearTimeout(timer)
   }
-  if (!res.ok) throw new Error(`DoH 服务器返回 HTTP ${res.status}`)
-  let json: unknown
-  try {
-    json = await res.json()
-  } catch {
-    throw new Error('DoH 返回的不是合法 JSON')
-  }
-  return renderResponse(json)
 }
 
 export async function transform(input: DnsQueryInput, options: DnsQueryOptions): Promise<string> {

@@ -100,13 +100,16 @@ describe('map · Tool', () => {
     })
   })
 
-  it('非法地区行进入错误态', () => {
+  it('非法地区行进入错误态', async () => {
     stubFetchPending()
     render(<Tool />)
     fireEvent.change(byTestId('input'), { target: { value: '只有一行' } })
-    const alert = outputAlert()
-    expect(alert).toBeTruthy()
-    expect(alert?.textContent).toContain('格式非法')
+    // MultiPanel 对输入做防抖快照后才渲染输出，断言需等待
+    await vi.waitFor(() => {
+      const alert = outputAlert()
+      expect(alert).toBeTruthy()
+      expect(alert?.textContent).toContain('格式非法')
+    })
   })
 
   it('切换到世界地图后注册 world 地图', async () => {

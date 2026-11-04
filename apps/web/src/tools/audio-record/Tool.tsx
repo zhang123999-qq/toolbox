@@ -46,6 +46,7 @@ export default function Tool() {
   const streamRef = useRef<MediaStream | null>(null)
   const chunksRef = useRef<Blob[]>([])
   const timerRef = useRef(0)
+  const resultUrlRef = useRef('')
   const baseMsRef = useRef(0)
   const startAtRef = useRef(0)
 
@@ -78,10 +79,9 @@ export default function Tool() {
   function finishRecording(mimeType: string): void {
     const blob = new Blob(chunksRef.current, { type: mimeType })
     const url = URL.createObjectURL(blob)
-    setResultUrl((prev) => {
-      if (prev) URL.revokeObjectURL(prev)
-      return url
-    })
+    if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+    resultUrlRef.current = url
+    setResultUrl(url)
     const fileName = recordFileName(mimeType)
     const report = [
       `录音时长：${formatDuration(baseMsRef.current)}`,
@@ -188,6 +188,9 @@ export default function Tool() {
       setError(err instanceof Error ? err.message : '操作非法')
       return
     }
+    if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+    resultUrlRef.current = ''
+    setResultUrl('')
     setResult(null)
     setElapsedMs(0)
     baseMsRef.current = 0
@@ -197,6 +200,7 @@ export default function Tool() {
     () => () => {
       stopTimer()
       streamRef.current?.getTracks().forEach((t) => t.stop())
+      if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
     },
     [],
   )

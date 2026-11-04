@@ -232,7 +232,14 @@ function yamlLines(text: string): YamlLine[] {
 function parseYamlScalar(text: string): unknown {
   const value = text.trim()
   if (/^'.*'$/.test(value)) return value.slice(1, -1).replace(/''/g, "'")
-  if (/^".*"$/.test(value)) return JSON.parse(value) as unknown
+  if (/^".*"$/.test(value)) {
+    try {
+      return JSON.parse(value) as unknown
+    } catch {
+      // 非法转义（如 \z）时不要让英文 SyntaxError 冒泡到界面，统一中文口径
+      throw new DataWorkbenchError('YAML 双引号字符串语法不合法：检查转义字符')
+    }
+  }
   if (/^(true|yes)$/i.test(value)) return true
   if (/^(false|no)$/i.test(value)) return false
   if (/^(null|~)$/i.test(value)) return null

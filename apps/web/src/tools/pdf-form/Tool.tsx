@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useEffect, useRef } from 'react'
 import { useTranslate } from '../../i18n'
 import type { MessageKey } from '../../i18n'
 import { downloadBlob, formatBytes } from '../../lib/image'
@@ -39,6 +39,15 @@ export default function Tool() {
   const t = useTranslate()
   const [dragOver, setDragOver] = useState(false)
   const [loaded, setLoaded] = useState<LoadedForm | null>(null)
+  const resultUrlRef = useRef<string | null>(null)
+
+  // 卸载时释放结果对象 URL（每次重新处理/重置也会释放旧 URL）
+  useEffect(
+    () => () => {
+      if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+    },
+    [],
+  )
   const [values, setValues] = useState<Record<number, FieldValue>>({})
   const [flatten, setFlatten] = useState(false)
   // 文本框发生截断的字段下标集合，用于显示“已截断”提示
@@ -121,7 +130,12 @@ export default function Tool() {
         const copy = new Uint8Array(out)
         const blob = new Blob([copy.buffer as ArrayBuffer], { type: 'application/pdf' })
         setResult({
-          url: URL.createObjectURL(blob),
+          url: (() => {
+            const u = URL.createObjectURL(blob)
+            if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+            resultUrlRef.current = u
+            return u
+          })(),
           blob,
           fileName: buildOutputFileName(fileName),
           fieldCount: fields.length,
@@ -137,6 +151,10 @@ export default function Tool() {
   )
 
   const handleReset = useCallback(() => {
+    if (resultUrlRef.current) {
+      URL.revokeObjectURL(resultUrlRef.current)
+      resultUrlRef.current = null
+    }
     setInputKey((k) => k + 1)
     setLoaded(null)
     setValues({})

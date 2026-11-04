@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useEffect, useRef } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
 import { useTranslate } from '../../i18n'
 import { downloadBlob } from '../../lib/image'
@@ -40,6 +40,15 @@ export default function Tool() {
   const [dragOver, setDragOver] = useState(false)
   const [fileName, setFileName] = useState('')
   const [result, setResult] = useState<Result | null>(null)
+  const resultUrlRef = useRef<string | null>(null)
+
+  // 卸载时释放结果对象 URL（每次重新处理/重置也会释放旧 URL）
+  useEffect(
+    () => () => {
+      if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+    },
+    [],
+  )
   const [error, setError] = useState<string | null>(null)
   const [progress, setProgress] = useState<Progress | null>(null)
   const [options, setOptions] = useState<PdfToExcelOptions>({ sheetMode: 'merged' })
@@ -88,7 +97,12 @@ export default function Tool() {
         const blob = buildXlsxBlob(pages, opts.sheetMode)
         const outName = buildOutputFileName(file.name)
         setResult({
-          url: URL.createObjectURL(blob),
+          url: (() => {
+            const u = URL.createObjectURL(blob)
+            if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+            resultUrlRef.current = u
+            return u
+          })(),
           blob,
           fileName: outName,
           pageCount: pdf.numPages,
@@ -126,6 +140,10 @@ export default function Tool() {
   )
 
   const handleReset = useCallback(() => {
+    if (resultUrlRef.current) {
+      URL.revokeObjectURL(resultUrlRef.current)
+      resultUrlRef.current = null
+    }
     setInputKey((k) => k + 1)
     setResult(null)
     setSourceFile(null)

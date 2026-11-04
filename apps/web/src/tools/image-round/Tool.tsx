@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useRef, useState, useEffect } from 'react'
 import { useTranslate } from '../../i18n'
 import type { MessageKey, Translate } from '../../i18n'
 import {
@@ -66,6 +66,15 @@ function traceRoundRect(ctx: CanvasRenderingContext2D, w: number, h: number, r: 
 export default function Tool() {
   const t = useTranslate()
   const fileRef = useRef<HTMLInputElement>(null)
+  const resultUrlRef = useRef<string | null>(null)
+
+  // 卸载时释放结果对象 URL（每次重新处理/重置也会释放旧 URL）
+  useEffect(
+    () => () => {
+      if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+    },
+    [],
+  )
   const [dragOver, setDragOver] = useState(false)
   const [fileName, setFileName] = useState('')
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
@@ -139,6 +148,9 @@ export default function Tool() {
         const mime = formatToMime(opts.format)
         const blob = await canvasToBlob(canvas, mime, effectiveQuality(opts.format))
         const url = URL.createObjectURL(blob)
+        // 释放上一次的结果 URL，避免重复处理时对象 URL 泄漏
+        if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+        resultUrlRef.current = url
         const preview = await readFileAsDataURL(file)
         setResult({
           url,
@@ -181,6 +193,10 @@ export default function Tool() {
   )
 
   const handleReset = useCallback(() => {
+    if (resultUrlRef.current) {
+      URL.revokeObjectURL(resultUrlRef.current)
+      resultUrlRef.current = null
+    }
     setInputKey((k) => k + 1)
     setResult(null)
     setPreviewUrl(null)

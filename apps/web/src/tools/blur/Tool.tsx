@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslate } from '../../i18n'
 import {
   canvasToBlob,
@@ -35,6 +35,7 @@ const FORMAT_OPTIONS = ['jpeg', 'png', 'webp'] as const
 export default function Tool() {
   const t = useTranslate()
   const fileRef = useRef<HTMLInputElement>(null)
+  const resultUrlRef = useRef<string | null>(null)
   const [dragOver, setDragOver] = useState(false)
   const [fileName, setFileName] = useState('')
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
@@ -44,6 +45,14 @@ export default function Tool() {
   const [options, setOptions] = useState<BlurOptions>({ radius: '10', format: 'png' })
   // 用 key 强制重挂载 file input 来清空已选文件，避免 ref 空守卫分支
   const [inputKey, setInputKey] = useState(0)
+
+  // 卸载时释放结果对象 URL（每次重新处理/重置也会释放旧 URL）
+  useEffect(
+    () => () => {
+      if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+    },
+    [],
+  )
 
   const processFile = useCallback(
     async (file: File, opts: BlurOptions) => {
@@ -65,6 +74,9 @@ export default function Tool() {
         const mime = formatToMime(opts.format)
         const blob = await canvasToBlob(canvas, mime)
         const url = URL.createObjectURL(blob)
+        // 释放上一次的结果 URL，避免重复处理时对象 URL 泄漏
+        if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+        resultUrlRef.current = url
         const preview = await readFileAsDataURL(file)
         setResult({
           url,
@@ -110,6 +122,10 @@ export default function Tool() {
 
   const handleReset = useCallback(() => {
     setInputKey((k) => k + 1)
+    if (resultUrlRef.current) {
+      URL.revokeObjectURL(resultUrlRef.current)
+      resultUrlRef.current = null
+    }
     setResult(null)
     setPreviewUrl(null)
     setFileName('')

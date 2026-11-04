@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslate } from '../../i18n'
 import {
   canvasToBlob,
@@ -57,11 +57,9 @@ function tryParseDimension(raw: string): number | undefined {
 }
 
 export default function Tool() {
-  // imageResize.* 文案键由集成阶段统一写入 i18n 消息文件（本工具任务禁止改动该文件），
-  // 为通过 tsc 此处把 key 类型放宽；又因 translator 在「缺键 + 传 params」时会崩溃，
-  // 本组件所有 t() 调用均不带 params（用 JSX 拼接代替占位符）。键补齐后可删掉这层转换。
-  const t = useTranslate() as unknown as (key: string) => string | undefined
+  const t = useTranslate()
   const fileRef = useRef<HTMLInputElement>(null)
+  const resultUrlRef = useRef<string | null>(null)
   const [dragOver, setDragOver] = useState(false)
   const [fileName, setFileName] = useState('')
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
@@ -81,6 +79,14 @@ export default function Tool() {
   })
   // 用 key 强制重挂载 file input 来清空已选文件，避免 ref 空守卫分支
   const [inputKey, setInputKey] = useState(0)
+
+  // 卸载时释放结果对象 URL
+  useEffect(
+    () => () => {
+      if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+    },
+    [],
+  )
 
   const processFile = useCallback(
     async (file: File, opts: ImageResizeOptions) => {
@@ -107,6 +113,8 @@ export default function Tool() {
         const mime = formatToMime(opts.format)
         const blob = await canvasToBlob(canvas, mime, effectiveQuality(opts.format, quality))
         const url = URL.createObjectURL(blob)
+        if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+        resultUrlRef.current = url
         const preview = await readFileAsDataURL(file)
         setResult({
           url,
@@ -123,6 +131,8 @@ export default function Tool() {
         setFileName(file.name)
       } catch (err) {
         setError(errorMessage(err))
+        if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+        resultUrlRef.current = null
         setResult(null)
       } finally {
         setProcessing(false)
@@ -171,6 +181,8 @@ export default function Tool() {
 
   const handleReset = useCallback(() => {
     setInputKey((k) => k + 1)
+    if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+    resultUrlRef.current = null
     setResult(null)
     setPreviewUrl(null)
     setSrcSize(null)

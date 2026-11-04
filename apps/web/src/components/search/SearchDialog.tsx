@@ -164,7 +164,12 @@ export function SearchDialog() {
               className="w-full border-b border-slate-200 bg-transparent px-4 py-3 text-sm outline-none dark:border-slate-700"
               placeholder={t('search.placeholder')}
               value={query}
-              onChange={(event) => setQuery(event.target.value)}
+              onChange={(event) => {
+                setQuery(event.target.value)
+                // 输入变化即复位高亮：否则旧 active（如第 10 项）可能超出新结果
+                // 列表长度，回车无目标、高亮丢失；Worker 异步回填时同样越界
+                setActive(0)
+              }}
               onKeyDown={onResultKeyDown}
             />
             <ul ref={listRef} className="max-h-80 overflow-auto py-1">

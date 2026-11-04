@@ -111,6 +111,14 @@ docker run -d \
 # 1. 装依赖（Windows 沙箱下 esbuild postinstall 会 EBUSY，加 --ignore-scripts）
 pnpm install --ignore-scripts
 
+# 1b. 显式物化 qpdf wasm（审计 P1-3）
+#     apps/web 的 postinstall 已改为「断言 dist/qpdf.wasm 存在、失败非零退出」
+#     （旧 try{}catch{} 会把缺文件吞掉，pdf 工具运行时才崩）。
+#     但 --ignore-scripts 会跳过 postinstall，所以 Dockerfile / CI 在 install 后
+#     都显式跑同一断言（node require.resolve('@neslinesli93/qpdf-wasm/dist/qpdf.js')
+#     + test -f qpdf.wasm）；本地加了 --ignore-scripts 时也建议跑一遍：
+#     node -e "require('@neslinesli93/qpdf-wasm/dist/qpdf.js')"
+
 # 2. 启动开发服务器（默认 http://localhost:5173）
 pnpm dev
 

@@ -3,7 +3,7 @@
  * base64-encode 组件测试（DEVELOPMENT.md §8.2 的 8 文件基线之一）
  */
 import { afterEach, describe, expect, it } from 'vitest'
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import Tool from './Tool'
 
 afterEach(cleanup)
@@ -23,10 +23,13 @@ describe('base64-encode · Tool', () => {
     }
   })
 
-  it('点击「示例」后输出为 Base64', () => {
+  it('点击「示例」后输出为 Base64', async () => {
     render(<Tool />)
     fireEvent.click(byTestId('example'))
-    expect(byTestId('output').textContent).toContain('5bel5YW35bqTIFRvb2xib3g=')
+    // TwoColumn 计算入口有 300ms 防抖，需等待防抖快照生效
+    await waitFor(() => {
+      expect(byTestId('output').textContent).toContain('5bel5YW35bqTIFRvb2xib3g=')
+    })
   })
 
   it('点击「清空」回到空输入', () => {
@@ -41,17 +44,21 @@ describe('base64-encode · Tool', () => {
     expect(byTestId('output').getAttribute('role')).not.toBe('alert')
   })
 
-  it('切到解码方向后能把 Base64 还原', () => {
+  it('切到解码方向后能把 Base64 还原', async () => {
     render(<Tool />)
     fireEvent.change(screen.getByLabelText('方向'), { target: { value: 'decode' } })
     fireEvent.change(byTestId('input'), { target: { value: 'aGVsbG8=' } })
-    expect(byTestId('output').textContent).toBe('hello')
+    await waitFor(() => {
+      expect(byTestId('output').textContent).toBe('hello')
+    })
   })
 
-  it('非法输入进入错误态（role=alert）', () => {
+  it('非法输入进入错误态（role=alert）', async () => {
     render(<Tool />)
     fireEvent.change(screen.getByLabelText('方向'), { target: { value: 'decode' } })
     fireEvent.change(byTestId('input'), { target: { value: '!!!oops!!!' } })
-    expect(byTestId('output').getAttribute('role')).toBe('alert')
+    await waitFor(() => {
+      expect(byTestId('output').getAttribute('role')).toBe('alert')
+    })
   })
 })

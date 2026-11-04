@@ -182,7 +182,9 @@ document.getElementById('options-form').addEventListener('submit', async (e) => 
   await chrome.storage.sync.set(readValues())
   const status = document.getElementById('status')
   status.textContent = '已保存'
-  setTimeout(() => { status.textContent = '' }, 1500)
+  // 连续保存时清掉上一个定时器，避免旧定时触发后误清新状态
+  if (status._statusTimer !== undefined) clearTimeout(status._statusTimer)
+  status._statusTimer = setTimeout(() => { status.textContent = '' }, 1500)
 })
 `
 

@@ -19,6 +19,9 @@ export type NowFn = () => number
 const defaultFetch: FetchFn = (url, init) => fetch(url, init)
 const defaultNow: NowFn = () => performance.now()
 
+/** 单次测速请求超时（AbortController 中断，见 measureDownload / measureUpload） */
+const REQUEST_TIMEOUT_MS = 120_000
+
 export type SpeedKind = 'download' | 'upload'
 
 export interface SpeedResult {
@@ -60,25 +63,37 @@ export async function measureDownload(
 ): Promise<SpeedResult> {
   const href = validateUrl(url)
   const start = now()
-  let res: Response
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
   try {
-    res = await fetchFn(href, { cache: 'no-store' })
-  } catch {
-    throw new SpeedNetError('下载请求失败：网络不可达或被 CORS 拦截')
-  }
-  if (!res.ok) throw new SpeedNetError(`下载请求失败：HTTP ${res.status}`)
-  let buf: ArrayBuffer
-  try {
-    buf = await res.arrayBuffer()
-  } catch {
-    throw new SpeedNetError('读取响应体失败')
-  }
-  const ms = now() - start
-  return {
-    kind: 'download',
-    bytes: buf.byteLength,
-    ms: Math.round(ms),
-    mbps: toMbps(buf.byteLength, ms),
+    let res: Response
+    try {
+      res = await fetchFn(href, { cache: 'no-store', signal: controller.signal })
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new SpeedNetError(`下载请求超时（超过 ${REQUEST_TIMEOUT_MS / 1000} 秒）`)
+      }
+      throw new SpeedNetError('下载请求失败：网络不可达或被 CORS 拦截')
+    }
+    if (!res.ok) throw new SpeedNetError(`下载请求失败：HTTP ${res.status}`)
+    let buf: ArrayBuffer
+    try {
+      buf = await res.arrayBuffer()
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new SpeedNetError(`下载请求超时（超过 ${REQUEST_TIMEOUT_MS / 1000} 秒）`)
+      }
+      throw new SpeedNetError('读取响应体失败')
+    }
+    const ms = now() - start
+    return {
+      kind: 'download',
+      bytes: buf.byteLength,
+      ms: Math.round(ms),
+      mbps: toMbps(buf.byteLength, ms),
+    }
+  } finally {
+    clearTimeout(timer)
   }
 }
 
@@ -95,15 +110,29 @@ export async function measureUpload(
   }
   const body = new Uint8Array(sizeBytes)
   const start = now()
-  let res: Response
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
   try {
-    res = await fetchFn(href, { method: 'POST', body, cache: 'no-store' })
-  } catch {
-    throw new SpeedNetError('上传请求失败：网络不可达或被 CORS 拦截')
+    let res: Response
+    try {
+      res = await fetchFn(href, {
+        method: 'POST',
+        body,
+        cache: 'no-store',
+        signal: controller.signal,
+      })
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new SpeedNetError(`上传请求超时（超过 ${REQUEST_TIMEOUT_MS / 1000} 秒）`)
+      }
+      throw new SpeedNetError('上传请求失败：网络不可达或被 CORS 拦截')
+    }
+    if (!res.ok) throw new SpeedNetError(`上传请求失败：HTTP ${res.status}`)
+    const ms = now() - start
+    return { kind: 'upload', bytes: sizeBytes, ms: Math.round(ms), mbps: toMbps(sizeBytes, ms) }
+  } finally {
+    clearTimeout(timer)
   }
-  if (!res.ok) throw new SpeedNetError(`上传请求失败：HTTP ${res.status}`)
-  const ms = now() - start
-  return { kind: 'upload', bytes: sizeBytes, ms: Math.round(ms), mbps: toMbps(sizeBytes, ms) }
 }
 
 /** 速率评级：<10 较慢，10–100 良好，>100 优秀 */

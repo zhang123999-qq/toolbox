@@ -1,3 +1,4 @@
+import { checkInputLimit } from '../../lib/input-limit'
 import type { Base64Input, Base64Options } from './schema'
 
 /** 字节分块大小：避免 String.fromCharCode(...bytes) 参数过多导致栈溢出 */
@@ -42,6 +43,8 @@ export function decodeBase64(text: string): string {
 
 export function transform(input: Base64Input, options: Base64Options): string {
   if (input.text === '') return ''
+  const limit = checkInputLimit(input.text)
+  if (!limit.ok) throw new Error(limit.error ?? '输入过长')
   try {
     if (options.direction === 'decode') return decodeBase64(input.text)
     return encodeBase64(input.text, options.mode === 'urlsafe')

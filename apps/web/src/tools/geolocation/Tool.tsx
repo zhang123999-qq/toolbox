@@ -77,7 +77,7 @@ export default function Tool() {
           <a
             href={coordsToMapLink(coords.latitude, coords.longitude)}
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
             className="mt-3 inline-block text-sm text-sky-600 underline dark:text-sky-400"
             data-testid="geolocation-map-link"
           >

@@ -60,9 +60,14 @@ if [ "$SKIP_BUILD" = "1" ]; then
   say "跳过构建，复用已有产物"
 else
   # 不走 root 的 `pnpm build:ssg`：它经 turbo 编排，在本机 Windows 沙箱下会因
-  # 管道范例耗尽失败（os error 231）。这里直接对 web 包跑等价的三步，产物一致。
-  say "构建静态产物（client → SSR → prerender）"
+  # 管道范例耗尽失败（os error 231）。这里直接对 web 包跑等价的五步，产物一致。
+  # 修复（P0-1 同类）：sitemap.xml / robots.txt / search-index.json 必须在客户端构建
+  # **之前** 生成——它们写进 apps/web/public/ 再由 Vite 拷入 dist/；漏掉这两步时
+  # public 里若无旧文件，下面的 robots.txt 断言直接 die，若有旧文件则静默发过期内容。
+  say "构建静态产物（sitemap → search-index → client → SSR → prerender）"
   ( cd "$ROOT" \
+      && pnpm generate:sitemap >/dev/null \
+      && pnpm generate:search-index >/dev/null \
       && pnpm --filter @toolbox/web build >/dev/null \
       && pnpm --filter @toolbox/web build:ssr >/dev/null \
       && pnpm prerender >/dev/null ) || die "构建失败"

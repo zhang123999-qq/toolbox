@@ -1,6 +1,9 @@
-﻿import type { WhoisLookupInput, WhoisLookupOptions } from './schema'
+import type { WhoisLookupInput, WhoisLookupOptions } from './schema'
 
 const MAX_INPUT = 200_000
+
+/** 单次 RDAP 查询超时（AbortController 中断，见 tryRdap） */
+const REQUEST_TIMEOUT_MS = 30_000
 
 /** 常见 TLD → whois 服务器速查 */
 const WHOIS_SERVERS: Record<string, string> = {
@@ -93,9 +96,12 @@ function renderLocal(info: ReturnType<typeof localInfo>): string {
 
 /** 尝试 RDAP 查询；失败不抛错，只返回说明 */
 async function tryRdap(domain: string): Promise<string> {
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
   try {
     const res = await fetch(`https://rdap.org/domain/${encodeURIComponent(domain)}`, {
       headers: { Accept: 'application/rdap+json' },
+      signal: controller.signal,
     })
     if (!res.ok) return `RDAP：HTTP ${res.status}，未能获取注册数据`
     const json = (await res.json()) as {
@@ -114,6 +120,8 @@ async function tryRdap(domain: string): Promise<string> {
       (error instanceof Error ? error.message : String(error)) +
       '），仅展示本地解析；可用上面的 whois 命令行或 RDAP 地址手动查询'
     )
+  } finally {
+    clearTimeout(timer)
   }
 }
 

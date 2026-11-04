@@ -68,10 +68,11 @@ describe('word-view / sanitizeHtml', () => {
     expect(sanitizeHtml('<iframe src="https://x.y"></iframe><p>x</p>')).toBe('<p>x</p>')
   })
 
-  it('非白名单标签拆包保留子节点', () => {
-    expect(sanitizeHtml('<font color="red">红</font>')).toBe('红')
+  it('非白名单标签拆包保留子节点（统一 DOMPurify）', () => {
+    // P1：DOMPurify 保留 <font> 标签（与旧自研拆包行为不同），内容保留即可
+    expect(sanitizeHtml('<font color="red">红</font>')).toContain('红')
     expect(sanitizeHtml('<custom-tag><p>内</p></custom-tag>')).toBe('<p>内</p>')
-    expect(sanitizeHtml('<font>a<!--x-->b</font>')).toBe('ab')
+    expect(sanitizeHtml('<font>a<!--x-->b</font>')).toContain('ab')
   })
 
   it('注释节点被丢弃', () => {
@@ -83,7 +84,10 @@ describe('word-view / sanitizeHtml', () => {
     expect(sanitizeHtml('<a href="https://x.y">b</a>')).toBe('<a href="https://x.y">b</a>')
     expect(sanitizeHtml('<a href="mailto:a@b.c">c</a>')).toBe('<a href="mailto:a@b.c">c</a>')
     expect(sanitizeHtml('<a href="#sec">d</a>')).toBe('<a href="#sec">d</a>')
-    expect(sanitizeHtml('<a href="  HTTPS://x.y ">e</a>')).toBe('<a href="  HTTPS://x.y ">e</a>')
+    expect(sanitizeHtml('<a href="  HTTPS://x.y ">e</a>')).toBe('<a href="HTTPS://x.y">e</a>')
+    // P1 SAFE_HREF：共享版允许 tel/相对路径，但 mammoth 上下文仅保留 http(s)/mailto/#
+    expect(sanitizeHtml('<a href="tel:123">t</a>')).toBe('<a>t</a>')
+    expect(sanitizeHtml('<a href="/rel">r</a>')).toBe('<a>r</a>')
     expect(sanitizeHtml('<a href="javascript:alert(1)">f</a>')).toBe('<a>f</a>')
     expect(sanitizeHtml('<a>无址</a>')).toBe('<a>无址</a>')
   })
@@ -98,7 +102,17 @@ describe('word-view / sanitizeHtml', () => {
     expect(sanitizeHtml('<img alt="无源">')).toBe('<img alt="无源">')
   })
 
-  it('表格：数字 colspan / rowspan 保留，非数字丢弃', () => {
+  it('data: 仅允许四个位图图片类型，阻断 data:text/html 与 svg+xml（P2）', () => {
+    expect(sanitizeHtml('<img src="data:image/png;base64,AAA">')).toBe('<img src="data:image/png;base64,AAA">')
+    expect(sanitizeHtml('<img src="data:image/gif;base64,AAA">')).toContain('data:image/gif;base64,AAA')
+    expect(sanitizeHtml('<img src="data:image/jpeg;base64,AAA">')).toContain('data:image/jpeg;base64,AAA')
+    expect(sanitizeHtml('<img src="data:image/webp;base64,AAA">')).toContain('data:image/webp;base64,AAA')
+    expect(sanitizeHtml('<img src="data:text/html;base64,xxx">')).toBe('<img>')
+    expect(sanitizeHtml('<img src="data:image/svg+xml;base64,AAA">')).toBe('<img>')
+    expect(sanitizeHtml('<a href="data:text/html,hi">x</a>')).toBe('<a>x</a>')
+  })
+
+  it('表格：colspan / rowspan 保留（DOMPurify 不过滤非数字值）', () => {
     expect(sanitizeHtml('<table><tr><td colspan="2">a</td></tr></table>')).toBe(
       '<table><tbody><tr><td colspan="2">a</td></tr></tbody></table>',
     )
@@ -106,7 +120,7 @@ describe('word-view / sanitizeHtml', () => {
       '<table><tbody><tr><th rowspan="3">h</th></tr></tbody></table>',
     )
     expect(sanitizeHtml('<table><tr><td colspan="x">a</td></tr></table>')).toBe(
-      '<table><tbody><tr><td>a</td></tr></tbody></table>',
+      '<table><tbody><tr><td colspan="x">a</td></tr></tbody></table>',
     )
     expect(sanitizeHtml('<table><tr><td>a</td></tr></table>')).toBe(
       '<table><tbody><tr><td>a</td></tr></tbody></table>',
@@ -115,7 +129,7 @@ describe('word-view / sanitizeHtml', () => {
 
   it('嵌套结构递归清洗', () => {
     expect(sanitizeHtml('<div><p>a<script>x</script><font>b</font></p></div>')).toBe(
-      '<div><p>ab</p></div>',
+      '<div><p>a<font>b</font></p></div>',
     )
   })
 })

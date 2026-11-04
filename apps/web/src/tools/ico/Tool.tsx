@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslate } from '../../i18n'
 import type { MessageKey } from '../../i18n'
 import {
@@ -47,6 +47,17 @@ function useToolT(): (key: string) => string {
 export default function Tool() {
   const tt = useToolT()
   const fileRef = useRef<HTMLInputElement>(null)
+  const resultUrlRef = useRef<string | null>(null)
+  const previewUrlRef = useRef<string | null>(null)
+
+  // 卸载时释放结果与预览对象 URL（重新生成/清空尺寸/重置也会释放旧 URL）
+  useEffect(
+    () => () => {
+      if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+      if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current)
+    },
+    [],
+  )
   const [dragOver, setDragOver] = useState(false)
   const [fileName, setFileName] = useState('')
   const [result, setResult] = useState<Result | null>(null)
@@ -83,12 +94,19 @@ export default function Tool() {
       const blob = new Blob([icoBytes], { type: 'image/x-icon' })
       // sizes 经 parseSelectedSizes 校验非空且升序，末位即最大尺寸
       const largest = pngParts[pngParts.length - 1]
+      const url = URL.createObjectURL(blob)
+      const previewUrl = URL.createObjectURL(largest.blob)
+      // 释放上一次的结果/预览 URL，避免重复生成时对象 URL 泄漏
+      if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+      if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current)
+      resultUrlRef.current = url
+      previewUrlRef.current = previewUrl
       setResult({
-        url: URL.createObjectURL(blob),
+        url,
         fileName: buildOutputFileName(file.name),
         blob,
         sizes,
-        previewUrl: URL.createObjectURL(largest.blob),
+        previewUrl,
         previewSize: largest.size,
         newSize: blob.size,
       })
@@ -120,6 +138,14 @@ export default function Tool() {
       setOptions(opts)
       if (next.length === 0) {
         // 至少保留一个尺寸：直接报错，不走异步重新生成，避免竞态覆盖
+        if (resultUrlRef.current) {
+          URL.revokeObjectURL(resultUrlRef.current)
+          resultUrlRef.current = null
+        }
+        if (previewUrlRef.current) {
+          URL.revokeObjectURL(previewUrlRef.current)
+          previewUrlRef.current = null
+        }
         setResult(null)
         setError(ERR_NO_SIZE_SELECTED)
         return
@@ -132,6 +158,14 @@ export default function Tool() {
   )
 
   const handleReset = useCallback(() => {
+    if (resultUrlRef.current) {
+      URL.revokeObjectURL(resultUrlRef.current)
+      resultUrlRef.current = null
+    }
+    if (previewUrlRef.current) {
+      URL.revokeObjectURL(previewUrlRef.current)
+      previewUrlRef.current = null
+    }
     setInputKey((k) => k + 1)
     setResult(null)
     setFileName('')

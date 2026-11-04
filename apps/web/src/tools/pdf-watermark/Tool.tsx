@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useEffect, useRef } from 'react'
 import { useTranslate } from '../../i18n'
 import type { MessageKey } from '../../i18n'
 import { downloadBlob, formatBytes } from '../../lib/image'
@@ -60,6 +60,15 @@ export default function Tool() {
   const [imageDragOver, setImageDragOver] = useState(false)
   const [pdfName, setPdfName] = useState('')
   const [pdfBytes, setPdfBytes] = useState<Uint8Array>(new Uint8Array(0))
+  const resultUrlRef = useRef<string | null>(null)
+
+  // 卸载时释放结果对象 URL（每次重新处理/重置也会释放旧 URL）
+  useEffect(
+    () => () => {
+      if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+    },
+    [],
+  )
   const [pdfPages, setPdfPages] = useState<number | null>(null)
   const [wmImageName, setWmImageName] = useState('')
   const [wmImageBytes, setWmImageBytes] = useState<Uint8Array | null>(null)
@@ -159,7 +168,12 @@ export default function Tool() {
       }
       const blob = new Blob([out.buffer as ArrayBuffer], { type: 'application/pdf' })
       setResult({
-        url: URL.createObjectURL(blob),
+        url: (() => {
+          const u = URL.createObjectURL(blob)
+          if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+          resultUrlRef.current = u
+          return u
+        })(),
         blob,
         fileName: buildOutputFileName(pdfName),
       })
@@ -172,6 +186,10 @@ export default function Tool() {
   }, [options, pdfBytes, pdfName, t, wmImageBytes, wmImageKind])
 
   const handleReset = useCallback(() => {
+    if (resultUrlRef.current) {
+      URL.revokeObjectURL(resultUrlRef.current)
+      resultUrlRef.current = null
+    }
     setInputKey((k) => k + 1)
     setImageInputKey((k) => k + 1)
     setPdfName('')

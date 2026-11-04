@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { MultiPanel } from '../../components/tool/templates/MultiPanel'
 import { meta } from './meta'
 import type { ExtensionPackToolInput } from './schema'
@@ -12,16 +12,33 @@ export default function Tool() {
   const [output, setOutput] = useState('')
   const [error, setError] = useState('')
   const [blobUrl, setBlobUrl] = useState('')
+  const resultUrlRef = useRef<string | null>(null)
+
+  // 卸载时释放结果对象 URL（每次重新打包/重置也会释放旧 URL）
+  useEffect(
+    () => () => {
+      if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+    },
+    [],
+  )
 
   function handleRun(input: ExtensionPackToolInput): void {
     setError('')
     setOutput('')
+    if (resultUrlRef.current) {
+      URL.revokeObjectURL(resultUrlRef.current)
+      resultUrlRef.current = null
+    }
     setBlobUrl('')
     try {
       const { files } = parsePackInput(input.text)
       const zip = packExtension(files)
       const blob = new Blob([zip as unknown as BlobPart], { type: 'application/zip' })
-      setBlobUrl(URL.createObjectURL(blob))
+      const blobUrl = URL.createObjectURL(blob)
+      // 释放上一次的结果 URL，避免重复打包时对象 URL 泄漏
+      if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+      resultUrlRef.current = blobUrl
+      setBlobUrl(blobUrl)
       setOutput(summarizePack(zip, files))
     } catch (err) {
       setError(err instanceof Error ? err.message : '执行失败')

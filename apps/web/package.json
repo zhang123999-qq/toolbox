@@ -12,7 +12,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "postinstall": "node -e \"try { require('@neslinesli93/qpdf-wasm/download.js') } catch { }\""
+    "postinstall": "node -e \"const fs=require('fs');const path=require('path');const f=require.resolve('@neslinesli93/qpdf-wasm/dist/qpdf.js');const w=path.join(path.dirname(f),'qpdf.wasm');if(!fs.existsSync(w)){console.error('[qpdf] wasm missing: '+w+' — run pnpm install again or check @neslinesli93/qpdf-wasm package');process.exit(1)}console.log('[qpdf] wasm ok: '+w)\""
   },
   "dependencies": {
     "@ffmpeg/ffmpeg": "^0.12.15",

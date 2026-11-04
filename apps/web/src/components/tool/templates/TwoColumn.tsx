@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react'
 import type { ChangeEvent } from 'react'
 import type { ToolMeta } from '@toolbox/catalog'
 import { useTranslate } from '../../../i18n'
+import { checkInputObject } from '../../../lib/input-limit'
 
 export interface OptionDef<O> {
   readonly key: keyof O & string
@@ -130,10 +131,27 @@ export function TwoColumn<I extends { text: string }, O extends object>({
   const [fileName, setFileName] = useState('')
   const t = useTranslate()
 
+  // 用 useDeferredValue 替代固定 300ms 防抖（P0-4 引申）：
+  // 输入框受控即时更新（不卡键），重计算走低优先级延迟值；
+  // 固定时长防抖会让「改完立刻点运行/断言」拿到旧快照，useDeferredValue 在 act/空闲时即刷新
+  const deferredInput = useDeferredValue(input)
+  const deferredOptions = useDeferredValue(options)
+  const copyTimerRef = useRef<number | undefined>(undefined)
+
+  // 卸载时清理复制定时器
+  useEffect(
+    () => () => {
+      if (copyTimerRef.current !== undefined) window.clearTimeout(copyTimerRef.current)
+    },
+    [],
+  )
+
   const computed = useMemo(() => {
     if (!run) return null
+    const limit = checkInputObject(deferredInput as Record<string, unknown>)
+    if (!limit.ok) return { ok: false as const, value: limit.error ?? '输入过长' }
     try {
-      return { ok: true as const, value: run(input, options) }
+      return { ok: true as const, value: run(deferredInput, deferredOptions) }
     } catch (error) {
       return {
         ok: false as const,
@@ -142,11 +160,16 @@ export function TwoColumn<I extends { text: string }, O extends object>({
     }
     // nonce 用于「运行」按钮强制重算
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [input, options, run, nonce])
+  }, [deferredInput, deferredOptions, run, nonce])
+
+  // 异步路径输入上限：渲染期同步计算，避免在 effect 里 setState
+  const asyncLimit =
+    runAsync && nonce > 0 ? checkInputObject(input as Record<string, unknown>) : null
 
   useEffect(() => {
     // nonce 为 0 表示还没点过运行：异步工具不自动发请求
     if (!runAsync || nonce === 0) return
+    if (!checkInputObject(input as Record<string, unknown>).ok) return
     let cancelled = false
     runAsync(input, options).then(
       (value) => {
@@ -179,12 +202,14 @@ export function TwoColumn<I extends { text: string }, O extends object>({
         }
       : computed
         ? { ok: computed.ok, pending: false, idle: false, value: computed.value }
-        : {
-            ok: asyncState.status !== 'error',
-            pending: asyncState.status === 'pending',
-            idle: asyncState.status === 'idle',
-            value: asyncState.value,
-          }
+        : asyncLimit && !asyncLimit.ok
+          ? { ok: false, pending: false, idle: false, value: asyncLimit.error ?? '输入过长' }
+          : {
+              ok: asyncState.status !== 'error',
+              pending: asyncState.status === 'pending',
+              idle: asyncState.status === 'idle',
+              value: asyncState.value,
+            }
 
   const output = view.ok ? view.value : ''
 
@@ -219,7 +244,8 @@ export function TwoColumn<I extends { text: string }, O extends object>({
     try {
       await navigator.clipboard.writeText(output)
       setCopied(true)
-      setTimeout(() => setCopied(false), 1500)
+      if (copyTimerRef.current !== undefined) window.clearTimeout(copyTimerRef.current)
+      copyTimerRef.current = window.setTimeout(() => setCopied(false), 1500)
     } catch {
       setCopied(false)
     }
@@ -317,6 +343,7 @@ export function TwoColumn<I extends { text: string }, O extends object>({
             data-testid="run"
             className="rounded bg-brand px-3 py-1.5 text-sm text-white hover:opacity-90"
             onClick={() => {
+              // 延迟值已自动跟随最新输入，直接触发重算
               setNonce((n) => n + 1)
               // 异步工具在点击时就切到 pending：放在 effect 里会触发级联渲染
               if (runAsync) setAsyncState({ status: 'pending', value: '' })

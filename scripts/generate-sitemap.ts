@@ -41,7 +41,7 @@ ${urls
 </urlset>
 `
 
-const robots = `# 站点尚未上线，见 docs/guide/getting-started.md
+const robots = `# 站点已上线：https://006336.xyz（www 子域仅作跳转别名）
 User-agent: *
 Allow: /
 

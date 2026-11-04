@@ -1,5 +1,8 @@
 import type { HttpClientInput, HttpClientOptions } from './schema'
 
+/** 单次 HTTP 请求超时（AbortController 中断，见 doRequest） */
+const REQUEST_TIMEOUT_MS = 60_000
+
 /** 把多行 `Key: Value` 解析成对象（纯函数） */
 export function parseHeaders(raw: string): Record<string, string> {
   const out: Record<string, string> = {}
@@ -29,41 +32,63 @@ export async function doRequest(
 ): Promise<string> {
   const headers = parseHeaders(input.headers)
   const init: RequestInit = { method: options.method, headers }
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
+  init.signal = controller.signal
   if (options.noCors) init.mode = 'no-cors'
   if (!['GET', 'HEAD'].includes(options.method) && input.body.trim() !== '') {
     init.body = input.body
   }
 
-  let res: Response
   try {
-    res = await fetch(url.trim(), init)
-  } catch (error) {
-    throw new Error(
-      '请求失败：' +
-        (error instanceof Error ? error.message : String(error)) +
-        '（常见原因：目标未允许 CORS、地址不通、混合内容被拦）',
-      { cause: error },
-    )
-  }
+    let res: Response
+    try {
+      res = await fetch(url.trim(), init)
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new Error(`请求失败：请求超时（超过 ${REQUEST_TIMEOUT_MS / 1000} 秒）`, {
+          cause: error,
+        })
+      }
+      throw new Error(
+        '请求失败：' +
+          (error instanceof Error ? error.message : String(error)) +
+          '（常见原因：目标未允许 CORS、地址不通、混合内容被拦）',
+        { cause: error },
+      )
+    }
 
-  if (options.noCors) {
-    return [
-      `已发送（no-cors 模式）：${options.method} ${url.trim()}`,
-      '响应是不透明的（opaque）：浏览器不暴露状态码与响应体，这是 no-cors 的固有限制。',
-      '要查看响应，请改用普通模式并确保目标服务器返回 CORS 头。',
-    ].join('\n')
-  }
+    if (options.noCors) {
+      return [
+        `已发送（no-cors 模式）：${options.method} ${url.trim()}`,
+        '响应是不透明的（opaque）：浏览器不暴露状态码与响应体，这是 no-cors 的固有限制。',
+        '要查看响应，请改用普通模式并确保目标服务器返回 CORS 头。',
+      ].join('\n')
+    }
 
-  const lines: string[] = []
-  lines.push(`${options.method} ${url.trim()}`)
-  lines.push(`状态：${res.status} ${res.statusText}`)
-  lines.push('响应头：')
-  res.headers.forEach((value, key) => lines.push(`  ${key}: ${value}`))
-  const text = await res.text()
-  lines.push('')
-  lines.push('响应体：')
-  lines.push(text === '' ? '(空)' : text)
-  return lines.join('\n')
+    const lines: string[] = []
+    lines.push(`${options.method} ${url.trim()}`)
+    lines.push(`状态：${res.status} ${res.statusText}`)
+    lines.push('响应头：')
+    res.headers.forEach((value, key) => lines.push(`  ${key}: ${value}`))
+    let text: string
+    try {
+      text = await res.text()
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new Error(`请求失败：请求超时（超过 ${REQUEST_TIMEOUT_MS / 1000} 秒）`, {
+          cause: error,
+        })
+      }
+      throw error
+    }
+    lines.push('')
+    lines.push('响应体：')
+    lines.push(text === '' ? '(空)' : text)
+    return lines.join('\n')
+  } finally {
+    clearTimeout(timer)
+  }
 }
 
 export async function transform(

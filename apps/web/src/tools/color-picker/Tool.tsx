@@ -1,4 +1,4 @@
-import { useCallback, useState, type FormEvent, type MouseEvent } from 'react'
+import { useCallback, useEffect, useRef, useState, type FormEvent, type MouseEvent } from 'react'
 import { useTranslate } from '../../i18n'
 import { createCanvas, isSupportedImageFile, loadImageFromBlob } from '../../lib/image'
 import {
@@ -30,6 +30,15 @@ export default function Tool() {
   const [dragOver, setDragOver] = useState(false)
   const [colorHex, setColorHex] = useState<string | null>(null)
   const [board, setBoard] = useState<ColorBoard | null>(null)
+  const resultUrlRef = useRef<string | null>(null)
+
+  // 卸载时释放画板对象 URL（每次重新上传/出错清空也会释放旧 URL）
+  useEffect(
+    () => () => {
+      if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+    },
+    [],
+  )
   const [options, setOptions] = useState<ColorPickerOptions>({})
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
@@ -87,9 +96,17 @@ export default function Tool() {
         const ctx = canvas.getContext('2d')
         if (!ctx) throw new Error(t('colorPicker.error.canvas'))
         ctx.drawImage(img, 0, 0)
-        setBoard({ url: URL.createObjectURL(file), width: img.width, height: img.height, ctx })
+        const url = URL.createObjectURL(file)
+        // 释放上一次的画板 URL，避免重复上传时对象 URL 泄漏
+        if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+        resultUrlRef.current = url
+        setBoard({ url, width: img.width, height: img.height, ctx })
       } catch (err) {
         setError(errorMessage(err))
+        if (resultUrlRef.current) {
+          URL.revokeObjectURL(resultUrlRef.current)
+          resultUrlRef.current = null
+        }
         setBoard(null)
       }
     },

@@ -36,7 +36,13 @@ COPY apps ./apps
 COPY scripts ./scripts
 
 # Install dependencies (frozen lockfile for reproducibility)
+# P1-3：--ignore-scripts 跳过 apps/web 的 postinstall（不可控副作用）；显式物化
+#   qpdf wasm 并断言文件存在（已发布包 files: ["dist"] 只含 dist/qpdf.wasm；
+#   历史 postinstall 的 require('.../download.js') 恒 MODULE_NOT_FOUND 且被
+#   catch{} 吞掉，见 apps/web/package.json 与 DEPLOYMENT.md 说明）。
 RUN pnpm install --frozen-lockfile --ignore-scripts
+RUN cd apps/web && node -e "const fs=require('fs');const path=require('path');const f=require.resolve('@neslinesli93/qpdf-wasm/dist/qpdf.js');const w=path.join(path.dirname(f),'qpdf.wasm');if(!fs.existsSync(w)){console.error('[qpdf][P1-3] wasm missing: '+w);process.exit(1)}console.log('[qpdf] wasm ok: '+w)" \
+ && test -f "$(cd apps/web && node -p "require('path').join(require('path').dirname(require.resolve('@neslinesli93/qpdf-wasm/dist/qpdf.js')),'qpdf.wasm')")"
 
 # Copy source
 COPY . .
@@ -45,11 +51,11 @@ COPY . .
 ARG SITE_ORIGIN=https://006336.xyz
 ENV SITE_ORIGIN=${SITE_ORIGIN}
 
-# Full build: client -> SSR -> prerender (SSG)
-RUN pnpm generate:sitemap \
-    && pnpm --filter @toolbox/web build \
-    && pnpm --filter @toolbox/web build:ssr \
-    && pnpm prerender
+# Full build via the single SSG chain (P0-1): sitemap → search-index →
+#   client build → SSR build → prerender. The old inline chain omitted
+#   generate:search-index, so search silently shipped empty; order is fixed
+#   (see scripts/build-ssg.sh header). Use sh because the builder is Alpine.
+RUN sh scripts/build-ssg.sh
 
 # ---- Stage 2: Production Runtime ---------------------------------------------
 FROM ${NGINX_IMAGE} AS production
@@ -98,9 +104,11 @@ USER nginx
 # Expose port (non-privileged)
 EXPOSE 8081
 
-# Health check
+# Health check (P0-2): probe the exact /healthz endpoint that answers
+# "ok v<VERSION>" (see deploy/nginx/default.conf) and assert the body —
+# a bare HTTP 200 on / would only prove the SPA fallback responded.
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD wget -qO- http://127.0.0.1:8081/healthz >/dev/null || exit 1
+    CMD wget -qO- http://127.0.0.1:8081/healthz | grep -q '^ok '
 
 # Run nginx
 CMD ["nginx", "-g", "daemon off;"]

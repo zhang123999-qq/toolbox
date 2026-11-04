@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslate } from '../../i18n'
 import {
   canvasToBlob,
@@ -53,6 +53,15 @@ const FORMAT_OPTIONS = ['jpeg', 'webp'] as const
 export default function Tool() {
   const t = useTranslate()
   const fileRef = useRef<HTMLInputElement>(null)
+  const resultUrlRef = useRef<string | null>(null)
+
+  // 卸载时释放结果对象 URL（每次重新处理/重置也会释放旧 URL）
+  useEffect(
+    () => () => {
+      if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+    },
+    [],
+  )
   const [dragOver, setDragOver] = useState(false)
   const [fileName, setFileName] = useState('')
   const [result, setResult] = useState<Result | null>(null)
@@ -79,7 +88,12 @@ export default function Tool() {
         // 目标 ≥ 原图大小：无需压缩，原样输出
         if (file.size <= targetBytes) {
           setResult({
-            url: URL.createObjectURL(file),
+            url: (() => {
+              const u = URL.createObjectURL(file)
+              if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+              resultUrlRef.current = u
+              return u
+            })(),
             fileName: outName,
             previewUrl,
             width: img.width,
@@ -128,7 +142,12 @@ export default function Tool() {
         if (!best) throw new Error(unreachableErrorText(targetBytes))
 
         setResult({
-          url: URL.createObjectURL(best.blob),
+          url: (() => {
+            const u = URL.createObjectURL(best.blob)
+            if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+            resultUrlRef.current = u
+            return u
+          })(),
           fileName: outName,
           previewUrl,
           width: w,
@@ -179,6 +198,10 @@ export default function Tool() {
   }, [options, processFile])
 
   const handleReset = useCallback(() => {
+    if (resultUrlRef.current) {
+      URL.revokeObjectURL(resultUrlRef.current)
+      resultUrlRef.current = null
+    }
     setInputKey((k) => k + 1)
     setResult(null)
     setFileName('')

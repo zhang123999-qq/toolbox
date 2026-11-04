@@ -4,7 +4,7 @@
  * 用法：pnpm generate:catalog
  * 新增工具只需建目录 + 写 meta.ts，跑本脚本后路由/首页/搜索/sitemap 全部自动生效。
  */
-import { readdirSync, writeFileSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { pathToFileURL } from 'node:url'
 import path from 'node:path'
 
@@ -126,7 +126,19 @@ export const TOOL_COUNT = TOOLS.length
 
 async function main(): Promise<void> {
   const metas = await loadMetas()
-  writeFileSync(OUTPUT, render(metas), 'utf8')
+  const rendered = render(metas)
+  // --check：不写文件，只校验已生成文件与当前 meta 一致（CI 门禁，审计 P1-5）
+  if (process.argv.includes('--check')) {
+    if (!existsSync(OUTPUT) || readFileSync(OUTPUT, 'utf8') !== rendered) {
+      console.error(
+        '[generate-catalog] tools.generated.ts 已过期：请重跑 pnpm generate:catalog 并提交',
+      )
+      process.exit(1)
+    }
+    console.log('[generate-catalog] --check 通过：注册表与 meta 一致 ✓')
+    return
+  }
+  writeFileSync(OUTPUT, rendered, 'utf8')
   console.log(
     `[generate-catalog] 已写入 ${metas.length} 条 → packages/catalog/src/tools.generated.ts`,
   )

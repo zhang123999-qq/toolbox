@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useRef, useState, useEffect } from 'react'
 import { PDFDocument } from 'pdf-lib'
 import { useTranslate } from '../../i18n'
 import {
@@ -38,6 +38,15 @@ const PAGE_SIZE_OPTIONS = ['fit', 'a4', 'letter'] as const
 export default function Tool() {
   const t = useTranslate()
   const fileRef = useRef<HTMLInputElement>(null)
+  const resultUrlRef = useRef<string | null>(null)
+
+  // 卸载时释放结果对象 URL（每次重新处理/重置也会释放旧 URL）
+  useEffect(
+    () => () => {
+      if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+    },
+    [],
+  )
   const idRef = useRef(0)
   const [dragOver, setDragOver] = useState(false)
   const [files, setFiles] = useState<PdfFileItem[]>([])
@@ -128,7 +137,12 @@ export default function Tool() {
       const pdfCopy = new Uint8Array(pdfBytes)
       const blob = new Blob([pdfCopy.buffer as ArrayBuffer], { type: 'application/pdf' })
       setResult({
-        url: URL.createObjectURL(blob),
+        url: (() => {
+          const u = URL.createObjectURL(blob)
+          if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+          resultUrlRef.current = u
+          return u
+        })(),
         blob,
         fileName: buildOutputFileName(files[0].file.name),
         pageCount: files.length,

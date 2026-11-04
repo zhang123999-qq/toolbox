@@ -46,7 +46,9 @@ export function htmlLang(locale: Locale): string {
 export function createTranslator(locale: Locale): Translate {
   const messages = MESSAGES[locale] ?? zh
   return (key, params) => {
-    const template = messages[key] ?? zh[key]
+    // key 缺失时回落到 key 本身：避免返回 undefined（违反 string 返回类型）
+    // 或在带参时对 undefined 调 replace 抛 TypeError 导致整树崩溃
+    const template = messages[key] ?? zh[key] ?? key
     if (params === undefined) return template
     return template.replace(/\{(\w+)\}/g, (match, name: string) => {
       const value = params[name]

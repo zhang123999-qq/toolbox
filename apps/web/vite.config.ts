@@ -63,5 +63,10 @@ export default defineConfig({
     restoreMocks: true,
     // 确保 pdfjs-dist worker 在测试环境可用
     setupFiles: ['./src/test-setup.ts'],
+    coverage: {
+      provider: 'v8',
+      // 阈值取保守基线（实测基线未量化前先防「零断言裸奔」），量化后可再上调
+      thresholds: { lines: 60, functions: 60, branches: 50, statements: 60 },
+    },
   },
 })

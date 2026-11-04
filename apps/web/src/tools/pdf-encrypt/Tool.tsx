@@ -26,6 +26,15 @@ type EngineState = 'loading' | 'ready' | 'failed'
 export default function Tool() {
   const t = useTranslate()
   const fileRef = useRef<HTMLInputElement>(null)
+  const resultUrlRef = useRef<string | null>(null)
+
+  // 卸载时释放结果对象 URL（每次重新处理/重置也会释放旧 URL）
+  useEffect(
+    () => () => {
+      if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+    },
+    [],
+  )
   const [dragOver, setDragOver] = useState(false)
   const [fileName, setFileName] = useState('')
   const [fileBytes, setFileBytes] = useState<Uint8Array | null>(null)
@@ -126,6 +135,9 @@ export default function Tool() {
       const copy = new Uint8Array(encryptedBytes)
       const blob = new Blob([copy.buffer as ArrayBuffer], { type: 'application/pdf' })
       const url = URL.createObjectURL(blob)
+      // 释放上一次的结果 URL，避免重复处理时对象 URL 泄漏
+      if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+      resultUrlRef.current = url
       setResult({ url, blob, fileName: outName, size: encryptedBytes.length, keyLength })
       // 处理完自动清空密码，不留内存残留
       setOptions((prev) => ({ ...prev, userPassword: '', ownerPassword: '' }))
@@ -138,6 +150,10 @@ export default function Tool() {
   }, [fileBytes, engine, options, fileName, t])
 
   const handleReset = useCallback(() => {
+    if (resultUrlRef.current) {
+      URL.revokeObjectURL(resultUrlRef.current)
+      resultUrlRef.current = null
+    }
     setInputKey((k) => k + 1)
     setResult(null)
     setFileBytes(null)

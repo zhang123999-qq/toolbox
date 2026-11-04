@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useDeferredValue, useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import type { ToolMeta } from '@toolbox/catalog'
 import { useTranslate } from '../../../i18n'
+import { checkInputObject } from '../../../lib/input-limit'
 import { SECONDARY_BUTTON } from './TwoColumn'
 import type { ExtraInputDef, OptionDef } from './TwoColumn'
 
@@ -51,6 +52,22 @@ export function MultiPanel<I extends { text: string }, O extends object>({
   const [, setNonce] = useState(0)
   const t = useTranslate()
 
+  // 用 useDeferredValue 替代固定 300ms 防抖（P0-4 引申）：输入受控即时更新，
+  // renderOutput 走延迟值；固定防抖会让改后立即点运行拿到旧快照，延迟值在 act/空闲时即刷新
+  const debouncedInput = useDeferredValue(input)
+  const debouncedOptions = useDeferredValue(options)
+  const copyTimerRef = useRef<number | undefined>(undefined)
+
+  useEffect(
+    () => () => {
+      if (copyTimerRef.current !== undefined) window.clearTimeout(copyTimerRef.current)
+    },
+    [],
+  )
+
+  /** 保留「运行/复制/下载前刷新快照」语义：延迟值已自动跟随，仅需触发重渲染 */
+  function flushDebounce(): void {}
+
   function updateOption(key: keyof O & string, value: string | boolean) {
     setOptions((prev) => ({ ...prev, [key]: value }) as O)
   }
@@ -61,18 +78,25 @@ export function MultiPanel<I extends { text: string }, O extends object>({
   }
 
   async function copy() {
+    const limit = checkInputObject(input as Record<string, unknown>)
+    if (!limit.ok) return
+    flushDebounce()
     const text = toText(input, options)
     if (!text) return
     try {
       await navigator.clipboard.writeText(text)
       setCopied(true)
-      setTimeout(() => setCopied(false), 1500)
+      if (copyTimerRef.current !== undefined) window.clearTimeout(copyTimerRef.current)
+      copyTimerRef.current = window.setTimeout(() => setCopied(false), 1500)
     } catch {
       setCopied(false)
     }
   }
 
   function download() {
+    const limit = checkInputObject(input as Record<string, unknown>)
+    if (!limit.ok) return
+    flushDebounce()
     const text = toText(input, options)
     if (!text) return
     const blob = new Blob([text], { type: 'text/plain;charset=utf-8' })
@@ -211,7 +235,17 @@ export function MultiPanel<I extends { text: string }, O extends object>({
           data-testid="output"
           className="tool-output min-h-64 w-full flex-1 overflow-auto rounded border border-slate-200 bg-slate-50 p-2 text-sm dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
         >
-          {renderOutput(input, options)}
+          {(() => {
+            const limit = checkInputObject(debouncedInput as Record<string, unknown>)
+            if (!limit.ok) {
+              return (
+                <p role="alert" data-testid="error" className="text-red-700 dark:text-red-300">
+                  {limit.error}
+                </p>
+              )
+            }
+            return renderOutput(debouncedInput, debouncedOptions)
+          })()}
         </div>
 
         <div className="tool-actions mt-2 flex flex-wrap gap-2">
@@ -219,7 +253,10 @@ export function MultiPanel<I extends { text: string }, O extends object>({
             type="button"
             data-testid="run"
             className="rounded bg-brand px-3 py-1.5 text-sm text-white hover:opacity-90"
-            onClick={() => setNonce((n) => n + 1)}
+            onClick={() => {
+              flushDebounce()
+              setNonce((n) => n + 1)
+            }}
           >
             {t('tool.run')}
           </button>

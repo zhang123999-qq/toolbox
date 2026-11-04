@@ -192,13 +192,15 @@ function applyMeta(template: string, route: string, body: string, meta: PageMeta
 
   const head = [socialHead(route, meta), jsonLdTags].filter(Boolean).join('\n    ')
 
+  // 替换串必须用函数形式：字符串里的 $& / $' / $` 会被 String.replace 当作
+  // 「匹配片段 / 前后文」特殊模式，SSR 正文或标题里出现 $& 就把整页贴错位置（实测复现）。
   return template
-    .replace(/<title>[\s\S]*?<\/title>/, `<title>${escapeHtml(meta.title)}</title>\n    ${head}`)
+    .replace(/<title>[\s\S]*?<\/title>/, () => `<title>${escapeHtml(meta.title)}</title>\n    ${head}`)
     .replace(
       /<meta\s+name="description"[\s\S]*?\/>/,
-      `<meta name="description" content="${escapeHtml(meta.description)}" />`,
+      () => `<meta name="description" content="${escapeHtml(meta.description)}" />`,
     )
-    .replace('<div id="root"></div>', `<div id="root">${body}</div>`)
+    .replace('<div id="root"></div>', () => `<div id="root">${body}</div>`)
 }
 
 function outputPath(route: string): string {
@@ -272,7 +274,12 @@ function main(): void {
 
     console.log(`[prerender] 已生成 ${count} 个静态页 + 404.html → apps/web/dist`)
     // 构建优化提示：当前 SSG 产出已包含真实 DOM（无 Suspense fallback），工具页体积由 manualChunks 控制（见 vite.config.ts）。预渲染产物可直接部署到静态托管（Cloudflare Pages / Vercel / nginx）。
-  })()
+    // 修复：async IIFE 之前无 .catch —— render 抛错时只剩 unhandled rejection 警告，进程仍以 0 退出，
+    // CI 会把「预渲染失败」当成功继续发版。这里显式失败。
+  })().catch((error: unknown) => {
+    console.error('[prerender] 失败：', error)
+    process.exit(1)
+  })
 }
 
 main()

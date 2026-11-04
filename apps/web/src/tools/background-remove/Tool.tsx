@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useEffect, useRef } from 'react'
 import type { CSSProperties } from 'react'
 import { useTranslate } from '../../i18n'
 import {
@@ -61,6 +61,15 @@ export default function Tool() {
   const t = useTranslate()
   const [dragOver, setDragOver] = useState(false)
   const [file, setFile] = useState<File | null>(null)
+  const resultUrlRef = useRef<string | null>(null)
+
+  // 卸载时释放结果对象 URL（每次重新处理/重置也会释放旧 URL）
+  useEffect(
+    () => () => {
+      if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+    },
+    [],
+  )
   const [fileName, setFileName] = useState('')
   const [result, setResult] = useState<Result | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -98,6 +107,9 @@ export default function Tool() {
         ctx.putImageData(imageData, 0, 0)
         const blob = await canvasToBlob(canvas, 'image/png')
         const url = URL.createObjectURL(blob)
+        // 释放上一次的结果 URL，避免重复处理时对象 URL 泄漏
+        if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+        resultUrlRef.current = url
         const preview = await readFileAsDataURL(f)
         setResult({
           url,
@@ -140,6 +152,10 @@ export default function Tool() {
   )
 
   const handleReset = useCallback(() => {
+    if (resultUrlRef.current) {
+      URL.revokeObjectURL(resultUrlRef.current)
+      resultUrlRef.current = null
+    }
     setInputKey((k) => k + 1)
     setFile(null)
     setResult(null)

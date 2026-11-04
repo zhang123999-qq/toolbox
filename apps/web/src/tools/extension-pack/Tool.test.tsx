@@ -3,13 +3,20 @@
  * extension-pack 组件测试（#775）：扩展打包与下载。
  */
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import Tool from './Tool'
 
 afterEach(() => {
   cleanup()
   vi.restoreAllMocks()
 })
+
+/** 等待模板防抖快照（300ms）落定后再点运行，否则运行的是旧快照 */
+async function waitSnapshot(): Promise<void> {
+  await act(async () => {
+    await new Promise((r) => setTimeout(r, 350))
+  })
+}
 
 function byTestId(id: string): HTMLElement {
   const el = screen.queryByTestId(id)
@@ -38,16 +45,19 @@ describe('extension-pack · Tool', () => {
     expect(link.getAttribute('download')).toBe('extension.zip')
   })
 
-  it('缺少 manifest.json 报错', () => {
+  it('缺少 manifest.json 报错', async () => {
     render(<Tool />)
     fireEvent.change(byTestId('input'), {
       target: { value: '{"files":[{"name":"a.js","content":"x"}]}' },
     })
+    await waitSnapshot()
     fireEvent.click(byTestId('extensionpack-run'))
-    expect(byTestId('extensionpack-error').textContent).toContain('必须包含 manifest.json')
+    await vi.waitFor(() =>
+      expect(byTestId('extensionpack-error').textContent).toContain('必须包含 manifest.json'),
+    )
   })
 
-  it('非法文件名报错', () => {
+  it('非法文件名报错', async () => {
     render(<Tool />)
     fireEvent.change(byTestId('input'), {
       target: {
@@ -55,14 +65,20 @@ describe('extension-pack · Tool', () => {
           '{"files":[{"name":"manifest.json","content":"{}"},{"name":"../evil.js","content":"x"}]}',
       },
     })
+    await waitSnapshot()
     fireEvent.click(byTestId('extensionpack-run'))
-    expect(byTestId('extensionpack-error').textContent).toContain('非法文件名')
+    await vi.waitFor(() =>
+      expect(byTestId('extensionpack-error').textContent).toContain('非法文件名'),
+    )
   })
 
-  it('非法 JSON 报错', () => {
+  it('非法 JSON 报错', async () => {
     render(<Tool />)
     fireEvent.change(byTestId('input'), { target: { value: '{' } })
+    await waitSnapshot()
     fireEvent.click(byTestId('extensionpack-run'))
-    expect(byTestId('extensionpack-error').textContent).toContain('不是合法 JSON')
+    await vi.waitFor(() =>
+      expect(byTestId('extensionpack-error').textContent).toContain('不是合法 JSON'),
+    )
   })
 })

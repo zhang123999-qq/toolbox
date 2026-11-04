@@ -3,8 +3,11 @@
  * mammoth 的动态加载与转换编排在 Tool.tsx（重型库不进 utils）。
  *
  * 清洗器的存在理由：mammoth 只转义正文文本，不校验超链接 href，
- * 恶意 docx 可夹带 javascript: 链接；此处做白名单清洗后才进 innerHTML。
+ * 恶意 docx 可夹带 javascript: 链接；此处委托共享 sanitizeHtml
+ * （DOMPurify）清洗并补 SAFE_HREF 约束后才进 innerHTML。
  */
+import { sanitizeHtml as sharedSanitizeHtml } from '../../shared/sanitizeHtml'
+import { escapeHtml } from '../../shared/sanitizeHtml'
 
 /** 单文件上限：50 MiB */
 export const MAX_FILE_BYTES = 50 * 1024 * 1024
@@ -50,140 +53,32 @@ export function exactBuffer(bytes: Uint8Array): ArrayBuffer {
   return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer
 }
 
-/** mammoth 产出允许的标签白名单 */
-const ALLOWED_TAGS: ReadonlySet<string> = new Set([
-  'p',
-  'h1',
-  'h2',
-  'h3',
-  'h4',
-  'h5',
-  'h6',
-  'ul',
-  'ol',
-  'li',
-  'dl',
-  'dt',
-  'dd',
-  'table',
-  'thead',
-  'tbody',
-  'tfoot',
-  'tr',
-  'th',
-  'td',
-  'caption',
-  'strong',
-  'b',
-  'em',
-  'i',
-  'u',
-  's',
-  'strike',
-  'del',
-  'ins',
-  'code',
-  'pre',
-  'blockquote',
-  'hr',
-  'br',
-  'a',
-  'img',
-  'sup',
-  'sub',
-  'span',
-  'div',
-  'figure',
-  'figcaption',
-])
+/**
+ * 清洗统一走共享 sanitizeHtml（DOMPurify）——P1 双重净化器漂移：
+ * 删除本地 ALLOWED_TAGS/cleanNode/sanitizeHtml 自研副本，不再自建第二套白名单。
+ * 保留原有 SAFE_HREF 约束（http(s)/mailto/#）：共享版允许 tel/相对路径，但
+ * mammoth 产出只允许 http(s)/mailto/页内锚点，故在调用处补一层 href 校验。
+ */
 
-/** 整体丢弃的标签（含内容）：脚本与内嵌框架不允许出现在预览里 */
-const DROP_ENTIRELY: ReadonlySet<string> = new Set([
-  'script',
-  'style',
-  'iframe',
-  'object',
-  'embed',
-  'link',
-  'meta',
-  'noscript',
-  'title',
-])
-
-/** 安全的超链接协议：http(s) / mailto / 页内锚点 */
+/** 安全的超链接协议：http(s) / mailto / 页内锚点（原有行为） */
 const SAFE_HREF = /^(https?:|mailto:|#)/i
-/** 安全的图片来源：内嵌 data URI 或 http(s) */
-const SAFE_IMG_SRC = /^(data:image\/|https?:)/i
-
-function isSafeHref(href: string): boolean {
-  return SAFE_HREF.test(href.trim())
-}
-
-function isSafeImgSrc(src: string): boolean {
-  return SAFE_IMG_SRC.test(src.trim())
-}
-
-/** 递归清洗节点：文本直通；白名单标签保留并过滤属性；其余标签拆包或丢弃 */
-function cleanNode(node: Node, doc: Document): Node | null {
-  if (node.nodeType === 3) return doc.createTextNode((node as Text).data)
-  if (node.nodeType !== 1) return null
-  const el = node as Element
-  const tag = el.tagName.toLowerCase()
-  if (DROP_ENTIRELY.has(tag)) return null
-  if (!ALLOWED_TAGS.has(tag)) {
-    // 非白名单标签：拆包保留子节点（如 <font>、自定义标签）
-    const frag = doc.createDocumentFragment()
-    el.childNodes.forEach((child) => {
-      const cleaned = cleanNode(child, doc)
-      if (cleaned !== null) frag.appendChild(cleaned)
-    })
-    return frag
-  }
-  const out = doc.createElement(tag)
-  if (tag === 'a') {
-    const href = el.getAttribute('href')
-    if (href !== null && isSafeHref(href)) out.setAttribute('href', href)
-  } else if (tag === 'img') {
-    const src = el.getAttribute('src')
-    if (src !== null && isSafeImgSrc(src)) out.setAttribute('src', src)
-    const alt = el.getAttribute('alt')
-    if (alt !== null) out.setAttribute('alt', alt)
-  } else if (tag === 'td' || tag === 'th') {
-    for (const name of ['colspan', 'rowspan'] as const) {
-      const value = el.getAttribute(name)
-      if (value !== null && /^\d+$/.test(value)) out.setAttribute(name, value)
-    }
-  }
-  el.childNodes.forEach((child) => {
-    const cleaned = cleanNode(child, doc)
-    if (cleaned !== null) out.appendChild(cleaned)
-  })
-  return out
-}
 
 /**
- * 清洗 HTML 片段：只保留白名单标签，中和危险链接与脚本。
- * 纯函数（DOM 操作无副作用），可在 jsdom / 浏览器中运行。
+ * 清洗 HTML 片段：委托共享 sanitizeHtml（DOMPurify），再补 SAFE_HREF 约束。
+ * 仅对 <a href> 做校验，不自建标签/属性白名单。
  */
 export function sanitizeHtml(html: string): string {
-  if (html.trim() === '') return ''
-  const parsed = new DOMParser().parseFromString(html, 'text/html')
-  const host = parsed.createElement('div')
-  parsed.body.childNodes.forEach((child) => {
-    const cleaned = cleanNode(child, parsed)
-    if (cleaned !== null) host.appendChild(cleaned)
+  const cleaned = sharedSanitizeHtml(html)
+  if (cleaned === '' || !/<a\b/i.test(cleaned)) return cleaned
+  return cleaned.replace(/<a\s[^>]*\bhref\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, (tag, rawValue) => {
+    const value = String(rawValue).replace(/^"(.*)"$|^(.*)$/, '$1')
+    if (SAFE_HREF.test(value.trim())) return tag
+    return tag.replace(/\s+\bhref\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/i, '')
   })
-  return host.innerHTML
 }
 
-/** HTML 转义：用于文件名等插入文档 <title> 的文本 */
-export function escapeHtml(text: string): string {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-}
+/** HTML 转义：用于文件名等插入文档 <title> 的文本（与共享版实现保持一致） */
+export { escapeHtml } from '../../shared/sanitizeHtml'
 
 /** 原始 HTML → 预览模型（清洗 + 图片标记） */
 export function buildPreview(fileName: string, rawHtml: string): WordPreview {

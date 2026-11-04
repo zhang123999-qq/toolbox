@@ -38,35 +38,50 @@ function openDb(): Promise<IDBDatabase> {
 }
 
 function idbGet<T>(key: string): Promise<T | undefined> {
-  return openDb().then(
-    (db) =>
-      new Promise<T | undefined>((resolve, reject) => {
-        const req = db.transaction(STORE, 'readonly').objectStore(STORE).get(key)
-        req.onsuccess = () => resolve(req.result as T | undefined)
-        req.onerror = () => reject(req.error)
-      }),
+  return openDb().then((db) =>
+    new Promise<T | undefined>((resolve, reject) => {
+      const req = db.transaction(STORE, 'readonly').objectStore(STORE).get(key)
+      req.onsuccess = () => {
+        db.close() // 每次操作后关闭连接，避免每次调用都泄漏一个 IDBDatabase
+        resolve(req.result as T | undefined)
+      }
+      req.onerror = () => {
+        db.close()
+        reject(req.error)
+      }
+    }),
   )
 }
 
 function idbPut(key: string, value: unknown): Promise<void> {
-  return openDb().then(
-    (db) =>
-      new Promise<void>((resolve, reject) => {
-        const req = db.transaction(STORE, 'readwrite').objectStore(STORE).put(value, key)
-        req.onsuccess = () => resolve()
-        req.onerror = () => reject(req.error)
-      }),
+  return openDb().then((db) =>
+    new Promise<void>((resolve, reject) => {
+      const req = db.transaction(STORE, 'readwrite').objectStore(STORE).put(value, key)
+      req.onsuccess = () => {
+        db.close()
+        resolve()
+      }
+      req.onerror = () => {
+        db.close()
+        reject(req.error)
+      }
+    }),
   )
 }
 
 function idbDelete(key: string): Promise<void> {
-  return openDb().then(
-    (db) =>
-      new Promise<void>((resolve, reject) => {
-        const req = db.transaction(STORE, 'readwrite').objectStore(STORE).delete(key)
-        req.onsuccess = () => resolve()
-        req.onerror = () => reject(req.error)
-      }),
+  return openDb().then((db) =>
+    new Promise<void>((resolve, reject) => {
+      const req = db.transaction(STORE, 'readwrite').objectStore(STORE).delete(key)
+      req.onsuccess = () => {
+        db.close()
+        resolve()
+      }
+      req.onerror = () => {
+        db.close()
+        reject(req.error)
+      }
+    }),
   )
 }
 
@@ -77,15 +92,21 @@ function hasSubtle(): boolean {
   return typeof crypto !== 'undefined' && Boolean(crypto.subtle)
 }
 
-async function getKey(): Promise<CryptoKey> {
-  const existing = await idbGet<CryptoKey>(KEY_ID)
-  if (existing) return existing
-  const key = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, false, [
-    'encrypt',
-    'decrypt',
-  ])
-  await idbPut(KEY_ID, key)
-  return key
+// 单例化「取/生成密钥」：并发首次调用若各自生成密钥，后者会覆盖前者的已存密钥，
+// 导致前者加密的数据永久无法解密（加载与 set 并发时真实可达）
+let keyPromise: Promise<CryptoKey> | null = null
+function getKey(): Promise<CryptoKey> {
+  keyPromise ??= (async () => {
+    const existing = await idbGet<CryptoKey>(KEY_ID)
+    if (existing) return existing
+    const key = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, false, [
+      'encrypt',
+      'decrypt',
+    ])
+    await idbPut(KEY_ID, key)
+    return key
+  })()
+  return keyPromise
 }
 
 function bufToB64(buf: ArrayBuffer): string {
@@ -127,13 +148,16 @@ export function useSecureStorage<T>(key: string, initial: T): SecureStorage<T> {
   const [ready, setReady] = useState(false)
   const [degraded, setDegraded] = useState(false)
   const mounted = useRef(true)
+  // 加载代际：key 变化时旧 key 的异步加载可能晚到，覆盖新 key 的值
+  const loadSeq = useRef(0)
 
   useEffect(() => {
     mounted.current = true
+    const seq = ++loadSeq.current
     void (async () => {
       try {
         const rec = await idbGet<StoredRecord>(key)
-        if (rec && mounted.current) {
+        if (rec && mounted.current && loadSeq.current === seq) {
           let plain: string
           if (rec.iv === 'xor') {
             plain = deobfuscate(rec)
@@ -149,12 +173,12 @@ export function useSecureStorage<T>(key: string, initial: T): SecureStorage<T> {
           } else {
             plain = ''
           }
-          if (plain !== '') setValue(JSON.parse(plain) as T)
+          if (plain !== '' && loadSeq.current === seq) setValue(JSON.parse(plain) as T)
         }
       } catch {
         /* 读取失败时保持初始值，ready 仍置 true 避免调用方永久等待 */
       } finally {
-        if (mounted.current) setReady(true)
+        if (mounted.current && loadSeq.current === seq) setReady(true)
       }
     })()
     return () => {
@@ -165,15 +189,21 @@ export function useSecureStorage<T>(key: string, initial: T): SecureStorage<T> {
   const set = useCallback(
     async (next: T): Promise<void> => {
       setValue(next)
-      const plain = JSON.stringify(next)
-      if (hasSubtle()) {
-        const cryptoKey = await getKey()
-        const iv = crypto.getRandomValues(new Uint8Array(12))
-        const data = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, cryptoKey, encoder.encode(plain))
-        await idbPut(key, { iv: bufToB64(iv.buffer), data: bufToB64(data) } satisfies StoredRecord)
-      } else {
-        setDegraded(true)
-        await idbPut(key, obfuscate(plain))
+      // 持久化失败（配额/隐私模式）时只记日志不抛：调用方不一定 catch，
+      // 未处理拒绝会污染控制台；内存值已更新，刷新后回落初始值
+      try {
+        const plain = JSON.stringify(next)
+        if (hasSubtle()) {
+          const cryptoKey = await getKey()
+          const iv = crypto.getRandomValues(new Uint8Array(12))
+          const data = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, cryptoKey, encoder.encode(plain))
+          await idbPut(key, { iv: bufToB64(iv.buffer), data: bufToB64(data) } satisfies StoredRecord)
+        } else {
+          setDegraded(true)
+          await idbPut(key, obfuscate(plain))
+        }
+      } catch (error) {
+        console.error('[secure-storage] 写入失败', error)
       }
     },
     [key],
@@ -181,7 +211,11 @@ export function useSecureStorage<T>(key: string, initial: T): SecureStorage<T> {
 
   const remove = useCallback(async (): Promise<void> => {
     setValue(initial)
-    await idbDelete(key)
+    try {
+      await idbDelete(key)
+    } catch (error) {
+      console.error('[secure-storage] 删除失败', error)
+    }
   }, [key, initial])
 
   return { value, ready, degraded, set, remove }

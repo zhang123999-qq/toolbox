@@ -23,7 +23,19 @@ function loadPage(name: string): AnyComponent {
   const entry = pageModules[`./pages/${name}.tsx`]
   if (!entry) throw new Error(`[router] 未找到页面模块 ${name}`)
   const component = lazy(() =>
-    entry().then((m) => ({ default: (m as Record<string, AnyComponent>)[name] as AnyComponent })),
+    entry()
+      .then((m) => {
+        const page = (m as Record<string, AnyComponent>)[name]
+        // 页面模块未按名导出时抛清晰错误，避免 React 对 undefined 组件报晦涩错误
+        if (!page) throw new Error(`[router] 页面模块 ${name} 未导出 ${name}`)
+        return { default: page }
+      })
+      .catch((error: unknown) => {
+        // 懒加载失败（chunk 网络错误/发版哈希失效）时清掉缓存：
+        // 否则错误边界「重试」复位后仍拿到同一被拒绝的 lazy，永久卡在错误兜底
+        lazyPages.delete(name)
+        throw error
+      }),
   )
   lazyPages.set(name, component)
   return component

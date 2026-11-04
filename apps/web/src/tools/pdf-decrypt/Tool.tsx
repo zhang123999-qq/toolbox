@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useEffect, useRef } from 'react'
 import { PDFDocument } from 'pdf-lib'
 import { useTranslate } from '../../i18n'
 import type { MessageKey } from '../../i18n'
@@ -39,6 +39,15 @@ export default function Tool() {
   const t = useTranslate()
   const [dragOver, setDragOver] = useState(false)
   const [pending, setPending] = useState<PendingFile | null>(null)
+  const resultUrlRef = useRef<string | null>(null)
+
+  // 卸载时释放结果对象 URL（每次重新处理/重置也会释放旧 URL）
+  useEffect(
+    () => () => {
+      if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+    },
+    [],
+  )
   const [password, setPassword] = useState('')
   const [result, setResult] = useState<DecryptResult | null>(null)
   const [errorKey, setErrorKey] = useState<MessageKey | null>(null)
@@ -103,7 +112,12 @@ export default function Tool() {
         const outCopy = new Uint8Array(out)
         const blob = new Blob([outCopy.buffer as ArrayBuffer], { type: 'application/pdf' })
         setResult({
-          url: URL.createObjectURL(blob),
+          url: (() => {
+            const u = URL.createObjectURL(blob)
+            if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+            resultUrlRef.current = u
+            return u
+          })(),
           blob,
           fileName: buildOutputFileName(target.name),
           pageCount,
@@ -121,6 +135,10 @@ export default function Tool() {
   )
 
   const handleReset = useCallback(() => {
+    if (resultUrlRef.current) {
+      URL.revokeObjectURL(resultUrlRef.current)
+      resultUrlRef.current = null
+    }
     setInputKey((k) => k + 1)
     setPending(null)
     setPassword('')

@@ -43,7 +43,17 @@ const ThemeContext = createContext<ThemeValue>({
 })
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>(resolveInitialTheme)
+  // 首渲染固定 DEFAULT_THEME，与 SSG 预渲染 HTML 一致（预渲染时 document 为空亦为默认值）；
+  // 挂载后的 layout effect 再从 DOM（theme-init.js 已落好的类名）同步真实主题。
+  // 旧实现直接在 useState 初始化时读 DOM：客户端首渲染与预渲染 HTML 的 aria-pressed/label
+  // 不一致，触发 hydration mismatch。
+  const [theme, setThemeState] = useState<Theme>(DEFAULT_THEME)
+
+  useIsomorphicLayoutEffect(() => {
+    const initial = resolveInitialTheme()
+    if (initial !== theme) setThemeState(initial)
+    // 仅挂载时同步一次；后续切换走 setTheme
+  }, [])
 
   useIsomorphicLayoutEffect(() => {
     applyTheme(theme)

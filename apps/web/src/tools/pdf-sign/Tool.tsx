@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslate } from '../../i18n'
 import type { MessageKey } from '../../i18n'
 import { downloadBlob, formatBytes } from '../../lib/image'
@@ -77,6 +77,17 @@ export default function Tool() {
   const [sigSource, setSigSource] = useState<'draw' | 'upload'>('draw')
   const [drawnDataUrl, setDrawnDataUrl] = useState<string | null>(null)
   const [uploadedSig, setUploadedSig] = useState<UploadedSig | null>(null)
+  const sigUrlRef = useRef<string | null>(null)
+  const resultUrlRef = useRef<string | null>(null)
+
+  // 卸载时释放签名图与结果对象 URL（重复上传/生成、重置也会释放旧 URL）
+  useEffect(
+    () => () => {
+      if (sigUrlRef.current) URL.revokeObjectURL(sigUrlRef.current)
+      if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+    },
+    [],
+  )
   const [options, setOptions] = useState<PdfSignOptions>(DEFAULT_OPTIONS)
   const [result, setResult] = useState<SignResult | null>(null)
   const [errorKey, setErrorKey] = useState<MessageKey | null>(null)
@@ -136,7 +147,12 @@ export default function Tool() {
         data: bytes,
         width: dims.width,
         height: dims.height,
-        url: URL.createObjectURL(file),
+        url: (() => {
+          const u = URL.createObjectURL(file)
+          if (sigUrlRef.current) URL.revokeObjectURL(sigUrlRef.current)
+          sigUrlRef.current = u
+          return u
+        })(),
         name: file.name,
       })
     } catch {
@@ -247,7 +263,12 @@ export default function Tool() {
         const outCopy = new Uint8Array(out)
         const blob = new Blob([outCopy.buffer as ArrayBuffer], { type: 'application/pdf' })
         setResult({
-          url: URL.createObjectURL(blob),
+          url: (() => {
+            const u = URL.createObjectURL(blob)
+            if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+            resultUrlRef.current = u
+            return u
+          })(),
           blob,
           fileName: buildOutputFileName(target.name),
           pageCount: target.pageCount,
@@ -263,6 +284,14 @@ export default function Tool() {
   )
 
   const handleReset = useCallback(() => {
+    if (sigUrlRef.current) {
+      URL.revokeObjectURL(sigUrlRef.current)
+      sigUrlRef.current = null
+    }
+    if (resultUrlRef.current) {
+      URL.revokeObjectURL(resultUrlRef.current)
+      resultUrlRef.current = null
+    }
     setInputKey((k) => k + 1)
     setSigInputKey((k) => k + 1)
     setCanvasKey((k) => k + 1)

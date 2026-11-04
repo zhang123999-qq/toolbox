@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useRef, useState, useEffect } from 'react'
 import { useTranslate } from '../../i18n'
 import type { MessageKey, MessageParams, Translate } from '../../i18n'
 import {
@@ -61,6 +61,15 @@ const INITIAL_OPTIONS: ImageCropOptions = {
 export default function Tool() {
   const t = useTranslate()
   const fileRef = useRef<HTMLInputElement>(null)
+  const resultUrlRef = useRef<string | null>(null)
+
+  // 卸载时释放结果对象 URL（每次重新处理/重置也会释放旧 URL）
+  useEffect(
+    () => () => {
+      if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+    },
+    [],
+  )
   const [dragOver, setDragOver] = useState(false)
   const [fileName, setFileName] = useState('')
   // 原图预览与尺寸合并为一个状态，避免渲染时出现分支
@@ -111,6 +120,9 @@ export default function Tool() {
         const mime = formatToMime(next.format)
         const blob = await canvasToBlob(canvas, mime, effectiveQuality(next.format, quality))
         const url = URL.createObjectURL(blob)
+        // 释放上一次的结果 URL，避免重复处理时对象 URL 泄漏
+        if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+        resultUrlRef.current = url
         const previewUrl = await readFileAsDataURL(file)
         setPreview({ url: previewUrl, w: img.width, h: img.height })
         setResult({
@@ -198,6 +210,10 @@ export default function Tool() {
   )
 
   const handleReset = useCallback(() => {
+    if (resultUrlRef.current) {
+      URL.revokeObjectURL(resultUrlRef.current)
+      resultUrlRef.current = null
+    }
     setInputKey((k) => k + 1)
     setResult(null)
     setPreview(null)

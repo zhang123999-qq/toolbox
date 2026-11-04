@@ -11,7 +11,7 @@ export const GROUP_IDS = ['dev', 'design', 'office', 'life', 'online'] as const
 export type GroupId = (typeof GROUP_IDS)[number]
 
 // ---------------------------------------------------------------------------
-// 20 个域
+// 21 个域
 // ---------------------------------------------------------------------------
 
 export const CATEGORY_IDS = [

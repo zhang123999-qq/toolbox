@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useRef, useState, useEffect } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
 import { useTranslate } from '../../i18n'
 import type { MessageKey } from '../../i18n'
@@ -43,6 +43,15 @@ const FORMAT_OPTIONS = ['png', 'jpeg'] as const
 export default function Tool() {
   const t = useTranslate()
   const fileRef = useRef<HTMLInputElement>(null)
+  const resultUrlRef = useRef<string | null>(null)
+
+  // 卸载时释放结果对象 URL（每次重新处理/重置也会释放旧 URL）
+  useEffect(
+    () => () => {
+      if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+    },
+    [],
+  )
   const [dragOver, setDragOver] = useState(false)
   const [fileName, setFileName] = useState('')
   const [results, setResults] = useState<ExtractedImage[]>([])
@@ -136,7 +145,12 @@ export default function Tool() {
           images.push({
             index,
             page: pageNum,
-            url: URL.createObjectURL(blob),
+            url: (() => {
+              const u = URL.createObjectURL(blob)
+              if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+              resultUrlRef.current = u
+              return u
+            })(),
             fileName: buildImageFileName(file.name, pageNum, index, opts.format),
             width: rgba.width,
             height: rgba.height,
@@ -182,6 +196,10 @@ export default function Tool() {
   )
 
   const handleReset = useCallback(() => {
+    if (resultUrlRef.current) {
+      URL.revokeObjectURL(resultUrlRef.current)
+      resultUrlRef.current = null
+    }
     setInputKey((k) => k + 1)
     setResults([])
     setSkipped(0)

@@ -17,6 +17,9 @@ import {
 import type { MapKind } from './utils'
 import type { MapInput, MapOptions } from './schema'
 
+/** 单次地图数据请求超时（AbortController 中断，见 ensureGeo） */
+const REQUEST_TIMEOUT_MS = 30_000
+
 /** 示例：示例地区数据 */
 const EXAMPLE: MapInput = { text: EXAMPLE_REGIONS }
 
@@ -57,7 +60,23 @@ export default function Tool() {
     const entry: GeoEntry = {}
     geoCache.current[kind] = entry
     const src = MAP_SOURCES[kind]
-    void fetchMapGeoJson(src.url, (u) => fetch(u)).then(
+    void fetchMapGeoJson(src.url, (u) => {
+      const controller = new AbortController()
+      const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
+      return fetch(u, { signal: controller.signal })
+        .then((res) => ({
+          ok: res.ok,
+          status: res.status,
+          json: () =>
+            res.json().finally(() => {
+              clearTimeout(timer)
+            }),
+        }))
+        .catch((error: unknown) => {
+          clearTimeout(timer)
+          throw error
+        })
+    }).then(
       (data) => {
         entry.data = data
         setGeoTick((t) => t + 1)

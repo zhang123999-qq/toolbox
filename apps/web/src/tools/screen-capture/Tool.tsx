@@ -21,6 +21,15 @@ function stopTracks(stream: MediaStream | null): void {
 export default function Tool() {
   const t = useTranslate()
   const streamRef = useRef<MediaStream | null>(null)
+  const resultUrlRef = useRef<string | null>(null)
+
+  // 卸载时释放结果对象 URL（每次重新处理/重置也会释放旧 URL）
+  useEffect(
+    () => () => {
+      if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+    },
+    [],
+  )
   // video 元素引用恒非空：初始为游离 video 元素，真实元素挂载后替换，
   // 调用方无需空守卫（preview 阶段外按钮不可达，天然保证已挂载）。
   const videoRef = useRef<HTMLVideoElement>(document.createElement('video'))
@@ -84,6 +93,9 @@ export default function Tool() {
       const blob = await canvasToBlob(canvas, 'image/png')
       const fileName = buildOutputFileName(Date.now())
       const url = URL.createObjectURL(blob)
+      // 释放上一次的结果 URL，避免重复处理时对象 URL 泄漏
+      if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+      resultUrlRef.current = url
       setResult({ url, fileName, blob })
       setPhase('captured')
       // 截取后立即自动下载，随后释放屏幕共享，避免指示灯常亮

@@ -10,6 +10,9 @@ export function errorMessage(e: unknown): string {
 
 export type FetchImpl = typeof fetch
 
+/** 单次 GraphQL 请求超时（AbortController 中断，见 sendGraphql） */
+const REQUEST_TIMEOUT_MS = 30_000
+
 export interface GraphqlRequest {
   endpoint: string
   query: string
@@ -203,20 +206,28 @@ export async function sendGraphql(
   validateGraphqlQuery(req.query)
   const variables = parseVariables(req.variables)
   const started = Date.now()
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
   let res: Response
   try {
     res = await fetchImpl(req.endpoint.trim(), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...req.headers },
       body: JSON.stringify({ query: req.query, variables }),
+      signal: controller.signal,
     })
   } catch (error) {
     return {
       ok: false,
       status: 0,
       durationMs: Date.now() - started,
-      error: '请求失败：' + errorMessage(error) + '（常见原因：目标未允许 CORS、地址不通）',
+      error:
+        error instanceof Error && error.name === 'AbortError'
+          ? `请求超时（超过 ${REQUEST_TIMEOUT_MS / 1000} 秒）`
+          : '请求失败：' + errorMessage(error) + '（常见原因：目标未允许 CORS、地址不通）',
     }
+  } finally {
+    clearTimeout(timer)
   }
   const text = await res.text()
   let parsed: unknown

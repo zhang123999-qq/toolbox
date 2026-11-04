@@ -34,6 +34,15 @@ const ERROR_KEYS = {
 export default function Tool() {
   const t = useTranslate()
   const streamRef = useRef<MediaStream | null>(null)
+  const resultUrlRef = useRef<string | null>(null)
+
+  // 卸载时释放结果对象 URL（每次重新处理/重置也会释放旧 URL）
+  useEffect(
+    () => () => {
+      if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+    },
+    [],
+  )
   const videoElRef = useRef<HTMLVideoElement | null>(null)
   const [options, setOptions] = useState<CameraSnapshotOptions>({ facing: 'user', mirror: 'on' })
   const [stream, setStream] = useState<MediaStream | null>(null)
@@ -118,6 +127,9 @@ export default function Tool() {
       const canvas = drawScaled(video, w, h, w, h)
       const blob = await canvasToBlob(canvas, 'image/png')
       const url = URL.createObjectURL(blob)
+      // 释放上一次的结果 URL，避免重复处理时对象 URL 泄漏
+      if (resultUrlRef.current) URL.revokeObjectURL(resultUrlRef.current)
+      resultUrlRef.current = url
       setResult({ url, fileName: buildOutputFileName(new Date()), blob })
     } catch {
       setErrorKind('failed')
