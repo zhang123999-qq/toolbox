@@ -64,6 +64,10 @@ REPO=${TOOLBOX_REPO:-zhang123999-qq/toolbox}
 # 换自建源时改 TOOLBOX_REPO，或显式传 --source。
 RELEASE_BASE=https://github.com/${REPO}/releases/latest/download
 TOKEN=${GITHUB_TOKEN:-}
+# minisign 公钥（RWQ... 形态，发布者签名密钥对应的可信公钥）。
+# 维护者务必在发版前填入真实公钥；未填时脚本仅做 sha256 校验并告警。
+# 也可通过环境变量 TOOLBOX_MINISIGN_PUBKEY 注入（内网分发/多密钥场景）。
+MINISIGN_PUBKEY=${TOOLBOX_MINISIGN_PUBKEY:-}
 
 VERSION=""
 SOURCE=""
@@ -189,6 +193,18 @@ if [ "$DO_SERVICE" = "1" ] && [ "$NO_START" = "1" ]; then
   die "--service 与 --no-start 不能同时使用（前者要开机自启，后者只落地不启动）"
 fi
 
+# --prefix 白名单（空 = 用默认 /opt/toolbox，默认本身恒在白名单内）
+if [ -n "$PREFIX" ]; then
+  check_prefix "$PREFIX"
+fi
+# --source / --from 的远程地址强制 HTTPS
+if [ -n "$SOURCE" ]; then
+  require_https "$SOURCE"
+fi
+if [ -n "$FROM" ]; then
+  require_https "$FROM"
+fi
+
 printf '\n\033[1mToolbox 安装程序\033[0m\n'
 
 # ============================================================================
@@ -244,9 +260,18 @@ fi
 # —— 下载封装：统一处理代理、超时、重试 ——
 # 相对常见做法多做了两件事：失败自动重试 2 次；下载后由调用方做体积下限检查，
 # 避免在受限网络里把「代理返回的 HTML 错误页」当成部署包继续安装。
+# 安全红线：GITHUB_TOKEN 只允许发往 github.com / api.github.com。
+# --mirror 会把 github.com 改写为第三方加速域，TOKEN 绝不能跟过去（防凭据外泄）；
+# --source / --from 指向自建源时同样不发送 TOKEN。
+is_github_url() { # is_github_url <url> -> 0 表示可携带 TOKEN
+  case $1 in
+    https://github.com/*|https://api.github.com/*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
 fetch() { # fetch <url> <dest>
   if [ "$DL" = "curl" ]; then
-    if [ -n "$TOKEN" ]; then
+    if [ -n "$TOKEN" ] && is_github_url "$1"; then
       curl -fsSL --connect-timeout 10 --max-time 300 --retry 2 --retry-delay 2 \
         ${PROXY:+-x "$PROXY"} \
         -H "Authorization: Bearer $TOKEN" \
@@ -269,7 +294,7 @@ fetch() { # fetch <url> <dest>
 
 fetch_text() { # fetch_text <url> -> stdout
   if [ "$DL" = "curl" ]; then
-    if [ -n "$TOKEN" ]; then
+    if [ -n "$TOKEN" ] && is_github_url "$1"; then
       curl -fsSL --connect-timeout 10 --max-time 60 --retry 2 \
         ${PROXY:+-x "$PROXY"} -H "Authorization: Bearer $TOKEN" "$1"
     else
@@ -283,6 +308,48 @@ fetch_text() { # fetch_text <url> -> stdout
       wget -qO- -T 30 --tries=3 "$1"
     fi
   fi
+}
+
+# 安装根目录白名单（与 toolboxctl 的 check_prefix 口径一致）
+check_prefix() {
+  _p=$1
+  case $_p in
+    ''|/*/../*|*/..|../*|..|./*|*//*)
+      die "非法 --prefix：$_p（必须为白名单目录下的绝对路径，如 /opt/toolbox）" ;;
+  esac
+  case $_p in
+    /opt/toolbox|/opt/toolbox/*|/srv/toolbox|/srv/toolbox/*|/var/lib/toolbox|/var/lib/toolbox/*|/usr/local/toolbox|/usr/local/toolbox/*) ;;
+    *) die "非法 --prefix：$_p（仅允许 /opt/toolbox、/srv/toolbox、/var/lib/toolbox、/usr/local/toolbox 及其子目录）" ;;
+  esac
+}
+
+# 远程地址必须走 HTTPS（回环地址除外）
+require_https() {
+  case $1 in
+    https://*) return 0 ;;
+    http://127.0.0.1/*|http://127.0.0.1|http://localhost/*|http://localhost) return 0 ;;
+    http://*) die "拒绝非 HTTPS 的远程地址：$1（仅回环地址允许 http）" ;;
+  esac
+}
+
+# 安全解包前置检查：遍历 tar 条目，拒绝绝对路径/目录穿越/反斜杠
+check_tar_safety() {
+  _tar=$1
+  _list=$(mktemp "${TMPDIR:-/tmp}/toolbox-tarlist.XXXXXX") || return 1
+  if ! tar -tzf "$_tar" > "$_list" 2>/dev/null; then
+    rm -f "$_list"; return 1
+  fi
+  _bad=$(awk '/^\/ {print; exit} /(^|\/)\.\.(\/|$)/ {print; exit} /\\/ {print; exit}' "$_list")
+  rm -f "$_list"
+  if [ -n "$_bad" ]; then
+    printf 'tar 包包含非法路径条目：%s\n' "$_bad" >&2
+    return 1
+  fi
+  return 0
+}
+safe_extract() {
+  check_tar_safety "$1" || die "tar 包路径检查未通过（可能含 ../ 或绝对路径），拒绝解包：$1"
+  tar --no-same-owner --no-overwrite-dir -xzf "$1" -C "$2" || die "解包失败，包可能已损坏"
 }
 
 # GitHub 下载走加速镜像：只改写 github.com 的下载域名，其余（自建源 / API）不动
@@ -345,7 +412,7 @@ else
       die "无法确定最新版本。
   可任选其一：
     1) 显式指定版本   --version 0.0.1-beta
-    2) 用自建发布源   --source http://<内网源>
+    2) 用自建发布源   --source https://<内网源>
     3) 私有仓库带 token  GITHUB_TOKEN=<token> $0"
     fi
     ASSET_VER=${TAG#v}
@@ -425,13 +492,35 @@ else
   ok "sha256 校验通过（$GOT）"
 fi
 
+# minisign 签名校验：配置了可信公钥时，签名缺失或不匹配都直接中止。
+# .sha256 只能防损坏、不能防中间人（校验文件本身也可被替换），
+# minisign 用离线私钥签名、客户端用预置公钥验签，才是真正的来源认证。
+if [ "$NO_VERIFY" = "1" ]; then
+  warn "已按 --no-verify 跳过 minisign 签名校验"
+elif [ -n "$MINISIGN_PUBKEY" ]; then
+  command -v minisign >/dev/null 2>&1 || die "已配置 minisign 公钥但缺少 minisign 命令，请先安装 minisign"
+  printf '%s' "$MINISIGN_PUBKEY" > "$WORK/minisign.pub"
+  if [ -n "$PKG_LOCAL" ]; then
+    [ -f "${PKG_LOCAL}.minisig" ] || die "本地包缺少签名文件 ${PKG_LOCAL}.minisig，拒绝安装"
+    cp -f "${PKG_LOCAL}.minisig" "$WORK/pkg.tar.gz.minisig"
+  else
+    fetch "$PKG_URL.minisig" "$WORK/pkg.tar.gz.minisig" 2>/dev/null \
+      || die "缺少签名文件 ${PKG_URL}.minisig —— 已配置可信公钥，拒绝无签名安装"
+  fi
+  minisign -Vm "$WORK/pkg.tar.gz" -p "$WORK/minisign.pub" -x "$WORK/pkg.tar.gz.minisig" \
+    || die "minisign 签名校验失败，包可能被篡改，已中止安装。"
+  ok "minisign 签名校验通过"
+else
+  warn "未配置 minisign 可信公钥（MINISIGN_PUBKEY），仅做 sha256 校验；请维护者填入公钥以防中间人攻击"
+fi
+
 # ============================================================================
 # 5/6 解包
 # ============================================================================
 step '5/6 解包'
 
 mkdir -p "$WORK/x"
-tar -xzf "$WORK/pkg.tar.gz" -C "$WORK/x" || die "解包失败，包可能已损坏"
+safe_extract "$WORK/pkg.tar.gz" "$WORK/x"
 CTL="$WORK/x/bin/toolboxctl"
 if [ ! -x "$CTL" ]; then
   inner=$(find "$WORK/x" -maxdepth 2 -name toolboxctl -path '*/bin/*' 2>/dev/null | head -1)

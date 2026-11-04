@@ -74,6 +74,10 @@ export function ToolPage({ slug }: { slug: string }) {
     <ToolShell meta={meta}>
       <ToolErrorBoundary
         key={meta.id}
+        resetKeys={[meta.id]}
+        onReset={() => {
+          /* 边界复位后重新挂载当前工具；仍抛错会再次被边界捕获 */
+        }}
         fallback={
           <p
             role="alert"

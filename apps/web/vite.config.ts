@@ -7,10 +7,24 @@ export default defineConfig({
   plugins: [react(), tailwindcss(), wasm()],
   build: {
     target: 'es2022',
+    // 单 chunk 软上限：超限即提示排查，避免大包静默进首屏
+    chunkSizeWarningLimit: 1024,
     // 每工具独立 chunk，便于控制工具页 JS < 30KB（DEVELOPMENT.md §11）
     rollupOptions: {
       output: {
         manualChunks(id: string) {
+          // Vendor 分包：React 运行时统一打进 vendor-react（首屏必需、长期稳定）
+          if (
+            id.includes('node_modules/react/') ||
+            id.includes('node_modules/react-dom/') ||
+            id.includes('node_modules/react-router') ||
+            id.includes('node_modules/scheduler/')
+          ) {
+            return 'vendor-react'
+          }
+          // 大体积按需依赖独立成 chunk：仅访问对应工具时加载，不污染首屏
+          if (id.includes('node_modules/echarts/')) return 'vendor-echarts'
+          if (id.includes('node_modules/pdfjs-dist/')) return 'vendor-pdfjs'
           if (id.includes('/src/tools/')) {
             const match = /\/src\/tools\/([^/]+)\//.exec(id)
             if (match?.[1]) return `tool-${match[1]}`

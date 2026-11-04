@@ -84,6 +84,42 @@ jobs:
         # 这里只负责组装 + 校验和 + 打包，避免 build-bundle 内部再跑一遍不完整的构建。
         run: bash deploy/binary/build-bundle.sh --skip-build
 
+      # minisign 离线签名：私钥只存在于仓库 Secrets（MINISIGN_SECRET_KEY，
+      # minisign 未加密私钥文件全文；MINISIGN_PASSWORD 为其口令，可空），
+      # 公钥 minisign.pub 随 Release 一并发布，install.sh / toolboxctl
+      # 用预置可信公钥验签，防御中间人替换 tar 包或 .sha256。
+      # 未配置 Secret 时明确失败而非静默跳过，避免「以为已签名」实际裸发。
+      - name: Sign bundle with minisign
+        env:
+          MINISIGN_SECRET_KEY: ${{ secrets.MINISIGN_SECRET_KEY }}
+          MINISIGN_PASSWORD: ${{ secrets.MINISIGN_PASSWORD }}
+        run: |
+          set -euo pipefail
+          if [ -z "${MINISIGN_SECRET_KEY:-}" ]; then
+            echo "::error::未配置 Secrets.MINISIGN_SECRET_KEY，拒绝发布未签名产物。"
+            echo "请先用 minisign -G 生成密钥对，把私钥全文填入该 Secret，公钥填入 install.sh 的 MINISIGN_PUBKEY。"
+            exit 1
+          fi
+          sudo apt-get update -qq && sudo apt-get install -y -qq minisign
+          printf '%s' "$MINISIGN_SECRET_KEY" > minisign.key
+          chmod 600 minisign.key
+          # 公钥：由私钥派生，与发布资产一同上传
+          minisign -Py minisign.key -p minisign.pub 2>/dev/null || minisign -p minisign.pub -s minisign.key -W
+          for f in dist-release/toolbox-*-linux-amd64.tar.gz; do
+            [ -f "$f" ] || continue
+            echo "签名：$f"
+            if [ -n "${MINISIGN_PASSWORD:-}" ]; then
+              printf '%s' "$MINISIGN_PASSWORD" | minisign -Sm "$f" -s minisign.key -x "$f.minisig"
+            else
+              minisign -Sm "$f" -s minisign.key -W -x "$f.minisig"
+            fi
+            # 自验：用刚生成的公钥验一次签，失败立刻中止，避免发坏包
+            minisign -Vm "$f" -p minisign.pub -x "$f.minisig"
+          done
+          cp minisign.pub dist-release/minisign.pub
+          rm -f minisign.key
+          ls -la dist-release/
+
       - name: Create GitHub Release and upload assets
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -121,6 +157,8 @@ jobs:
           gh release upload "$RELEASE_TAG" \
             dist-release/toolbox-*-linux-amd64.tar.gz \
             dist-release/toolbox-*-linux-amd64.tar.gz.sha256 \
+            dist-release/toolbox-*-linux-amd64.tar.gz.minisig \
+            dist-release/minisign.pub \
             dist-release/latest.txt \
             dist-release/index.json \
             dist-release/install.sh \

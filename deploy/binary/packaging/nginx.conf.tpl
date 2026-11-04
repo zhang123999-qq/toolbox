@@ -60,9 +60,12 @@ http {
     add_header X-Frame-Options "DENY" always;
     add_header X-Content-Type-Options "nosniff" always;
     add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    # HSTS：站点走 HTTPS 直连时启用（纯 HTTP 内网部署可删此行，不影响其它策略）
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 
-    # CSP 观察版（Report-Only，不强制）；策略按站点实际：允许 self、data:/blob: 图片、inline style/script 现状
-    add_header Content-Security-Policy-Report-Only "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; media-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self';" always;
+    # CSP 强制拦截模式（非 Report-Only）：script-src 仅 'self'（主题脚本已外置，
+    # 无任何内联脚本）；style-src 保留 'unsafe-inline' 仅为 React 内联 style 属性所需。
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; media-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; worker-src 'self' blob:;" always;
 
     server {
         listen       @PORT@;

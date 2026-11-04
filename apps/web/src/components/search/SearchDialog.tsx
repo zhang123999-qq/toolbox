@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { searchTools } from '@toolbox/search'
+import { useOramaSearch } from './useOramaSearch'
 import { getTool, groupOfCategory } from '@toolbox/catalog'
 import { groupName, toolTitle } from '../../i18n/catalog-text'
 import { useI18n } from '../../i18n'
@@ -24,7 +24,8 @@ export function SearchDialog() {
   const navigate = useNavigate()
   const { locale, t } = useI18n()
 
-  const results = useMemo(() => searchTools(query), [query])
+  // Worker 内检索（预建索引 + 防抖），Worker 不可用时自动回落同步检索
+  const results = useOramaSearch(query)
 
   // 打开/关闭时复位查询与高亮项。
   // 刻意不写进 effect（react-hooks/set-state-in-effect）：那是「渲染后再同步状态」，

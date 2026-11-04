@@ -1,21 +1,40 @@
 import { Suspense, lazy } from 'react'
+import type { ComponentType } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import { TOOL_ROUTES } from '@toolbox/catalog'
 import { useTranslate } from './i18n'
 
-// 页面级懒加载：首屏只加载壳与路由，控制首屏 JS 体积（DEVELOPMENT.md §11）
-const HomePage = lazy(() => import('./pages/HomePage').then((m) => ({ default: m.HomePage })))
-const AllToolsPage = lazy(() =>
-  import('./pages/AllToolsPage').then((m) => ({ default: m.AllToolsPage })),
-)
-const GroupPage = lazy(() => import('./pages/GroupPage').then((m) => ({ default: m.GroupPage })))
-const CategoryPage = lazy(() =>
-  import('./pages/CategoryPage').then((m) => ({ default: m.CategoryPage })),
-)
-const ToolPage = lazy(() => import('./pages/ToolPage').then((m) => ({ default: m.ToolPage })))
-const NotFoundPage = lazy(() =>
-  import('./pages/NotFoundPage').then((m) => ({ default: m.NotFoundPage })),
-)
+/**
+ * 页面组件单层懒加载：import.meta.glob 在构建期展开为「路径 → loader」映射表，
+ * 渲染时按名直接取 loader 并 lazy()，结果按名缓存（组件身份稳定，避免重渲染卸载重挂）。
+ * 不再叠 (router lazy + glob lazy) 双层包装；工具页内部（ToolPage）同样是 glob 单层映射。
+ */
+/** 页面组件统一视图：slug 可选（仅 ToolPage 用到），无 props 的页面同样可赋值 */
+type AnyComponent = ComponentType<{ slug?: string }>
+type PageModule = Partial<Record<string, AnyComponent>>
+
+const pageModules = import.meta.glob<PageModule>('./pages/*.tsx')
+
+const lazyPages = new Map<string, AnyComponent>()
+
+function loadPage(name: string): AnyComponent {
+  const cached = lazyPages.get(name)
+  if (cached) return cached
+  const entry = pageModules[`./pages/${name}.tsx`]
+  if (!entry) throw new Error(`[router] 未找到页面模块 ${name}`)
+  const component = lazy(() =>
+    entry().then((m) => ({ default: (m as Record<string, AnyComponent>)[name] as AnyComponent })),
+  )
+  lazyPages.set(name, component)
+  return component
+}
+
+const HomePage = loadPage('HomePage')
+const AllToolsPage = loadPage('AllToolsPage')
+const GroupPage = loadPage('GroupPage')
+const CategoryPage = loadPage('CategoryPage')
+const ToolPage = loadPage('ToolPage')
+const NotFoundPage = loadPage('NotFoundPage')
 
 /**
  * 工具页路由由 catalog 生成（红线第 1 条：禁止手写路由表）。

@@ -7,6 +7,7 @@
  * 路由集合与 generate-sitemap.ts 保持一致，均来自 catalog（红线第 1 条）。
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { cpus } from 'node:os'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 import {
@@ -206,6 +207,14 @@ function outputPath(route: string): string {
 }
 
 function main(): void {
+  // 物理隔离防线：客户端产物（dist）与 SSR 产物（dist-ssr）绝不能互相覆盖。
+  // 若有人改了 --outDir 让两者同目录，预渲染写出的 index.html 会吃掉 Vite 产物，
+  // 这里在开工前就失败，而不是产出半坏的 dist。
+  const ssrDir = path.dirname(SSR_ENTRY)
+  const rel = path.relative(DIST, ssrDir)
+  if (rel === '' || (!rel.startsWith('..') && !path.isAbsolute(rel))) {
+    throw new Error(`[prerender] 客户端产物目录与 SSR 产物目录重叠（dist=${DIST}，dist-ssr=${ssrDir}），拒绝运行以防互相覆盖`)
+  }
   if (!existsSync(SSR_ENTRY)) {
     throw new Error(
       `[prerender] 未找到 SSR 产物 ${SSR_ENTRY}\n先执行：pnpm --filter @toolbox/web build:ssr`,
@@ -225,16 +234,30 @@ function main(): void {
       pathToFileURL(SSR_ENTRY).href
     )
 
+    // 高并发预渲染：800+ 页串行渲染会让 CI 超时。并发度 = CPU-1（至少 1），
+    // 保留 1 核给 OS / Vite 进程；可用 PRERENDER_CONCURRENCY 覆盖（CI 小机器可调低）。
+    const envConcurrency = Number(process.env['PRERENDER_CONCURRENCY'] ?? '')
+    const concurrency = Number.isFinite(envConcurrency) && envConcurrency > 0
+      ? Math.floor(envConcurrency)
+      : Math.max(1, cpus().length - 1)
+
     let count = 0
-    for (const route of routes) {
-      const { html } = await mod.render(route)
-      const meta = metaFor(route)
-      const out = applyMeta(template, route, html, meta)
-      const file = outputPath(route)
-      mkdirSync(path.dirname(file), { recursive: true })
-      writeFileSync(file, out, 'utf8')
-      count += 1
-    }
+    let cursor = 0
+    const workers = Array.from({ length: Math.min(concurrency, routes.length) }, async () => {
+      while (cursor < routes.length) {
+        const route = routes[cursor]
+        cursor += 1
+        if (!route) continue
+        const { html } = await mod.render(route)
+        const meta = metaFor(route)
+        const out = applyMeta(template, route, html, meta)
+        const file = outputPath(route)
+        mkdirSync(path.dirname(file), { recursive: true })
+        writeFileSync(file, out, 'utf8')
+        count += 1
+      }
+    })
+    await Promise.all(workers)
 
     // 静态托管（Cloudflare Pages 等）可直接用的 404 页
     const notFound = await mod.render('/this-route-does-not-exist')

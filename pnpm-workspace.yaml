@@ -4,6 +4,9 @@ packages:
 allowBuilds:
   esbuild: true
   tesseract.js: true
+  # qpdf-wasm 的 postinstall 负责下载 WASM 二进制（apps/web postinstall 直接 require 它）；
+  # 缺此项时 pnpm 会吞掉其构建脚本，pdf 工具运行时才报缺文件，崩在用户面前。
+  "@neslinesli93/qpdf-wasm": true
 overrides:
   image-size: "^2.0.3"
   source-map-js: "^1.2.2"

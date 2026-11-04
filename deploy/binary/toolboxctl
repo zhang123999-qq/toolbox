@@ -148,14 +148,100 @@ need_systemd() {
 opt_key() { printf '%s' "$1" | sed -n 's/^\(--[a-z-]*\)=.*$/\1/p'; }
 opt_inline() { printf '%s' "$1" | sed -n 's/^--[a-z-]*=//p'; }
 
+# 安全解析单行配置值：仅接受纯量值，拒绝命令替换/变量展开/反引号等注入载体。
+# 返回处理后的值；含危险字符时返回非 0，调用方必须拒绝该配置行。
+conf_value() {
+  _v=$1
+  # 去掉行首/行尾空白
+  _v=$(printf '%s' "$_v" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+  # 去掉成对的单/双引号
+  case $_v in
+    \'*\') _v=$(printf '%s' "$_v" | sed "s/^'//;s/'$//") ;;
+    \"*\") _v=$(printf '%s' "$_v" | sed 's/^"//;s/"$//') ;;
+  esac
+  case $_v in
+    *'$'*|*'`'*|*'\\'*|*'$('*|*';'*|*'|'*|*'&'*)
+      printf '%s' "$_v" >&2
+      return 1
+      ;;
+  esac
+  printf '%s' "$_v"
+}
+
+# 安装根目录白名单：仅允许落在专用目录下，拒绝 /、/etc、相对路径与 .. 穿越。
+# 原则：PREFIX 必须为绝对路径，且位于 /opt/toolbox、/srv/toolbox、
+# /var/lib/toolbox、/usr/local/toolbox 之一（或其子目录）内。
+check_prefix() {
+  _p=$1
+  case $_p in
+    ''|/*/../*|*/..|../*|..|./*|*//*)
+      die "非法 --prefix：$_p（必须为白名单目录下的绝对路径，如 /opt/toolbox）"
+      ;;
+  esac
+  case $_p in
+    /opt/toolbox|/opt/toolbox/*|/srv/toolbox|/srv/toolbox/*|/var/lib/toolbox|/var/lib/toolbox/*|/usr/local/toolbox|/usr/local/toolbox/*)
+      ;;
+    *)
+      die "非法 --prefix：$_p（仅允许 /opt/toolbox、/srv/toolbox、/var/lib/toolbox、/usr/local/toolbox 及其子目录）"
+      ;;
+  esac
+}
+
+# 安全解包前置检查：遍历 tar 条目，拒绝绝对路径与目录穿越。
+# 必须在任何 tar -x 之前调用；发现违规直接返回非 0，调用方需 die 中止。
+check_tar_safety() {
+  _tar=$1
+  _list=$(mktemp "${TMPDIR:-/tmp}/toolbox-tarlist.XXXXXX") || return 1
+  if ! tar -tzf "$_tar" > "$_list" 2>/dev/null; then
+    rm -f "$_list"
+    return 1
+  fi
+  _bad=$(awk '
+    /^\/ { print; exit }
+    /(^|\/)\.\.(\/|$)/ { print; exit }
+    /\\/ { print; exit }
+  ' "$_list")
+  rm -f "$_list"
+  if [ -n "$_bad" ]; then
+    printf 'tar 包包含非法路径条目：%s\n' "$_bad" >&2
+    return 1
+  fi
+  return 0
+}
+# 统一安全解包：先查条目，再以 --no-same-owner --no-overwrite-dir 解包。
+safe_extract() {
+  check_tar_safety "$1" || die "tar 包路径检查未通过（可能含 ../ 或绝对路径），拒绝解包：$1"
+  tar --no-same-owner --no-overwrite-dir -xzf "$1" -C "$2" || die "解包失败：$1"
+}
+
 load_conf() {
   if [ -f "$CONF_FILE" ]; then
-    # shellcheck disable=SC1090
-    . "$CONF_FILE"
+    # 严禁使用 . / source 执行配置文件（任意代码执行）。逐行白名单解析，
+    # 仅接受 PREFIX/PORT/NGINX_USER/NGINX_BIN/UPDATE_SOURCE/SERVICE_NAME。
+    while IFS='=' read -r _k _v || [ -n "${_k:-}" ]; do
+      case $_k in
+        '#'*) continue ;;
+        ''|*[!A-Za-z0-9_]*) continue ;;
+      esac
+      case $_k in
+        PREFIX|PORT|NGINX_USER|NGINX_BIN|UPDATE_SOURCE|SERVICE_NAME)
+          _val=$(conf_value "${_v:-}") || die "配置文件 $CONF_FILE 中 $_k 含非法字符，已拒绝加载"
+          case $_k in
+            PREFIX) PREFIX=$_val ;;
+            PORT) PORT=$_val ;;
+            NGINX_USER) NGINX_USER=$_val ;;
+            NGINX_BIN) NGINX_BIN=$_val ;;
+            UPDATE_SOURCE) UPDATE_SOURCE=$_val ;;
+            SERVICE_NAME) SERVICE_NAME=$_val ;;
+          esac
+          ;;
+      esac
+    done < "$CONF_FILE"
   fi
   # 兼容旧配置缺字段
   [ -n "${SERVICE_NAME:-}" ] || SERVICE_NAME=toolbox
   [ -n "${PREFIX:-}" ] || PREFIX=$DEFAULT_PREFIX
+  check_prefix "$PREFIX"
 }
 
 save_conf() {
@@ -269,6 +355,23 @@ download_file() { # download_file <url> <dest>
   fi
 }
 
+# minisign 签名校验（可选，配置 TOOLBOX_MINISIGN_PUBKEY 后强制）：
+# verify_minisig <url> <pkg> <workdir> —— 下载 .minisig 并校验整包。
+# 未配置公钥时跳过（sha256 仍会校验）；配置后若拿不到签名则直接失败。
+verify_minisig() {
+  _pub=${TOOLBOX_MINISIGN_PUBKEY:-}
+  [ -n "$_pub" ] || return 0
+  command -v minisign >/dev/null 2>&1 || die "已配置 TOOLBOX_MINISIGN_PUBKEY 但缺少 minisign 命令"
+  _url=$1; _pkg=$2; _work=$3
+  printf '%s' "$_pub" > "$_work/minisign.pub"
+  if ! download_file "$_url.minisig" "$_work/pkg.tar.gz.minisig" 2>/dev/null; then
+    die "缺少 minisign 签名 ${_url}.minisig —— 已配置公钥，拒绝无签名安装"
+  fi
+  minisign -Vm "$_pkg" -p "$_work/minisign.pub" -x "$_work/pkg.tar.gz.minisig" \
+    || die "minisign 签名校验失败，包可能被篡改，已中止"
+  info "minisign 签名校验通过"
+}
+
 render_tpl() { # render_tpl <模板> <输出>
   tpl=$1; out=$2
   [ -f "$tpl" ] || die "找不到模板：$tpl"
@@ -332,6 +435,7 @@ cmd_render() {
   esac
   [ "$PORT" -ge 1 ] && [ "$PORT" -le 65535 ] ||
     die "--port 必须在 1-65535 之间，实际：$PORT"
+  check_prefix "$PREFIX"
   [ -n "$OUT_DIR" ] || OUT_DIR="$PREFIX/shared"
   VER_OVERRIDE=${VER_OVERRIDE:-}
   detect_nginx || warn "本机未找到 nginx，渲染出的配置将由目标机的 nginx 使用"
@@ -481,10 +585,20 @@ install_nginx_deps() {
   info "nginx 就绪：$NGINX_BIN（$("$NGINX_BIN" -v 2>&1)）"
 }
 
+# 远程源必须走 HTTPS（回环地址除外）：防中间人篡改 bundle。
+require_https() {
+  case $1 in
+    https://*) return 0 ;;
+    http://127.0.0.1/*|http://127.0.0.1|http://localhost/*|http://localhost) return 0 ;;
+    http://*) die "拒绝非 HTTPS 的远程源：$1（仅回环地址允许 http）" ;;
+  esac
+}
+
 # 把 --from 指向的东西落到一个临时目录，并把该目录路径写入 BUNDLE_DIR
 resolve_source() {
   src=$1
   work=$2
+  require_https "$src"
   case $src in
     http://*|https://*)
       info "下载 bundle：$src"
@@ -500,7 +614,7 @@ resolve_source() {
         warn "未取到 .sha256 伴生文件，跳过整包校验（仍会做文件级校验）"
       fi
       mkdir -p "$work/extract"
-      tar -xzf "$work/pkg.tar.gz" -C "$work/extract" || die "解包失败"
+      safe_extract "$work/pkg.tar.gz" "$work/extract"
       find_bundle_root "$work/extract"
       ;;
     *.tar.gz|*.tgz)
@@ -512,7 +626,7 @@ resolve_source() {
         info "整包 sha256 校验通过"
       fi
       mkdir -p "$work/extract"
-      tar -xzf "$src" -C "$work/extract" || die "解包失败"
+      safe_extract "$src" "$work/extract"
       find_bundle_root "$work/extract"
       ;;
     *)
@@ -525,7 +639,7 @@ resolve_source() {
         [ -n "$f" ] || die "目录 $src 内既不是解包后的 bundle，也没有 ${REPO_NAME}-*.tar.gz"
         info "使用目录内最新包：${f##*/}"
         mkdir -p "$work/extract"
-        tar -xzf "$f" -C "$work/extract" || die "解包失败"
+        safe_extract "$f" "$work/extract"
         find_bundle_root "$work/extract"
       fi
       ;;
@@ -575,6 +689,7 @@ cmd_install() {
 
   need_root
   need_systemd
+  check_prefix "$PREFIX"
 
   # 端口必须落在合法区间。只判「是不是数字」会放 99999 过去，
   # 渲染出的 nginx 因非法端口起不来，systemd 单元里还留着脏端口。
@@ -1081,6 +1196,7 @@ resolve_update_source() {
   src=$1
   # 调用方已保证非空（--source > UPDATE_SOURCE > DEFAULT_UPDATE_SOURCE）
   [ -n "$src" ] || src=$DEFAULT_UPDATE_SOURCE
+  require_https "$src"
   case $src in
     http://*|https://*)
       base=${src%/}
@@ -1113,6 +1229,7 @@ fetch_release() {
   want=$1
   src=$2
   WORK=$3
+  require_https "$src"
   case $src in
     http://*|https://*)
       base=${src%/}
@@ -1130,6 +1247,7 @@ fetch_release() {
       else
         warn "无 .sha256 伴生文件，跳过整包校验"
       fi
+      verify_minisig "$url" "$WORK/pkg.tar.gz" "$WORK"
       ;;
     *)
       f="$src/${REPO_NAME}-${want}-linux-"*".tar.gz"
@@ -1140,7 +1258,7 @@ fetch_release() {
       ;;
   esac
   mkdir -p "$WORK/extract"
-  tar -xzf "$WORK/pkg.tar.gz" -C "$WORK/extract" || die "解包失败"
+  safe_extract "$WORK/pkg.tar.gz" "$WORK/extract"
   find_bundle_root "$WORK/extract"
 }
 

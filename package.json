@@ -21,7 +21,7 @@
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build --concurrency=1",
-    "build:ssg": "pnpm generate:sitemap && pnpm --filter @toolbox/web build && pnpm --filter @toolbox/web build:ssr && pnpm prerender",
+    "build:ssg": "pnpm generate:sitemap && pnpm generate:search-index && pnpm --filter @toolbox/web build && pnpm --filter @toolbox/web build:ssr && pnpm prerender",
     "typecheck": "pnpm -r --if-present run typecheck",
     "test": "pnpm -r --if-present run test",
     "lint": "eslint .",
@@ -30,6 +30,7 @@
     "format:check": "prettier --check .",
     "generate:catalog": "tsx scripts/generate-catalog.ts",
     "generate:sitemap": "tsx scripts/generate-sitemap.ts",
+    "generate:search-index": "tsx scripts/build-search-index.ts",
     "check:tools": "tsx scripts/check-tools.ts",
     "check:docs": "tsx scripts/check-docs.ts",
     "check:licenses": "tsx scripts/check-licenses.ts",
