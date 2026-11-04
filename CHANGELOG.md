@@ -8,6 +8,54 @@
 每个版本对应一个 git tag（`vX.Y.Z`）与一个 GitHub Release，
 Release 附件即该版本的可部署产物（见 [`docs/RELEASE.md`](docs/RELEASE.md)）。
 
+## [0.0.8] - 2026-11-04
+
+深度审计与安全加固版本：修复 PDF 解密双 WASM 加载链、收敛依赖漏洞、
+补齐 API/部署文档与 Docker 部署资产，并完成全量质量门禁验证。
+
+### 安全
+
+- **依赖安全升级**：将 `dompurify`、`lodash-es`、`vite`、`mermaid`、
+  `markdown-it`、`node-forge`、`zod`、`source-map-js`、`image-size` 等
+  关键依赖升级到已修复版本，并通过 pnpm overrides 固定安全版本
+- **HTML 清洗依赖**：统一使用已升级的 `dompurify` 版本，降低历史 XSS 与
+  注入风险
+
+### 修复
+
+- **PDF 解密工具双 WASM 加载**：补齐 `vite-plugin-wasm`、qpdf WASM
+  postinstall 与 pdfjs-dist worker 测试初始化；Windows 测试路径解析
+  改为跨平台 `fileURLToPath` + `resolve`，使 `pdf-decrypt` 在构建与
+  测试环境均可加载真实 WASM
+- **符号工具重复 React key**：`symbols` 工具的列表 key 加入分组与索引，
+  消除同字符同名称条目触发的重复 key 警告
+- **文档锚点**：修复 `DEPLOYMENT.md` / `DEPLOYMENT.en.md` 中指向
+  `DEVELOPMENT.md` §8.5 的错误锚点链接
+
+### 新增
+
+- **API 文档**：新增中英双语 `docs/API.md` / `docs/API.en.md`，覆盖
+  `toolboxctl` 子命令、`/healthz` 端点、nginx 模板与环境变量
+- **部署文档**：新增中英双语 `docs/DEPLOYMENT.md` / `docs/DEPLOYMENT.en.md`，
+  覆盖二进制部署、容器部署、升级回滚、自建发布源与故障排查
+- **审计报告**：新增 `docs/audit/` 下 7 份审计报告，覆盖架构、模板、
+  工具/Catalog、构建/CI、代码质量、文档与产品对齐
+- **部署资产**：新增 Dockerfile、`docker-compose.yml` 与 `rollback.sh`
+
+### 变更
+
+- **E2E 报告**：本地 Playwright 运行时输出 HTML 报告到 `test-results/`,
+  便于查看完整失败上下文
+- **格式化收口**：全仓库 Prettier 格式化，恢复 `format:check` 通过
+
+### 已知限制
+
+- 本次本地 E2E 全量运行时仍有少量「从首页搜索可达」用例在搜索
+  placeholder 等待阶段超时，以及个别「有本地处理说明」用例的严格模式
+  匹配冲突；单测与 `pnpm verify` 核心链路已全绿，E2E 报告已可通过
+  `test-results/` 查看
+- `xlsx@0.18.5` 暂无可升级的官方修复版本，仍需后续替换或隔离评估
+
 ## [0.0.7] - 2026-10-24
 
 安全加固版本：收敛全站 `dangerouslySetInnerHTML` 到统一防线，堵住头像工具的
