@@ -2,7 +2,7 @@ services:
   web:
     build:
       context: ../..
-      dockerfile: deploy/docker/Dockerfile
+      dockerfile: Dockerfile
       args:
         # 构建期如需代理，在此传入（不写入镜像层）
         HTTP_PROXY: ${HTTP_PROXY:-}

@@ -89,7 +89,7 @@ tar -xzf toolbox-0.0.6-linux-amd64.tar.gz -C /root/pkg
 
 ```bash
 # 构建镜像（多阶段：Node 24 构建 → nginx 静态托管）
-docker build -f deploy/docker/Dockerfile -t toolbox-web:dev .
+docker build -f Dockerfile -t toolbox-web:dev .
 
 # 运行（容器内外都是 8081）
 docker run -d --name toolbox-web -p 8081:8081 toolbox-web:dev
@@ -344,7 +344,7 @@ toolboxctl upgrade
 
 ## 7. 容器化部署
 
-### 7.1 Dockerfile 关键点（`deploy/docker/Dockerfile`）
+### 7.1 Dockerfile 关键点（根 `Dockerfile`；2026-11-05 起为唯一生产 Dockerfile，原 `deploy/docker/Dockerfile` 已合并删除）
 
 - 多阶段构建：Node 24 (alpine) 构建 → nginx:1.27-alpine 运行
 - 构建期注入 `SITE_ORIGIN`、`VERSION`，渲染 nginx 配置与 `/healthz`
@@ -357,7 +357,7 @@ toolboxctl upgrade
 ```bash
 # 构建（指定版本标签）
 docker build \
-  -f deploy/docker/Dockerfile \
+  -f Dockerfile \
   -t toolbox-web:0.0.6 \
   --build-arg SITE_ORIGIN=https://tools.example.com \
   --build-arg VERSION=0.0.6 \
@@ -383,7 +383,7 @@ services:
   web:
     build:
       context: .
-      dockerfile: deploy/docker/Dockerfile
+      dockerfile: Dockerfile
     ports:
       - '8081:8081'
     volumes:

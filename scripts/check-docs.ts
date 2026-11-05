@@ -14,6 +14,8 @@
  *   5. 锚点可达        `path#frag` 的锚点在目标文档里真实存在
  *   6. 在线体验链接     指定文档必须同时含两个正式域名，并标注「已上线」
  *   7. 命名规范        文件名 kebab-case（历史中文文件名只记 warning，不阻塞）
+ *   8. 版本同步        RELEASE.md / RELEASE.en.md 的「最新正式发布」版本号必须
+ *                      等于 deploy/binary/VERSION（曾出现文档滞后两个版本）
  *
  * （2026-09-29 修订：docs/ 下的 guide / glossary / spec / tools 等文档已按项目决定删除，
  *  原规则 6「术语统一」（依赖 docs/glossary.md）与原规则 8「索引覆盖」（依赖 docs/README.md）
@@ -305,6 +307,30 @@ if (badNames.length) {
         '、',
       )}）。文件名用 ASCII、中文名放 H1 与索引表；迁移清单见 docs/spec/11-文档命名规范.md`,
   )
+}
+
+// ───────────────────────────────────────────────────────────
+// 8. 版本同步（RELEASE.md / RELEASE.en.md vs deploy/binary/VERSION）
+// ───────────────────────────────────────────────────────────
+// 发版文档最容易悄悄滞后（曾出现 VERSION 已 0.0.8、文档还写 v0.0.6）。
+// 断言：两份 RELEASE 文档的「最新正式发布」段里的版本号 == VERSION 文件。
+const versionFile = path.join(ROOT, 'deploy/binary/VERSION')
+if (!existsSync(versionFile)) {
+  err('deploy/binary/VERSION', 'VERSION 文件缺失')
+} else {
+  const expectedVersion = readFileSync(versionFile, 'utf8').trim()
+  for (const rel of ['docs/RELEASE.md', 'docs/RELEASE.en.md']) {
+    const full = path.join(ROOT, rel)
+    if (!existsSync(full)) continue
+    const src = readFileSync(full, 'utf8')
+    // 中文版要求 v 前缀写法；英文版以 VERSION 串出现即可（`` (`0.0.8`) ``），
+    // 都要求至少两次（版本号表 + 最新发布段），防单处历史引用冒充
+    const hits = src.split(expectedVersion).length - 1
+    const hasV = rel.endsWith('.en.md') ? hits >= 2 : src.includes(`v${expectedVersion}`)
+    if (!(hasV && hits >= 2)) {
+      err(rel, `最新正式发布版本号应为 v${expectedVersion}（deploy/binary/VERSION），与文档不符`)
+    }
+  }
 }
 
 // ───────────────────────────────────────────────────────────

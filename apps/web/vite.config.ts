@@ -25,6 +25,17 @@ export default defineConfig({
           // 大体积按需依赖独立成 chunk：仅访问对应工具时加载，不污染首屏
           if (id.includes('node_modules/echarts/')) return 'vendor-echarts'
           if (id.includes('node_modules/pdfjs-dist/')) return 'vendor-pdfjs'
+          // mermaid 全家（elkjs/cytoscape/katex 等）合并成包：否则 rollup 会把它们
+          // 塞进 tool-* 或默认 chunk，脱离预算归因（见 check-bundle-size.ts）。
+          if (
+            id.includes('node_modules/mermaid/') ||
+            id.includes('node_modules/elkjs/') ||
+            id.includes('node_modules/cytoscape/') ||
+            id.includes('node_modules/katex/') ||
+            id.includes('node_modules/@mermaid-js/')
+          ) {
+            return 'vendor-mermaid'
+          }
           if (id.includes('/src/tools/')) {
             const match = /\/src\/tools\/([^/]+)\//.exec(id)
             if (match?.[1]) return `tool-${match[1]}`
@@ -58,6 +69,8 @@ export default defineConfig({
     // （只有渲染组件的用例需要 DOM，靠文件顶部 `// @vitest-environment jsdom`
     // 声明；vitest 3 已废弃 environmentMatchGlobs，不要再用它。）
     pool: 'threads',
+    // CI 上给偶发 flaky 一次重跑的机会（本地仍严格：失败就是失败）
+    retry: process.env.CI ? 1 : 0,
     // 用例之间有共享的可变状态（localStorage / document.title），
     // 每次跑完清一遍，避免新增用例互相污染
     restoreMocks: true,

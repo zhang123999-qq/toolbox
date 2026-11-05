@@ -13,7 +13,7 @@ services:
   web:
     build:
       context: ../..
-      dockerfile: deploy/docker/Dockerfile
+      dockerfile: Dockerfile
       # 代理必须显式 opt-in：宿主机的 HTTP_PROXY 通常指向 127.0.0.1，
       # 透传进容器后 127.0.0.1 是容器自己，结果是每个请求都 Connection refused
       # （曾让 pnpm install 挂在隧道错误上 18 分钟）。要代理就先 export
