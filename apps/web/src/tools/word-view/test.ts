@@ -103,10 +103,18 @@ describe('word-view / sanitizeHtml', () => {
   })
 
   it('data: 仅允许四个位图图片类型，阻断 data:text/html 与 svg+xml（P2）', () => {
-    expect(sanitizeHtml('<img src="data:image/png;base64,AAA">')).toBe('<img src="data:image/png;base64,AAA">')
-    expect(sanitizeHtml('<img src="data:image/gif;base64,AAA">')).toContain('data:image/gif;base64,AAA')
-    expect(sanitizeHtml('<img src="data:image/jpeg;base64,AAA">')).toContain('data:image/jpeg;base64,AAA')
-    expect(sanitizeHtml('<img src="data:image/webp;base64,AAA">')).toContain('data:image/webp;base64,AAA')
+    expect(sanitizeHtml('<img src="data:image/png;base64,AAA">')).toBe(
+      '<img src="data:image/png;base64,AAA">',
+    )
+    expect(sanitizeHtml('<img src="data:image/gif;base64,AAA">')).toContain(
+      'data:image/gif;base64,AAA',
+    )
+    expect(sanitizeHtml('<img src="data:image/jpeg;base64,AAA">')).toContain(
+      'data:image/jpeg;base64,AAA',
+    )
+    expect(sanitizeHtml('<img src="data:image/webp;base64,AAA">')).toContain(
+      'data:image/webp;base64,AAA',
+    )
     expect(sanitizeHtml('<img src="data:text/html;base64,xxx">')).toBe('<img>')
     expect(sanitizeHtml('<img src="data:image/svg+xml;base64,AAA">')).toBe('<img>')
     expect(sanitizeHtml('<a href="data:text/html,hi">x</a>')).toBe('<a>x</a>')

@@ -38,50 +38,53 @@ function openDb(): Promise<IDBDatabase> {
 }
 
 function idbGet<T>(key: string): Promise<T | undefined> {
-  return openDb().then((db) =>
-    new Promise<T | undefined>((resolve, reject) => {
-      const req = db.transaction(STORE, 'readonly').objectStore(STORE).get(key)
-      req.onsuccess = () => {
-        db.close() // 每次操作后关闭连接，避免每次调用都泄漏一个 IDBDatabase
-        resolve(req.result as T | undefined)
-      }
-      req.onerror = () => {
-        db.close()
-        reject(req.error)
-      }
-    }),
+  return openDb().then(
+    (db) =>
+      new Promise<T | undefined>((resolve, reject) => {
+        const req = db.transaction(STORE, 'readonly').objectStore(STORE).get(key)
+        req.onsuccess = () => {
+          db.close() // 每次操作后关闭连接，避免每次调用都泄漏一个 IDBDatabase
+          resolve(req.result as T | undefined)
+        }
+        req.onerror = () => {
+          db.close()
+          reject(req.error)
+        }
+      }),
   )
 }
 
 function idbPut(key: string, value: unknown): Promise<void> {
-  return openDb().then((db) =>
-    new Promise<void>((resolve, reject) => {
-      const req = db.transaction(STORE, 'readwrite').objectStore(STORE).put(value, key)
-      req.onsuccess = () => {
-        db.close()
-        resolve()
-      }
-      req.onerror = () => {
-        db.close()
-        reject(req.error)
-      }
-    }),
+  return openDb().then(
+    (db) =>
+      new Promise<void>((resolve, reject) => {
+        const req = db.transaction(STORE, 'readwrite').objectStore(STORE).put(value, key)
+        req.onsuccess = () => {
+          db.close()
+          resolve()
+        }
+        req.onerror = () => {
+          db.close()
+          reject(req.error)
+        }
+      }),
   )
 }
 
 function idbDelete(key: string): Promise<void> {
-  return openDb().then((db) =>
-    new Promise<void>((resolve, reject) => {
-      const req = db.transaction(STORE, 'readwrite').objectStore(STORE).delete(key)
-      req.onsuccess = () => {
-        db.close()
-        resolve()
-      }
-      req.onerror = () => {
-        db.close()
-        reject(req.error)
-      }
-    }),
+  return openDb().then(
+    (db) =>
+      new Promise<void>((resolve, reject) => {
+        const req = db.transaction(STORE, 'readwrite').objectStore(STORE).delete(key)
+        req.onsuccess = () => {
+          db.close()
+          resolve()
+        }
+        req.onerror = () => {
+          db.close()
+          reject(req.error)
+        }
+      }),
   )
 }
 
@@ -196,8 +199,15 @@ export function useSecureStorage<T>(key: string, initial: T): SecureStorage<T> {
         if (hasSubtle()) {
           const cryptoKey = await getKey()
           const iv = crypto.getRandomValues(new Uint8Array(12))
-          const data = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, cryptoKey, encoder.encode(plain))
-          await idbPut(key, { iv: bufToB64(iv.buffer), data: bufToB64(data) } satisfies StoredRecord)
+          const data = await crypto.subtle.encrypt(
+            { name: 'AES-GCM', iv },
+            cryptoKey,
+            encoder.encode(plain),
+          )
+          await idbPut(key, {
+            iv: bufToB64(iv.buffer),
+            data: bufToB64(data),
+          } satisfies StoredRecord)
         } else {
           setDegraded(true)
           await idbPut(key, obfuscate(plain))

@@ -195,7 +195,10 @@ function applyMeta(template: string, route: string, body: string, meta: PageMeta
   // 替换串必须用函数形式：字符串里的 $& / $' / $` 会被 String.replace 当作
   // 「匹配片段 / 前后文」特殊模式，SSR 正文或标题里出现 $& 就把整页贴错位置（实测复现）。
   return template
-    .replace(/<title>[\s\S]*?<\/title>/, () => `<title>${escapeHtml(meta.title)}</title>\n    ${head}`)
+    .replace(
+      /<title>[\s\S]*?<\/title>/,
+      () => `<title>${escapeHtml(meta.title)}</title>\n    ${head}`,
+    )
     .replace(
       /<meta\s+name="description"[\s\S]*?\/>/,
       () => `<meta name="description" content="${escapeHtml(meta.description)}" />`,
@@ -215,7 +218,9 @@ function main(): void {
   const ssrDir = path.dirname(SSR_ENTRY)
   const rel = path.relative(DIST, ssrDir)
   if (rel === '' || (!rel.startsWith('..') && !path.isAbsolute(rel))) {
-    throw new Error(`[prerender] 客户端产物目录与 SSR 产物目录重叠（dist=${DIST}，dist-ssr=${ssrDir}），拒绝运行以防互相覆盖`)
+    throw new Error(
+      `[prerender] 客户端产物目录与 SSR 产物目录重叠（dist=${DIST}，dist-ssr=${ssrDir}），拒绝运行以防互相覆盖`,
+    )
   }
   if (!existsSync(SSR_ENTRY)) {
     throw new Error(
@@ -239,9 +244,10 @@ function main(): void {
     // 高并发预渲染：800+ 页串行渲染会让 CI 超时。并发度 = CPU-1（至少 1），
     // 保留 1 核给 OS / Vite 进程；可用 PRERENDER_CONCURRENCY 覆盖（CI 小机器可调低）。
     const envConcurrency = Number(process.env['PRERENDER_CONCURRENCY'] ?? '')
-    const concurrency = Number.isFinite(envConcurrency) && envConcurrency > 0
-      ? Math.floor(envConcurrency)
-      : Math.max(1, cpus().length - 1)
+    const concurrency =
+      Number.isFinite(envConcurrency) && envConcurrency > 0
+        ? Math.floor(envConcurrency)
+        : Math.max(1, cpus().length - 1)
 
     let count = 0
     let cursor = 0

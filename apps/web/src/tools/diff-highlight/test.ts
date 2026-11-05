@@ -51,8 +51,12 @@ describe('diff-highlight / sanitizeHtml XSS 载荷（WP1 要求至少 3 个）',
     expect(html).toContain('<p>a</p>')
   })
   it('data: 仅允许位图图片 base64，阻断 data:text/html（P2）', () => {
-    expect(sanitizeHtml('<img src="data:image/png;base64,AAA">')).toContain('data:image/png;base64,AAA')
-    expect(sanitizeHtml('<img src="data:image/webp;base64,AAA">')).toContain('data:image/webp;base64,AAA')
+    expect(sanitizeHtml('<img src="data:image/png;base64,AAA">')).toContain(
+      'data:image/png;base64,AAA',
+    )
+    expect(sanitizeHtml('<img src="data:image/webp;base64,AAA">')).toContain(
+      'data:image/webp;base64,AAA',
+    )
     const html = sanitizeHtml('<img src="data:text/html;base64,xxx">')
     expect(html).not.toContain('data:text/html')
     expect(html).toContain('<img>')

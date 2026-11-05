@@ -57,6 +57,13 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile --ignore-scripts
 
+      # 与 CI 同款校验：--ignore-scripts 同时跳过 apps/web 的 qpdf postinstall，
+      # 缺 qpdf.wasm 会让 PDF 工具在发布包里静默失效，这里显式断言。
+      - name: Verify qpdf wasm
+        run: |
+          (cd apps/web && node -e "const fs=require('fs');const path=require('path');const f=require.resolve('@neslinesli93/qpdf-wasm/dist/qpdf.js');const w=path.join(path.dirname(f),'qpdf.wasm');if(!fs.existsSync(w)){console.error('[qpdf] wasm missing: '+w);process.exit(1)}console.log('[qpdf] wasm ok: '+w)")
+          test -f apps/web/node_modules/@neslinesli93/qpdf-wasm/dist/qpdf.wasm
+
       # 发版前强制对齐 tag 与 deploy/binary/VERSION：包名 / latest.txt / index.json
       # 都取自 VERSION，一旦与 tag 不符就会「绿勾发错版」，把旧版本附件挂到新 tag 下，
       # 直接搞乱 upgrade 源。这里在耗时构建之前就失败。

@@ -23,16 +23,21 @@
 **修复代码（三步，缺一不可）：**
 
 1. 把 `index.html:11-43` 内联脚本抽到独立文件 `apps/web/public/prefs-init.js`，并在构建期计算 SHA-256 哈希（或改用 nonce 注入）。抽出后 `index.html` 只保留：
+
 ```html
 <script src="/assets/prefs-init.js" async></script>
 ```
+
 2. Vite 构建侧给该文件加 `integrity` 校验（构建脚本核对 hash），nginx 侧下发**强制** CSP（去掉 `Report-Only`，去掉 `'unsafe-inline'` 的 script 侧；style 若 Tailwind 需要 inline，改用 hash 或移入 `<link>`）：
+
 ```nginx
 # deploy/nginx/default.conf:32（与 nginx.conf.tpl:65 同步修改）
 add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://api.openai.com https://api.exchangerate.host https://dns.google https://rdap.org https://eth.llamarpc.com https://geo.datav.aliyun.com https://cdn.jsdelivr.net; media-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; report-uri /csp-report" always;
 add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;
 ```
+
 > 注意：`connect-src 'self'` 现状与 ~10 个需联网工具（见 §2 外部资源）冲突，强制 CSP 必须先把白名单补齐，否则会误伤业务——这正是 Report-Only 长期未转正的根因，iolist 不改则不要硬转正。
+
 3. 加 `report-uri`（或 `report-to`）端点，把违规先收集到日志再调策略。
 
 ---
@@ -47,16 +52,18 @@ if (!trusted && html.includes('dangerouslySetInnerHTML')) {
 }
 dangerouslySetInnerHTML={{ __html: html }}
 ```
+
 `SafeHtml` 渲染前不做任何清洗/拒绝；`trusted={true}` 只是一个调用方自证。ESLint 规则（`eslint.config.js:74-82`）只限制了 `dangerouslySetInnerHTML` 出现在 `SafeHtml.tsx` 内部，**不限制谁可以传 `trusted={true}`**。本次 17 处 `trusted` 调用经抽查当前均安全（见"已验证"），但新增工具时误传用户输入 + `trusted` 即可绕过白名单，且 CI 抓不住。
 
 当前抽查安全的 `trusted` 路径（输入均经转义/白名单校验）：
-| 工具 | 证据 |
-|---|---|
-| timeline-gen | `utils.ts:47,146-162` 全部 `escapeHtml` |
-| svg-game | `utils.ts:227-241` 输入经 `validateHex` 校验 |
-| text-to-qr | `utils.ts:71` 只输出数字矩阵 |
-| avatar / er-gen / flowchart / gantt / mindmap / sequence / uml（mermaid 家族） | `securityLevel: 'strict'` 如 `er-gen/Tool.tsx:34`、`flowchart/Tool.tsx:29` |
-| pdf-to-html | `Tool.tsx:189-193` 注意：**未走 `sanitizeHtml`**，而是逐行 `escapeHtml`（`utils.ts:147-154,175-188`），属独立安全路径，见 P2-2 |
+
+| 工具                                                                           | 证据                                                                                                                           |
+| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| timeline-gen                                                                   | `utils.ts:47,146-162` 全部 `escapeHtml`                                                                                        |
+| svg-game                                                                       | `utils.ts:227-241` 输入经 `validateHex` 校验                                                                                   |
+| text-to-qr                                                                     | `utils.ts:71` 只输出数字矩阵                                                                                                   |
+| avatar / er-gen / flowchart / gantt / mindmap / sequence / uml（mermaid 家族） | `securityLevel: 'strict'` 如 `er-gen/Tool.tsx:34`、`flowchart/Tool.tsx:29`                                                     |
+| pdf-to-html                                                                    | `Tool.tsx:189-193` 注意：**未走 `sanitizeHtml`**，而是逐行 `escapeHtml`（`utils.ts:147-154,175-188`），属独立安全路径，见 P2-2 |
 
 **修复建议：** `SafeHtml` 改为类型级二选一：`html`（内部强制 `sanitizeHtml`）与 `trustedHtml`（仅接受品牌类型 `TrustedHtml`，仅白名单工具可构造）；删除空检查块；ESLint 增加 `SafeHtml` `trusted` 传参审查规则。
 
@@ -97,14 +104,15 @@ dangerouslySetInnerHTML={{ __html: html }}
 ### P1-6 · 零追踪声明与联网工具并存——外发域名很多，按工具逐个知情 — 若干
 
 站点主张"纯本地"，但以下工具运行时必外发（均已在各自 README 披露，属知情同意，但隐私页应汇总）：
-| 域名 | 用途 | 证据 |
-|---|---|---|
-| `api.openai.com`（默认）/ 用户自填 baseURL | 全部 AI 工具，Key 随请求发送 | `ai-detect/utils.ts:12`、`lib/ai.ts:61` |
-| `eth.llamarpc.com`（默认 RPC） | chain-query / contract-sim / ens | `chain-query/utils.ts:10` |
-| `dns.google/resolve` | dns-query | `dns-query/utils.ts:60` |
-| `rdap.org` | whois-lookup | `whois-lookup/utils.ts:97` |
-| `api.exchangerate.host/convert` | exchange-rate | `exchange-rate/utils.ts:11` |
-| `geo.datav.aliyun.com`、`cdn.jsdelivr.net` | map | `map/utils.ts:16,21` |
+
+| 域名                                       | 用途                             | 证据                                    |
+| ------------------------------------------ | -------------------------------- | --------------------------------------- |
+| `api.openai.com`（默认）/ 用户自填 baseURL | 全部 AI 工具，Key 随请求发送     | `ai-detect/utils.ts:12`、`lib/ai.ts:61` |
+| `eth.llamarpc.com`（默认 RPC）             | chain-query / contract-sim / ens | `chain-query/utils.ts:10`               |
+| `dns.google/resolve`                       | dns-query                        | `dns-query/utils.ts:60`                 |
+| `rdap.org`                                 | whois-lookup                     | `whois-lookup/utils.ts:97`              |
+| `api.exchangerate.host/convert`            | exchange-rate                    | `exchange-rate/utils.ts:11`             |
+| `geo.datav.aliyun.com`、`cdn.jsdelivr.net` | map                              | `map/utils.ts:16,21`                    |
 
 **修复建议：** 在站点 Footer/隐私说明汇总"哪些工具会联网、发往何处"，并提示 chain-query 这类公共 RPC 会暴露查询地址。
 
@@ -115,6 +123,7 @@ dangerouslySetInnerHTML={{ __html: html }}
 ### P2-1 · 缺少 HSTS / Permissions-Policy / COOP·COEP·CORP / CSP 上报端点
 
 两份 nginx 模板只有 `X-Frame-Options`、`X-Content-Type-Options`、`Referrer-Policy`（`deploy/nginx/default.conf:27-29`、`nginx.conf.tpl:60-62`，`nginx.conf.tpl:37` 另有 `server_tokens off` 而 Docker 形态未同步）：
+
 - 无 `Strict-Transport-Security`（站点经 HTTPS 部署，`package.json:7` homepage 即 https）；
 - 无 `Permissions-Policy`：相机/麦克风/定位工具（`camera-photo/Tool.tsx:54`、`audio-record/Tool.tsx:118`、`geolocation/Tool.tsx:22` 等）依赖浏览器权限弹窗，站点级未收敛；
 - `wasm` 工具（pdfjs/qpdf/blake3）未配 `Cross-Origin-Opener/Embedder-Policy`，`SharedArrayBuffer` 类路径受影响；
@@ -160,15 +169,15 @@ dangerouslySetInnerHTML={{ __html: html }}
 
 ## 修复优先级清单
 
-| 编号 | 事项 | 一句话动作 |
-|---|---|---|
-| P0-1 | CSP Report-Only + unsafe-inline | 拆内联脚本，转正 CSP，补 HSTS/白名单/上报 |
-| P1-1 | `trusted` 布尔旁路 | 类型级 TrustedHtml，删空检查，加 ESLint 审查 |
-| P1-2 | Key 明文 localStorage | sessionStorage/加密，UI 风险提示 |
-| P1-3 | DOMPurify 名实不符 | 引入 DOMPurify 或改文档+ fuzz |
-| P1-4 | map CDN 旧版 | geoJSON 自托管，升级 echarts 数据 |
-| P1-5 | 小众 scope + postinstall + 无 audit | CI 加审计，postinstall 显式化 |
-| P1-6 | 联网工具外发汇总 | 隐私页汇总外发域名 |
-| P2-1~6 | 头部补齐等 | 随 P0 批 / 顺手修 |
+| 编号   | 事项                                | 一句话动作                                   |
+| ------ | ----------------------------------- | -------------------------------------------- |
+| P0-1   | CSP Report-Only + unsafe-inline     | 拆内联脚本，转正 CSP，补 HSTS/白名单/上报    |
+| P1-1   | `trusted` 布尔旁路                  | 类型级 TrustedHtml，删空检查，加 ESLint 审查 |
+| P1-2   | Key 明文 localStorage               | sessionStorage/加密，UI 风险提示             |
+| P1-3   | DOMPurify 名实不符                  | 引入 DOMPurify 或改文档+ fuzz                |
+| P1-4   | map CDN 旧版                        | geoJSON 自托管，升级 echarts 数据            |
+| P1-5   | 小众 scope + postinstall + 无 audit | CI 加审计，postinstall 显式化                |
+| P1-6   | 联网工具外发汇总                    | 隐私页汇总外发域名                           |
+| P2-1~6 | 头部补齐等                          | 随 P0 批 / 顺手修                            |
 
-*审计取证：2026-11-04，grep/read 全量。所有行号基于当前 HEAD（toolbox v0.0.8）。*
+_审计取证：2026-11-04，grep/read 全量。所有行号基于当前 HEAD（toolbox v0.0.8）。_

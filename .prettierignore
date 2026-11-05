@@ -17,6 +17,7 @@ dist-release
 packages/catalog/src/tools.generated.ts
 apps/web/public/sitemap.xml
 apps/web/public/robots.txt
+apps/web/public/search-index.json
 
 # 锁文件：由 pnpm 维护，格式化会破坏其结构
 pnpm-lock.yaml
