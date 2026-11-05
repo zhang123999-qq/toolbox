@@ -1,0 +1,9 @@
+# 负责人（audit P1 候选，2026-11-05）：把 @ 占位符换成真实 GitHub 用户名后才生效。
+/.github/workflows/ @toolbox-owners
+/deploy/binary/        @toolbox-owners
+/Dockerfile            @toolbox-owners
+/docker-compose.yml    @toolbox-owners
+/apps/web/vite.config.ts @toolbox-owners
+/scripts/check-bundle-size.ts @toolbox-owners
+/package.json          @toolbox-owners
+/pnpm-lock.yaml        @toolbox-owners
