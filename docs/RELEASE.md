@@ -36,11 +36,11 @@
   各 workspace 的 `package.json` 版本号在发版时**同步**为同一版本（供工具链与包元数据使用），
   一律以 `VERSION` 为准对齐，避免两处漂移。
 
-> **当前进度**：最新正式发布 = **v0.0.6**（2026-10-22，**798 个工具**，5 大组全覆盖；
-> tag `v0.0.6`；Release 含 5 个附件：`toolbox-0.0.6-linux-amd64.tar.gz` + `.sha256`、
+> **当前进度**：最新正式发布 = **v0.0.8**（2026-11-04，**799 个工具**，5 大组全覆盖；
+> tag `v0.0.8`；Release 含 5 个附件：`toolbox-0.0.8-linux-amd64.tar.gz` + `.sha256`、
 > `latest.txt`、`index.json`、`install.sh`）。
-> 第 5 大组（online）与 #798 在线画图随本次发布并入版本号（见
-> [`CHANGELOG.md`](../CHANGELOG.md) 的 `[0.0.6]` 段）。
+> 第 5 大组（online）与 #798 在线画图随 v0.0.6 并入版本号，0.0.7/0.0.8 为后续迭代（见
+> [`CHANGELOG.md`](../CHANGELOG.md) 的 `[0.0.8]` 段）。
 
 ## 二、发布流程（推 tag 全自动，无需手工打包 / 上传）
 

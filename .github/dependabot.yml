@@ -1,0 +1,30 @@
+# Dependabot：actions 钉 SHA 后仍要更新（SHA 不会自己跟到新版）。
+# npm（pnpm workspace）只覆盖 workspace 根的 package.json；Dockerfile 覆盖根镜像与测试镜像。
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: "chore(deps):"
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: "chore(deps):"
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: docker
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: "chore(deps):"
+    open-pull-requests-limit: 5

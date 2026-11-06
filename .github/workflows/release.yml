@@ -22,9 +22,10 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "要补发附件的版本 tag（如 v0.0.2）"
+        description: "要补发附件的版本 tag（如 v0.0.8）"
         required: true
-        default: "v0.0.3"
+        # 故意不给 default：此前 default 是 v0.0.3，当前已 0.0.8，一次误触就用
+        # 旧 tag 重新打包发版。必填防误发版。
 
 # 创建 Release 与上传附件需要 contents 写权限
 permissions:
@@ -37,32 +38,25 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # 发版前强制门禁：完整验证的 fast-gates + 单测（build 省掉——bundle 自己会构建，
+  # 且本仓库 tag push 不会产生 CI run，“等 CI 通过”链路不存在，只能 in-job 校验）。
+  verify:
+    uses: ./.github/workflows/verify.yml
+    with:
+      include-build: false
+
   bundle:
+    needs: verify
     runs-on: ubuntu-latest
     # 正常构建+打包+发布约 2 分钟；超过 15 分钟判定为卡死，避免空跑占用额度。
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           # 推 tag 时构建该 tag；手动补发时构建输入框指定的 tag
           ref: ${{ github.event.inputs.tag || github.ref }}
 
-      - uses: pnpm/action-setup@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: pnpm
-
-      - name: Install
-        run: pnpm install --frozen-lockfile --ignore-scripts
-
-      # 与 CI 同款校验：--ignore-scripts 同时跳过 apps/web 的 qpdf postinstall，
-      # 缺 qpdf.wasm 会让 PDF 工具在发布包里静默失效，这里显式断言。
-      - name: Verify qpdf wasm
-        run: |
-          (cd apps/web && node -e "const fs=require('fs');const path=require('path');const f=require.resolve('@neslinesli93/qpdf-wasm/dist/qpdf.js');const w=path.join(path.dirname(f),'qpdf.wasm');if(!fs.existsSync(w)){console.error('[qpdf] wasm missing: '+w);process.exit(1)}console.log('[qpdf] wasm ok: '+w)")
-          test -f apps/web/node_modules/@neslinesli93/qpdf-wasm/dist/qpdf.wasm
+      - uses: ./.github/actions/setup
 
       # 发版前强制对齐 tag 与 deploy/binary/VERSION：包名 / latest.txt / index.json
       # 都取自 VERSION，一旦与 tag 不符就会「绿勾发错版」，把旧版本附件挂到新 tag 下，
@@ -86,6 +80,36 @@ jobs:
           SITE_ORIGIN: ${{ vars.SITE_ORIGIN || 'https://006336.xyz' }}
         run: pnpm build:ssg
 
+      # 把签名公钥注入「发布版」install.sh / toolboxctl 的默认值。
+      # 仓库里的 MINISIGN_PUBKEY 默认是空的——若不注入，用户端 minisign 校验会
+      # 静默降级成只验 sha256（见 install.sh 对应 warn），签了名也白签。
+      # build-bundle 会把这两个文件原样装进 dist-release / tar 包，下面 Sign 步骤会
+      # 再次断言注入值 == 派生公钥。（注意：只改工作树拷贝，不回写仓库。）
+      - name: Inject minisign pubkey into install scripts
+        env:
+          MINISIGN_SECRET_KEY: ${{ secrets.MINISIGN_SECRET_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${MINISIGN_SECRET_KEY:-}" ]; then
+            echo "::warning::MINISIGN_SECRET_KEY 未配置，跳过公钥注入；后续 Sign 步骤将明确失败。"
+            exit 0
+          fi
+          sudo apt-get update -qq && sudo apt-get install -y -qq minisign
+          trap 'rm -f minisign.key' EXIT
+          printf '%s' "$MINISIGN_SECRET_KEY" > minisign.key
+          chmod 600 minisign.key
+          minisign -Py minisign.key -p minisign.pub 2>/dev/null || minisign -p minisign.pub -s minisign.key -W
+          # minisign.pub 第 1 行是 "untrusted comment: ..."，第 2 行才是密钥；
+          # install.sh / toolboxctl 按单行密钥接收（与 TOOLBOX_MINISIGN_PUBKEY 约定一致）
+          PUB=$(awk 'NR==2' minisign.pub)
+          [ -n "$PUB" ] || { echo "::error::无法从 minisign.pub 提取公钥"; exit 1; }
+          sed -i "s|^MINISIGN_PUBKEY=.*|MINISIGN_PUBKEY=\${TOOLBOX_MINISIGN_PUBKEY:-${PUB}}|" deploy/binary/install.sh
+          sed -i "s|_pub=.*|_pub=\${TOOLBOX_MINISIGN_PUBKEY:-${PUB}}|" deploy/binary/toolboxctl
+          grep -qF "$PUB" deploy/binary/install.sh && grep -qF "$PUB" deploy/binary/toolboxctl \
+            || { echo "::error::公钥注入后断言失败"; exit 1; }
+          bash -n deploy/binary/install.sh && bash -n deploy/binary/toolboxctl
+          echo "已注入公钥到发布版 install.sh / toolboxctl"
+
       - name: Package self-contained bundle
         # 复用上面 build:ssg 已产出的 apps/web/dist（含 sitemap/robots/预渲染页），
         # 这里只负责组装 + 校验和 + 打包，避免 build-bundle 内部再跑一遍不完整的构建。
@@ -108,11 +132,18 @@ jobs:
             exit 1
           fi
           sudo apt-get update -qq && sudo apt-get install -y -qq minisign
+          trap 'rm -f minisign.key' EXIT
           printf '%s' "$MINISIGN_SECRET_KEY" > minisign.key
           chmod 600 minisign.key
           # 公钥：由私钥派生，与发布资产一同上传
           minisign -Py minisign.key -p minisign.pub 2>/dev/null || minisign -p minisign.pub -s minisign.key -W
-          for f in dist-release/toolbox-*-linux-amd64.tar.gz; do
+          # 注入值必须等于派生公钥（第 2 行是密钥本身）：防注入步骤被绕过/改错导致
+          # 用户端验签全挂——发版前就失败，而不是发到用户面前才发现。
+          PUB=$(awk 'NR==2' minisign.pub)
+          grep -qF "$PUB" dist-release/install.sh \
+            || { echo "::error::发布版 install.sh 的公钥与签名密钥不匹配，拒绝发布"; exit 1; }
+          # 全量签名（不限 amd64：以后加 arm64 包也不会漏签）
+          for f in dist-release/*.tar.gz; do
             [ -f "$f" ] || continue
             echo "签名：$f"
             if [ -n "${MINISIGN_PASSWORD:-}" ]; then
@@ -124,7 +155,6 @@ jobs:
             minisign -Vm "$f" -p minisign.pub -x "$f.minisig"
           done
           cp minisign.pub dist-release/minisign.pub
-          rm -f minisign.key
           ls -la dist-release/
 
       - name: Create GitHub Release and upload assets
@@ -139,8 +169,9 @@ jobs:
 
           # Release 说明优先取 CHANGELOG.md 中 `## [<ver>]` 这一节（到下一个二级标题为止）；
           # CHANGELOG 里没有该版本时，回落到 GitHub 自动生成的提交说明，不让发布失败。
+          # header 后必须跟空格/行尾：否则搜 `## [0.0.1]` 会命中 `## [0.0.1-beta]` 那节
           awk -v header="## [$VER]" '
-            index($0, header) == 1 { cap = 1; print; next }
+            index($0, header) == 1 && (length($0) == length(header) || substr($0, length(header)+1, 1) ~ /[ \t]/) { cap = 1; print; next }
             cap && $0 ~ /^## \[/ { exit }
             cap { print }
           ' CHANGELOG.md > "$NOTES_FILE"

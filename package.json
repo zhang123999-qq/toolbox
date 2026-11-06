@@ -3,7 +3,7 @@
   "version": "0.0.8",
   "private": true,
   "license": "MIT",
-  "description": "870 client-side online tools: local-first, static deployment, bilingual",
+  "description": "799 client-side online tools: local-first, static deployment, bilingual",
   "homepage": "https://006336.xyz",
   "repository": {
     "type": "git",
@@ -41,7 +41,8 @@
     "check:licenses:strict": "tsx scripts/check-licenses.ts --strict",
     "check:source-org": "tsx scripts/check-source-org.ts",
     "prerender": "tsx scripts/prerender.ts",
-    "verify": "pnpm check:tools && pnpm check:source-org && pnpm check:env && pnpm check:docs && pnpm check:licenses && pnpm lint && pnpm format:check && pnpm typecheck && pnpm test",
+    "check:fast": "pnpm check:tools && pnpm check:source-org && pnpm check:env && pnpm check:docs && pnpm check:licenses && pnpm lint && pnpm format:check && pnpm typecheck",
+    "verify": "pnpm check:fast && pnpm test",
     "check:env": "tsx scripts/check-env-config.ts"
   },
   "devDependencies": {

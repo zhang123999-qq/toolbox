@@ -8,6 +8,7 @@ on:
   pull_request:
 
 # 只读仓库即可：CI 不需要写权限，按最小权限收敛默认 GITHUB_TOKEN。
+# （dependency-review job 在 job 级别单独声明 pull-requests: write。）
 permissions:
   contents: read
 
@@ -17,104 +18,156 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # 完整验证（fast-gates / test / build 并行 + 聚合 verify，见 verify.yml）
   verify:
+    uses: ./.github/workflows/verify.yml
+
+  # Docker 镜像冒烟：构建生产镜像 → 用 docker-compose 起 → /healthz 与 smoke 都过。
+  # 与 verify 并行（无 needs），镜像坏了不等测试跑完才发现。
+  docker-smoke:
+    name: Docker smoke
     runs-on: ubuntu-latest
-    # 全流程（检查 + 3260 单测 + SSG）实测数分钟；20 分钟仍未完成视为卡死。
-    timeout-minutes: 20
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - uses: pnpm/action-setup@v4
-        # 不写 version：package.json 的 packageManager 是 pnpm 版本的唯一真源。
-        # 两处都指定会让 action v4 直接失败（Multiple versions of pnpm specified）。
-        # 这个坑此前一直被「push 不触发 CI」掩盖着——第一次真正跑就挂在第 3 步。
+      - uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3.11.1
 
-      - uses: actions/setup-node@v4
+      - name: Build image (load)
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         with:
-          # 不用 20：测试环境 jsdom@30 的 engines 是 ^22.22.2 || ^24.15.0 || >=26.0.0，
-          # 其依赖 undici@8 要求 >=22.19.0，Node 20 上 jsdom 环境根本起不来
-          # （表现为 webidl.util.markAsUncloneable is not a function）。
-          node-version: 24
-          cache: pnpm
+          context: .
+          file: ./Dockerfile
+          load: true
+          push: false
+          tags: toolbox:ci
+          # CI 走 npmjs：.npmrc 的 npmmirror 是本地优化，GH runner 上慢
+          build-args: |
+            SITE_ORIGIN=${{ vars.SITE_ORIGIN || 'https://006336.xyz' }}
+            COREPACK_NPM_REGISTRY=https://registry.npmjs.org
+          cache-from: type=gha,scope=toolbox-web
+          cache-to: type=gha,mode=max,scope=toolbox-web
 
-      - name: Install
-        # --ignore-scripts：esbuild 的 postinstall 在受限环境下会 EBUSY，
-        # 而它的二进制来自平台可选包，不需要该脚本（DEVELOPMENT.md §18.3）。
-        # P1-3：--ignore-scripts 同时跳过 apps/web 的 qpdf postinstall，
-        # 显式物化校验见下面独立的「Verify qpdf wasm (P1-3)」步骤
-        #（postinstall 本身已改为缺文件非零退出，不再吞错）。
-        run: pnpm install --frozen-lockfile --ignore-scripts
+      # smoke.mjs 需要 Node（runner 自带版本不可控，显式声明与 .nvmrc 一致）
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
 
-      # P1-3：qpdf wasm 存在性校验（替代被 --ignore-scripts 跳过的 postinstall）。
-      # postinstall 已去掉 try{}catch{} 吞错，这里用同样的显式断言：
-      # node 解析 @neslinesli93/qpdf-wasm/dist/qpdf.js，且 test -f 同目录 qpdf.wasm。
-      # （已发布包 files: ["dist"] 只含 dist/qpdf.wasm，旧 download.js 路径恒失效。）
-      - name: Verify qpdf wasm (P1-3)
+      - name: Start container (compose)
+        env:
+          # compose 的 image 是 toolbox:${VERSION:-latest}，用 VERSION=ci 对上上面打的 tag
+          VERSION: ci
         run: |
-          (cd apps/web && node -e "const fs=require('fs');const path=require('path');const f=require.resolve('@neslinesli93/qpdf-wasm/dist/qpdf.js');const w=path.join(path.dirname(f),'qpdf.wasm');if(!fs.existsSync(w)){console.error('[qpdf][P1-3] wasm missing: '+w);process.exit(1)}console.log('[qpdf] wasm ok: '+w)")
-          test -f apps/web/node_modules/@neslinesli93/qpdf-wasm/dist/qpdf.wasm
+          set -euo pipefail
+          docker compose up -d --no-build toolbox
+          # 等 /healthz（nginx 新容器起来需要几秒，轮询 60 次）
+          for i in $(seq 1 60); do
+            if wget -qO- http://127.0.0.1:8081/healthz >/dev/null 2>&1; then break; fi
+            sleep 1
+          done
+          BODY=$(wget -qO- http://127.0.0.1:8081/healthz)
+          VER=$(tr -d ' \t\r\n' < deploy/binary/VERSION)
+          echo "healthz: $BODY"
+          [ "$BODY" = "ok v${VER}" ] || { echo "::error::healthz 不符（期望 ok v${VER}）"; docker compose logs toolbox || true; exit 1; }
 
-      # 门禁顺序见 DEVELOPMENT.md §十：静态检查在前，慢的在后。
-      - name: Check tool metadata
-        run: pnpm check:tools
+      - name: HTTP smoke (deploy/docker/smoke.mjs)
+        env:
+          SMOKE_BASE_URL: http://127.0.0.1:8081
+          # nginx 模式：未知路径是硬 404（SPA_FALLBACK 未设置）
+        run: node deploy/docker/smoke.mjs
 
-      # 源码组织规范（docs/source-organization.md）【强制约束】：
-      # 一工具一文件夹、8 文件齐全、无跨工具 import、命名合规。
-      - name: Check source organization
-        run: pnpm check:source-org
+      - name: Stop container
+        if: always()
+        env:
+          VERSION: ci
+        run: docker compose down
 
-      # 调外部 API 的工具必须把配置写进 .env.example（DEVELOPMENT.md §8.5），
-      # 顺带拦住「真实密钥被提交」与「VITE_ 前缀承载密钥」（会被内联进产物）。
-      - name: Check external API config
-        run: pnpm check:env
+  # E2E：真实浏览器跑 e2e.spec.ts（799 个工具页）。首版 1 shard；
+  # 耗时超过 8 分钟再加 --shard（见 apps/web/playwright.config.ts）。
+  e2e:
+    name: E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - name: Check docs consistency
-        run: pnpm check:docs
+      - uses: ./.github/actions/setup
 
-      # 部署脚本此前没有任何自动化校验：语法错只有在目标机上才暴露。
-      # 顺带机检「发布源默认值」在 install.sh / toolboxctl / 文档里是同一个值，
-      # 防止改一处漏一处（脚本本体见 deploy/binary/tests/verify-release-source.sh）。
-      - name: Check deployment scripts
-        run: |
-          bash -n deploy/binary/install.sh
-          bash -n deploy/binary/toolboxctl
-          sh deploy/binary/tests/verify-release-source.sh
+      - name: Cache Playwright browsers
+        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ hashFiles('pnpm-lock.yaml') }}-1.63.0
 
-      # 守住「只使用宽松许可的依赖」：GPL / AGPL / SSPL / BUSL 等会直接失败
-      - name: Check dependency licenses
-        run: pnpm check:licenses
+      - name: Install Chromium (+ system deps)
+        run: pnpm --filter @toolbox/web exec playwright install --with-deps chromium
 
-      - name: Lint
-        run: pnpm lint
-
-      - name: Format check
-        run: pnpm format:check
-
-      - name: Typecheck
-        run: pnpm typecheck
-
-      # 覆盖率门禁：阈值在 apps/web/vite.config.ts 的 test.coverage.thresholds
-      - name: Test (with coverage)
-        run: pnpm --filter @toolbox/web exec vitest run --coverage
-
-      # catalog 一致性门禁：改了 meta.ts 必须重跑 generate:catalog（审计 P1-5）
-      - name: Check catalog is up to date
-        run: pnpm generate:catalog:check
-
-      # SSG：不补预渲染，870 个工具页对爬虫就是空壳（DEVELOPMENT.md §十二）
-      # build:ssg = 客户端构建 + SSR 构建 + 预渲染，三步顺序不能反。
       - name: Build (client + SSR + prerender)
         run: pnpm build:ssg
         env:
-          # 默认域名来自 packages/catalog/src/site.ts；部署到别处用仓库变量覆盖
           SITE_ORIGIN: ${{ vars.SITE_ORIGIN || 'https://006336.xyz' }}
 
-      # 体积预算门禁：首屏 gzip <120KB、单工具 chunk <30KB（PRD §4.1，审计 P1-1）
-      - name: Check bundle size budgets
-        run: pnpm check:bundle-size
+      - name: Run E2E
+        run: pnpm --filter @toolbox/web exec playwright test
 
-      - name: Upload dist
-        uses: actions/upload-artifact@v4
+      - name: Upload trace/artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: web-dist
-          path: apps/web/dist
+          name: e2e-report
+          path: apps/web/test-results
+          retention-days: 14
+
+  # 依赖审计：起点非阻塞（xlsx 有 2 个 high 无官方补丁，见 package.json 注释）。
+  # 替换掉 xlsx 后再去掉 continue-on-error 转门禁。
+  audit:
+    name: Audit (non-blocking)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - uses: ./.github/actions/setup
+
+      - name: pnpm audit
+        run: pnpm --registry=https://registry.npmjs.org audit --prod --audit-level=high 2>&1 | tee audit-output.txt
+
+      - name: Upload audit output
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: audit-output
+          path: audit-output.txt
+          retention-days: 14
+
+  # PR 维度依赖审查：只拦 PR 新引入的漏洞（免费）。critical 起步，
+  # xlsx 的 high 已登记跟踪 issue，high 门禁随其替换一并收紧。
+  dependency-review:
+    name: Dependency review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Dependency review
+        uses: actions/dependency-review-action@40c09b7dc99638e5ddb0bfd91c1673effc064d8a # v4.8.1
+        with:
+          fail-on-severity: critical
+
+  # workflow 语法自查：改 workflow 时的提交前关卡（pint/actionlint 同类问题最早拦截点）。
+  actionlint:
+    name: Actionlint
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: actionlint
+        run: |
+          go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.7
+          "$HOME/go/bin/actionlint"

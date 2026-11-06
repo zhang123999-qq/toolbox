@@ -1,0 +1,128 @@
+name: Verify (reusable)
+
+# 可复用的完整验证：拆 fast-gates / test / build 三个完全并行 job，
+# 最后 aggregate 成一个 `verify`（分支保护只设这一个 required check）。
+# 被 ci.yml（push/PR）和 release.yml（发版前置，include-build=false 省构建）共同调用。
+# 本文件内部 job 不再声明 concurrency：取消策略由调用方 workflow 的 concurrency 决定。
+
+on:
+  workflow_call:
+    inputs:
+      include-build:
+        description: "是否包含 SSG 构建 job（release 已自带构建，可关掉省时间）"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  fast-gates:
+    name: Fast gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - uses: ./.github/actions/setup
+
+      # 部署脚本此前没有任何自动化校验：语法错只有在目标机上才暴露。
+      # 顺带机检「发布源默认值」在 install.sh / toolboxctl / 文档里是同一个值
+      #（脚本本体见 deploy/binary/tests/verify-release-source.sh）。
+      - name: Check deployment scripts
+        run: |
+          bash -n deploy/binary/install.sh
+          bash -n deploy/binary/toolboxctl
+          sh deploy/binary/tests/verify-release-source.sh
+
+      # catalog 一致性：改了 meta.ts 必须重跑 generate:catalog（审计 P1-5）
+      - name: Check catalog is up to date
+        run: pnpm generate:catalog:check
+
+      # 与本地 `pnpm verify` 同源：check:fast = 门禁 + lint + format + typecheck（不含单测）
+      - name: Fast checks (check:fast)
+        run: pnpm check:fast
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - uses: ./.github/actions/setup
+
+      # 覆盖率门禁：阈值在 apps/web/vite.config.ts 的 test.coverage.thresholds
+      # junit 供后续 SARIF/摘要评论消费
+      - name: Test (with coverage)
+        run: pnpm --filter @toolbox/web exec vitest run --coverage --reporter=default --reporter=junit --outputFile=junit.xml
+
+      # 失败才上传（成功不留，省存储）：含 junit、coverage、失败截图/日志
+      # actions/upload-artifact v4 默认 fail-if-no-files-found=false，这里不设是因为
+      # 上传条件已收窄到 failure()，其余情况天然不跑。
+      - name: Upload test report
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: test-report
+          path: |
+            apps/web/junit.xml
+            apps/web/coverage
+          retention-days: 14
+
+  build:
+    name: Build (SSG)
+    if: inputs.include-build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - uses: ./.github/actions/setup
+
+      # SSG：不补预渲染，870 个工具页对爬虫就是空壳（DEVELOPMENT.md §十二）
+      # build:ssg = 客户端构建 + SSR 构建 + 预渲染，三步顺序不能反。
+      - name: Build (client + SSR + prerender)
+        run: pnpm build:ssg
+        env:
+          # 默认域名来自 packages/catalog/src/site.ts；部署到别处用仓库变量覆盖
+          SITE_ORIGIN: ${{ vars.SITE_ORIGIN || 'https://006336.xyz' }}
+
+      # 体积预算门禁：首屏 gzip <120KB、单工具 chunk <30KB（PRD §4.1，审计 P1-1）
+      - name: Check bundle size budgets
+        run: pnpm check:bundle-size
+
+      - name: Upload dist
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: web-dist
+          path: apps/web/dist
+          retention-days: 7
+
+  verify:
+    name: Verify (aggregate)
+    if: always()
+    runs-on: ubuntu-latest
+    needs: [fast-gates, test, build]
+    permissions: {}
+    steps:
+      - name: Check all needs succeeded
+        run: |
+          set -eu
+          check () {
+            result="$1"; name="$2"
+            # build 可被跳过（include-build=false）；被跳过视为通过，
+            # 但其它 job 被跳过/取消/失败都视为不通过。
+            if [ "$name" = "build" ] && [ "$result" = "skipped" ]; then
+              echo "$name: skipped (接受)"
+            elif [ "$result" = "success" ]; then
+              echo "$name: success"
+            else
+              echo "$name: $result ✗"
+              exit 1
+            fi
+          }
+          check "${{ needs.fast-gates.result }}" "fast-gates"
+          check "${{ needs.test.result }}" "test"
+          check "${{ needs.build.result }}" "build"
+          echo "全部验证通过 ✓"

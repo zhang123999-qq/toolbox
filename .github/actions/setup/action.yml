@@ -1,0 +1,36 @@
+name: Setup toolbox toolchain
+description: >-
+  pnpm（唯一真源 package.json packageManager）+ Node（.nvmrc）+ 冻结安装（npmjs registry）+ qpdf wasm 显式校验。
+  调用方须先完成 checkout。
+
+runs:
+  using: composite
+  steps:
+    - name: Setup pnpm
+      uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+      # 不写 version：package.json 的 packageManager 是 pnpm 版本的唯一真源。
+      # 两处都指定会让 action 直接失败（Multiple versions of pnpm specified）。
+
+    - name: Setup Node
+      uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      with:
+        # .nvmrc 是 Node 版本单源（CI / Dockerfile / 本地一致），改一处生效。
+        node-version-file: .nvmrc
+        cache: pnpm
+
+    - name: Install
+      shell: bash
+      # --ignore-scripts：esbuild 的 postinstall 在受限环境下会 EBUSY，
+      # 而它的二进制来自平台可选包，不需要该脚本（DEVELOPMENT.md §18.3）。
+      # --registry=https://registry.npmjs.org：.npmrc 的 npmmirror 是国内本地优化，
+      # 对 GH runner（美/欧）装包慢且不支持 audit 端点（pnpm audit 会直接失败），
+      # CI 统一走 npmjs。注意环境变量 npm_config_registry 盖不住 .npmrc，必须用 CLI 选项。
+      run: pnpm install --frozen-lockfile --ignore-scripts --registry=https://registry.npmjs.org
+
+    # --ignore-scripts 同时跳过 apps/web 的 qpdf postinstall（含历史吞错实现），
+    # 这里用显式断言替代：解析 @neslinesli93/qpdf-wasm/dist/qpdf.js 且同目录 qpdf.wasm 存在。
+    - name: Verify qpdf wasm
+      shell: bash
+      run: |
+        (cd apps/web && node -e "const fs=require('fs');const path=require('path');const f=require.resolve('@neslinesli93/qpdf-wasm/dist/qpdf.js');const w=path.join(path.dirname(f),'qpdf.wasm');if(!fs.existsSync(w)){console.error('[qpdf] wasm missing: '+w);process.exit(1)}console.log('[qpdf] wasm ok: '+w)")
+        test -f apps/web/node_modules/@neslinesli93/qpdf-wasm/dist/qpdf.wasm

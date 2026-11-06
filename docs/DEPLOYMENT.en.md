@@ -89,7 +89,7 @@ tar -xzf toolbox-0.0.6-linux-amd64.tar.gz -C /root/pkg
 
 ```bash
 # Build image (multi-stage: Node 24 build → nginx static hosting)
-docker build -f deploy/docker/Dockerfile -t toolbox-web:dev .
+docker build -f Dockerfile -t toolbox-web:dev .
 
 # Run (container internal and external both 8081)
 docker run -d --name toolbox-web -p 8081:8081 toolbox-web:dev
@@ -336,7 +336,7 @@ toolboxctl upgrade
 
 ## 7. Containerized Deployment
 
-### 7.1 Dockerfile Key Points (`deploy/docker/Dockerfile`)
+### 7.1 Dockerfile Key Points (root `Dockerfile`)
 
 - Multi-stage build: Node 24 (alpine) build → nginx:1.27-alpine runtime
 - Build-time inject `SITE_ORIGIN`, `VERSION`, render nginx config and `/healthz`
@@ -375,7 +375,7 @@ services:
   web:
     build:
       context: .
-      dockerfile: deploy/docker/Dockerfile
+      dockerfile: Dockerfile
     ports:
       - '8081:8081'
     volumes:
