@@ -349,7 +349,7 @@ toolboxctl upgrade
 ```bash
 # Build (with version tag)
 docker build \
-  -f deploy/docker/Dockerfile \
+  -f Dockerfile \
   -t toolbox-web:0.0.6 \
   --build-arg SITE_ORIGIN=https://tools.example.com \
   --build-arg VERSION=0.0.6 \
