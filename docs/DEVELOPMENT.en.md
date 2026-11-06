@@ -781,7 +781,7 @@ apps/web/public/     sitemap.xml / robots.txt
 | esbuild postinstall `EBUSY`                     | sandbox blocks spawn; the `--version` check fails                               | `pnpm install --ignore-scripts`. The binary ships in the `@esbuild/win32-x64` platform package; postinstall only validates it                                                                            |
 | turbo `os error 231` (pipe instances exhausted) | concurrent spawn exceeds the sandbox pipe limit; reproduces reliably on Windows | `typecheck` / `test` now use `pnpm -r`; `build` / `dev` still use turbo, so locally prefer `pnpm build:ssg`, or bypass the orchestrator per package with `pnpm exec tsc -p <pkg>/tsconfig.json --noEmit` |
 
-**Three more gotchas at Docker build time (already encoded in `deploy/docker/Dockerfile`):**
+**Three more gotchas at Docker build time (already encoded in the root `Dockerfile`):**
 
 | Symptom                                                              | Cause                                                                                                                                         | Fix                                                                                                                                                                           |
 | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -1082,7 +1082,7 @@ ssh root@192.168.100.4 'bash /tmp/tbv/verify-binary-local.sh'
 ssh root@192.168.100.4 'bash /tmp/tbv/verify-binary-deploy.sh'
 
 # 4) Group C: real Docker deploy (save → scp → load → run; container 8081, host 8082)
-docker build -f deploy/docker/Dockerfile -t toolbox-web:dev .
+docker build -f Dockerfile -t toolbox-web:dev .
 docker save toolbox-web:dev -o .agent/tmp/web-image.tar
 scp .agent/tmp/web-image.tar root@192.168.100.4:/tmp/tbv/web-image.tar
 ssh root@192.168.100.4 'docker load -i /tmp/tbv/web-image.tar && bash /tmp/tbv/verify-docker-deploy.sh'
@@ -1178,7 +1178,7 @@ inside an actual site.
 
 ```bash
 # 1) Build artifacts that contain the new tools
-docker build -f deploy/docker/Dockerfile.test -t toolbox-test:dev .   # rebuild if the image predates the sources
+docker build -f Dockerfile.test -t toolbox-test:dev .   # rebuild if the image predates the sources
 docker run --rm -v "$PWD/dist-release:/out" toolbox-test:dev \
   bash -c 'cd /app && pnpm build:ssg && bash deploy/binary/build-bundle.sh --out /out'
 
@@ -1191,7 +1191,7 @@ ssh root@192.168.100.4 'cd /tmp/tbv/dist-release && sha256sum -c *.sha256 &&
     --service --port 8081'
 
 # 3) Local Docker: use host port 8090 (8081 is usually taken by Docker Desktop itself)
-docker build -f deploy/docker/Dockerfile -t toolbox-web:dev .
+docker build -f Dockerfile -t toolbox-web:dev .
 docker run -d --name tbv-e2e-docker -p 8090:8081 toolbox-web:dev
 
 # 4) Run the batch's tools against both

@@ -319,6 +319,9 @@ if (!existsSync(versionFile)) {
   err('deploy/binary/VERSION', 'VERSION 文件缺失')
 } else {
   const expectedVersion = readFileSync(versionFile, 'utf8').trim()
+  if (!expectedVersion) {
+    err('deploy/binary/VERSION', 'VERSION 文件为空，无法校验 RELEASE 文档版本')
+  }
   for (const rel of ['docs/RELEASE.md', 'docs/RELEASE.en.md']) {
     const full = path.join(ROOT, rel)
     if (!existsSync(full)) continue

@@ -104,9 +104,13 @@ for (const f of files) {
       failures.push(`${f}: ${kb.toFixed(1)}KB > 共享 chunk 上限 ${SHARED_CHUNK_CEILING_KB}KB`)
     }
   } else {
-    // 未归因 chunk：默认 chunk（rollup 产物名 chunk-*/lib-*）尚无预算归因，
-    // 先计数暴露盲区，不计入首屏、不阻断。
+    // 未归因 chunk：默认 chunk（rollup 产物名 chunk-*/lib-*）尚无预算归因。
+    // 仍按共享 chunk 上限约束，防大包从未归因的前缀里静默增长；
+    // 归因补齐（manualChunks 显式命名）后应消除此类 chunk。
     unassigned++
+    if (kb > SHARED_CHUNK_CEILING_KB) {
+      failures.push(`${f}: ${kb.toFixed(1)}KB > 未归因 chunk 上限 ${SHARED_CHUNK_CEILING_KB}KB`)
+    }
   }
 }
 
@@ -122,7 +126,9 @@ console.log(
   `[check-bundle-size] tool-* chunk 数: ${toolChunks.length}，最大: ${toolChunks.length ? Math.max(...toolChunks.map((t) => t.kb)).toFixed(1) : '0'}KB，现状上限工具: ${seenCeilings.size}`,
 )
 if (unassigned > 0) {
-  console.log(`[check-bundle-size] 提示：${unassigned} 个未归因 chunk（chunk-*/lib-*），尚未设预算归因`)
+  console.log(
+    `[check-bundle-size] 提示：${unassigned} 个未归因 chunk（chunk-*/lib-*），尚未设预算归因`,
+  )
 }
 if (firstScreenKB > FIRST_SCREEN_CEILING_KB) {
   failures.push(`首屏 gzip ${firstScreenKB.toFixed(1)}KB 超过现状上限 ${FIRST_SCREEN_CEILING_KB}KB`)

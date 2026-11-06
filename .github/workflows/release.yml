@@ -171,7 +171,7 @@ jobs:
           # CHANGELOG 里没有该版本时，回落到 GitHub 自动生成的提交说明，不让发布失败。
           # header 后必须跟空格/行尾：否则搜 `## [0.0.1]` 会命中 `## [0.0.1-beta]` 那节
           awk -v header="## [$VER]" '
-            index($0, header) == 1 && substr($0, length(header)+1, 1) ~ /[ \t]/ { cap = 1; print; next }
+            index($0, header) == 1 && (length($0) == length(header) || substr($0, length(header)+1, 1) ~ /[ \t]/) { cap = 1; print; next }
             cap && $0 ~ /^## \[/ { exit }
             cap { print }
           ' CHANGELOG.md > "$NOTES_FILE"

@@ -754,7 +754,7 @@ apps/web/public/     sitemap.xml / robots.txt
 | esbuild postinstall `EBUSY`          | 沙箱限制 spawn，`--version` 校验失败            | `pnpm install --ignore-scripts`；二进制来自 `@esbuild/win32-x64` 平台包，postinstall 仅为校验                                                                           |
 | turbo `os error 231`（管道范例耗尽） | 并发 spawn 超出沙箱管道上限，Windows 上稳定复现 | `typecheck` / `test` 已改为走 `pnpm -r`；`build` / `dev` 仍用 turbo，本地请改用 `pnpm build:ssg`，或按包执行 `pnpm exec tsc -p <pkg>/tsconfig.json --noEmit` 绕开编排器 |
 
-**Docker 构建期另有三个坑（已写进 `deploy/docker/Dockerfile`）：**
+**Docker 构建期另有三个坑（已写进根 `Dockerfile`）：**
 
 | 现象                                                 | 原因                                                                                            | 解法                                                                                                                                              |
 | ---------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -1036,7 +1036,7 @@ ssh root@192.168.100.4 'bash /tmp/tbv/verify-binary-local.sh'
 ssh root@192.168.100.4 'bash /tmp/tbv/verify-binary-deploy.sh'
 
 # 4) C 组：Docker 真实部署（镜像 docker save → scp → load → run，容器 8081 / 宿主 8082）
-docker build -f deploy/docker/Dockerfile -t toolbox-web:dev .
+docker build -f Dockerfile -t toolbox-web:dev .
 docker save toolbox-web:dev -o .agent/tmp/web-image.tar
 scp .agent/tmp/web-image.tar root@192.168.100.4:/tmp/tbv/web-image.tar
 ssh root@192.168.100.4 'docker load -i /tmp/tbv/web-image.tar && bash /tmp/tbv/verify-docker-deploy.sh'
@@ -1114,7 +1114,7 @@ ssh root@192.168.100.4 'docker load -i /tmp/tbv/web-image.tar && bash /tmp/tbv/v
 
 ```bash
 # ① 造含新工具的产物
-docker build -f deploy/docker/Dockerfile.test -t toolbox-test:dev .   # 镜像里是旧源码就要先重建
+docker build -f Dockerfile.test -t toolbox-test:dev .   # 镜像里是旧源码就要先重建
 docker run --rm -v "$PWD/dist-release:/out" toolbox-test:dev \
   bash -c 'cd /app && pnpm build:ssg && bash deploy/binary/build-bundle.sh --out /out'
 
@@ -1127,7 +1127,7 @@ ssh root@192.168.100.4 'cd /tmp/tbv/dist-release && sha256sum -c *.sha256 &&
     --service --port 8081'
 
 # ③ 本地 Docker：宿主端口用 8090（8081 常被 Docker Desktop 自己占着）
-docker build -f deploy/docker/Dockerfile -t toolbox-web:dev .
+docker build -f Dockerfile -t toolbox-web:dev .
 docker run -d --name tbv-e2e-docker -p 8090:8081 toolbox-web:dev
 
 # ④ 两个环境各跑一遍本批工具（--grep 限定本批 slug）

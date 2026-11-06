@@ -119,7 +119,7 @@ tar -xzf toolbox-0.0.1-beta-linux-amd64.tar.gz -C /root/pkg
 ### 2. Container deployment
 
 ```bash
-docker build -f deploy/docker/Dockerfile -t toolbox-web:dev .
+docker build -f Dockerfile -t toolbox-web:dev .
 docker run -d --name toolbox-web -p 8081:8081 toolbox-web:dev   # 8081 inside and out
 ```
 

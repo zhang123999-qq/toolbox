@@ -32,7 +32,11 @@ export default defineConfig({
             id.includes('node_modules/elkjs/') ||
             id.includes('node_modules/cytoscape/') ||
             id.includes('node_modules/katex/') ||
-            id.includes('node_modules/@mermaid-js/')
+            id.includes('node_modules/@mermaid-js/') ||
+            id.includes('node_modules/dagre') ||
+            id.includes('node_modules/cose-bilkent') ||
+            id.includes('node_modules/dayjs/') ||
+            id.includes('node_modules/roughjs/')
           ) {
             return 'vendor-mermaid'
           }
@@ -69,8 +73,8 @@ export default defineConfig({
     // （只有渲染组件的用例需要 DOM，靠文件顶部 `// @vitest-environment jsdom`
     // 声明；vitest 3 已废弃 environmentMatchGlobs，不要再用它。）
     pool: 'threads',
-    // CI 上给偶发 flaky 一次重跑的机会（本地仍严格：失败就是失败）
-    retry: process.env.CI ? 1 : 0,
+    // 不在合并门禁上重试：flaky 应被定位修复，而非被 retry 掩盖
+    retry: 0,
     // 用例之间有共享的可变状态（localStorage / document.title），
     // 每次跑完清一遍，避免新增用例互相污染
     restoreMocks: true,

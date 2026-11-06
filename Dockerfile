@@ -73,9 +73,14 @@ RUN sh scripts/build-ssg.sh
 # ---- Stage 2: Production Runtime ---------------------------------------------
 FROM ${NGINX_IMAGE} AS production
 
+# 全局 ARG（FROM 之前声明）在本阶段不可见，必须在此重声明，否则 OCI 标签为空
+ARG BUILD_DATE
+ARG VERSION
+ARG VCS_REF
+
 # Labels for traceability
 LABEL org.opencontainers.image.title="Toolbox" \
-      org.opencontainers.image.description="870 client-side online tools - local-first, static deployment, bilingual" \
+      org.opencontainers.image.description="799 client-side online tools - local-first, static deployment, bilingual" \
       org.opencontainers.image.version="${VERSION}" \
       org.opencontainers.image.created="${BUILD_DATE}" \
       org.opencontainers.image.revision="${VCS_REF}" \
