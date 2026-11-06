@@ -277,8 +277,8 @@ importers:
         specifier: ^6.3.289
         version: 6.3.289
       pinyin-pro:
-        specifier: ^3.29.4
-        version: 3.29.4
+        specifier: ^3.29.5
+        version: 3.29.5
       pptxgenjs:
         specifier: 4.0.1
         version: 4.0.1
@@ -2933,8 +2933,8 @@ packages:
     resolution: {integrity: sha512-qcJu88Q2IWqJsDD529JKMdwGm/dvInW4HvQnRwiH9JtihJvzGOscDtHE3x1pBKeUOTysQ8kVmLnJ2kJu7yhcGA==}
     engines: {node: '>=12'}
 
-  pinyin-pro@3.29.4:
-    resolution: {integrity: sha512-SPXpDT2cHEy+d26V1RXYMlVzXN42hotFAak1fzyWPi4o2dKXb61UqD4pzxDJHwk6gbv8vQ6EfErd+hYX0Qhzug==}
+  pinyin-pro@3.29.5:
+    resolution: {integrity: sha512-Fk5YoRmtdHqJWqAuzYVG/NzvzeCbaG+ZEwbY6Nbps3QAIrvQQEtcm49frcyCM8i2b5najnzPDtYqrHRYTTiuwQ==}
 
   playwright-core@1.63.0:
     resolution: {integrity: sha512-rYCsBF/M5HjUch52bbtVONEFjv6Xu8sm8h72dNlR5bzIE1fvC/bxgspzkjSfU+MweEMmPM8KJebG6nnyxo5mCg==}
@@ -6082,7 +6082,7 @@ snapshots:
 
   picomatch@4.0.7: {}
 
-  pinyin-pro@3.29.4: {}
+  pinyin-pro@3.29.5: {}
 
   playwright-core@1.63.0: {}
 
