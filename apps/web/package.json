@@ -38,7 +38,7 @@
     "fraction.js": "^5.3.4",
     "gif.js": "^0.2.0",
     "gifuct-js": "^2.1.2",
-    "gpt-tokenizer": "^4.0.0",
+    "gpt-tokenizer": "^4.1.0",
     "html-to-image": "^1.11.13",
     "jose": "^6.2.12",
     "jsqr": "^1.4.0",
