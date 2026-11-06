@@ -51,7 +51,7 @@ jobs:
     # 正常构建+打包+发布约 2 分钟；超过 15 分钟判定为卡死，避免空跑占用额度。
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # 推 tag 时构建该 tag；手动补发时构建输入框指定的 tag
           ref: ${{ github.event.inputs.tag || github.ref }}
